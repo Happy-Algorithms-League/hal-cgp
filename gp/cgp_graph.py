@@ -1,6 +1,6 @@
 import collections
 
-from .cgp_node import CGPOutputNode
+from .cgp_node import CGPInputNode, CGPOutputNode
 
 
 class CGPGraph():
@@ -51,10 +51,21 @@ class CGPGraph():
                 if i >= 0:  # do not add (external) input nodes
                     nodes_to_process.append(self._nodes[i])
 
+        # temporally add InputNodes; since they are indexed with
+        # negative values, just append them to _nodes list and
+        # list[-|idx|] will select the correct input node
+        # TODO: dangerous if any node assumes standard shape of graph._nodes
+        self._nodes += [CGPInputNode() for _ in range(self._n_inputs)]
+        for i in range(-self._n_inputs, 0):
+            self._nodes[i]._output = x[i + self._n_inputs]
+
         # evaluate active nodes in order
         for i in sorted(active_nodes):
             for node in active_nodes[i]:
                 node(x, self)
+
+        # remove input nodes again
+        self._nodes = self._nodes[:-self._n_inputs]
 
         return [node._output for node in self.output_nodes]
 

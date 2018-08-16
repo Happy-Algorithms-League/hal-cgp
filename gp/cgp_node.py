@@ -22,7 +22,7 @@ class CGPNode():
         return self._idx
 
     def __repr__(self):
-        return '{}(idx: {}, arity: {}, inputs {})'.format(self._name, self._idx, self._arity, self._inputs)
+        return '{}(idx: {}, arity: {}, inputs {}, output {})'.format(self._name, self._idx, self._arity, self._inputs, self._output)
 
     @property
     def output(self):
@@ -38,15 +38,7 @@ class CGPAdd(CGPNode):
         self._name = self.__class__.__name__
 
     def __call__(self, x, graph):
-        if self._inputs[0] < 0:
-            inp1 = x[self._inputs[0] + graph._n_inputs]
-        else:
-            inp1 = graph[self._inputs[0]].output
-        if self._inputs[1] < 0:
-            inp2 = x[self._inputs[1] + graph._n_inputs]
-        else:
-            inp2 = graph[self._inputs[1]].output
-        self._output = inp1 + inp2
+        self._output = graph[self._inputs[0]].output + graph[self._inputs[1]].output
 
 
 class CGPSub(CGPNode):
@@ -58,15 +50,18 @@ class CGPSub(CGPNode):
         self._name = self.__class__.__name__
 
     def __call__(self, x, graph):
-        if self._inputs[0] < 0:
-            inp1 = x[self._inputs[0] + graph._n_inputs]
-        else:
-            inp1 = graph[self._inputs[0]].output
-        if self._inputs[1] < 0:
-            inp2 = x[self._inputs[1] + graph._n_inputs]
-        else:
-            inp2 = graph[self._inputs[1]].output
-        self._output = inp1 - inp2
+        self._output = graph[self._inputs[0]].output - graph[self._inputs[1]].output
+
+
+class CGPInputNode(CGPNode):
+    _arity = 0
+
+    def __init__(self):
+
+        self._name = self.__class__.__name__
+
+    def __call__(self, x, graph):
+        assert(False)
 
 
 class CGPOutputNode(CGPNode):
@@ -78,8 +73,4 @@ class CGPOutputNode(CGPNode):
         self._name = self.__class__.__name__
 
     def __call__(self, x, graph):
-        if self._inputs[0] < 0:
-            inp = x[self._inputs[0] + graph._n_inputs]
-        else:
-            inp = graph[self._inputs[0]].output
-        self._output = inp
+        self._output = graph[self._inputs[0]].output
