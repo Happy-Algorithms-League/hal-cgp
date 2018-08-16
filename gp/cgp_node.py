@@ -65,7 +65,7 @@ class CGPConstantFloat(CGPNode):
 
         self._name = self.__class__.__name__
 
-        self._output = np.random.uniform(-1, 1)
+        self._output = 1.
 
     def __call__(self, x, graph):
         pass
