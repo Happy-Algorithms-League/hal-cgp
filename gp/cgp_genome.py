@@ -27,7 +27,6 @@ class CGPGenome():
                 permissable_inputs += [j for j in range(-self._n_inputs, 0)]
                 permissable_inputs += [j for j in range(self._n_rows * max(0, (current_column - levels_back)), self._n_rows * (current_column))]
 
-            print(current_column, permissable_inputs, levels_back)
             region += list(np.random.choice(permissable_inputs, self._length_per_region - 1))
 
             self._dna += region
