@@ -63,3 +63,24 @@ class CGPGenome():
     def dna(self, value):
         assert(len(value) == len(self))
         self._dna = value
+
+    def _is_output_gene(self, idx):
+        return idx >= (self._n_regions * self._length_per_region)
+
+    def _is_function_gene(self, idx):
+        return (idx % self._length_per_region) == 0
+
+    def mutate(self, n_mutations, levels_back):
+
+        for i in np.random.randint(0, len(self), n_mutations):
+
+            # TODO: parameters to control mutation rates of specific
+            # genes?
+            if self._is_output_gene(i):
+                self._dna[i] = self._random_input_for_output()[0]
+            elif self._is_function_gene(i):
+                self._dna[i] = self._primitives.sample()
+            else:
+                current_column = i // self._length_per_region // self._n_rows
+                permissable_inputs = self._permissable_inputs(current_column, levels_back)
+                self._dna[i] = np.random.choice(permissable_inputs)
