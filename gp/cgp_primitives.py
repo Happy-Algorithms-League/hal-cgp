@@ -1,15 +1,13 @@
 import numpy as np
 
-from .cgp_node import CGPAdd, CGPSub
-
 
 class CGPPrimitives():
     _primitives = None
 
-    def __init__(self):
+    def __init__(self, primitives):
         self._primitives = {}
-        self._primitives[0] = CGPAdd
-        self._primitives[1] = CGPSub
+        for i in range(len(primitives)):
+            self._primitives[i] = primitives[i]
 
     @property
     def max_arity(self):

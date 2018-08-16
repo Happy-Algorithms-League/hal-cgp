@@ -18,10 +18,12 @@ def test_cgp():
 
     np.random.seed(params['seed'])
 
-    primitives = gp.CGPPrimitives()
-    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives, params['levels_back'])
-    graph = gp.CGPGraph(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'])
-    graph.parse_genome(genome, primitives)
+    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub])
+    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
+    genome.randomize(primitives, params['levels_back'])
+    graph = gp.CGPGraph(genome, primitives)
 
-    y = graph([2., 5.])
-    print(y)
+    x = [5., 2.]
+    y = graph(x)
+    print(genome._dna)
+    print(x, '->', y)

@@ -2,7 +2,6 @@ class CGPNode():
     _arity = None
     _inputs = None
     _output = None
-    _active = None
     _name = None
     _idx = None
 
@@ -14,9 +13,6 @@ class CGPNode():
     def arity(self):
         return self._arity
 
-    def activate(self):
-        self._active = True
-
     @property
     def inputs(self):
         return self._inputs
@@ -26,7 +22,7 @@ class CGPNode():
         return self._idx
 
     def __repr__(self):
-        return '{}(idx: {}, arity: {}, active: {}, inputs {})'.format(self._name, self._idx, self._arity, self._active, self._inputs)
+        return '{}(idx: {}, arity: {}, inputs {})'.format(self._name, self._idx, self._arity, self._inputs)
 
     @property
     def output(self):
@@ -35,7 +31,6 @@ class CGPNode():
 
 class CGPAdd(CGPNode):
     _arity = 2
-    _active = False
 
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
@@ -56,7 +51,6 @@ class CGPAdd(CGPNode):
 
 class CGPSub(CGPNode):
     _arity = 2
-    _active = False
 
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
@@ -77,7 +71,6 @@ class CGPSub(CGPNode):
 
 class CGPOutputNode(CGPNode):
     _arity = 1
-    _active = True
 
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
