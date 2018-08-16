@@ -13,25 +13,33 @@ class CGPGenome():
         self._n_rows = n_rows
         self._n_regions = n_columns * n_rows
         self._length_per_region = 1 + primitives.max_arity
+        self._primitives = primitives
 
-    def randomize(self, primitives, levels_back):
+    def randomize(self, levels_back):
 
         self._dna = []
         for i in range(self._n_regions):
             region = []
-            region.append(primitives.sample())
+            region.append(self._primitives.sample())
 
             if i % self._n_rows == 0:  # only compute permissable inputs once per column
                 current_column = i // self._n_rows
-                permissable_inputs = []
-                permissable_inputs += [j for j in range(-self._n_inputs, 0)]
-                permissable_inputs += [j for j in range(self._n_rows * max(0, (current_column - levels_back)), self._n_rows * (current_column))]
+                permissable_inputs = self._permissable_inputs(current_column, levels_back)
 
             region += list(np.random.choice(permissable_inputs, self._length_per_region - 1))
 
             self._dna += region
 
-        self._dna += list(np.random.choice(range(-self._n_inputs, self._n_rows * self._n_columns), self._n_outputs))
+        self._dna += self._random_input_for_output()
+
+    def _permissable_inputs(self, column, levels_back):
+        permissable_inputs = []
+        permissable_inputs += [j for j in range(-self._n_inputs, 0)]
+        permissable_inputs += [j for j in range(self._n_rows * max(0, (column - levels_back)), self._n_rows * (column))]
+        return permissable_inputs
+
+    def _random_input_for_output(self):
+        return list(np.random.choice(range(-self._n_inputs, self._n_rows * self._n_columns), self._n_outputs))
 
     def __iter__(self):
         if self._dna is None:
