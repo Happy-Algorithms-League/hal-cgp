@@ -44,6 +44,26 @@ def test_sub():
     assert(abs(x[0] - x[1] - y[0]) < 1e-15)
 
 
+def test_direct_input_output():
+    params = {
+        'n_inputs': 1,
+        'n_outputs': 1,
+        'n_columns': 3,
+        'n_rows': 3,
+        'levels_back': 2,
+    }
+    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub])
+    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
+    genome.randomize(primitives, params['levels_back'])
+    genome._dna[-1] = -1
+    graph = gp.CGPGraph(genome, primitives)
+
+    x = [2.14159]
+    y = graph(x)
+
+    assert(abs(x[0] - y[0]) < 1e-15)
+
+
 def test_cgp():
     params = {
         'seed': 1234,

@@ -78,4 +78,8 @@ class CGPOutputNode(CGPNode):
         self._name = self.__class__.__name__
 
     def __call__(self, x, graph):
-        self._output = graph[self._inputs[0]].output
+        if self._inputs[0] < 0:
+            inp = x[self._inputs[0] + graph._n_inputs]
+        else:
+            inp = graph[self._inputs[0]].output
+        self._output = inp
