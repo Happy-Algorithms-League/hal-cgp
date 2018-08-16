@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class CGPNode():
     _arity = None
     _inputs = None
@@ -51,6 +54,21 @@ class CGPSub(CGPNode):
 
     def __call__(self, x, graph):
         self._output = graph[self._inputs[0]].output - graph[self._inputs[1]].output
+
+
+class CGPConstantFloat(CGPNode):
+    _arity = 0
+    _output = None
+
+    def __init__(self, idx, inputs):
+        super().__init__(idx, inputs)
+
+        self._name = self.__class__.__name__
+
+        self._output = np.random.uniform(-1, 1)
+
+    def __call__(self, x, graph):
+        pass
 
 
 class CGPInputNode(CGPNode):
