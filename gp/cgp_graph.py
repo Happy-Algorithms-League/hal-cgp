@@ -40,6 +40,7 @@ class CGPGraph():
 
         while len(nodes_to_process) > 0:
             node = nodes_to_process.pop()
+            node.activate()
 
             # add this node to active nodes; sorted by column to
             # determine evaluation order

@@ -3,6 +3,7 @@ import numpy as np
 
 class CGPNode():
     _arity = None
+    _active = False
     _inputs = None
     _output = None
     _name = None
@@ -25,11 +26,14 @@ class CGPNode():
         return self._idx
 
     def __repr__(self):
-        return '{}(idx: {}, arity: {}, inputs {}, output {})'.format(self._name, self._idx, self._arity, self._inputs, self._output)
+        return '{}(idx: {}, active: {}, arity: {}, inputs {}, output {})'.format(self._name, self._idx, self._active, self._arity, self._inputs, self._output)
 
     @property
     def output(self):
         return self._output
+
+    def activate(self):
+        self._active = True
 
 
 class CGPAdd(CGPNode):
