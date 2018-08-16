@@ -11,9 +11,10 @@ class CGPGraph():
     _nodes = None
 
     def __init__(self, genome, primitives):
-        self.parse_genome(genome, primitives)
+        self._primitives = primitives
+        self.parse_genome(genome)
 
-    def parse_genome(self, genome, primitives):
+    def parse_genome(self, genome):
 
         self._n_inputs = genome._n_inputs
         self._n_outputs = genome._n_outputs
@@ -23,7 +24,7 @@ class CGPGraph():
         self._nodes = []
 
         for i, region in enumerate(genome):
-            self._nodes.append(primitives[region[0]](i, region[1:]))
+            self._nodes.append(self._primitives[region[0]](i, region[1:]))
 
         for i in range(self._n_outputs):
             self._nodes.append(CGPOutputNode(self._n_columns * self._n_rows + i, [genome[-self._n_outputs + i]]))
