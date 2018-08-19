@@ -264,6 +264,31 @@ def test_compile_two_columns_two_rows():
     assert(abs((x[0] + x[1]) + (x[0] - x[1]) - y[1]) < 1e-15)
 
 
+# -> node
+def test_compile_addsubmul():
+    params = {
+        'n_inputs': 2,
+        'n_outputs': 1,
+        'n_columns': 2,
+        'n_rows': 2,
+    }
+
+    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul])
+    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
+    genome.dna = [
+        -1, None, None, -1, None, None,
+        2, 0, 1, 1, 0, 1,
+        1, 2, 3, 0, 0, 0,
+        -2, 4, None]
+    graph = gp.CGPGraph(genome)
+    f = graph.compile_func()
+
+    x = [5., 2.]
+    y = f(x)
+
+    assert(abs(((x[0] * x[1]) - (x[0] - x[1])) - y[0]) < 1e-15)
+
+
 def test_cgp():
     params = {
         'seed': 81882,
