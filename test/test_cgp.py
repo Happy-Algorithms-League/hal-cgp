@@ -112,12 +112,13 @@ def test_add():
     primitives = gp.CGPPrimitives([gp.CGPAdd])
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
-    graph = gp.CGPGraph(genome, primitives)
+    graph = gp.CGPGraph(genome)
 
     x = [5., 1.5]
     y = graph(x)
 
     assert(abs(x[0] + x[1] - y[0]) < 1e-15)
+
 
 # -> node
 def test_sub():
@@ -131,7 +132,7 @@ def test_sub():
     primitives = gp.CGPPrimitives([gp.CGPSub])
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
-    graph = gp.CGPGraph(genome, primitives)
+    graph = gp.CGPGraph(genome)
 
     x = [5., 1.5]
     y = graph(x)
@@ -154,7 +155,7 @@ def test_direct_input_output():
 
     # TODO: only allow setting of gene via function with sanity checks
     genome._dna[-2:] = [0, None]  # set inputs for output node to input node
-    graph = gp.CGPGraph(genome, primitives)
+    graph = gp.CGPGraph(genome)
 
     x = [2.14159]
     y = graph(x)
@@ -201,7 +202,7 @@ def test_cgp():
     primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPConstantFloat])
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
     genome.randomize(params['levels_back'])
-    graph = gp.CGPGraph(genome, primitives)
+    graph = gp.CGPGraph(genome)
 
     history_loss = []
     for i in range(1000):

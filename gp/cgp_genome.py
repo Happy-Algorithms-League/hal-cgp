@@ -215,3 +215,7 @@ class CGPGenome():
                     self._dna[i] = np.random.choice(permissable_inputs)
 
         self._validate_dna(self._dna)
+
+    @property
+    def primitives(self):
+        return self._primitives
