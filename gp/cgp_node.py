@@ -72,6 +72,21 @@ class CGPSub(CGPNode):
         self._output_str = '({} - {})'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
 
 
+class CGPMul(CGPNode):
+    _arity = 2
+
+    def __init__(self, idx, inputs):
+        super().__init__(idx, inputs)
+
+        self._name = self.__class__.__name__
+
+    def __call__(self, x, graph):
+        self._output = graph[self._inputs[0]].output * graph[self._inputs[1]].output
+
+    def format_output_str(self, graph):
+        self._output_str = '({} * {})'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
+
+
 class CGPConstantFloat(CGPNode):
     _arity = 0
     _output = None

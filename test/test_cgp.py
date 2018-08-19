@@ -140,6 +140,26 @@ def test_sub():
     assert(abs(x[0] - x[1] - y[0]) < 1e-15)
 
 
+# -> node
+def test_mul():
+    params = {
+        'n_inputs': 2,
+        'n_outputs': 1,
+        'n_columns': 1,
+        'n_rows': 1,
+    }
+
+    primitives = gp.CGPPrimitives([gp.CGPMul])
+    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
+    genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
+    graph = gp.CGPGraph(genome)
+
+    x = [5., 1.5]
+    y = graph(x)
+
+    assert(abs((x[0] * x[1]) - y[0]) < 1e-15)
+
+
 # -> graph
 def test_direct_input_output():
     params = {
