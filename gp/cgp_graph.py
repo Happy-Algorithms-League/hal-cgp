@@ -106,5 +106,6 @@ class CGPGraph():
             for node in active_nodes[hidden_column_idx]:
                 node.format_output_str(self)
 
-        exec('def f(x): return {}'.format(self._nodes[-1].output_str))
-        return locals()['f']
+        func_str = 'def _f(x): return [{}]'.format(', '.join(node.output_str for node in self.output_nodes))
+        exec(func_str)
+        return locals()['_f']

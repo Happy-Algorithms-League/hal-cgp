@@ -228,6 +228,22 @@ def test_compile_two_columns():
     assert(abs(x[0] - (x[0] + x[1]) - y) < 1e-15)
 
 
+# -> graph
+def test_compile_two_columns_two_rows():
+    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub])
+    genome = gp.CGPGenome(2, 2, 2, 2, primitives)
+
+    genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, 1, 0, 1, 0, 0, 2, 0, 2, 3, -2, 4, None, -2, 5, None]
+    graph = gp.CGPGraph(genome)
+    f = graph.compile_func()
+
+    x = [5., 2.]
+    y = f(x)
+
+    assert(abs(x[0] + (x[0] + x[1]) - y[0]) < 1e-15)
+    assert(abs((x[0] + x[1]) + (x[0] - x[1]) - y[1]) < 1e-15)
+
+
 def test_cgp():
     params = {
         'seed': 81882,
