@@ -10,6 +10,8 @@ class CGPNode():
         self._idx = idx
         self._inputs = inputs
 
+        assert(idx not in inputs)
+
     @property
     def arity(self):
         return self._arity
