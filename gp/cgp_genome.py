@@ -199,7 +199,8 @@ class CGPGenome():
                 pass  # nothing to do here
 
             elif self._is_output_region(region_idx):
-                if self._is_input_gene(i) and self._dna[i] is not None:  # only mutate coding output gene
+                # only mutate coding output gene
+                if self._is_input_gene(i) and self._dna[i] is not self._non_coding_allele:
                     permissable_inputs = self._permissable_inputs_for_output()
                     self._dna[i] = np.random.choice(permissable_inputs)
 
