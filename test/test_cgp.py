@@ -8,6 +8,29 @@ import gp
 
 
 # -> genome
+def test_permissable_inputs():
+    params = {
+        'n_inputs': 2,
+        'n_outputs': 1,
+        'n_columns': 4,
+        'n_rows': 2,
+        'levels_back': 2,
+    }
+
+    primitives = gp.CGPPrimitives([gp.CGPAdd])
+    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
+
+    expected = [
+        [0, 1],
+        [0, 1, 2, 3],
+        [0, 1, 2, 3, 4, 5],
+        [0, 1, 4, 5, 6, 7],
+    ]
+    for column_idx in range(params['n_columns']):
+        assert(expected[column_idx] == genome._permissable_inputs(column_idx, params['levels_back']))
+
+
+# -> genome
 def test_region_generators():
     params = {
         'n_inputs': 2,
