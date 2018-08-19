@@ -54,7 +54,7 @@ class CGPAdd(CGPNode):
         self._output = graph[self._inputs[0]].output + graph[self._inputs[1]].output
 
     def format_output_str(self, graph):
-        self._output_str = '{} + {}'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
+        self._output_str = '({} + {})'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
 
 
 class CGPSub(CGPNode):
@@ -69,7 +69,7 @@ class CGPSub(CGPNode):
         self._output = graph[self._inputs[0]].output - graph[self._inputs[1]].output
 
     def format_output_str(self, graph):
-        self._output_str = '{} - {}'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
+        self._output_str = '({} - {})'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
 
 
 class CGPConstantFloat(CGPNode):
