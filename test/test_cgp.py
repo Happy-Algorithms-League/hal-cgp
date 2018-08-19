@@ -99,6 +99,7 @@ def test_check_dna_consistency():
         genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 0, 0]
 
 
+# -> node
 def test_add():
     params = {
         'n_inputs': 2,
@@ -117,7 +118,7 @@ def test_add():
 
     assert(abs(x[0] + x[1] - y[0]) < 1e-15)
 
-
+# -> node
 def test_sub():
     params = {
         'n_inputs': 2,
@@ -137,6 +138,7 @@ def test_sub():
     assert(abs(x[0] - x[1] - y[0]) < 1e-15)
 
 
+# -> graph
 def test_direct_input_output():
     params = {
         'n_inputs': 1,
@@ -148,7 +150,9 @@ def test_direct_input_output():
     primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub])
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
     genome.randomize(params['levels_back'])
-    genome._dna[-1] = -1
+
+    # TODO: only allow setting of gene via function with sanity checks
+    genome._dna[-2:] = [0, None]  # set inputs for output node to input node
     graph = gp.CGPGraph(genome, primitives)
 
     x = [2.14159]
@@ -201,7 +205,7 @@ def test_cgp():
     x = [5., 2.]
 
     history_loss = []
-    for i in range(1000):
+    for i in range(10):
         genome.mutate(params['n_mutations'], params['levels_back'])
         graph.parse_genome(genome)
         y = graph(x)
