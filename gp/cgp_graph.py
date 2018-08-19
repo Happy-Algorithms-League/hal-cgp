@@ -9,12 +9,16 @@ class CGPGraph():
     _n_columns = None
     _n_rows = None
     _nodes = None
+    _gnome = None
 
     def __init__(self, genome, primitives):
         self._primitives = primitives
         self.parse_genome(genome)
+        self._genome = genome
 
     def parse_genome(self, genome):
+        assert(self._primitives == genome._primitives)
+        self._genome = genome
 
         self._n_inputs = genome._n_inputs
         self._n_outputs = genome._n_outputs
@@ -23,11 +27,29 @@ class CGPGraph():
 
         self._nodes = []
 
-        for i, region in enumerate(genome):
-            self._nodes.append(self._primitives[region[0]](i, region[1:]))
+        idx = 0
+        for region in genome.input_regions():
+            self._nodes.append(CGPInputNode(idx, region[1:]))
+            idx += 1
 
-        for i in range(self._n_outputs):
-            self._nodes.append(CGPOutputNode(self._n_columns * self._n_rows + i, [genome[-self._n_outputs + i]]))
+        for region in genome.hidden_regions():
+            self._nodes.append(self._primitives[region[0]](idx, region[1:]))
+            idx += 1
+
+        for region in genome.output_regions():
+            self._nodes.append(CGPOutputNode(idx, region[1:]))
+            idx += 1
+
+    def _column_idx(self, idx):
+        return idx // self._n_rows
+
+    @property
+    def input_nodes(self):
+        return self._nodes[:self._n_inputs]
+
+    @property
+    def hidden_nodes(self):
+        return self._nodes[self._n_inputs:-self._n_outputs]
 
     @property
     def output_nodes(self):
@@ -41,33 +63,26 @@ class CGPGraph():
 
         while len(nodes_to_process) > 0:
             node = nodes_to_process.pop()
-            node.activate()
 
             # add this node to active nodes; sorted by column to
             # determine evaluation order
-            current_column = node.idx // self._n_rows
-            active_nodes[current_column].add(node)
+            active_nodes[self._column_idx(node.idx)].add(node)
+            node.activate()
 
             # need to process all inputs to this node next
             for i in node.inputs:
-                if i >= 0:  # do not add (external) input nodes
+                if i is not self._genome._non_coding_allele and not isinstance(self._nodes[i], CGPInputNode):
                     nodes_to_process.append(self._nodes[i])
 
-        # temporally add InputNodes; since they are indexed with
-        # negative values, just append them to _nodes list and
-        # list[-|idx|] will select the correct input node
-        # TODO: dangerous if any node assumes standard shape of graph._nodes
-        self._nodes += [CGPInputNode() for _ in range(self._n_inputs)]
-        for i in range(-self._n_inputs, 0):
-            self._nodes[i]._output = x[i + self._n_inputs]
+        # store values of x in input nodes
+        for i, xi in enumerate(x):
+            assert(isinstance(self._nodes[i], CGPInputNode))
+            self._nodes[i]._output = xi
 
         # evaluate active nodes in order
         for i in sorted(active_nodes):
             for node in active_nodes[i]:
                 node(x, self)
-
-        # remove input nodes again
-        self._nodes = self._nodes[:-self._n_inputs]
 
         return [node._output for node in self.output_nodes]
 
