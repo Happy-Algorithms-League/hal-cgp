@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pytest
 import sys
 
 sys.path.insert(0, '../')
@@ -62,6 +63,29 @@ def test_direct_input_output():
     y = graph(x)
 
     assert(abs(x[0] - y[0]) < 1e-15)
+
+
+# -> primitives
+def test_immutable_primitives():
+    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub])
+    with pytest.raises(TypeError):
+        primitives[0] = gp.CGPAdd
+
+    with pytest.raises(TypeError):
+        primitives._primitives[0] = gp.CGPAdd
+
+
+# -> primitives
+def test_max_arity():
+    plain_primitives = [gp.CGPAdd, gp.CGPSub, gp.CGPConstantFloat]
+    primitives = gp.CGPPrimitives(plain_primitives)
+
+    arity = 0
+    for p in plain_primitives:
+        if arity < p._arity:
+            arity = p._arity
+
+    assert(arity == primitives.max_arity)
 
 
 def test_cgp():

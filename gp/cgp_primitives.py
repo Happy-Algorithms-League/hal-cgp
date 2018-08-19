@@ -1,28 +1,41 @@
 import numpy as np
+import types
 
 
 class CGPPrimitives():
+    _n_primitives = 0
+    _max_arity = 0
     _primitives = None
 
     def __init__(self, primitives):
+        self._n_primitives = len(primitives)
+
         self._primitives = {}
         for i in range(len(primitives)):
             self._primitives[i] = primitives[i]
 
-    @property
-    def max_arity(self):
+        # hide primitives dict behind MappingProxyType to make sure it
+        # is not changed after construction
+        self._primitives = types.MappingProxyType(self._primitives)
 
-        # TODO: determine arity without creating object instance
-        arity = self._primitives[0](None, None).arity
+        self._determine_max_arity()
+
+    def _determine_max_arity(self):
+
+        arity = self._primitives[0]._arity
 
         for idx, p in self._primitives.items():
-            if arity < p(None, None).arity:
-                arity = p(None, None).arity
+            if arity < p._arity:
+                arity = p._arity
 
-        return arity
+        self._max_arity = arity
 
     def sample(self):
         return np.random.choice(list(self._primitives.keys()))
 
     def __getitem__(self, key):
         return self._primitives[key]
+
+    @property
+    def max_arity(self):
+        return self._max_arity
