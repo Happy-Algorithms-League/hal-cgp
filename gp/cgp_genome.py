@@ -85,9 +85,6 @@ class CGPGenome():
     def _permissable_inputs_for_output(self):
         return self._permissable_inputs(self._n_columns, self._n_columns)
 
-    def _random_input_for_outputs(self):
-        return list(np.random.choice(range(-self._n_inputs, self._n_rows * self._n_columns), self._n_outputs))
-
     def __iter__(self):
         if self._dna is None:
             raise RuntimeError('dna not initialized - call CGPGenome.randomize first')
@@ -175,23 +172,46 @@ class CGPGenome():
         for i in range(self._n_outputs):
             yield dna[(i + self._n_inputs + self._n_hidden) * self._length_per_region:(i + 1 + self._n_inputs + self._n_hidden) * self._length_per_region]
 
-    def _is_output_gene(self, idx):
-        return idx >= (self._n_regions * self._length_per_region)
+    def _is_input_region(self, region_idx):
+        return region_idx < self._n_inputs
+
+    def _is_hidden_region(self, region_idx):
+        return (self._n_inputs <= region_idx) & (region_idx < self._n_inputs + self._n_hidden)
+
+    def _is_output_region(self, region_idx):
+        return self._n_inputs + self._n_hidden <= region_idx
 
     def _is_function_gene(self, idx):
         return (idx % self._length_per_region) == 0
+
+    def _is_input_gene(self, idx):
+        return not self._is_function_gene(idx)
 
     def mutate(self, n_mutations, levels_back):
 
         for i in np.random.randint(0, len(self), n_mutations):
 
+            region_idx = i // self._length_per_region
+
             # TODO: parameters to control mutation rates of specific
             # genes?
-            if self._is_output_gene(i):
-                self._dna[i] = self._random_input_for_outputs()[0]
-            elif self._is_function_gene(i):
-                self._dna[i] = self._primitives.sample()
+            if self._is_input_region(region_idx):
+                pass  # nothing to do here
+
+            elif self._is_output_region(region_idx):
+                if self._is_input_gene(i) and self._dna[i] is not None:  # only mutate coding output gene
+                    permissable_inputs = self._permissable_inputs_for_output()
+                    self._dna[i] = np.random.choice(permissable_inputs)
+
             else:
-                current_column = i // self._length_per_region // self._n_rows
-                permissable_inputs = self._permissable_inputs(current_column, levels_back)
-                self._dna[i] = np.random.choice(permissable_inputs)
+                assert(self._is_hidden_region(region_idx))
+
+                if self._is_function_gene(i):
+                    self._dna[i] = self._primitives.sample()
+
+                else:
+                    hidden_region_idx = region_idx - self._n_inputs
+                    permissable_inputs = self._permissable_inputs(self._hidden_column_idx(hidden_region_idx), levels_back)
+                    self._dna[i] = np.random.choice(permissable_inputs)
+
+        self._validate_dna(self._dna)

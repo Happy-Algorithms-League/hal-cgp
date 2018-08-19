@@ -40,8 +40,8 @@ class CGPGraph():
             self._nodes.append(CGPOutputNode(idx, region[1:]))
             idx += 1
 
-    def _column_idx(self, idx):
-        return idx // self._n_rows
+    def _hidden_column_idx(self, idx):
+        return (idx - self._n_inputs) // self._n_rows
 
     @property
     def input_nodes(self):
@@ -66,7 +66,7 @@ class CGPGraph():
 
             # add this node to active nodes; sorted by column to
             # determine evaluation order
-            active_nodes[self._column_idx(node.idx)].add(node)
+            active_nodes[self._hidden_column_idx(node.idx)].add(node)
             node.activate()
 
             # need to process all inputs to this node next
