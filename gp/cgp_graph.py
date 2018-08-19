@@ -53,7 +53,7 @@ class CGPGraph():
     def output_nodes(self):
         return self._nodes[-self._n_outputs:]
 
-    def __call__(self, x):
+    def _determine_active_nodes(self):
 
         # determine active nodes
         active_nodes = collections.defaultdict(set)  # use set to avoid duplication
@@ -72,14 +72,20 @@ class CGPGraph():
                 if i is not self._genome._non_coding_allele and not isinstance(self._nodes[i], CGPInputNode):
                     nodes_to_process.append(self._nodes[i])
 
+        return active_nodes
+
+    def __call__(self, x):
+
+        active_nodes = self._determine_active_nodes()
+
         # store values of x in input nodes
         for i, xi in enumerate(x):
             assert(isinstance(self._nodes[i], CGPInputNode))
             self._nodes[i]._output = xi
 
         # evaluate active nodes in order
-        for i in sorted(active_nodes):
-            for node in active_nodes[i]:
+        for hidden_column_idx in sorted(active_nodes):
+            for node in active_nodes[hidden_column_idx]:
                 node(x, self)
 
         return [node._output for node in self.output_nodes]
