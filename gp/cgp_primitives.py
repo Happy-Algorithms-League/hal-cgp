@@ -31,7 +31,7 @@ class CGPPrimitives():
         self._max_arity = arity
 
     def sample(self):
-        return np.random.choice(list(self._primitives.keys()))
+        return np.random.choice(self.alleles)
 
     def __getitem__(self, key):
         return self._primitives[key]
@@ -39,3 +39,7 @@ class CGPPrimitives():
     @property
     def max_arity(self):
         return self._max_arity
+
+    @property
+    def alleles(self):
+        return tuple(self._primitives.keys())
