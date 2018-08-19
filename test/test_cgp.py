@@ -41,16 +41,62 @@ def test_region_generators():
 
     primitives = gp.CGPPrimitives([gp.CGPAdd])
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
-    genome.dna = [-1, 0, 0, -1, 0, 0, 0, -2, -1, -2, 0, 0]
+    genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 0, None]
 
     for region in genome.input_regions():
-        assert(region == [-1, 0, 0])
+        assert(region == [-1, None, None])
 
     for region in genome.hidden_regions():
-        assert(region == [0, -2, -1])
+        assert(region == [0, 0, 1])
 
     for region in genome.output_regions():
-        assert(region == [-2, 0, 0])
+        assert(region == [-2, 0, None])
+
+
+# -> genome
+def test_check_dna_consistency():
+    params = {
+        'n_inputs': 2,
+        'n_outputs': 1,
+        'n_columns': 1,
+        'n_rows': 1,
+    }
+
+    primitives = gp.CGPPrimitives([gp.CGPAdd])
+    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
+    genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 0, None]
+
+    # invalid length
+    with pytest.raises(ValueError):
+        genome.dna = [-1, None, None, -1, None, None, 0, -2, -1, -2, 0, None, 0]
+
+    # invalid function gene for input node
+    with pytest.raises(ValueError):
+        genome.dna = [0, None, None, -1, None, None, 0, -2, 0, -2, 0, None]
+
+    # invalid input gene for input node
+    with pytest.raises(ValueError):
+        genome.dna = [-1, 0, None, -1, None, None, 0, -2, 0, -2, 0, None]
+
+    # invalid function gene for hidden node
+    with pytest.raises(ValueError):
+        genome.dna = [-1, None, None, -1, None, None, 2, 0, 1, -2, 0, None]
+
+    # invalid input gene for hidden node
+    with pytest.raises(ValueError):
+        genome.dna = [-1, None, None, -1, None, None, 0, 2, 1, -2, 0, None]
+
+    # invalid function gene for output node
+    with pytest.raises(ValueError):
+        genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, 0, 0, None]
+
+    # invalid input gene for input node
+    with pytest.raises(ValueError):
+        genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 3, None]
+
+    # invalid non-coding input gene for output node
+    with pytest.raises(ValueError):
+        genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 0, 0]
 
 
 def test_add():
@@ -63,7 +109,7 @@ def test_add():
 
     primitives = gp.CGPPrimitives([gp.CGPAdd])
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
-    genome.dna = [0, -2, -1, 0]
+    genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 0, None]
     graph = gp.CGPGraph(genome, primitives)
 
     x = [5., 1.5]
