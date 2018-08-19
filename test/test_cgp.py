@@ -302,19 +302,28 @@ def test_cgp():
 
     np.random.seed(params['seed'])
 
-    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPConstantFloat])
+    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat])
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
     genome.randomize(params['levels_back'])
     graph = gp.CGPGraph(genome)
 
     history_loss = []
-    for i in range(1000):
-        x = np.random.normal(size=2)
-        genome.mutate(params['n_mutations'], params['levels_back'])
-        graph.parse_genome(genome)
-        y = graph(x)
-        loss = (x[0] + x[1] - y[0]) ** 2
-        history_loss.append(loss)
+    for i in range(100000):
+
+        history_loss_trial = []
+        for j in range(5):
+            x = np.random.randint(1, 10, 2)
+            genome.mutate(params['n_mutations'], params['levels_back'])
+            graph.parse_genome(genome)
+            f = graph.compile_func()
+            y = f(x)
+            loss = (((x[0] * x[1]) - (x[0] - x[1])) - y[0]) ** 2
+            history_loss_trial.append(loss)
+
+        if np.sum(history_loss_trial) < 1e-15:
+            print(graph[-1].output_str)
+
+        history_loss.append(np.sum(np.mean(history_loss_trial)))
 
     plt.plot(history_loss)
     plt.show()
