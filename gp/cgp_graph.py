@@ -16,6 +16,9 @@ class CGPGraph():
         self._genome = genome
 
     def parse_genome(self, genome):
+        if genome.dna is None:
+            raise RuntimeError('dna not initialized')
+
         self._genome = genome
 
         self._n_inputs = genome._n_inputs

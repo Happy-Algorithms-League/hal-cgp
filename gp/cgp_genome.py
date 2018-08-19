@@ -87,13 +87,13 @@ class CGPGenome():
 
     def __iter__(self):
         if self._dna is None:
-            raise RuntimeError('dna not initialized - call CGPGenome.randomize first')
+            raise RuntimeError('dna not initialized')
         for i in range(self._n_regions):
             yield self._dna[i * self._length_per_region:(i + 1) * self._length_per_region]
 
     def __getitem__(self, key):
         if self._dna is None:
-            raise RuntimeError('dna not initialized - call CGPGenome.randomize first')
+            raise RuntimeError('dna not initialized')
         return self._dna[key]
 
     def __len__(self):
