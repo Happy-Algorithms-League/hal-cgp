@@ -24,25 +24,24 @@ class CGPGenome():
 
     def randomize(self, levels_back):
 
-        self._dna = []
+        dna = []
 
-        # add input nodes
+        # add input regions
         for i in range(self._n_inputs):
 
             # fill region with identifier for input node and zeros,
             # since input nodes do not have any inputs
             region = []
             region.append(self._id_input_node)
-            region += [0] * self._primitives.max_arity
+            region += [self._non_coding_allele] * self._primitives.max_arity
 
-            self._dna += region
+            dna += region
 
         # add hidden nodes
         for i in range(self._n_hidden):
 
             if i % self._n_rows == 0:  # only compute permissable inputs once per column
-                column_idx = self._column_idx(i)
-                permissable_inputs = self._permissable_inputs(column_idx, levels_back)
+                permissable_inputs = self._permissable_inputs(self._column_idx(i), levels_back)
 
             # construct dna region consisting of function allele and
             # input alleles
@@ -50,18 +49,24 @@ class CGPGenome():
             region.append(self._primitives.sample())
             region += list(np.random.choice(permissable_inputs, self._primitives.max_arity))
 
-            self._dna += region
+            dna += region
 
-        permissable_inputs = self._permissable_inputs(column_idx, levels_back, output=True)
+        permissable_inputs = self._permissable_inputs_for_output()
         # add output nodes
         for i in range(self._n_outputs):
 
             # fill region with identifier for output node and single
             # gene determining input
             region = []
-            region.append(self._id_input_node)
+            region.append(self._id_output_node)
             region.append(np.random.choice(permissable_inputs))
-            region += [0] * (self._primitives.max_arity - 1)
+            region += [None] * (self._primitives.max_arity - 1)
+
+            dna += region
+
+        self._validate_dna(dna)
+
+        self._dna = dna
 
     # TODO: replace following two function with one that only takes
     # index of node
@@ -108,11 +113,11 @@ class CGPGenome():
     @dna.setter
     def dna(self, value):
 
-        self._check_dna_consistency(value)
+        self._validate_dna(value)
 
         self._dna = value
 
-    def _check_dna_consistency(self, dna):
+    def _validate_dna(self, dna):
 
         if len(dna) != len(self):
             raise ValueError('dna length mismatch')
@@ -147,7 +152,7 @@ class CGPGenome():
                 raise ValueError('input gene for output nodes has invalid value')
 
             if region[2:] != [None] * (self._primitives.max_arity - 1):
-                raise ValueError('non-coding input genes for output nodes need to be identical to zero')
+                raise ValueError('non-coding input genes for output nodes need to be identical to non-coding allele')
 
     def _column_idx(self, hidden_region_idx):
         return hidden_region_idx // self._n_rows
@@ -167,7 +172,7 @@ class CGPGenome():
     def output_regions(self, dna=None):
         if dna is None:
             dna = self.dna
-        for i in range(self._n_hidden):
+        for i in range(self._n_outputs):
             yield dna[(i + self._n_inputs + self._n_hidden) * self._length_per_region:(i + 1 + self._n_inputs + self._n_hidden) * self._length_per_region]
 
     def _is_output_gene(self, idx):
