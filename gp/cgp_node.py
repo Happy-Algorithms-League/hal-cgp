@@ -1,6 +1,3 @@
-import numpy as np
-
-
 class CGPNode():
     _arity = None
     _active = False
@@ -78,7 +75,8 @@ class CGPConstantFloat(CGPNode):
 class CGPInputNode(CGPNode):
     _arity = 0
 
-    def __init__(self):
+    def __init__(self, idx, inputs):
+        super().__init__(idx, inputs)
 
         self._name = self.__class__.__name__
 
