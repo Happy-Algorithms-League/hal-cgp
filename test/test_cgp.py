@@ -308,14 +308,15 @@ def test_cgp():
     graph = gp.CGPGraph(genome)
 
     history_loss = []
-    for i in range(100000):
+    for i in range(10000):
+
+        genome.mutate(params['n_mutations'], params['levels_back'])
+        graph.parse_genome(genome)
+        f = graph.compile_func()
 
         history_loss_trial = []
-        for j in range(5):
+        for j in range(10):
             x = np.random.randint(1, 10, 2)
-            genome.mutate(params['n_mutations'], params['levels_back'])
-            graph.parse_genome(genome)
-            f = graph.compile_func()
             y = f(x)
             loss = (((x[0] * x[1]) - (x[0] - x[1])) - y[0]) ** 2
             history_loss_trial.append(loss)
