@@ -203,10 +203,9 @@ def test_cgp():
     genome.randomize(params['levels_back'])
     graph = gp.CGPGraph(genome, primitives)
 
-    x = [5., 2.]
-
     history_loss = []
-    for i in range(10):
+    for i in range(1000):
+        x = np.random.normal(size=2)
         genome.mutate(params['n_mutations'], params['levels_back'])
         graph.parse_genome(genome)
         y = graph(x)
