@@ -13,7 +13,7 @@ def test_permissable_inputs():
         'n_inputs': 2,
         'n_outputs': 1,
         'n_columns': 4,
-        'n_rows': 2,
+        'n_rows': 3,
         'levels_back': 2,
     }
 
@@ -22,12 +22,13 @@ def test_permissable_inputs():
 
     expected = [
         [0, 1],
-        [0, 1, 2, 3],
-        [0, 1, 2, 3, 4, 5],
-        [0, 1, 4, 5, 6, 7],
+        [0, 1, 2, 3, 4],
+        [0, 1, 2, 3, 4, 5, 6, 7],
+        [0, 1, 5, 6, 7, 8, 9, 10],
     ]
-    for column_idx in range(params['n_columns']):
-        assert(expected[column_idx] == genome._permissable_inputs(column_idx, params['levels_back']))
+
+    for hidden_column_idx in range(params['n_columns']):
+        assert(expected[hidden_column_idx] == genome._permissable_inputs(hidden_column_idx, params['levels_back']))
 
 
 # -> genome
