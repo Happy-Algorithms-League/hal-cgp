@@ -186,6 +186,33 @@ def test_max_arity():
     assert(arity == primitives.max_arity)
 
 
+# -> graph
+def test_compile_simple():
+    primitives = gp.CGPPrimitives([gp.CGPAdd])
+    genome = gp.CGPGenome(2, 1, 1, 1, primitives)
+
+    genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
+    graph = gp.CGPGraph(genome)
+    f = graph.compile_func()
+
+    x = [5., 2.]
+    y = f(x)
+
+    assert(abs(x[0] + x[1] - y) < 1e-15)
+
+    primitives = gp.CGPPrimitives([gp.CGPSub])
+    genome = gp.CGPGenome(2, 1, 1, 1, primitives)
+
+    genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
+    graph = gp.CGPGraph(genome)
+    f = graph.compile_func()
+
+    x = [5., 2.]
+    y = f(x)
+
+    assert(abs(x[0] - x[1] - y) < 1e-15)
+
+
 def test_cgp():
     params = {
         'seed': 81882,

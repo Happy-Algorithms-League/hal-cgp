@@ -34,6 +34,13 @@ class CGPNode():
     def activate(self):
         self._active = True
 
+    def format_output_str(self, graph):
+        raise NotImplementedError()
+
+    @property
+    def output_str(self):
+        return self._output_str
+
 
 class CGPAdd(CGPNode):
     _arity = 2
@@ -46,6 +53,9 @@ class CGPAdd(CGPNode):
     def __call__(self, x, graph):
         self._output = graph[self._inputs[0]].output + graph[self._inputs[1]].output
 
+    def format_output_str(self, graph):
+        self._output_str = '{} + {}'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
+
 
 class CGPSub(CGPNode):
     _arity = 2
@@ -57,6 +67,9 @@ class CGPSub(CGPNode):
 
     def __call__(self, x, graph):
         self._output = graph[self._inputs[0]].output - graph[self._inputs[1]].output
+
+    def format_output_str(self, graph):
+        self._output_str = '{} - {}'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
 
 
 class CGPConstantFloat(CGPNode):
@@ -85,6 +98,9 @@ class CGPInputNode(CGPNode):
     def __call__(self, x, graph):
         assert(False)
 
+    def format_output_str(self, graph):
+        self._output_str = 'x[{}]'.format(self._idx)
+
 
 class CGPOutputNode(CGPNode):
     _arity = 1
@@ -96,3 +112,6 @@ class CGPOutputNode(CGPNode):
 
     def __call__(self, x, graph):
         self._output = graph[self._inputs[0]].output
+
+    def format_output_str(self, graph):
+        self._output_str = '{}'.format(graph[self._inputs[0]].output_str)

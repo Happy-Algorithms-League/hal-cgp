@@ -95,3 +95,16 @@ class CGPGraph():
 
     def __getitem__(self, key):
         return self._nodes[key]
+
+    def compile_func(self):
+
+        for i, node in enumerate(self.input_nodes):
+            node.format_output_str(self)
+
+        active_nodes = self._determine_active_nodes()
+        for hidden_column_idx in sorted(active_nodes):
+            for node in active_nodes[hidden_column_idx]:
+                node.format_output_str(self)
+
+        exec('def f(x): return {}'.format(self._nodes[-1].output_str))
+        return locals()['f']
