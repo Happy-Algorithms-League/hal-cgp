@@ -86,6 +86,9 @@ class CGPConstantFloat(CGPNode):
     def __call__(self, x, graph):
         pass
 
+    def format_output_str(self, graph):
+        self._output_str = '{}'.format(self._output)
+
 
 class CGPInputNode(CGPNode):
     _arity = 0
