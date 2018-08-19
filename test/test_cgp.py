@@ -7,6 +7,29 @@ sys.path.insert(0, '../')
 import gp
 
 
+# -> genome
+def test_region_generators():
+    params = {
+        'n_inputs': 2,
+        'n_outputs': 1,
+        'n_columns': 1,
+        'n_rows': 1,
+    }
+
+    primitives = gp.CGPPrimitives([gp.CGPAdd])
+    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
+    genome.dna = [-1, 0, 0, -1, 0, 0, 0, -2, -1, -2, 0, 0]
+
+    for region in genome.input_regions():
+        assert(region == [-1, 0, 0])
+
+    for region in genome.hidden_regions():
+        assert(region == [0, -2, -1])
+
+    for region in genome.output_regions():
+        assert(region == [-2, 0, 0])
+
+
 def test_add():
     params = {
         'n_inputs': 2,

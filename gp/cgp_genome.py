@@ -64,6 +64,24 @@ class CGPGenome():
         assert(len(value) == len(self))
         self._dna = value
 
+    def input_regions(self, dna=None):
+        if dna is None:
+            dna = self.dna
+        for i in range(self._n_inputs):
+            yield dna[i * self._length_per_region:(i + 1) * self._length_per_region]
+
+    def hidden_regions(self, dna=None):
+        if dna is None:
+            dna = self.dna
+        for i in range(self._n_hidden):
+            yield dna[(i + self._n_inputs) * self._length_per_region:(i + 1 + self._n_inputs) * self._length_per_region]
+
+    def output_regions(self, dna=None):
+        if dna is None:
+            dna = self.dna
+        for i in range(self._n_hidden):
+            yield dna[(i + self._n_inputs + self._n_hidden) * self._length_per_region:(i + 1 + self._n_inputs + self._n_hidden) * self._length_per_region]
+
     def _is_output_gene(self, idx):
         return idx >= (self._n_regions * self._length_per_region)
 
