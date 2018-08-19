@@ -109,7 +109,7 @@ def test_add():
 
     primitives = gp.CGPPrimitives([gp.CGPAdd])
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
-    genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 0, None]
+    genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
     graph = gp.CGPGraph(genome, primitives)
 
     x = [5., 1.5]
@@ -128,7 +128,7 @@ def test_sub():
 
     primitives = gp.CGPPrimitives([gp.CGPSub])
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
-    genome.dna = [0, -2, -1, 0]
+    genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
     graph = gp.CGPGraph(genome, primitives)
 
     x = [5., 1.5]
