@@ -218,7 +218,7 @@ def test_compile_simple():
     x = [5., 2.]
     y = f(x)
 
-    assert(abs(x[0] + x[1] - y) < 1e-15)
+    assert(abs(x[0] + x[1] - y[0]) < 1e-15)
 
     primitives = gp.CGPPrimitives([gp.CGPSub])
     genome = gp.CGPGenome(2, 1, 1, 1, primitives)
@@ -230,7 +230,7 @@ def test_compile_simple():
     x = [5., 2.]
     y = f(x)
 
-    assert(abs(x[0] - x[1] - y) < 1e-15)
+    assert(abs(x[0] - x[1] - y[0]) < 1e-15)
 
 
 # -> graph
@@ -245,7 +245,7 @@ def test_compile_two_columns():
     x = [5., 2.]
     y = f(x)
 
-    assert(abs(x[0] - (x[0] + x[1]) - y) < 1e-15)
+    assert(abs(x[0] - (x[0] + x[1]) - y[0]) < 1e-15)
 
 
 # -> graph
