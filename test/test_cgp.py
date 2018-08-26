@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pytest
 import sys
+import torch
 
 sys.path.insert(0, '../')
 import gp
@@ -286,6 +287,37 @@ def test_compile_addsubmul():
     y = f(x)
 
     assert(abs(((x[0] * x[1]) - (x[0] - x[1])) - y[0]) < 1e-15)
+
+
+# -> graph
+def test_compile_torch_and_backprop():
+    primitives = gp.CGPPrimitives([gp.CGPMul, gp.CGPConstantFloat])
+    genome = gp.CGPGenome(1, 1, 2, 2, primitives)
+    genome.dna = [-1, None, None, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, -2, 3, None]
+    graph = gp.CGPGraph(genome)
+
+    c = graph.compile_torch_class()
+
+    optimizer = torch.optim.SGD(c.parameters(), lr=1e-1)
+    criterion = torch.nn.MSELoss()
+
+    for i in range(100):
+
+        x = torch.Tensor(1).normal_()
+        y = c(x)
+
+        y_target = -2.14159 * x
+        loss = criterion(y[0], y_target)
+        c.zero_grad()
+        loss.backward()
+
+        optimizer.step()
+
+    assert(loss.detach().numpy() < 1e-15)
+
+    assert(abs(c([3.])[0].detach().numpy() - graph([3.]))[0] > 1e-15)
+    graph.update_parameter_values(c)
+    assert(abs(c([3.])[0].detach().numpy() - graph([3.]))[0] < 1e-15)
 
 
 def test_cgp():
