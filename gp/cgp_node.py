@@ -5,6 +5,7 @@ class CGPNode():
     _output = None
     _name = None
     _idx = None
+    _is_parameter = False
 
     def __init__(self, idx, inputs):
         self._idx = idx
@@ -37,9 +38,27 @@ class CGPNode():
     def format_output_str(self, graph):
         raise NotImplementedError()
 
+    def format_output_str_torch(self, graph):
+        self.format_output_str(graph)
+
+    def format_parameter_str(self):
+        raise NotImplementedError
+
     @property
     def output_str(self):
         return self._output_str
+
+    @property
+    def output_str_torch(self):
+        return self.output_str
+
+    @property
+    def is_parameter(self):
+        return self._is_parameter
+
+    @property
+    def parameter_str(self):
+        return self._parameter_str
 
 
 class CGPAdd(CGPNode):
@@ -89,7 +108,7 @@ class CGPMul(CGPNode):
 
 class CGPConstantFloat(CGPNode):
     _arity = 0
-    _output = None
+    _is_parameter = True
 
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
@@ -103,6 +122,12 @@ class CGPConstantFloat(CGPNode):
 
     def format_output_str(self, graph):
         self._output_str = '{}'.format(self._output)
+
+    def format_output_str_torch(self, graph):
+        self._output_str = 'self._p{}'.format(self._idx)
+
+    def format_parameter_str(self):
+        self._parameter_str = 'self._p{} = torch.nn.Parameter(torch.Tensor([{}]))\n'.format(self._idx, self._output)
 
 
 class CGPInputNode(CGPNode):

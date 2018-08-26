@@ -1,4 +1,5 @@
 import collections
+import torch
 
 from .cgp_node import CGPInputNode, CGPOutputNode
 
@@ -112,3 +113,50 @@ class CGPGraph():
         func_str = 'def _f(x): return [{}]'.format(', '.join(node.output_str for node in self.output_nodes))
         exec(func_str)
         return locals()['_f']
+
+    def compile_torch_class(self):
+
+        for i, node in enumerate(self.input_nodes):
+            node.format_output_str_torch(self)
+
+        active_nodes = self._determine_active_nodes()
+        all_parameter_str = []
+        for hidden_column_idx in sorted(active_nodes):
+            for node in active_nodes[hidden_column_idx]:
+                node.format_output_str_torch(self)
+                if node.is_parameter:
+                    node.format_parameter_str()
+                    all_parameter_str.append(node.parameter_str)
+
+        class_str = \
+"""
+class _C(torch.nn.Module):
+
+    def __init__(self):
+        super().__init__()
+"""
+        for s in all_parameter_str:
+            class_str += '        ' + s
+
+        func_str = \
+"""
+    def forward(self, x):
+        return [{}]
+"""
+        func_str = func_str.format(', '.join(node.output_str_torch for node in self.output_nodes))
+
+        class_str += func_str
+
+        # print(class_str)
+        exec(class_str)
+        exec('_c = _C()')
+
+        return locals()['_c']
+
+    def update_parameter_values(self, torch_cls):
+        for n in self._nodes:
+            if n.is_parameter:
+                try:
+                    n._output = eval('torch_cls._p{}'.format(n._idx))
+                except AttributeError:
+                    pass
