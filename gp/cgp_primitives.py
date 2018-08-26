@@ -22,7 +22,7 @@ class CGPPrimitives():
 
     def _determine_max_arity(self):
 
-        arity = self._primitives[0]._arity
+        arity = 1  # minimal possible arity (output nodes need one input)
 
         for idx, p in self._primitives.items():
             if arity < p._arity:
