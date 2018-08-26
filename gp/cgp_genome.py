@@ -96,6 +96,12 @@ class CGPGenome():
             raise RuntimeError('dna not initialized')
         return self._dna[key]
 
+    def __setitem__(self, key, value):
+        dna = list(self._dna)
+        dna[key] = value
+        self._validate_dna(dna)
+        self._dna = dna
+
     def __len__(self):
         return self._n_regions * self._length_per_region
 

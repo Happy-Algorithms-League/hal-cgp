@@ -173,8 +173,7 @@ def test_direct_input_output():
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
     genome.randomize(params['levels_back'])
 
-    # TODO: only allow setting of gene via function with sanity checks
-    genome._dna[-2:] = [0, None]  # set inputs for output node to input node
+    genome[-2:] = [0, None]  # set inputs for output node to input node
     graph = gp.CGPGraph(genome)
 
     x = [2.14159]
