@@ -18,7 +18,7 @@ class CGPNode():
 
     @property
     def inputs(self):
-        return self._inputs
+        return self._inputs[:self._arity]
 
     @property
     def idx(self):
