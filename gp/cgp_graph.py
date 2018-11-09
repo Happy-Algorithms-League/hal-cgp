@@ -19,6 +19,9 @@ class CGPGraph():
     def __repr__(self):
         return 'CGPGraph(' + str(self._nodes) + ')'
 
+    def print_active_nodes(self):
+        return 'CGPGraph(' + str([node for node in self._nodes if node._active]) + ')'
+
     def parse_genome(self, genome):
         if genome.dna is None:
             raise RuntimeError('dna not initialized')
