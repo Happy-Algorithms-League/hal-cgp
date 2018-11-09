@@ -74,6 +74,9 @@ class AbstractPopulation():
     def _mutate(self, offsprings):
         raise NotImplementedError()
 
+    def local_search(self, objective):
+        raise NotImplementedError()
+
     @property
     def parents(self):
         return self._parents
