@@ -68,3 +68,7 @@ def random_regression():
 
     plt.plot(history_loss)
     plt.show()
+
+
+if __name__ == '__main__':
+    random_regression()
