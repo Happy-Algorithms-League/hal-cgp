@@ -27,7 +27,7 @@ def test_population():
                       for i in range(len(target_sequence)))
 
     # create population object that will be evolved
-    pop = gp.Population(
+    pop = gp.BinaryPopulation(
         params['n_individuals'], params['genome_length'], params['n_breeding'],
         params['tournament_size'], params['n_mutations'])
 
@@ -58,5 +58,5 @@ def test_population():
     for ind in pop.parents:
         assert(target_sequence == ind.genome)
 
-    plt.plot(np.mean(history_fitness, axis=1))
-    plt.show()
+    # plt.plot(np.mean(history_fitness, axis=1))
+    # plt.show()

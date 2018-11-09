@@ -13,30 +13,18 @@ class Individual():
         return 'Individual(fitness={}, genome={})'.format(self.fitness, self.genome)
 
 
-class Population():
-    _n_individuals = None  # number of individuals in parent population
-    _genome_length = None  # length of genome
-    _n_breeding = None  # size of breeding population
-    _tournament_size = None  # size of tournament for selection breeding population
-    _n_mutations = None  # number of mutations in genome per individual
+class AbstractPopulation():
 
-    _parents = None  # list of parent individuals
-    _offsprings = None  # list of offspring individuals
-    _combined = None  # list of all individuals
+    def __init__(self, n_individuals, n_breeding, tournament_size, n_mutations):
 
-    def __init__(self, n_individuals, genome_length, n_breeding, tournament_size, n_mutations):
-        self._n_individuals = n_individuals
-        self._genome_length = genome_length
-        self._n_breeding = n_breeding
-        self._tournament_size = tournament_size
-        self._n_mutations = n_mutations
+        self._n_individuals = n_individuals  # number of individuals in parent population
+        self._n_breeding = n_breeding  # size of breeding population
+        self._tournament_size = tournament_size  # size of tournament for selection breeding population
+        self._n_mutations = n_mutations  # number of mutations in genome per individual
 
-    def _generate_random_individuals(self):
-        individuals = []
-        for i in range(self._n_individuals):
-            individuals.append(
-                Individual(None, str(np.random.randint(10 ** self._genome_length)).zfill(self._genome_length)))
-        return individuals
+        self._parents = None  # list of parent individuals
+        self._offsprings = None  # list of offspring individuals
+        self._combined = None  # list of all individuals
 
     def generate_random_parent_population(self):
         self._parents = self._generate_random_individuals()
@@ -71,26 +59,14 @@ class Population():
 
         self._offsprings = offsprings
 
-    def _crossover(self, breeding_pool):
-        offsprings = []
-        while len(offsprings) < self._n_individuals:
-            # choose parents and perform crossover at random position in genome
-            parents = np.random.permutation(breeding_pool)[:2]
-            split_pos = np.random.randint(self._genome_length)
-            offsprings.append(
-                Individual(None, parents[0].genome[:split_pos] + parents[1].genome[split_pos:]))
+    def _generate_random_individuals(self):
+        raise NotImplementedError()
 
-        return offsprings
+    def _crossover(self, breeding_pool):
+        raise NotImplementedError()
 
     def _mutate(self, offsprings):
-        for off in offsprings:
-            for i in range(self._n_mutations):
-                # mutate random gene
-                genome = list(off.genome)
-                genome[np.random.randint(self._genome_length)] = str(np.random.randint(10))
-                off.genome = ''.join(genome)
-
-        return offsprings
+        raise NotImplementedError()
 
     @property
     def parents(self):
