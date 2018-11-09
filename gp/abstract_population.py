@@ -34,10 +34,16 @@ class AbstractPopulation():
 
     def compute_fitness(self, objective):
         self._combined = []
+
         for ind in self._parents:
-            self._combined.append(Individual(objective(ind.genome), ind.genome))
+            fitness = objective(ind.genome)
+            ind.fitness = fitness
+            self._combined.append(Individual(fitness, ind.genome))
+
         for ind in self._offsprings:
-            self._combined.append(Individual(objective(ind.genome), ind.genome))
+            fitness = objective(ind.genome)
+            ind.fitness = fitness
+            self._combined.append(Individual(fitness, ind.genome))
 
     def sort(self):
         self._combined = sorted(self._combined, key=lambda x: -x.fitness)
