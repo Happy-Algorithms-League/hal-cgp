@@ -217,11 +217,13 @@ class CGPGenome():
                 continue  # nothing to do here
 
             elif self._is_output_region(region_idx):
-                if self._mutate_output_region(gene_idx, region_idx) is True:
+                success = self._mutate_output_region(gene_idx, region_idx)
+                if success:
                     successful_mutations += 1
 
             else:
-                if self._mutate_hidden_region(gene_idx, region_idx, levels_back):
+                success = self._mutate_hidden_region(gene_idx, region_idx, levels_back)
+                if success:
                     successful_mutations += 1
 
         self._validate_dna(self._dna)
