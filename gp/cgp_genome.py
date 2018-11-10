@@ -22,6 +22,9 @@ class CGPGenome():
         self._id_output_node = -2
         self._non_coding_allele = None
 
+    def __repr__(self):
+        return self.__class__.__name__ + '(' + str(self._dna) + ')'
+
     def randomize(self, levels_back):
 
         dna = []
