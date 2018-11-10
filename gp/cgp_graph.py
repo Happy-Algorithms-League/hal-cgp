@@ -146,13 +146,13 @@ class _C(torch.nn.Module):
         func_str = \
 """
     def forward(self, x):
-        return [{}]
+        return torch.stack([{}], dim=1)
 """
+
         func_str = func_str.format(', '.join(node.output_str_torch for node in self.output_nodes))
 
         class_str += func_str
 
-        # print(class_str)
         exec(class_str)
         exec('_c = _C()')
 

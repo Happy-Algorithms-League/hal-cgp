@@ -301,13 +301,14 @@ def test_compile_torch_and_backprop():
     optimizer = torch.optim.SGD(c.parameters(), lr=1e-1)
     criterion = torch.nn.MSELoss()
 
-    for i in range(100):
+    for i in range(200):
 
-        x = torch.Tensor(1).normal_()
+        x = torch.Tensor(1, 1).normal_()
         y = c(x)
 
         y_target = -2.14159 * x
-        loss = criterion(y[0], y_target)
+
+        loss = criterion(y, y_target)
         c.zero_grad()
         loss.backward()
 
@@ -315,9 +316,11 @@ def test_compile_torch_and_backprop():
 
     assert(loss.detach().numpy() < 1e-15)
 
-    assert(abs(c([3.])[0].detach().numpy() - graph([3.]))[0] > 1e-15)
+    x = [3.]
+    x_torch = torch.Tensor(x).view(1, 1)
+    assert(abs(c(x_torch)[0].detach().numpy() - graph(x))[0] > 1e-15)
     graph.update_parameter_values(c)
-    assert(abs(c([3.])[0].detach().numpy() - graph([3.]))[0] < 1e-15)
+    assert(abs(c(x_torch)[0].detach().numpy() - graph(x))[0] < 1e-15)
 
 
 def test_cgp():

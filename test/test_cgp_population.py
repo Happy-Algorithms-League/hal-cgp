@@ -42,16 +42,14 @@ def test_cgp_population():
 
         def f_target(x):  # target function
             # return 2.7182 + x[0] - x[1]
-            return 1. + x[0] - x[1]
+            return 1. + x[:, 0] - x[:, 1]
 
-        loss = 0.
-        for j in range(n_function_evaluations):
-            x = torch.Tensor(params['n_inputs']).normal_()
-            y = f_graph(x)
+        x = torch.Tensor(n_function_evaluations, params['n_inputs']).normal_()
+        y = f_graph(x)
 
-            loss += (f_target(x) - y[0]) ** 2
+        loss = torch.mean((f_target(x) - y[:, 0]) ** 2)
 
-        return -1. / n_function_evaluations * loss.item()
+        return -loss.item()
 
     # create population object that will be evolved
     pop = gp.CGPPopulation(

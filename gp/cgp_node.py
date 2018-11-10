@@ -39,6 +39,8 @@ class CGPNode():
         raise NotImplementedError()
 
     def format_output_str_torch(self, graph):
+        # in case output_str_torch implementation is not provided, use
+        # standard output_str
         self.format_output_str(graph)
 
     def format_parameter_str(self):
@@ -143,6 +145,9 @@ class CGPInputNode(CGPNode):
 
     def format_output_str(self, graph):
         self._output_str = 'x[{}]'.format(self._idx)
+
+    def format_output_str_torch(self, graph):
+        self._output_str = 'x[:, {}]'.format(self._idx)
 
 
 class CGPOutputNode(CGPNode):
