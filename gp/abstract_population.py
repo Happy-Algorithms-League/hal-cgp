@@ -63,7 +63,7 @@ class AbstractPopulation():
     def create_new_parent_population(self):
         self._parents = []
         for i in range(self._n_individuals):
-            self._parents.append(self._combined[i])
+            self._parents.append(self._clone_individual(self._combined[i]))
 
     def create_new_offspring_population(self):
 
@@ -73,7 +73,7 @@ class AbstractPopulation():
         while len(breeding_pool) < self._n_breeding:
             tournament_pool = np.random.permutation(self._parents)[:self._tournament_size]
             best_in_tournament = sorted(tournament_pool, key=lambda x: -x.fitness)[0]
-            breeding_pool.append(best_in_tournament)
+            breeding_pool.append(self._clone_individual(best_in_tournament))
 
         offsprings = self._crossover(breeding_pool)
         offsprings = self._mutate(offsprings)
@@ -90,6 +90,9 @@ class AbstractPopulation():
         raise NotImplementedError()
 
     def local_search(self, objective):
+        raise NotImplementedError()
+
+    def _clone_individual(self, ind):
         raise NotImplementedError()
 
     @property

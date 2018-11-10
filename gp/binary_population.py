@@ -37,3 +37,6 @@ class BinaryPopulation(AbstractPopulation):
                 off.genome = ''.join(genome)
 
         return offsprings
+
+    def _clone_individual(self, ind):
+        return Individual(ind.fitness, ind.genome)

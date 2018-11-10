@@ -226,3 +226,8 @@ class CGPGenome():
     @property
     def primitives(self):
         return self._primitives
+
+    def clone(self):
+        new = CGPGenome(self._n_inputs, self._n_outputs, self._n_columns, self._n_rows, self._primitives)
+        new.dna = self._dna.copy()
+        return new
