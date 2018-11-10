@@ -39,6 +39,9 @@ class AbstractPopulation():
         self._offsprings = None  # list of offspring individuals
         self._combined = None  # list of all individuals
 
+    def __getitem__(self, idx):
+        return self._parents[idx]
+
     def generate_random_parent_population(self):
         self._parents = self._generate_random_individuals()
 
