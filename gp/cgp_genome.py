@@ -204,26 +204,31 @@ class CGPGenome():
 
     def mutate(self, n_mutations, levels_back):
 
-        for i in np.random.randint(0, len(self), n_mutations):
+        successful_mutations = 0
+        while successful_mutations < n_mutations:
+
+            i = np.random.randint(0, len(self))
 
             region_idx = i // self._length_per_region
 
             # TODO: parameters to control mutation rates of specific
             # genes?
             if self._is_input_region(region_idx):
-                pass  # nothing to do here
+                continue  # nothing to do here
 
             elif self._is_output_region(region_idx):
                 # only mutate coding output gene
                 if self._is_input_gene(i) and self._dna[i] is not self._non_coding_allele:
                     permissable_inputs = self._permissable_inputs_for_output()
                     self._dna[i] = np.random.choice(permissable_inputs)
+                    successful_mutations += 1
 
             else:
                 assert(self._is_hidden_region(region_idx))
 
                 if self._is_function_gene(i):
                     self._dna[i] = self._primitives.sample()
+                    successful_mutations += 1
 
                     # since we have changed the function gene, we need
                     # to update the input genes to match the arity of
@@ -245,6 +250,7 @@ class CGPGenome():
                         hidden_region_idx = region_idx - self._n_inputs
                         permissable_inputs = self._permissable_inputs(self._hidden_column_idx(hidden_region_idx), levels_back)
                         self._dna[i] = np.random.choice(permissable_inputs)
+                        successful_mutations += 1
 
         self._validate_dna(self._dna)
 
