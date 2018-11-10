@@ -49,8 +49,14 @@ class CGPGenome():
             # construct dna region consisting of function allele and
             # input alleles
             region = []
-            region.append(self._primitives.sample())
-            region += list(np.random.choice(permissable_inputs, self._primitives.max_arity))
+            node_id = self._primitives.sample()
+            region.append(node_id)
+
+            # choose inputs for coding region
+            region += list(np.random.choice(permissable_inputs, self._primitives[node_id]._arity))
+
+            # mark non-coding region
+            region += [self._non_coding_allele] * (self._primitives.max_arity - self._primitives[node_id]._arity)
 
             dna += region
 
@@ -63,7 +69,7 @@ class CGPGenome():
             region = []
             region.append(self._id_output_node)
             region.append(np.random.choice(permissable_inputs))
-            region += [None] * (self._primitives.max_arity - 1)
+            region += [self._non_coding_allele] * (self._primitives.max_arity - 1)
 
             dna += region
 
@@ -146,7 +152,7 @@ class CGPGenome():
             # TODO: check for levels back, currently assumes
             # levels back == n_columns
             permissable_inputs = set(self._permissable_inputs(hidden_column_idx, self._n_columns))
-            if not set(region[1:]).issubset(permissable_inputs):
+            if not set(region[1:self._primitives[region[0]]._arity + 1]).issubset(permissable_inputs):
                 raise ValueError('input genes for hidden nodes have invalid value')
 
         for region in self.output_regions(dna):
@@ -219,10 +225,26 @@ class CGPGenome():
                 if self._is_function_gene(i):
                     self._dna[i] = self._primitives.sample()
 
-                else:
+                    # since we have changed the function gene, we need
+                    # to update the input genes to match the arity of
+                    # the new function
+
+                    # first: set coding genes to valid input allele
                     hidden_region_idx = region_idx - self._n_inputs
                     permissable_inputs = self._permissable_inputs(self._hidden_column_idx(hidden_region_idx), levels_back)
-                    self._dna[i] = np.random.choice(permissable_inputs)
+
+                    for j in range(1, 1 + self._primitives[self._dna[i]]._arity):
+                        self._dna[i + j] = np.random.choice(permissable_inputs)
+
+                    # second: set non-coding genes to non-coding allele
+                    for j in range(1 + self._primitives[self._dna[i]]._arity, 1 + self._primitives.max_arity):
+                        self._dna[i + j] = self._non_coding_allele
+
+                else:
+                    if self._dna[i] is not self._non_coding_allele:
+                        hidden_region_idx = region_idx - self._n_inputs
+                        permissable_inputs = self._permissable_inputs(self._hidden_column_idx(hidden_region_idx), levels_back)
+                        self._dna[i] = np.random.choice(permissable_inputs)
 
         self._validate_dna(self._dna)
 
