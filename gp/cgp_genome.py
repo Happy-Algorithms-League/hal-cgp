@@ -207,9 +207,9 @@ class CGPGenome():
         successful_mutations = 0
         while successful_mutations < n_mutations:
 
-            i = np.random.randint(0, len(self))
+            gene_idx = np.random.randint(0, len(self))
 
-            region_idx = i // self._length_per_region
+            region_idx = gene_idx // self._length_per_region
 
             # TODO: parameters to control mutation rates of specific
             # genes?
@@ -217,42 +217,57 @@ class CGPGenome():
                 continue  # nothing to do here
 
             elif self._is_output_region(region_idx):
-                # only mutate coding output gene
-                if self._is_input_gene(i) and self._dna[i] is not self._non_coding_allele:
-                    permissable_inputs = self._permissable_inputs_for_output()
-                    self._dna[i] = np.random.choice(permissable_inputs)
+                if self._mutate_output_region(gene_idx, region_idx) is True:
                     successful_mutations += 1
 
             else:
-                assert(self._is_hidden_region(region_idx))
-
-                if self._is_function_gene(i):
-                    self._dna[i] = self._primitives.sample()
+                if self._mutate_hidden_region(gene_idx, region_idx, levels_back):
                     successful_mutations += 1
 
-                    # since we have changed the function gene, we need
-                    # to update the input genes to match the arity of
-                    # the new function
-
-                    # first: set coding genes to valid input allele
-                    hidden_region_idx = region_idx - self._n_inputs
-                    permissable_inputs = self._permissable_inputs(self._hidden_column_idx(hidden_region_idx), levels_back)
-
-                    for j in range(1, 1 + self._primitives[self._dna[i]]._arity):
-                        self._dna[i + j] = np.random.choice(permissable_inputs)
-
-                    # second: set non-coding genes to non-coding allele
-                    for j in range(1 + self._primitives[self._dna[i]]._arity, 1 + self._primitives.max_arity):
-                        self._dna[i + j] = self._non_coding_allele
-
-                else:
-                    if self._dna[i] is not self._non_coding_allele:
-                        hidden_region_idx = region_idx - self._n_inputs
-                        permissable_inputs = self._permissable_inputs(self._hidden_column_idx(hidden_region_idx), levels_back)
-                        self._dna[i] = np.random.choice(permissable_inputs)
-                        successful_mutations += 1
-
         self._validate_dna(self._dna)
+
+    def _mutate_output_region(self, gene_idx, region_idx):
+        assert(self._is_output_region(region_idx))
+
+        # only mutate coding output gene
+        if self._is_input_gene(gene_idx) and self._dna[gene_idx] is not self._non_coding_allele:
+            permissable_inputs = self._permissable_inputs_for_output()
+            self._dna[gene_idx] = np.random.choice(permissable_inputs)
+            return True
+
+        return False
+
+    def _mutate_hidden_region(self, gene_idx, region_idx, levels_back):
+        assert(self._is_hidden_region(region_idx))
+
+        if self._is_function_gene(gene_idx):
+            self._dna[gene_idx] = self._primitives.sample()
+
+            # since we have changed the function gene, we need
+            # to update the input genes to match the arity of
+            # the new function
+
+            # first: set coding genes to valid input allele
+            hidden_region_idx = region_idx - self._n_inputs
+            permissable_inputs = self._permissable_inputs(self._hidden_column_idx(hidden_region_idx), levels_back)
+
+            for j in range(1, 1 + self._primitives[self._dna[gene_idx]]._arity):
+                self._dna[gene_idx + j] = np.random.choice(permissable_inputs)
+
+            # second: set non-coding genes to non-coding allele
+            for j in range(1 + self._primitives[self._dna[gene_idx]]._arity, 1 + self._primitives.max_arity):
+                self._dna[gene_idx + j] = self._non_coding_allele
+
+            return True
+
+        else:
+            if self._dna[gene_idx] is not self._non_coding_allele:
+                hidden_region_idx = region_idx - self._n_inputs
+                permissable_inputs = self._permissable_inputs(self._hidden_column_idx(hidden_region_idx), levels_back)
+                self._dna[gene_idx] = np.random.choice(permissable_inputs)
+                return True
+
+        return False
 
     @property
     def primitives(self):
