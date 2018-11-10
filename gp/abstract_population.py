@@ -48,18 +48,14 @@ class AbstractPopulation():
     def generate_random_offspring_population(self):
         self._offsprings = self._generate_random_individuals()
 
+    def create_combined_population(self):
+        self._combined = self._parents + self._offsprings
+
     def compute_fitness(self, objective):
-        self._combined = []
 
-        for ind in self._parents:
+        for ind in self._combined:
             fitness = objective(ind.genome)
             ind.fitness = fitness
-            self._combined.append(Individual(fitness, ind.genome))
-
-        for ind in self._offsprings:
-            fitness = objective(ind.genome)
-            ind.fitness = fitness
-            self._combined.append(Individual(fitness, ind.genome))
 
     def sort(self):
         self._combined = sorted(self._combined, key=lambda x: -x.fitness)

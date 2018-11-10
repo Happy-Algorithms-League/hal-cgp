@@ -64,8 +64,11 @@ def evo_regression():
     # perform evolution
     history_fitness = []
     for i in range(params['generations']):
-        # combine parent and offspring populations and compute fitness for
-        # all objectives for all individuals
+
+        # combine parent and offspring populations
+        pop.create_combined_population()
+
+        #  compute fitness for all objectives for all individuals
         pop.compute_fitness(objective)
 
         # sort population according to fitness & crowding distance

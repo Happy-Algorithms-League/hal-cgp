@@ -9,14 +9,14 @@ params = {
     'seed': 1234,
     'n_individuals': 5,
     'genome_length': 10,
-    'generations': 50,
+    'generations': 100,
     'n_breeding': 5,
     'tournament_size': 6,
     'n_mutations': 1,
 }
 
 
-def test_population():
+def test_binary_population():
 
     np.random.seed(params['seed'])
 
@@ -40,8 +40,11 @@ def test_population():
     # perform evolution
     history_fitness = []
     for i in range(params['generations']):
-        # combine parent and offspring populations and compute fitness for
-        # all objectives for all individuals
+
+        # combine parent and offspring populations
+        pop.create_combined_population()
+
+        #  compute fitness for all objectives for all individuals
         pop.compute_fitness(objective)
 
         # sort population according to fitness & crowding distance
