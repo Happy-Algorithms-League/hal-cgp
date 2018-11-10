@@ -48,6 +48,8 @@ class CGPGraph():
             self._nodes.append(CGPOutputNode(idx, region[1:]))
             idx += 1
 
+        self._determine_active_nodes()
+
     def _hidden_column_idx(self, idx):
         return (idx - self._n_inputs) // self._n_rows
 
