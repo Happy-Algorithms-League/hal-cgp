@@ -70,10 +70,12 @@ class AbstractPopulation():
             self._parents.append(self._combined[i])
 
     def create_new_offspring_population(self):
-        # fill breeding pool via tournament selection
+
+        # fill breeding pool via tournament selection from parent
+        # population
         breeding_pool = []
         while len(breeding_pool) < self._n_breeding:
-            sample = sorted(np.random.permutation(self._combined)[:self._tournament_size], key=lambda x: -x.fitness)
+            sample = sorted(np.random.permutation(self._parents)[:self._tournament_size], key=lambda x: -x.fitness)
             breeding_pool.append(sample[0])
 
         offsprings = self._crossover(breeding_pool)
