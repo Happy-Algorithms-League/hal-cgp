@@ -14,6 +14,19 @@ class Individual():
 
 
 class AbstractPopulation():
+    """
+    Generic population class for evolutionary algorithms based on Deb et al. (2002).
+
+    Derived class need to implement functions to
+    - generate random individuals
+    - perform crossover
+    - perform mutations
+    - perform local search
+
+    Currently only uses a single objective.
+
+    Deb, K., Pratap, A., Agarwal, S., & Meyarivan, T. A. M. T. (2002). A fast and elitist multiobjective genetic algorithm: NSGA-II. IEEE transactions on evolutionary computation, 6(2), 182-197.
+    """
 
     def __init__(self, n_individuals, n_breeding, tournament_size, n_mutations):
 
