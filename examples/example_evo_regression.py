@@ -12,8 +12,9 @@ def evo_regression():
         'seed': 81882,
 
         # evo parameters
-        'n_individuals': 5,
-        'generations': 200,
+        'n_parents': 5,
+        'n_offspring': 5,
+        'generations': 1000,
         'n_breeding': 5,
         'tournament_size': 2,
         'n_mutations': 10,
@@ -53,7 +54,7 @@ def evo_regression():
 
     # create population object that will be evolved
     pop = gp.CGPPopulation(
-        params['n_individuals'], params['n_breeding'], params['tournament_size'], params['n_mutations'],
+        params['n_parents'], params['n_offspring'], params['n_breeding'], params['tournament_size'], params['n_mutations'],
         params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
 
     # generate initial parent population of size N

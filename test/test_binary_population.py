@@ -7,7 +7,8 @@ import gp
 
 params = {
     'seed': 1234,
-    'n_individuals': 5,
+    'n_parents': 5,
+    'n_offsprings': 5,
     'genome_length': 10,
     'generations': 100,
     'n_breeding': 5,
@@ -28,7 +29,7 @@ def test_binary_population():
 
     # create population object that will be evolved
     pop = gp.BinaryPopulation(
-        params['n_individuals'], params['genome_length'], params['n_breeding'],
+        params['n_parents'], params['n_offsprings'], params['genome_length'], params['n_breeding'],
         params['tournament_size'], params['n_mutations'])
 
     # generate initial parent population of size N

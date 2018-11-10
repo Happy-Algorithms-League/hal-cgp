@@ -12,7 +12,8 @@ def test_cgp_population():
 
     params = {
         # evo parameters
-        'n_individuals': 5,
+        'n_parents': 5,
+        'n_offsprings': 5,
         'generations': 200,
         'n_breeding': 5,
         'tournament_size': 2,
@@ -53,7 +54,7 @@ def test_cgp_population():
 
     # create population object that will be evolved
     pop = gp.CGPPopulation(
-        params['n_individuals'], params['n_breeding'], params['tournament_size'], params['n_mutations'],
+        params['n_parents'], params['n_offsprings'], params['n_breeding'], params['tournament_size'], params['n_mutations'],
         params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
 
     # generate initial parent population of size N

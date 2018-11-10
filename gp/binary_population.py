@@ -5,21 +5,21 @@ from .abstract_population import AbstractPopulation, Individual
 
 class BinaryPopulation(AbstractPopulation):
 
-    def __init__(self, n_individuals, genome_length, n_breeding, tournament_size, n_mutations):
-        super().__init__(n_individuals, n_breeding, tournament_size, n_mutations)
+    def __init__(self, n_parents, n_offsprings, genome_length, n_breeding, tournament_size, n_mutations):
+        super().__init__(n_parents, n_offsprings, n_breeding, tournament_size, n_mutations)
 
         self._genome_length = genome_length  # length of genome
 
-    def _generate_random_individuals(self):
+    def _generate_random_individuals(self, n):
         individuals = []
-        for i in range(self._n_individuals):
+        for i in range(n):
             individuals.append(
                 Individual(None, str(np.random.randint(10 ** self._genome_length)).zfill(self._genome_length)))
         return individuals
 
     def _crossover(self, breeding_pool):
         offsprings = []
-        while len(offsprings) < self._n_individuals:
+        while len(offsprings) < self._n_offsprings:
             # choose parents and perform crossover at random position in genome
             parents = np.random.permutation(breeding_pool)[:2]
             split_pos = np.random.randint(self._genome_length)

@@ -28,9 +28,10 @@ class AbstractPopulation():
     Deb, K., Pratap, A., Agarwal, S., & Meyarivan, T. A. M. T. (2002). A fast and elitist multiobjective genetic algorithm: NSGA-II. IEEE transactions on evolutionary computation, 6(2), 182-197.
     """
 
-    def __init__(self, n_individuals, n_breeding, tournament_size, n_mutations):
+    def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, n_mutations):
 
-        self._n_individuals = n_individuals  # number of individuals in parent population
+        self._n_parents = n_parents  # number of individuals in parent population
+        self._n_offsprings = n_offsprings  # number of individuals in offspring population
         self._n_breeding = n_breeding  # size of breeding population
         self._tournament_size = tournament_size  # size of tournament for selection breeding population
         self._n_mutations = n_mutations  # number of mutations in genome per individual
@@ -43,10 +44,10 @@ class AbstractPopulation():
         return self._parents[idx]
 
     def generate_random_parent_population(self):
-        self._parents = self._generate_random_individuals()
+        self._parents = self._generate_random_individuals(self._n_parents)
 
     def generate_random_offspring_population(self):
-        self._offsprings = self._generate_random_individuals()
+        self._offsprings = self._generate_random_individuals(self._n_offsprings)
 
     def create_combined_population(self):
         self._combined = self._parents + self._offsprings
@@ -62,7 +63,7 @@ class AbstractPopulation():
 
     def create_new_parent_population(self):
         self._parents = []
-        for i in range(self._n_individuals):
+        for i in range(self._n_parents):
             self._parents.append(self._clone_individual(self._combined[i]))
 
     def create_new_offspring_population(self):
@@ -80,7 +81,7 @@ class AbstractPopulation():
 
         self._offsprings = offsprings
 
-    def _generate_random_individuals(self):
+    def _generate_random_individuals(self, n):
         raise NotImplementedError()
 
     def _crossover(self, breeding_pool):

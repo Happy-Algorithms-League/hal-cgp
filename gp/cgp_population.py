@@ -8,9 +8,9 @@ from .cgp_graph import CGPGraph
 
 class CGPPopulation(AbstractPopulation):
 
-    def __init__(self, n_individuals, n_breeding, tournament_size, n_mutations,
+    def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, n_mutations,
                  n_inputs, n_outputs, n_columns, n_rows, levels_back, primitives):
-        super().__init__(n_individuals, n_breeding, tournament_size, n_mutations)
+        super().__init__(n_parents, n_offsprings, n_breeding, tournament_size, n_mutations)
 
         self._n_inputs = n_inputs
         self._n_hidden = n_columns * n_rows
@@ -22,16 +22,18 @@ class CGPPopulation(AbstractPopulation):
 
         self._primitives = primitives
 
-    def _generate_random_individuals(self):
+    def _generate_random_individuals(self, n):
         individuals = []
-        for i in range(self._n_individuals):
+        for i in range(n):
             genome = CGPGenome(self._n_inputs, self._n_outputs, self._n_columns, self._n_rows, self._primitives)
             genome.randomize(self._levels_back)
             individuals.append(Individual(None, genome))
         return individuals
 
     def _crossover(self, breeding_pool):
-        return breeding_pool  # do not perform crossover for CGP
+        # do not perform crossover for CGP, just choose the best
+        # individuals from breeding pool
+        return sorted(breeding_pool, key=lambda x: -x.fitness)[:self._n_offsprings]
 
     def _mutate(self, offsprings):
         for off in offsprings:
