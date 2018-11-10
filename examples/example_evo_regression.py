@@ -35,23 +35,21 @@ def evo_regression():
 
         torch.manual_seed(params['seed'])
 
-        n_function_evaluations = 100
+        n_function_evaluations = 5000
 
         graph = gp.CGPGraph(genome)
         f_graph = graph.compile_torch_class()
 
         def f_target(x):  # target function
             # return 2.7182 + x[0] - x[1]
-            return 1. + x[0] - x[1]
+            return 1. + x[:, 0] - x[:, 1]
 
-        loss = 0.
-        for j in range(n_function_evaluations):
-            x = torch.Tensor(params['n_inputs']).normal_()
-            y = f_graph(x)
+        x = torch.Tensor(n_function_evaluations, params['n_inputs']).normal_()
+        y = f_graph(x)
 
-            loss += (f_target(x) - y[0]) ** 2
+        loss = torch.mean((f_target(x) - y[:, 0]) ** 2)
 
-        return -1. / n_function_evaluations * loss.item()
+        return -loss.item()
 
     # create population object that will be evolved
     pop = gp.CGPPopulation(
@@ -88,8 +86,8 @@ def evo_regression():
 
         history_fitness.append(pop.fitness)
 
-        # if np.std(pop.fitness) < 1e-3:
-        #     import ipdb; ipdb.set_trace()
+        if abs(np.mean(pop.fitness)) < 1e-10:
+            break
 
     history_fitness = np.array(history_fitness)
 
