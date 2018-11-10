@@ -71,8 +71,9 @@ class AbstractPopulation():
         # population
         breeding_pool = []
         while len(breeding_pool) < self._n_breeding:
-            sample = sorted(np.random.permutation(self._parents)[:self._tournament_size], key=lambda x: -x.fitness)
-            breeding_pool.append(sample[0])
+            tournament_pool = np.random.permutation(self._parents)[:self._tournament_size]
+            best_in_tournament = sorted(tournament_pool, key=lambda x: -x.fitness)[0]
+            breeding_pool.append(best_in_tournament)
 
         offsprings = self._crossover(breeding_pool)
         offsprings = self._mutate(offsprings)
