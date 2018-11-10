@@ -13,10 +13,10 @@ def evo_regression():
 
         # evo parameters
         'n_individuals': 5,
-        'generations': 1000,
+        'generations': 200,
         'n_breeding': 5,
-        'tournament_size': 6,
-        'n_mutations': 3,
+        'tournament_size': 2,
+        'n_mutations': 10,
 
         # cgp parameters
         'n_inputs': 2,
@@ -27,10 +27,13 @@ def evo_regression():
     }
 
     np.random.seed(params['seed'])
+    torch.manual_seed(params['seed'])
 
     primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat])
 
     def objective(genome):
+
+        torch.manual_seed(params['seed'])
 
         n_function_evaluations = 100
 
@@ -43,12 +46,12 @@ def evo_regression():
 
         loss = 0.
         for j in range(n_function_evaluations):
-            x = torch.Tensor(2).normal_()
+            x = torch.Tensor(params['n_inputs']).normal_()
             y = f_graph(x)
 
             loss += (f_target(x) - y[0]) ** 2
 
-        return -1. / n_function_evaluations * loss
+        return -1. / n_function_evaluations * loss.item()
 
     # create population object that will be evolved
     pop = gp.CGPPopulation(
@@ -85,7 +88,17 @@ def evo_regression():
 
         history_fitness.append(pop.fitness)
 
-    plt.plot(np.mean(history_fitness, axis=1))
+        # if np.std(pop.fitness) < 1e-3:
+        #     import ipdb; ipdb.set_trace()
+
+    history_fitness = np.array(history_fitness)
+
+    mean = np.mean(history_fitness, axis=1)
+    std = np.std(history_fitness, axis=1)
+    plt.plot(mean, lw=2, color='k')
+    plt.plot(mean + std, color='k', ls='--')
+    plt.plot(mean - std, color='k', ls='--')
+    plt.plot(history_fitness)
     plt.show()
 
 
