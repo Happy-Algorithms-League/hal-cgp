@@ -81,8 +81,11 @@ class CGPGraph():
 
             # need to process all inputs to this node next
             for i in node.inputs:
-                if i is not self._genome._non_coding_allele and not isinstance(self._nodes[i], CGPInputNode):
-                    nodes_to_process.append(self._nodes[i])
+                if i is not self._genome._non_coding_allele:
+                    if not isinstance(self._nodes[i], CGPInputNode):
+                        nodes_to_process.append(self._nodes[i])
+                    else:
+                        self._nodes[i].activate()
 
         return active_nodes_by_hidden_column_idx
 
