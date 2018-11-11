@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pytest
+import sympy
 import sys
 import torch
 
@@ -324,6 +325,22 @@ def test_compile_torch_and_backprop():
 
 
 def test_cgp():
+def test_compile_sympy_expression():
+    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPConstantFloat])
+    genome = gp.CGPGenome(1, 1, 2, 2, primitives)
+
+    genome.dna = [-1, None, None, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, -2, 3, None]
+    graph = gp.CGPGraph(genome)
+
+    x_0_target, y_0_target = sympy.symbols('x_0_target y_0_target')
+    y_0_target = x_0_target + 1.
+
+    y_0 = graph.compile_sympy_expression()[0]
+
+    for x in np.random.normal(size=100):
+        assert abs(y_0_target.subs('x_0_target', x).evalf() - y_0.subs('x_0', x).evalf()) < 1e-12
+
+
     params = {
         'seed': 81882,
         'n_inputs': 2,
