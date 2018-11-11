@@ -171,8 +171,8 @@ class CGPConstantFloat(CGPNode):
     def format_parameter_str(self):
         self._parameter_str = 'self._p{} = torch.nn.Parameter(torch.Tensor([{}]))\n'.format(self._idx, self._output)
 
-    def format_sympy_expr(self, graph):
-        self._output_str = '{}'.format(self._output)
+    def format_sympy_expression(self, graph):
+        self.sympy_expr = '{}'.format(self._output)
 
 
 class CGPInputNode(CGPNode):
