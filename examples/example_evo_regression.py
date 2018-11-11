@@ -69,42 +69,8 @@ def evo_regression():
         params['n_parents'], params['n_offspring'], params['n_breeding'], params['tournament_size'], params['n_mutations'],
         params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
 
-    # generate initial parent population of size N
-    pop.generate_random_parent_population()
+    history_fitness, history_average_distance = pop.evolve(objective, params['max_generations'], params['min_fitness'])
 
-    # generate initial offspring population of size N
-    pop.generate_random_offspring_population()
-
-    # perform evolution
-    history_fitness = []
-    history_average_distance = []
-    for i in range(params['generations']):
-
-        # combine parent and offspring populations
-        pop.create_combined_population()
-
-        #  compute fitness for all objectives for all individuals
-        pop.compute_fitness(objective)
-
-        # sort population according to fitness & crowding distance
-        pop.sort()
-
-        # fill new parent population according to sorting
-        pop.create_new_parent_population()
-
-        # generate new offspring population from parent population
-        pop.create_new_offspring_population()
-
-        # perform local search to tune values of constants
-        # TODO pop.local_search(objective)
-
-        history_fitness.append(pop.fitness)
-        history_average_distance.append(pop.compute_average_distance_of_individuals())
-
-        if abs(np.mean(pop.fitness)) < 1e-10:
-            break
-
-    print(i, n_evaluations, pop.champion.fitness)
     graph = gp.CGPGraph(pop.champion.genome)
     sympy_expr = graph.compile_sympy_expression()
     print(graph.pretty_print())
@@ -118,6 +84,7 @@ def evo_regression():
         f.write(dotprint(sympy_expr[0]))
     with open('example_evo_regression-graph_simplified.dot', 'w') as f:
         f.write(dotprint(sympy_expr[0].simplify()))
+    print(n_evaluations, pop.champion.fitness)
 
     history_fitness = np.array(history_fitness)
 

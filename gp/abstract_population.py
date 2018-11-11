@@ -92,6 +92,45 @@ class AbstractPopulation():
 
         return 1. / self._n_parents * d
 
+    def evolve(self, objective, max_generations, min_fitness):
+
+        # generate initial parent population of size N
+        self.generate_random_parent_population()
+
+        # generate initial offspring population of size N
+        self.generate_random_offspring_population()
+
+        # perform evolution
+        history_fitness = []
+        history_average_distance = []
+        for i in range(max_generations):
+
+            # combine parent and offspring populations
+            self.create_combined_population()
+
+            #  compute fitness for all objectives for all individuals
+            self.compute_fitness(objective)
+
+            # sort population according to fitness & crowding distance
+            self.sort()
+
+            # fill new parent population according to sorting
+            self.create_new_parent_population()
+
+            # generate new offspring population from parent population
+            self.create_new_offspring_population()
+
+            # perform local search to tune values of constants
+            # TODO pop.local_search(objective)
+
+            history_fitness.append(self.fitness)
+            history_average_distance.append(self.compute_average_distance_of_individuals())
+
+            if np.mean(self.fitness) + 1e-10 >= min_fitness:
+                break
+
+        return history_fitness, history_average_distance
+
     def _generate_random_individuals(self, n):
         raise NotImplementedError()
 
