@@ -147,13 +147,18 @@ class CGPGenome():
             if region[0] not in self._primitives.alleles:
                 raise ValueError('function gene for hidden node has invalid value')
 
-            hidden_column_idx = self._hidden_column_idx(i)
+            coding_input_genes = region[1:self._primitives[region[0]]._arity + 1]
+            non_coding_input_genes = region[self._primitives[region[0]]._arity + 1:]
 
+            hidden_column_idx = self._hidden_column_idx(i)
             # TODO: check for levels back, currently assumes
             # levels back == n_columns
             permissable_inputs = set(self._permissable_inputs(hidden_column_idx, self._n_columns))
-            if not set(region[1:self._primitives[region[0]]._arity + 1]).issubset(permissable_inputs):
+            if not set(coding_input_genes).issubset(permissable_inputs):
                 raise ValueError('input genes for hidden nodes have invalid value')
+
+            if non_coding_input_genes != [self._non_coding_allele] * (self._primitives.max_arity - self._primitives[region[0]]._arity):
+                raise ValueError('non-coding input genes for hidden nodes need to be identical to non-coding allele')
 
         for region in self.output_regions(dna):
 

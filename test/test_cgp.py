@@ -294,7 +294,7 @@ def test_compile_addsubmul():
 def test_compile_torch_and_backprop():
     primitives = gp.CGPPrimitives([gp.CGPMul, gp.CGPConstantFloat])
     genome = gp.CGPGenome(1, 1, 2, 2, primitives)
-    genome.dna = [-1, None, None, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, -2, 3, None]
+    genome.dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 3, None]
     graph = gp.CGPGraph(genome)
 
     c = graph.compile_torch_class()
@@ -324,12 +324,11 @@ def test_compile_torch_and_backprop():
     assert(abs(c(x_torch)[0].detach().numpy() - graph(x))[0] < 1e-15)
 
 
-def test_cgp():
 def test_compile_sympy_expression():
     primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPConstantFloat])
     genome = gp.CGPGenome(1, 1, 2, 2, primitives)
 
-    genome.dna = [-1, None, None, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, -2, 3, None]
+    genome.dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 3, None]
     graph = gp.CGPGraph(genome)
 
     x_0_target, y_0_target = sympy.symbols('x_0_target y_0_target')
@@ -339,6 +338,19 @@ def test_compile_sympy_expression():
 
     for x in np.random.normal(size=100):
         assert abs(y_0_target.subs('x_0_target', x).evalf() - y_0.subs('x_0', x).evalf()) < 1e-12
+
+
+def test_catch_no_non_coding_allele_in_non_coding_region():
+    primitives = gp.CGPPrimitives([gp.CGPConstantFloat])
+    genome = gp.CGPGenome(1, 1, 1, 1, primitives)
+
+    # wrong: ConstantFloat node has no inputs, but input gene has
+    # value different from the non-coding allele
+    with pytest.raises(ValueError):
+        genome.dna = [-1, None, 0, 0, -2, 1]
+
+    # correct
+    genome.dna = [-1, None, 0, None, -2, 1]
 
 
     params = {
