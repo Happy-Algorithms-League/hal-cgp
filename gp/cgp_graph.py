@@ -163,7 +163,7 @@ class _C(torch.nn.Module):
 
         return locals()['_c']
 
-    def update_parameter_values(self, torch_cls):
+    def update_parameters_from_torch_class(self, torch_cls):
         for n in self._nodes:
             if n.is_parameter:
                 try:

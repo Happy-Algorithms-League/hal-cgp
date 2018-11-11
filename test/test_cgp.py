@@ -319,7 +319,7 @@ def test_compile_torch_and_backprop():
     x = [3.]
     x_torch = torch.Tensor(x).view(1, 1)
     assert(abs(c(x_torch)[0].detach().numpy() - graph(x))[0] > 1e-15)
-    graph.update_parameter_values(c)
+    graph.update_parameters_from_torch_class(c)
     assert(abs(c(x_torch)[0].detach().numpy() - graph(x))[0] < 1e-15)
 
 
