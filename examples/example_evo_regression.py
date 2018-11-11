@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.constants
+import sympy
 import sys
 import torch
 
@@ -9,30 +11,35 @@ import gp
 
 def evo_regression():
     params = {
-        'seed': 81882,
+        'seed': 818821,
 
         # evo parameters
         'n_parents': 5,
         'n_offspring': 5,
-        'generations': 1000,
+        'generations': 10000,
         'n_breeding': 5,
         'tournament_size': 2,
-        'n_mutations': 10,
+        'n_mutations': 20,
 
         # cgp parameters
-        'n_inputs': 2,
+        'n_inputs': 1,
         'n_outputs': 1,
-        'n_columns': 3,
-        'n_rows': 3,
+        'n_columns': 5,
+        'n_rows': 4,
         'levels_back': 2,
     }
 
     np.random.seed(params['seed'])
     torch.manual_seed(params['seed'])
 
-    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat])
+    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat])
+
+    n_evaluations = 0
 
     def objective(genome):
+
+        nonlocal n_evaluations
+        n_evaluations += 1
 
         torch.manual_seed(params['seed'])
 
@@ -43,7 +50,11 @@ def evo_regression():
 
         def f_target(x):  # target function
             # return 2.7182 + x[0] - x[1]
-            return 1. + x[:, 0] - x[:, 1]
+            # return 1. + x[:, 0] - x[:, 1] * x[:, 0]
+            # return (1. + x[:, 1]) * (1. + x[:, 0])
+            # return 1. / (1. + x[:, 0]) + 1. / (1. + x[:, 1])
+            # return 1. / (1. + x[:, 0] ** 2) + 1. / (1. - x[:, 1] ** 2)
+            return x[:, 0] ** 2 + x[:, 0] + 1
 
         x = torch.Tensor(n_function_evaluations, params['n_inputs']).normal_()
         y = f_graph(x)
@@ -90,15 +101,32 @@ def evo_regression():
         if abs(np.mean(pop.fitness)) < 1e-10:
             break
 
+    print(i, n_evaluations, pop.champion.fitness)
+    graph = gp.CGPGraph(pop.champion.genome)
+    sympy_expr = graph.compile_sympy_expression()
+    print(sympy_expr[0])
+    print(sympy_expr[0].simplify())
+    sympy.plot(sympy_expr[0])
+
     history_fitness = np.array(history_fitness)
 
     mean = np.mean(history_fitness, axis=1)
-    std = np.std(history_fitness, axis=1)
-    plt.plot(mean, lw=2, color='k')
-    plt.plot(mean + std, color='k', ls='--')
-    plt.plot(mean - std, color='k', ls='--')
-    plt.plot(history_fitness)
-    plt.show()
+    # std = np.std(history_fitness, axis=1)
+
+    width = 4.
+    fig = plt.figure(figsize=(width, width / scipy.constants.golden))
+    ax_fitness = fig.add_axes([0.2, 0.2, 0.7, 0.7])
+    ax_fitness.set_xlabel('Evolution step')
+    ax_fitness.set_ylabel('Fitness')
+
+    ax_fitness.plot(mean, lw=2, color='k', label='mean')
+    # plt.plot(mean + std, color='k', ls='--')
+    # plt.plot(mean - std, color='k', ls='--')
+    ax_fitness.plot(history_fitness)
+
+    ax_fitness.legend(fontsize=8)
+
+    fig.savefig('example_evo_regression.pdf')
 
 
 if __name__ == '__main__':
