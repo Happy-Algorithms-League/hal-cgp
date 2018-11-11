@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.constants
 import sympy
+from sympy.printing.dot import dotprint
 import sys
 import torch
 
@@ -15,17 +16,17 @@ def evo_regression():
 
         # evo parameters
         'n_parents': 5,
-        'n_offspring': 5,
+        'n_offspring': 10,
         'generations': 10000,
         'n_breeding': 5,
         'tournament_size': 2,
-        'n_mutations': 20,
+        'n_mutations': 10,
 
         # cgp parameters
-        'n_inputs': 1,
+        'n_inputs': 2,
         'n_outputs': 1,
-        'n_columns': 5,
-        'n_rows': 4,
+        'n_columns': 6,
+        'n_rows': 6,
         'levels_back': 2,
     }
 
@@ -50,11 +51,11 @@ def evo_regression():
 
         def f_target(x):  # target function
             # return 2.7182 + x[0] - x[1]
-            # return 1. + x[:, 0] - x[:, 1] * x[:, 0]
-            # return (1. + x[:, 1]) * (1. + x[:, 0])
+            # return (1. + x[:, 0]) * (1. + x[:, 1])
             # return 1. / (1. + x[:, 0]) + 1. / (1. + x[:, 1])
-            # return 1. / (1. + x[:, 0] ** 2) + 1. / (1. - x[:, 1] ** 2)
-            return x[:, 0] ** 2 + x[:, 0] + 1
+            # return 1. / (1. + 1. / x[:, 0]) + 1. / (1. + 1. / x[:, 1])
+            # return 1. / (1. + 1. / x[:, 0] ** 2) + x[:, 1] / (1. + 1. / x[:, 1] ** 2)
+            return x[:, 0] ** 2 + 2 * x[:, 0] * x[:, 1] + x[:, 1] ** 2
 
         x = torch.Tensor(n_function_evaluations, params['n_inputs']).normal_()
         y = f_graph(x)
@@ -107,7 +108,14 @@ def evo_regression():
     print(graph.pretty_print())
     print(sympy_expr[0])
     print(sympy_expr[0].simplify())
-    sympy.plot(sympy_expr[0])
+    # sympy.plot(sympy_expr[0])
+
+    # export computational graphs; create pdf with
+    # $ dot -Tpdf {filename} -O
+    with open('example_evo_regression-graph.dot', 'w') as f:
+        f.write(dotprint(sympy_expr[0]))
+    with open('example_evo_regression-graph_simplified.dot', 'w') as f:
+        f.write(dotprint(sympy_expr[0].simplify()))
 
     history_fitness = np.array(history_fitness)
 
