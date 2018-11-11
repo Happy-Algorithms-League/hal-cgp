@@ -122,6 +122,32 @@ class CGPMul(CGPNode):
     def format_sympy_expression(self, graph):
         self.sympy_expr = '({} * {})'.format(graph[self._inputs[0]].sympy_expr, graph[self._inputs[1]].sympy_expr)
 
+
+class CGPDiv(CGPNode):
+    _arity = 2
+
+    def __init__(self, idx, inputs):
+        super().__init__(idx, inputs)
+
+        self._name = self.__class__.__name__
+
+    def __call__(self, x, graph):
+
+        self._output = graph[self._inputs[0]].output / graph[self._inputs[1]].output
+
+    def format_output_str(self, graph):
+        self._output_str = '({inp0} / {inp1})'.format(
+            inp0=graph[self._inputs[0]].output_str, inp1=graph[self._inputs[1]].output_str)
+
+    def format_sympy_expression(self, graph):
+        self.sympy_expr = '({} / {})'.format(graph[self._inputs[0]].sympy_expr, graph[self._inputs[1]].sympy_expr)
+
+
+    # def format_output_str_torch(self, graph):
+    #     self._output_str = '(0.5 * (torch.sign({inp1}) + 1.) * ({inp0} / {inp1}) + (1. - 0.5 * (torch.sign({inp1}) + 1.)))'.format(
+    #         inp0=graph[self._inputs[0]].output_str, inp1=graph[self._inputs[1]].output_str)
+
+
 class CGPConstantFloat(CGPNode):
     _arity = 0
     _is_parameter = True
