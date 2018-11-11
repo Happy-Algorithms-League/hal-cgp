@@ -1,4 +1,6 @@
 import collections
+import sympy
+from sympy.core.evaluate import evaluate
 import torch
 
 from .cgp_node import CGPInputNode, CGPOutputNode
@@ -167,3 +169,42 @@ class _C(torch.nn.Module):
                     n._output = eval('torch_cls._p{}[0]'.format(n._idx))
                 except AttributeError:
                     pass
+
+    def _format_sympy_expressions_of_active_nodes(self):
+
+        for node in self.input_nodes:
+            node.format_sympy_expression(self)
+
+        active_nodes = self._determine_active_nodes()
+        for hidden_column_idx in sorted(active_nodes):
+            for node in active_nodes[hidden_column_idx]:
+                node.format_sympy_expression(self)
+
+    def compile_sympy_expression(self):
+
+        self._format_sympy_expressions_of_active_nodes()
+
+        sympy_expr = ''
+        # to get an expression that reflects the computational graph,
+        # sympy should not automatically simplify the expression; if a
+        # simplified expression is, run {expr}.simplify() on the output
+        sympy_expr += 'with evaluate(False):\n'
+        sympy_output_var_names = []
+        for node in self.input_nodes:
+            # register sympy symbol
+            sympy_expr += "    {name} = sympy.symbols('{name}')\n".format(name=node.sympy_var_name)
+
+        for node in self.output_nodes:
+            # register sympy symbol
+            sympy_expr += "    {name} = sympy.symbols('{name}')\n".format(name=node.sympy_var_name)
+            sympy_output_var_names.append(node.sympy_var_name)
+
+        sympy_expr += '    {}'.format('\n'.join(node.sympy_expr for node in self.output_nodes))
+
+        exec(sympy_expr)
+
+        # can not use the dict returned by locals() in list
+        # comprehension due to scope; we hence first store the locals
+        # of the function and use that in the list comprehension
+        local_dict = locals()
+        return [local_dict['y_0'] for name in sympy_output_var_names]
