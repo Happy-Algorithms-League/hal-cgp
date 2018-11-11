@@ -229,18 +229,18 @@ class _C(torch.nn.Module):
         # sympy should not automatically simplify the expression; if a
         # simplified expression is, run {expr}.simplify() on the output
         sympy_expr += 'with evaluate(False):\n'
-        sympy_output_var_names = []
+
+        # register sympy symbol for inputs
         for node in self.input_nodes:
-            # register sympy symbol
             sympy_expr += "    {name} = sympy.symbols('{name}')\n".format(name=node.sympy_var_name)
 
+        # collect variable names for outputs
+        sympy_output_var_names = []
         for node in self.output_nodes:
-            # register sympy symbol
-            sympy_expr += "    {name} = sympy.symbols('{name}')\n".format(name=node.sympy_var_name)
             sympy_output_var_names.append(node.sympy_var_name)
 
+        # construct and execute sympy expression
         sympy_expr += '    {}'.format('\n'.join(node.sympy_expr for node in self.output_nodes))
-
         exec(sympy_expr)
 
         # can not use the dict returned by locals() in list
