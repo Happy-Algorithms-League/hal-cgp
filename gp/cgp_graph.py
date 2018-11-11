@@ -7,14 +7,15 @@ from .cgp_node import CGPInputNode, CGPOutputNode
 
 
 class CGPGraph():
-    _n_outputs = None
-    _n_inputs = None
-    _n_columns = None
-    _n_rows = None
-    _nodes = None
-    _gnome = None
 
     def __init__(self, genome):
+        self._n_outputs = None
+        self._n_inputs = None
+        self._n_columns = None
+        self._n_rows = None
+        self._nodes = None
+        self._gnome = None
+
         self.parse_genome(genome)
         self._genome = genome
 
