@@ -138,8 +138,9 @@ class AbstractPopulation():
 
         # perform evolution
         history_fitness = []
-        history_average_distance = []
         for i in range(max_generations):
+        history_average_phenotype_distance = []
+        history_average_genotype_distance = []
 
             # combine parent and offspring populations
             self.create_combined_population()
@@ -160,12 +161,13 @@ class AbstractPopulation():
             # TODO pop.local_search(objective)
 
             history_fitness.append(self.fitness)
-            history_average_distance.append(self.compute_average_distance_of_individuals())
+            history_average_phenotype_distance.append(self.compute_average_phenotype_distance_of_individuals())
+            history_average_genotype_distance.append(self.compute_average_genotype_distance_of_individuals())
 
             if np.mean(self.fitness) + 1e-10 >= min_fitness:
                 break
 
-        return history_fitness, history_average_distance
+        return history_fitness, history_average_phenotype_distance, history_average_genotype_distance
 
     def _generate_random_individuals(self, n):
         raise NotImplementedError()
