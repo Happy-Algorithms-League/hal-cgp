@@ -36,6 +36,8 @@ class CGPPopulation(AbstractPopulation):
     def _crossover(self, breeding_pool):
         # do not perform crossover for CGP, just choose the best
         # individuals from breeding pool
+        if len(breeding_pool) < self._n_offsprings:
+            raise ValueError('size of breeding pool must be at least as large as the desired number of offsprings')
         return sorted(breeding_pool, key=lambda x: -x.fitness)[:self._n_offsprings]
 
     def _mutate(self, offsprings):
