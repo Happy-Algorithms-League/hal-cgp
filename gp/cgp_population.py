@@ -80,7 +80,7 @@ class CGPPopulation(AbstractPopulation):
     def _clone_individual(self, ind):
         return Individual(ind.fitness, ind.genome.clone())
 
-    def compute_average_distance_of_individuals(self):
+    def compute_average_phenotype_distance_of_individuals(self):
 
         n_function_evaluations = 1000
 
@@ -93,5 +93,15 @@ class CGPPopulation(AbstractPopulation):
             for j, f_graph_j in enumerate(f_graph):
                 if i != j:
                     d += torch.mean((f_graph_i(x) - f_graph_j(x)) ** 2)
+
+        return 1. / self._n_parents * d
+
+    def compute_average_genotype_distance_of_individuals(self):
+
+        d = 0
+        for i, ind_i in enumerate(self._parents):
+            for j, ind_j in enumerate(self._parents):
+                if i != j:
+                    d += np.sum([not ind_i.genome[k] == ind_j.genome[k] for k in range(len(ind_i.genome))])
 
         return 1. / self._n_parents * d
