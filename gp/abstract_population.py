@@ -78,6 +78,13 @@ class AbstractPopulation():
             ind.fitness = fitness
 
     def sort(self):
+
+        # replace all nan by -inf to make sure they end up at the end
+        # after sorting
+        for ind in self._combined:
+            if np.isnan(ind.fitness):
+                ind.fitness = -np.inf
+
         self._combined = sorted(self._combined, key=lambda x: -x.fitness)
 
     def create_new_parent_population(self):
