@@ -66,7 +66,7 @@ class AbstractPopulation():
         # of elements that compare equal)
         # (https://docs.python.org/3.5/library/functions.html#sorted),
         # we can make sure that offsprings preceed parents with
-        # identical fitness in the /sorted/ combined populaiton by
+        # identical fitness in the /sorted/ combined population by
         # concatenating the parent population to the offspring
         # population instead of the other way around
         self._combined = self._offsprings + self._parents
