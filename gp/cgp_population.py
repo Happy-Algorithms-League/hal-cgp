@@ -41,8 +41,10 @@ class CGPPopulation(AbstractPopulation):
         return sorted(breeding_pool, key=lambda x: -x.fitness)[:self._n_offsprings]
 
     def _mutate(self, offsprings):
+
+        n_mutations = int(self._mutation_rate * len(offsprings[0].genome))
         for off in offsprings:
-            off.genome.mutate(self._n_mutations, self._levels_back)
+            off.genome.mutate(n_mutations, self._levels_back)
 
         return offsprings
 

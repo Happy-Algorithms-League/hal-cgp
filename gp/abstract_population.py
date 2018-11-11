@@ -28,13 +28,13 @@ class AbstractPopulation():
     Deb, K., Pratap, A., Agarwal, S., & Meyarivan, T. A. M. T. (2002). A fast and elitist multiobjective genetic algorithm: NSGA-II. IEEE transactions on evolutionary computation, 6(2), 182-197.
     """
 
-    def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, n_mutations):
+    def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate):
 
         self._n_parents = n_parents  # number of individuals in parent population
         self._n_offsprings = n_offsprings  # number of individuals in offspring population
         self._n_breeding = n_breeding  # size of breeding population
         self._tournament_size = tournament_size  # size of tournament for selection breeding population
-        self._n_mutations = n_mutations  # number of mutations in genome per individual
+        self._mutation_rate = mutation_rate  # probability of mutation per gene
 
         self._parents = None  # list of parent individuals
         self._offsprings = None  # list of offspring individuals
