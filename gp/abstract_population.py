@@ -138,9 +138,9 @@ class AbstractPopulation():
 
         # perform evolution
         history_fitness = []
-        for i in range(max_generations):
         history_average_phenotype_distance = []
         history_average_genotype_distance = []
+        for generation in range(max_generations):
 
             # combine parent and offspring populations
             self.create_combined_population()
