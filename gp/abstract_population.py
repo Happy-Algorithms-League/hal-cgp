@@ -2,8 +2,6 @@ import numpy as np
 
 
 class Individual():
-    fitness = None
-    genome = None
 
     def __init__(self, fitness, genome):
         self.fitness = fitness
