@@ -48,7 +48,17 @@ class AbstractPopulation():
         self._offsprings = self._generate_random_individuals(self._n_offsprings)
 
     def create_combined_population(self):
-        self._combined = self._parents + self._offsprings
+
+        # we want to prefer offsprings with the same fitness as their
+        # parents as this allows accumulation of silent mutations;
+        # since the built-in sort is stable (does not change the order
+        # of elements that compare equal)
+        # (https://docs.python.org/3.5/library/functions.html#sorted),
+        # we can make sure that offsprings preceed parents with
+        # identical fitness in the /sorted/ combined populaiton by
+        # concatenating the parent population to the offspring
+        # population instead of the other way around
+        self._combined = self._offsprings + self._parents
 
     def compute_fitness(self, objective):
 
