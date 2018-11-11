@@ -81,6 +81,10 @@ class AbstractPopulation():
 
         self._offsprings = offsprings
 
+    @property
+    def champion(self):
+        return sorted(self._parents, key=lambda x: -x.fitness)[0]
+
     def _generate_random_individuals(self, n):
         raise NotImplementedError()
 
