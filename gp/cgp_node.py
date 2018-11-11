@@ -186,11 +186,6 @@ class CGPDiv(CGPNode):
         self.sympy_expr = '({} / {})'.format(graph[self._inputs[0]].sympy_expr, graph[self._inputs[1]].sympy_expr)
 
 
-    # def format_output_str_torch(self, graph):
-    #     self._output_str = '(0.5 * (torch.sign({inp1}) + 1.) * ({inp0} / {inp1}) + (1. - 0.5 * (torch.sign({inp1}) + 1.)))'.format(
-    #         inp0=graph[self._inputs[0]].output_str, inp1=graph[self._inputs[1]].output_str)
-
-
 class CGPConstantFloat(CGPNode):
     _arity = 0
     _is_parameter = True
