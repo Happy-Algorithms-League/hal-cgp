@@ -77,6 +77,7 @@ def evo_regression():
 
     # perform evolution
     history_fitness = []
+    history_average_distance = []
     for i in range(params['generations']):
 
         # combine parent and offspring populations
@@ -98,6 +99,7 @@ def evo_regression():
         # TODO pop.local_search(objective)
 
         history_fitness.append(pop.fitness)
+        history_average_distance.append(pop.compute_average_distance_of_individuals())
 
         if abs(np.mean(pop.fitness)) < 1e-10:
             break
@@ -124,16 +126,19 @@ def evo_regression():
 
     width = 4.
     fig = plt.figure(figsize=(width, width / scipy.constants.golden))
-    ax_fitness = fig.add_axes([0.2, 0.2, 0.7, 0.7])
+    ax_fitness = fig.add_axes([0.2, 0.2, 0.3, 0.7])
     ax_fitness.set_xlabel('Evolution step')
     ax_fitness.set_ylabel('Fitness')
+
+    ax_distance = fig.add_axes([0.6, 0.2, 0.3, 0.7])
 
     ax_fitness.plot(mean, lw=2, color='k', label='mean')
     # plt.plot(mean + std, color='k', ls='--')
     # plt.plot(mean - std, color='k', ls='--')
     ax_fitness.plot(history_fitness)
-
     ax_fitness.legend(fontsize=8)
+
+    ax_distance.plot(history_average_distance)
 
     fig.savefig('example_evo_regression.pdf')
 

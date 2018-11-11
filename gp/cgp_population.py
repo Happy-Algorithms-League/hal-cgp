@@ -77,3 +77,19 @@ class CGPPopulation(AbstractPopulation):
 
     def _clone_individual(self, ind):
         return Individual(ind.fitness, ind.genome.clone())
+
+    def compute_average_distance_of_individuals(self):
+
+        n_function_evaluations = 1000
+
+        f_graph = [CGPGraph(ind.genome).compile_torch_class() for ind in self._parents]
+
+        x = torch.Tensor(n_function_evaluations, self._n_inputs).normal_()
+
+        d = 0
+        for i, f_graph_i in enumerate(f_graph):
+            for j, f_graph_j in enumerate(f_graph):
+                if i != j:
+                    d += torch.mean((f_graph_i(x) - f_graph_j(x)) ** 2)
+
+        return 1. / self._n_parents * d

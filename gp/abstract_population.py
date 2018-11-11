@@ -85,6 +85,15 @@ class AbstractPopulation():
     def champion(self):
         return sorted(self._parents, key=lambda x: -x.fitness)[0]
 
+    def compute_average_distance_of_individuals(self):
+        d = 0
+        for ind_i in self._parents:
+            for ind_j in self._parents:
+                if ind_i != ind_j:
+                    d += self._distance_between_individuals(ind_i, ind_j)
+
+        return 1. / self._n_parents * d
+
     def _generate_random_individuals(self, n):
         raise NotImplementedError()
 
@@ -98,6 +107,9 @@ class AbstractPopulation():
         raise NotImplementedError()
 
     def _clone_individual(self, ind):
+        raise NotImplementedError()
+
+    def _distance_between_individuals(self, ind_i, ind_j):
         raise NotImplementedError()
 
     @property
