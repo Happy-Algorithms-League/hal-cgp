@@ -43,3 +43,6 @@ class CGPPrimitives():
     @property
     def alleles(self):
         return tuple(self._primitives.keys())
+
+    def __len__(self):
+        return len(self._primitives)

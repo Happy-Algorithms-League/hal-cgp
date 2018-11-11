@@ -12,6 +12,9 @@ class CGPPopulation(AbstractPopulation):
                  n_inputs, n_outputs, n_columns, n_rows, levels_back, primitives):
         super().__init__(n_parents, n_offsprings, n_breeding, tournament_size, n_mutations)
 
+        if len(primitives) == 0:
+            raise RuntimeError('need to provide at least one function primitive')
+
         self._n_inputs = n_inputs
         self._n_hidden = n_columns * n_rows
         self._n_outputs = n_outputs
