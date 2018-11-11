@@ -7,8 +7,10 @@ class Individual():
         self.fitness = fitness
         self.genome = genome
 
+        self.idx = None
+
     def __repr__(self):
-        return 'Individual(fitness={}, genome={})'.format(self.fitness, self.genome)
+        return 'Individual(idx={}, fitness={}, genome={}))'.format(self.idx, self.fitness, self.genome)
 
 
 class AbstractPopulation():
@@ -38,14 +40,23 @@ class AbstractPopulation():
         self._offsprings = None  # list of offspring individuals
         self._combined = None  # list of all individuals
 
+        self._max_idx = -1  # keeps track of maximal idx in population used to label individuals
+
     def __getitem__(self, idx):
         return self._parents[idx]
 
     def generate_random_parent_population(self):
         self._parents = self._generate_random_individuals(self._n_parents)
+        self._label_new_individuals(self._parents)
 
     def generate_random_offspring_population(self):
         self._offsprings = self._generate_random_individuals(self._n_offsprings)
+        self._label_new_individuals(self._offsprings)
+
+    def _label_new_individuals(self, individuals):
+        for ind in individuals:
+            ind.idx = self._max_idx + 1
+            self._max_idx += 1
 
     def create_combined_population(self):
 
@@ -72,7 +83,13 @@ class AbstractPopulation():
     def create_new_parent_population(self):
         self._parents = []
         for i in range(self._n_parents):
-            self._parents.append(self._clone_individual(self._combined[i]))
+            new_individual = self._clone_individual(self._combined[i])
+
+            # since this individual is genetically identical to its
+            # parent, the identifier is the same
+            new_individual.idx = self._combined[i].idx
+
+            self._parents.append(new_individual)
 
     def create_new_offspring_population(self):
 
@@ -88,6 +105,8 @@ class AbstractPopulation():
         offsprings = self._mutate(offsprings)
 
         self._offsprings = offsprings
+
+        self._label_new_individuals(self._offsprings)
 
     @property
     def champion(self):
