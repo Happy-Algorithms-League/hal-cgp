@@ -21,6 +21,10 @@ class CGPNode():
         return self._arity
 
     @property
+    def max_arity(self):
+        return len(self._inputs)
+
+    @property
     def inputs(self):
         return self._inputs[:self._arity]
 
@@ -30,6 +34,45 @@ class CGPNode():
 
     def __repr__(self):
         return '{}(idx: {}, active: {}, arity: {}, inputs {}, output {})'.format(self._name, self._idx, self._active, self._arity, self._inputs, self._output)
+
+    def pretty_str(self, n):
+        used_characters = 0
+        used_characters += 3  # for two digit idx and following whitespace
+        used_characters += 3  # for "active" marker
+        # for brackets around inputs, two digits inputs separated by comma and last input without comma
+        used_characters += 2 + self.max_arity * 3 - 1
+
+        assert n > used_characters
+        name = self.__class__.__name__[3:]  # cut of "CGP" prefix of class name
+        name = name[:n - used_characters]  # cut to correct size
+
+        s = '{:02d}'.format(self._idx)
+
+        if self._active:
+            s += ' * '
+            s += name + ' '
+            if self._arity > 0:
+                s += '('
+                for i in range(self._arity):
+                    s += '{:02d},'.format(self._inputs[i])
+                s = s[:-1]
+                s += ')'
+                for i in range(self.max_arity - self._arity):
+                    s += '   '
+            else:
+                s += '  '
+                for i in range(self.max_arity):
+                    s += '   '
+                s = s[:-1]
+        else:
+            s += '   '
+            s += name + ' '
+            s += '  '
+            for i in range(self.max_arity):
+                s += '   '
+            s = s[:-1]
+
+        return s.ljust(n)
 
     @property
     def output(self):

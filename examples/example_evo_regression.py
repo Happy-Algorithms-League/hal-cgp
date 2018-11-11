@@ -104,6 +104,7 @@ def evo_regression():
     print(i, n_evaluations, pop.champion.fitness)
     graph = gp.CGPGraph(pop.champion.genome)
     sympy_expr = graph.compile_sympy_expression()
+    print(graph.pretty_print())
     print(sympy_expr[0])
     print(sympy_expr[0].simplify())
     sympy.plot(sympy_expr[0])

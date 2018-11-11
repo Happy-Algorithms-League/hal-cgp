@@ -25,6 +25,45 @@ class CGPGraph():
     def print_active_nodes(self):
         return 'CGPGraph(' + str([node for node in self._nodes if node._active]) + ')'
 
+    def pretty_print(self):
+
+        n_characters = 18
+
+        def pretty_node_str(node):
+            s = node.pretty_str(n_characters)
+            assert len(s) == n_characters
+            return s
+
+        def empty_node_str():
+            return ' ' * n_characters
+
+        s = '\n'
+
+        for row in range(self._n_rows):
+            for column in range(-1, self._n_columns + 1):
+
+                if column == -1:
+                    if row < self._n_inputs:
+                        s += pretty_node_str(self.input_nodes[row])
+                    else:
+                        s += empty_node_str()
+                    s += '\t'
+
+                elif column < self._n_columns:
+                    s += pretty_node_str(self.hidden_nodes[row + column * self._n_rows])
+                    s += '\t'
+
+                else:
+                    if row < self._n_outputs:
+                        s += pretty_node_str(self.output_nodes[row])
+                    else:
+                        s += empty_node_str()
+                    s += '\t'
+
+            s += '\n'
+
+        return s
+
     def parse_genome(self, genome):
         if genome.dna is None:
             raise RuntimeError('dna not initialized')
