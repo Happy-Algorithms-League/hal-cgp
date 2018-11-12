@@ -30,7 +30,8 @@ class CGPPopulation(AbstractPopulation):
         for i in range(n):
             genome = CGPGenome(self._n_inputs, self._n_outputs, self._n_columns, self._n_rows, self._primitives)
             genome.randomize(self._levels_back)
-            individuals.append(Individual(None, genome))
+            fitness = None
+            individuals.append(Individual(fitness, genome))
         return individuals
 
     def _crossover(self, breeding_pool):

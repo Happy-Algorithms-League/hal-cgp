@@ -74,8 +74,9 @@ class AbstractPopulation():
     def compute_fitness(self, objective):
 
         for ind in self._combined:
-            fitness = objective(ind.genome)
-            ind.fitness = fitness
+            if ind.fitness is None:  # only compute fitness if necessary
+                fitness = objective(ind.genome)
+                ind.fitness = fitness
 
     def sort(self):
 
@@ -112,6 +113,11 @@ class AbstractPopulation():
         offsprings = self._mutate(offsprings)
 
         self._offsprings = offsprings
+
+        # due to crossover and mutation, need to reevaluate fitness of
+        # offsprings
+        for ind in self._offsprings:
+            ind.fitness = None
 
         self._label_new_individuals(self._offsprings)
 
