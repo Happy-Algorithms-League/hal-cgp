@@ -44,6 +44,8 @@ class CGPPopulation(AbstractPopulation):
     def _mutate(self, offsprings):
 
         n_mutations = int(self._mutation_rate * len(offsprings[0].genome))
+        assert n_mutations > 0
+
         for off in offsprings:
             off.genome.mutate(n_mutations, self._levels_back)
 
