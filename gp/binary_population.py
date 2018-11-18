@@ -3,6 +3,17 @@ import numpy as np
 from .abstract_population import AbstractPopulation, Individual
 
 
+class BinaryIndividual(Individual):
+
+    def __init__(self, fitness, genome):
+        super().__init__(fitness, genome)
+
+        self._graph = None
+
+    def clone(self):
+        return BinaryIndividual(self.fitness, self.genome)
+
+
 class BinaryPopulation(AbstractPopulation):
 
     def __init__(self, n_parents, n_offsprings, genome_length, n_breeding, tournament_size, mutation_rate):
@@ -14,7 +25,7 @@ class BinaryPopulation(AbstractPopulation):
         individuals = []
         for i in range(n):
             individuals.append(
-                Individual(None, str(np.random.randint(10 ** self._genome_length)).zfill(self._genome_length)))
+                BinaryIndividual(None, str(np.random.randint(10 ** self._genome_length)).zfill(self._genome_length)))
         return individuals
 
     def _crossover(self, breeding_pool):
@@ -24,7 +35,7 @@ class BinaryPopulation(AbstractPopulation):
             parents = np.random.permutation(breeding_pool)[:2]
             split_pos = np.random.randint(self._genome_length)
             offsprings.append(
-                Individual(None, parents[0].genome[:split_pos] + parents[1].genome[split_pos:]))
+                BinaryIndividual(None, parents[0].genome[:split_pos] + parents[1].genome[split_pos:]))
 
         return offsprings
 
@@ -41,6 +52,3 @@ class BinaryPopulation(AbstractPopulation):
                 off.genome = ''.join(genome)
 
         return offsprings
-
-    def _clone_individual(self, ind):
-        return Individual(ind.fitness, ind.genome)
