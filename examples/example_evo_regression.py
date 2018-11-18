@@ -17,18 +17,18 @@ def evo_regression():
         # evo parameters
         'n_parents': 1,
         'n_offspring': 4,
-        'max_generations': 20000,
+        'max_generations': 200000,
         'min_fitness': 0.,
         'n_breeding': 4,
         'tournament_size': 2,
-        'mutation_rate': 0.01,
+        'mutation_rate': 0.02,
 
         # cgp parameters
         'n_inputs': 2,
         'n_outputs': 1,
-        'n_columns': 6,
-        'n_rows': 6,
-        'levels_back': 2,
+        'n_columns': 10,
+        'n_rows': 5,
+        'levels_back': 10,
     }
 
     np.random.seed(params['seed'])
@@ -55,10 +55,14 @@ def evo_regression():
             # return (1. + x[:, 0]) * (1. + x[:, 1])
             # return 1. / (1. + x[:, 0]) + 1. / (1. + x[:, 1])
             # return 1. / (1. + 1. / x[:, 0]) + 1. / (1. + 1. / x[:, 1])
-            return 1. / (1. + 1. / x[:, 0] ** 2) + 1. / (1. + 1. / x[:, 1] ** 2)
-            # return x[:, 0] ** 2 + 2 * x[:, 0] * x[:, 1] + x[:, 1] ** 2
+            # return 1. / (1. + 1. / x[:, 0] ** 2) + 1.
+            # return 1. / (1. + 1. / x[:, 0] ** 2) + 1. / (1. + 1. / x[:, 1] ** 2)  # solved, ~50k
+            return 1. / (1. + 1. / x[:, 0] ** 4) + 1. / (1. + 1. / x[:, 1] ** 4)
+            # return 1. / (1. + 1. / x[:, 0] ** 2)
+            # return x[:, 0] ** 2 + 2 * x[:, 0] * x[:, 1] + x[:, 1] ** 2  # solved, ~3k
 
-        x = torch.Tensor(n_function_evaluations, params['n_inputs']).normal_()
+        # x = torch.Tensor(n_function_evaluations, params['n_inputs']).normal_()
+        x = torch.Tensor(n_function_evaluations, params['n_inputs']).uniform_(-5, 5)
         x[torch.abs(x) < 1e-5] = 1.  # avoid infinities due to zero division
         y = f_graph(x)
 
@@ -73,7 +77,7 @@ def evo_regression():
 
     history_fitness, history_average_phenotype_distance, history_average_genotype_distance = pop.evolve(objective, params['max_generations'], params['min_fitness'])
 
-    print(len(history_fitness), n_evaluations, pop.champion.fitness)
+    # print(len(history_fitness), n_evaluations, pop.champion.fitness)
 
     history_fitness = np.array(history_fitness)
 
