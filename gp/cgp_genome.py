@@ -209,6 +209,8 @@ class CGPGenome():
 
     def mutate(self, n_mutations, levels_back):
 
+        assert isinstance(n_mutations, int) and 0 < n_mutations
+
         successful_mutations = 0
         while successful_mutations < n_mutations:
 

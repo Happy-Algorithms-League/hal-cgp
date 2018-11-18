@@ -34,6 +34,8 @@ class AbstractPopulation():
         self._n_offsprings = n_offsprings  # number of individuals in offspring population
         self._n_breeding = n_breeding  # size of breeding population
         self._tournament_size = tournament_size  # size of tournament for selection breeding population
+
+        assert 0. < mutation_rate and mutation_rate < 1.
         self._mutation_rate = mutation_rate  # probability of mutation per gene
 
         self._parents = None  # list of parent individuals

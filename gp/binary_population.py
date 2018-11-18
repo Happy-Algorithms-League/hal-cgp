@@ -5,8 +5,8 @@ from .abstract_population import AbstractPopulation, Individual
 
 class BinaryPopulation(AbstractPopulation):
 
-    def __init__(self, n_parents, n_offsprings, genome_length, n_breeding, tournament_size, n_mutations):
-        super().__init__(n_parents, n_offsprings, n_breeding, tournament_size, n_mutations)
+    def __init__(self, n_parents, n_offsprings, genome_length, n_breeding, tournament_size, mutation_rate):
+        super().__init__(n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate)
 
         self._genome_length = genome_length  # length of genome
 
@@ -29,8 +29,12 @@ class BinaryPopulation(AbstractPopulation):
         return offsprings
 
     def _mutate(self, offsprings):
+
+        n_mutations = int(self._mutation_rate * len(offsprings[0].genome))
+        assert n_mutations > 0
+
         for off in offsprings:
-            for i in range(self._n_mutations):
+            for i in range(n_mutations):
                 # mutate random gene
                 genome = list(off.genome)
                 genome[np.random.randint(self._genome_length)] = str(np.random.randint(10))
