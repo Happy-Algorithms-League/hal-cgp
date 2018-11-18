@@ -77,8 +77,6 @@ class CGPGenome():
 
         self._dna = dna
 
-    # TODO: replace following two function with one that only takes
-    # index of node
     def _permissable_inputs(self, hidden_column_idx, levels_back):
         permissable_inputs = []
 
