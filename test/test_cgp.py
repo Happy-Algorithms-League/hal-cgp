@@ -9,6 +9,29 @@ sys.path.insert(0, '../')
 import gp
 
 
+def test_check_levels_back_consistency():
+    params = {
+        'n_inputs': 2,
+        'n_outputs': 1,
+        'n_columns': 4,
+        'n_rows': 3,
+        'levels_back': None,
+    }
+
+    primitives = gp.CGPPrimitives([gp.CGPAdd])
+
+    params['levels_back'] = 0
+    with pytest.raises(ValueError):
+        gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+
+    params['levels_back'] = params['n_columns'] + 1
+    with pytest.raises(ValueError):
+        gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+
+    params['levels_back'] = params['n_columns'] - 1
+    gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+
+
 # -> genome
 def test_permissable_inputs():
     params = {
@@ -20,17 +43,30 @@ def test_permissable_inputs():
     }
 
     primitives = gp.CGPPrimitives([gp.CGPAdd])
-    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
+    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+    genome.randomize()
 
-    expected = [
+    for input_idx in range(params['n_inputs']):
+        region_idx = input_idx
+        with pytest.raises(AssertionError):
+            genome._permissable_inputs(region_idx)
+
+    expected_for_hidden = [
         [0, 1],
         [0, 1, 2, 3, 4],
         [0, 1, 2, 3, 4, 5, 6, 7],
         [0, 1, 5, 6, 7, 8, 9, 10],
     ]
 
-    for hidden_column_idx in range(params['n_columns']):
-        assert(expected[hidden_column_idx] == genome._permissable_inputs(hidden_column_idx, params['levels_back']))
+    for column_idx in range(params['n_columns']):
+        region_idx = params['n_inputs'] + params['n_rows'] * column_idx
+        assert expected_for_hidden[column_idx] == genome._permissable_inputs(region_idx)
+
+    expected_for_output = list(range(params['n_inputs'] + params['n_rows'] * params['n_columns']))
+
+    for output_idx in range(params['n_outputs']):
+        region_idx = params['n_inputs'] + params['n_rows'] * params['n_columns'] + output_idx
+        assert expected_for_output == genome._permissable_inputs(region_idx)
 
 
 # -> genome
@@ -40,19 +76,20 @@ def test_region_generators():
         'n_outputs': 1,
         'n_columns': 1,
         'n_rows': 1,
+        'levels_back': 1,
     }
 
     primitives = gp.CGPPrimitives([gp.CGPAdd])
-    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
+    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 0, None]
 
-    for region in genome.input_regions():
+    for region_idx, region in genome.input_regions():
         assert(region == [-1, None, None])
 
-    for region in genome.hidden_regions():
+    for region_idx, region in genome.hidden_regions():
         assert(region == [0, 0, 1])
 
-    for region in genome.output_regions():
+    for region_idx, region in genome.output_regions():
         assert(region == [-2, 0, None])
 
 
@@ -63,10 +100,11 @@ def test_check_dna_consistency():
         'n_outputs': 1,
         'n_columns': 1,
         'n_rows': 1,
+        'levels_back': 1,
     }
 
     primitives = gp.CGPPrimitives([gp.CGPAdd])
-    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
+    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 0, None]
 
     # invalid length
@@ -109,10 +147,11 @@ def test_add():
         'n_outputs': 1,
         'n_columns': 1,
         'n_rows': 1,
+        'levels_back': 1,
     }
 
     primitives = gp.CGPPrimitives([gp.CGPAdd])
-    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
+    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
     graph = gp.CGPGraph(genome)
 
@@ -129,10 +168,11 @@ def test_sub():
         'n_outputs': 1,
         'n_columns': 1,
         'n_rows': 1,
+        'levels_back': 1,
     }
 
     primitives = gp.CGPPrimitives([gp.CGPSub])
-    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
+    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
     graph = gp.CGPGraph(genome)
 
@@ -149,10 +189,11 @@ def test_mul():
         'n_outputs': 1,
         'n_columns': 1,
         'n_rows': 1,
+        'levels_back': 1,
     }
 
     primitives = gp.CGPPrimitives([gp.CGPMul])
-    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
+    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
     graph = gp.CGPGraph(genome)
 
@@ -172,8 +213,8 @@ def test_direct_input_output():
         'levels_back': 2,
     }
     primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub])
-    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
-    genome.randomize(params['levels_back'])
+    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+    genome.randomize()
 
     genome[-2:] = [0, None]  # set inputs for output node to input node
     graph = gp.CGPGraph(genome)
@@ -210,7 +251,7 @@ def test_max_arity():
 # -> graph
 def test_compile_simple():
     primitives = gp.CGPPrimitives([gp.CGPAdd])
-    genome = gp.CGPGenome(2, 1, 1, 1, primitives)
+    genome = gp.CGPGenome(2, 1, 1, 1, 1, primitives)
 
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
     graph = gp.CGPGraph(genome)
@@ -222,7 +263,7 @@ def test_compile_simple():
     assert(abs(x[0] + x[1] - y[0]) < 1e-15)
 
     primitives = gp.CGPPrimitives([gp.CGPSub])
-    genome = gp.CGPGenome(2, 1, 1, 1, primitives)
+    genome = gp.CGPGenome(2, 1, 1, 1, 1, primitives)
 
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
     graph = gp.CGPGraph(genome)
@@ -237,7 +278,7 @@ def test_compile_simple():
 # -> graph
 def test_compile_two_columns():
     primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub])
-    genome = gp.CGPGenome(2, 1, 2, 1, primitives)
+    genome = gp.CGPGenome(2, 1, 2, 1, 1, primitives)
 
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, 1, 0, 2, -2, 3, None]
     graph = gp.CGPGraph(genome)
@@ -252,7 +293,7 @@ def test_compile_two_columns():
 # -> graph
 def test_compile_two_columns_two_rows():
     primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub])
-    genome = gp.CGPGenome(2, 2, 2, 2, primitives)
+    genome = gp.CGPGenome(2, 2, 2, 2, 1, primitives)
 
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, 1, 0, 1, 0, 0, 2, 0, 2, 3, -2, 4, None, -2, 5, None]
     graph = gp.CGPGraph(genome)
@@ -272,10 +313,11 @@ def test_compile_addsubmul():
         'n_outputs': 1,
         'n_columns': 2,
         'n_rows': 2,
+        'levels_back': 1,
     }
 
     primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul])
-    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
+    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
     genome.dna = [
         -1, None, None, -1, None, None,
         2, 0, 1, 1, 0, 1,
@@ -293,7 +335,7 @@ def test_compile_addsubmul():
 # -> graph
 def test_compile_torch_and_backprop():
     primitives = gp.CGPPrimitives([gp.CGPMul, gp.CGPConstantFloat])
-    genome = gp.CGPGenome(1, 1, 2, 2, primitives)
+    genome = gp.CGPGenome(1, 1, 2, 2, 1, primitives)
     genome.dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 3, None]
     graph = gp.CGPGraph(genome)
 
@@ -326,7 +368,7 @@ def test_compile_torch_and_backprop():
 
 def test_compile_sympy_expression():
     primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPConstantFloat])
-    genome = gp.CGPGenome(1, 1, 2, 2, primitives)
+    genome = gp.CGPGenome(1, 1, 2, 2, 1, primitives)
 
     genome.dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 3, None]
     graph = gp.CGPGraph(genome)
@@ -342,7 +384,7 @@ def test_compile_sympy_expression():
 
 def test_catch_no_non_coding_allele_in_non_coding_region():
     primitives = gp.CGPPrimitives([gp.CGPConstantFloat])
-    genome = gp.CGPGenome(1, 1, 1, 1, primitives)
+    genome = gp.CGPGenome(1, 1, 1, 1, 1, primitives)
 
     # wrong: ConstantFloat node has no inputs, but input gene has
     # value different from the non-coding allele

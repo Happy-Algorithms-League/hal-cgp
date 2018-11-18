@@ -28,8 +28,8 @@ class CGPPopulation(AbstractPopulation):
     def _generate_random_individuals(self, n):
         individuals = []
         for i in range(n):
-            genome = CGPGenome(self._n_inputs, self._n_outputs, self._n_columns, self._n_rows, self._primitives)
-            genome.randomize(self._levels_back)
+            genome = CGPGenome(self._n_inputs, self._n_outputs, self._n_columns, self._n_rows, self._levels_back, self._primitives)
+            genome.randomize()
             fitness = None
             individuals.append(Individual(fitness, genome))
         return individuals
@@ -47,7 +47,7 @@ class CGPPopulation(AbstractPopulation):
         assert n_mutations > 0
 
         for off in offsprings:
-            off.genome.mutate(n_mutations, self._levels_back)
+            off.genome.mutate(n_mutations)
 
         return offsprings
 
