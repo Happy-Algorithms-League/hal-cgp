@@ -6,6 +6,15 @@ from .cgp_genome import CGPGenome
 from .cgp_graph import CGPGraph
 
 
+class CGPIndividual(Individual):
+
+    def __init__(self, fitness, genome):
+        super().__init__(fitness, genome)
+
+    def clone(self):
+        return CGPIndividual(self.fitness, self.genome.clone())
+
+
 class CGPPopulation(AbstractPopulation):
 
     def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, n_mutations,
@@ -30,8 +39,7 @@ class CGPPopulation(AbstractPopulation):
         for i in range(n):
             genome = CGPGenome(self._n_inputs, self._n_outputs, self._n_columns, self._n_rows, self._levels_back, self._primitives)
             genome.randomize()
-            fitness = None
-            individuals.append(Individual(fitness, genome))
+            individuals.append(CGPIndividual(fitness=None, genome=genome))
         return individuals
 
     def _crossover(self, breeding_pool):
@@ -81,9 +89,6 @@ class CGPPopulation(AbstractPopulation):
     #                 history_loss_bp.append(loss.detach().numpy())
 
     #         graph.update_parameter_values(f)
-
-    def _clone_individual(self, ind):
-        return Individual(ind.fitness, ind.genome.clone())
 
     def compute_average_phenotype_distance_of_individuals(self):
 

@@ -12,6 +12,9 @@ class Individual():
     def __repr__(self):
         return 'Individual(idx={}, fitness={}, genome={}))'.format(self.idx, self.fitness, self.genome)
 
+    def clone(self):
+        raise NotImplementedError()
+
 
 class AbstractPopulation():
     """
@@ -93,7 +96,7 @@ class AbstractPopulation():
     def create_new_parent_population(self):
         self._parents = []
         for i in range(self._n_parents):
-            new_individual = self._clone_individual(self._combined[i])
+            new_individual = self._combined[i].clone()
 
             # since this individual is genetically identical to its
             # parent, the identifier is the same
@@ -109,7 +112,7 @@ class AbstractPopulation():
         while len(breeding_pool) < self._n_breeding:
             tournament_pool = np.random.permutation(self._parents)[:self._tournament_size]
             best_in_tournament = sorted(tournament_pool, key=lambda x: -x.fitness)[0]
-            breeding_pool.append(self._clone_individual(best_in_tournament))
+            breeding_pool.append(best_in_tournament.clone())
 
         offsprings = self._crossover(breeding_pool)
         offsprings = self._mutate(offsprings)
@@ -187,9 +190,6 @@ class AbstractPopulation():
         raise NotImplementedError()
 
     def local_search(self, objective):
-        raise NotImplementedError()
-
-    def _clone_individual(self, ind):
         raise NotImplementedError()
 
     def _phenotype_distance_between_individuals(self, ind_i, ind_j):
