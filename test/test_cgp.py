@@ -232,8 +232,11 @@ def test_immutable_primitives():
     with pytest.raises(TypeError):
         primitives[0] = gp.CGPAdd
 
-    with pytest.raises(TypeError):
-        primitives._primitives[0] = gp.CGPAdd
+    # currently setting this possible, since MappingProxy which was
+    # used to enforce this behaviour can not be pickled and hence was
+    # removed from Primitives
+    # with pytest.raises(TypeError):
+    #     primitives._primitives[0] = gp.CGPAdd
 
 
 # -> primitives

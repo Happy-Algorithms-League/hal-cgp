@@ -17,9 +17,9 @@ class CGPIndividual(Individual):
 
 class CGPPopulation(AbstractPopulation):
 
-    def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, n_mutations,
-                 n_inputs, n_outputs, n_columns, n_rows, levels_back, primitives):
-        super().__init__(n_parents, n_offsprings, n_breeding, tournament_size, n_mutations)
+    def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate,
+                 n_inputs, n_outputs, n_columns, n_rows, levels_back, primitives, *, n_threads=1):
+        super().__init__(n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate, n_threads=n_threads)
 
         if len(primitives) == 0:
             raise RuntimeError('need to provide at least one function primitive')

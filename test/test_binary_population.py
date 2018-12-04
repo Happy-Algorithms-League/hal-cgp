@@ -23,9 +23,14 @@ def test_binary_population():
 
     target_sequence = str(np.random.randint(10 ** params['genome_length'])).zfill(params['genome_length'])
 
-    def objective(x):
-        return np.sum(1 if x[i] == target_sequence[i] else 0
-                      for i in range(len(target_sequence)))
+    def objective(individual):
+
+        if individual.fitness is not None:
+            return individual
+
+        individual.fitness = np.sum(1 if individual.genome[i] == target_sequence[i] else 0
+                                    for i in range(len(target_sequence)))
+        return individual
 
     # create population object that will be evolved
     pop = gp.BinaryPopulation(

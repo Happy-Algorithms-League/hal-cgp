@@ -1,3 +1,4 @@
+import concurrent.futures
 import numpy as np
 
 
@@ -31,7 +32,7 @@ class AbstractPopulation():
     Deb, K., Pratap, A., Agarwal, S., & Meyarivan, T. A. M. T. (2002). A fast and elitist multiobjective genetic algorithm: NSGA-II. IEEE transactions on evolutionary computation, 6(2), 182-197.
     """
 
-    def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate):
+    def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate, *, n_threads=1):
 
         self._n_parents = n_parents  # number of individuals in parent population
         self._n_offsprings = n_offsprings  # number of individuals in offspring population
@@ -46,6 +47,8 @@ class AbstractPopulation():
         self._combined = None  # list of all individuals
 
         self._max_idx = -1  # keeps track of maximal idx in population used to label individuals
+
+        self.n_threads = n_threads  # number of threads to use for evaluating fitness
 
     def __getitem__(self, idx):
         return self._parents[idx]
@@ -78,10 +81,13 @@ class AbstractPopulation():
 
     def compute_fitness(self, objective):
 
-        for ind in self._combined:
-            if ind.fitness is None:  # only compute fitness if necessary
-                fitness = objective(ind.genome)
-                ind.fitness = fitness
+        # computes fitness on all individuals, objective functions
+        # should return immediately if fitness is not None
+        if self.n_threads == 1:
+            self._combined = list(map(objective, self._combined))
+        else:
+            with concurrent.futures.ProcessPoolExecutor(max_workers=self.n_threads) as executor:
+                self._combined = list(executor.map(objective, self._combined))
 
     def sort(self):
 
@@ -118,11 +124,6 @@ class AbstractPopulation():
         offsprings = self._mutate(offsprings)
 
         self._offsprings = offsprings
-
-        # due to crossover and mutation, need to reevaluate fitness of
-        # offsprings
-        for ind in self._offsprings:
-            ind.fitness = None
 
         self._label_new_individuals(self._offsprings)
 

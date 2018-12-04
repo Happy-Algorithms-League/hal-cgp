@@ -16,8 +16,8 @@ class BinaryIndividual(Individual):
 
 class BinaryPopulation(AbstractPopulation):
 
-    def __init__(self, n_parents, n_offsprings, genome_length, n_breeding, tournament_size, mutation_rate):
-        super().__init__(n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate)
+    def __init__(self, n_parents, n_offsprings, genome_length, n_breeding, tournament_size, mutation_rate, *, n_threads=1):
+        super().__init__(n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate, n_threads=n_threads)
 
         self._genome_length = genome_length  # length of genome
 
