@@ -16,7 +16,9 @@ class CGPPrimitives():
 
         # hide primitives dict behind MappingProxyType to make sure it
         # is not changed after construction
-        self._primitives = types.MappingProxyType(self._primitives)
+        # unfortunately not supported by pickle, necessary for
+        # multiprocessing; another way to implement this?
+        # self._primitives = types.MappingProxyType(self._primitives)
 
         self._determine_max_arity()
 

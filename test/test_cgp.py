@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pickle
 import pytest
 import sympy
 import sys
@@ -452,6 +453,15 @@ def test_individuals_have_different_genomes():
                 assert parent_i.genome is not offspring_j.genome
                 assert parent_i.genome.dna is not offspring_j.genome.dna
 
+
+def test_pickle_individual():
+
+    primitives = gp.CGPPrimitives([gp.CGPAdd])
+    genome = gp.CGPGenome(1, 1, 1, 1, 1, primitives)
+    individual = gp.CGPIndividual(None, genome)
+
+    with open('individual.pkl', 'wb') as f:
+        pickle.dump(individual, f)
 
 # def cgp():
 #     params = {
