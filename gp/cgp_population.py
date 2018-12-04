@@ -55,7 +55,12 @@ class CGPPopulation(AbstractPopulation):
         assert n_mutations > 0
 
         for off in offsprings:
-            off.genome.mutate(n_mutations)
+            graph = CGPGraph(off.genome)
+            active_regions = graph.determine_active_regions()
+            only_silent_mutations = off.genome.mutate(n_mutations, active_regions)
+
+            if not only_silent_mutations:
+                off.fitness = None
 
         return offsprings
 

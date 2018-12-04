@@ -239,11 +239,12 @@ class CGPGenome():
     def _is_input_gene(self, idx):
         return not self._is_function_gene(idx)
 
-    def mutate(self, n_mutations):
+    def mutate(self, n_mutations, active_regions):
 
         assert isinstance(n_mutations, int) and 0 < n_mutations
 
         successful_mutations = 0
+        only_silent_mutations = True
         while successful_mutations < n_mutations:
 
             gene_idx = np.random.randint(0, len(self))
@@ -258,14 +259,18 @@ class CGPGenome():
             elif self._is_output_region(region_idx):
                 success = self._mutate_output_region(gene_idx, region_idx)
                 if success:
+                    only_silent_mutations = only_silent_mutations and (region_idx not in active_regions)
                     successful_mutations += 1
 
             else:
                 success = self._mutate_hidden_region(gene_idx, region_idx)
                 if success:
+                    only_silent_mutations = only_silent_mutations and (region_idx not in active_regions)
                     successful_mutations += 1
 
         self._validate_dna(self._dna)
+
+        return only_silent_mutations
 
     def _mutate_output_region(self, gene_idx, region_idx):
         assert(self._is_output_region(region_idx))

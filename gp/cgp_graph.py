@@ -131,6 +131,15 @@ class CGPGraph():
 
         return active_nodes_by_hidden_column_idx
 
+    def determine_active_regions(self):
+        active_regions = []
+        active_nodes_by_hidden_column_idx = self._determine_active_nodes()
+        for column_idx in active_nodes_by_hidden_column_idx:
+            for node in active_nodes_by_hidden_column_idx[column_idx]:
+                active_regions.append(node.idx)
+
+        return active_regions
+
     def __call__(self, x):
 
         # store values of x in input nodes
