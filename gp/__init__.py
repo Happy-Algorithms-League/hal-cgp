@@ -3,5 +3,5 @@ from .cgp_graph import CGPGraph
 from .cgp_primitives import CGPPrimitives
 from .cgp_node import CGPAdd, CGPSub, CGPMul, CGPDiv, CGPConstantFloat
 from .abstract_population import AbstractPopulation, Individual
-from .binary_population import BinaryPopulation
-from .cgp_population import CGPPopulation
+from .binary_population import BinaryPopulation, BinaryIndividual
+from .cgp_population import CGPPopulation, CGPIndividual
