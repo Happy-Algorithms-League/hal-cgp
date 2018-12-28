@@ -131,15 +131,6 @@ class AbstractPopulation():
     def champion(self):
         return sorted(self._parents, key=lambda x: -x.fitness)[0]
 
-    def compute_average_phenotype_distance_of_individuals(self):
-        d = 0
-        for ind_i in self._parents:
-            for ind_j in self._parents:
-                if ind_i != ind_j:
-                    d += self._phenotype_distance_between_individuals(ind_i, ind_j)
-
-        return 1. / self._n_parents * d
-
     def evolve(self, objective, max_generations, min_fitness):
 
         # generate initial parent population of size N
@@ -150,8 +141,6 @@ class AbstractPopulation():
 
         # perform evolution
         history_fitness = []
-        history_average_phenotype_distance = []
-        history_average_genotype_distance = []
         for generation in range(max_generations):
 
             # combine parent and offspring populations
@@ -173,13 +162,11 @@ class AbstractPopulation():
             # TODO pop.local_search(objective)
 
             history_fitness.append(self.fitness)
-            history_average_phenotype_distance.append(self.compute_average_phenotype_distance_of_individuals())
-            history_average_genotype_distance.append(self.compute_average_genotype_distance_of_individuals())
 
             if np.mean(self.fitness) + 1e-10 >= min_fitness:
                 break
 
-        return history_fitness, history_average_phenotype_distance, history_average_genotype_distance
+        return history_fitness
 
     def _generate_random_individuals(self, n):
         raise NotImplementedError()
@@ -191,12 +178,6 @@ class AbstractPopulation():
         raise NotImplementedError()
 
     def local_search(self, objective):
-        raise NotImplementedError()
-
-    def _phenotype_distance_between_individuals(self, ind_i, ind_j):
-        raise NotImplementedError()
-
-    def _genotype_distance_between_individuals(self, ind_i, ind_j):
         raise NotImplementedError()
 
     @property
