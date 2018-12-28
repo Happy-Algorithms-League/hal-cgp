@@ -1,4 +1,5 @@
 import concurrent.futures
+import functools
 import numpy as np
 
 
@@ -79,15 +80,20 @@ class AbstractPopulation():
         # population instead of the other way around
         self._combined = self._offsprings + self._parents
 
-    def compute_fitness(self, objective):
+    def compute_fitness(self, objective, *, label=None):
+
+        if label is not None:
+            tmp_objective = functools.partial(objective, label=label)
+        else:
+            tmp_objective = objective
 
         # computes fitness on all individuals, objective functions
         # should return immediately if fitness is not None
         if self.n_threads == 1:
-            self._combined = list(map(objective, self._combined))
+            self._combined = list(map(tmp_objective, self._combined))
         else:
             with concurrent.futures.ProcessPoolExecutor(max_workers=self.n_threads) as executor:
-                self._combined = list(executor.map(objective, self._combined))
+                self._combined = list(executor.map(tmp_objective, self._combined))
 
     def sort(self):
 
@@ -131,7 +137,7 @@ class AbstractPopulation():
     def champion(self):
         return sorted(self._parents, key=lambda x: -x.fitness)[0]
 
-    def evolve(self, objective, max_generations, min_fitness):
+    def evolve(self, objective, max_generations, min_fitness, *, label=None):
 
         # generate initial parent population of size N
         self.generate_random_parent_population()
@@ -148,7 +154,7 @@ class AbstractPopulation():
             self.create_combined_population()
 
             #  compute fitness for all objectives for all individuals
-            self.compute_fitness(objective)
+            self.compute_fitness(objective, label=label)
 
             # sort population according to fitness & crowding distance
             self.sort()
