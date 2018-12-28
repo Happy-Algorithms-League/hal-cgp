@@ -140,7 +140,8 @@ class AbstractPopulation():
         self.generate_random_offspring_population()
 
         # perform evolution
-        history_fitness = []
+        history_fitness = np.empty((max_generations, self._n_parents))
+        history_dna_parents = np.empty((max_generations, self._n_parents, len(self._parents[0].genome.dna)))
         for generation in range(max_generations):
 
             # combine parent and offspring populations
@@ -161,12 +162,13 @@ class AbstractPopulation():
             # perform local search to tune values of constants
             # TODO pop.local_search(objective)
 
-            history_fitness.append(self.fitness)
+            history_fitness[generation] = self.fitness_parents()
+            history_dna_parents[generation] = self.dna_parents()
 
-            if np.mean(self.fitness) + 1e-10 >= min_fitness:
+            if np.mean(self.fitness_parents()) + 1e-10 >= min_fitness:
                 break
 
-        return history_fitness
+        return history_fitness[:generation], history_dna_parents[:generation]
 
     def _generate_random_individuals(self, n):
         raise NotImplementedError()
@@ -184,6 +186,11 @@ class AbstractPopulation():
     def parents(self):
         return self._parents
 
-    @property
-    def fitness(self):
+    def fitness_parents(self):
         return [ind.fitness for ind in self._parents]
+
+    def dna_parents(self):
+        dnas = np.empty((self._n_parents, len(self._parents[0].genome)))
+        for i in range(self._n_parents):
+            dnas[i] = self._parents[i].genome.dna
+        return dnas
