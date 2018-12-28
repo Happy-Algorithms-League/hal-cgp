@@ -189,7 +189,7 @@ class CGPGenome():
             if output_region[1] not in self._permissable_inputs_for_output_region():
                 raise ValueError('input gene for output nodes has invalid value')
 
-            if output_region[2:] != [None] * (self._primitives.max_arity - 1):
+            if output_region[2:] != [self._non_coding_allele] * (self._primitives.max_arity - 1):
                 raise ValueError('non-coding input genes for output nodes need to be identical to non-coding allele')
 
     def _hidden_column_idx(self, region_idx):
