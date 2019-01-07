@@ -211,6 +211,9 @@ class _C(torch.nn.Module):
 
         return locals()['_c']
 
+    def to_torch(self):
+        return self.compile_torch_class()
+
     def update_parameters_from_torch_class(self, torch_cls):
         for n in self._nodes:
             if n.is_parameter:
@@ -257,3 +260,6 @@ class _C(torch.nn.Module):
         # of the function and use that in the list comprehension
         local_dict = locals()
         return [local_dict['y_0'] for name in sympy_output_var_names]
+
+    def to_sympy(self):
+        return self.compile_sympy_expression()
