@@ -62,7 +62,7 @@ def test_binary_population():
         # generate new offspring population from parent population
         pop.create_new_offspring_population()
 
-        history_fitness.append(pop.fitness)
+        history_fitness.append(pop.fitness_parents())
 
     for ind in pop.parents:
         assert(target_sequence == ind.genome)
