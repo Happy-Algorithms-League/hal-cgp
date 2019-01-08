@@ -41,10 +41,11 @@ def _test_cgp_population(n_threads):
         # evo parameters
         'n_parents': 5,
         'n_offsprings': 5,
-        'generations': 500,
+        'max_generations': 500,
         'n_breeding': 5,
         'tournament_size': 2,
         'mutation_rate': 0.05,
+        'min_fitness': 1e-12,
 
         # cgp parameters
         'n_inputs': 2,
@@ -59,51 +60,18 @@ def _test_cgp_population(n_threads):
 
     primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat])
 
-    # create population object that will be evolved
     pop = gp.CGPPopulation(
         params['n_parents'], params['n_offsprings'], params['n_breeding'], params['tournament_size'], params['mutation_rate'],
         params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives, n_threads=n_threads)
 
-    # generate initial parent population of size N
-    pop.generate_random_parent_population()
+    history_fitness, _ = pop.evolve(objective, params['max_generations'], params['min_fitness'])
 
-    # generate initial offspring population of size N
-    pop.generate_random_offspring_population()
+    assert abs(np.mean(pop.fitness_parents())) < 1e-10
 
-    best_fitness = -1e15
-
-    # perform evolution
-    for i in range(params['generations']):
-
-        # combine parent and offspring populations
-        pop.create_combined_population()
-
-        #  compute fitness for all objectives for all individuals
-        pop.compute_fitness(objective)
-
-        # sort population according to fitness & crowding distance
-        pop.sort()
-
-        # fill new parent population according to sorting
-        pop.create_new_parent_population()
-
-        # generate new offspring population from parent population
-        pop.create_new_offspring_population()
-
-        # perform local search to tune values of constants
-        # TODO pop.local_search(objective)
-
-        # for fixed inputs (seed is fixed in objective), fitness
-        # should monotonously increase due to elitism
-        assert best_fitness <= np.max(pop.fitness)
-        best_fitness = np.max(pop.fitness)
-
-    # assert abs(np.mean(pop.fitness)) < 1e-10
-
-    return np.mean(pop.fitness)
+    return np.mean(pop.fitness_parents())
 
 
-def test_cgp_population():
+def test_parallel_cgp_population():
 
     time_per_n_threads = []
     fitness_per_n_threads = []
@@ -111,9 +79,6 @@ def test_cgp_population():
         t1 = time.time()
         fitness_per_n_threads.append(_test_cgp_population(n_threads))
         time_per_n_threads.append(time.time() - t1)
-
-    print(fitness_per_n_threads)
-    print(time_per_n_threads)
 
     assert abs(fitness_per_n_threads[0] - fitness_per_n_threads[1]) < 1e-10
     assert abs(fitness_per_n_threads[0] - fitness_per_n_threads[2]) < 1e-10
