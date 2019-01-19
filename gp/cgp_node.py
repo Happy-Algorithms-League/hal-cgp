@@ -253,3 +253,21 @@ class CGPOutputNode(CGPNode):
         output_idx = self._idx - graph._n_inputs - graph._n_rows * graph._n_columns
         self.sympy_var_name = 'y_{}'.format(output_idx)
         self.sympy_expr = 'y_{} = {}'.format(output_idx, graph[self._inputs[0]].sympy_expr)
+
+
+class CGPPow(CGPNode):
+    _arity = 2
+
+    def __init__(self, idx, inputs):
+        super().__init__(idx, inputs)
+
+        self._name = self.__class__.__name__
+
+    def __call__(self, x, graph):
+        self._output = graph[self._inputs[0]].output ** graph[self._inputs[1]].output
+
+    def format_output_str(self, graph):
+        self._output_str = '({} ** {})'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
+
+    def format_sympy_expression(self, graph):
+        self.sympy_expr = '({} ** {})'.format(graph[self._inputs[0]].sympy_expr, graph[self._inputs[1]].sympy_expr)
