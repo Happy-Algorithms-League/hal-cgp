@@ -5,8 +5,9 @@ import sys
 sys.path.insert(0, '../')
 import gp
 
+SEED = np.random.randint(2 ** 31)
+
 params = {
-    'seed': 1234,
     'n_parents': 5,
     'n_offsprings': 5,
     'genome_length': 10,
@@ -19,7 +20,7 @@ params = {
 
 def test_binary_population():
 
-    np.random.seed(params['seed'])
+    np.random.seed(SEED)
 
     target_sequence = str(np.random.randint(10 ** params['genome_length'])).zfill(params['genome_length'])
 
@@ -35,7 +36,7 @@ def test_binary_population():
     # create population object that will be evolved
     pop = gp.BinaryPopulation(
         params['n_parents'], params['n_offsprings'], params['genome_length'], params['n_breeding'],
-        params['tournament_size'], params['mutation_rate'])
+        params['tournament_size'], params['mutation_rate'], SEED)
 
     # generate initial parent population of size N
     pop.generate_random_parent_population()

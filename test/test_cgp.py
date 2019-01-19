@@ -10,6 +10,9 @@ sys.path.insert(0, '../')
 import gp
 
 
+SEED = np.random.randint(2 ** 31)
+
+
 def test_check_levels_back_consistency():
     params = {
         'n_inputs': 2,
@@ -45,7 +48,7 @@ def test_permissable_inputs():
 
     primitives = gp.CGPPrimitives([gp.CGPAdd])
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
-    genome.randomize()
+    genome.randomize(np.random)
 
     for input_idx in range(params['n_inputs']):
         region_idx = input_idx
@@ -215,7 +218,7 @@ def test_direct_input_output():
     }
     primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub])
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
-    genome.randomize()
+    genome.randomize(np.random)
 
     genome[-2:] = [0, None]  # set inputs for output node to input node
     graph = gp.CGPGraph(genome)
@@ -402,8 +405,6 @@ def test_catch_no_non_coding_allele_in_non_coding_region():
 def test_individuals_have_different_genomes():
 
     params = {
-        'seed': 8188212,
-
         # evo parameters
         'n_parents': 5,
         'n_offspring': 5,
@@ -423,8 +424,7 @@ def test_individuals_have_different_genomes():
     primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat])
 
     pop = gp.CGPPopulation(
-        params['n_parents'], params['n_offspring'], params['n_breeding'], params['tournament_size'], params['mutation_rate'],
-        params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+        params['n_parents'], params['n_offspring'], params['n_breeding'], params['tournament_size'], params['mutation_rate'], SEED, params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
 
     pop.generate_random_parent_population()
     pop.generate_random_offspring_population()

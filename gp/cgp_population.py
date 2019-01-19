@@ -17,9 +17,9 @@ class CGPIndividual(Individual):
 
 class CGPPopulation(AbstractPopulation):
 
-    def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate,
+    def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate, seed,
                  n_inputs, n_outputs, n_columns, n_rows, levels_back, primitives, *, n_threads=1):
-        super().__init__(n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate, n_threads=n_threads)
+        super().__init__(n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate, seed, n_threads=n_threads)
 
         if len(primitives) == 0:
             raise RuntimeError('need to provide at least one function primitive')
@@ -30,26 +30,29 @@ class CGPPopulation(AbstractPopulation):
 
         self._n_columns = n_columns
         self._n_rows = n_rows
-        self._levels_back = levels_back
+        if levels_back:
+            self._levels_back = levels_back
+        else:
+            self._levels_back = n_columns
 
         self._primitives = primitives
 
-    def _generate_random_individuals(self, n):
+    def _generate_random_individuals(self, n, rng):
         individuals = []
         for i in range(n):
             genome = CGPGenome(self._n_inputs, self._n_outputs, self._n_columns, self._n_rows, self._levels_back, self._primitives)
-            genome.randomize()
+            genome.randomize(rng)
             individuals.append(CGPIndividual(fitness=None, genome=genome))
         return individuals
 
-    def _crossover(self, breeding_pool):
+    def _crossover(self, breeding_pool, rng):
         # do not perform crossover for CGP, just choose the best
         # individuals from breeding pool
         if len(breeding_pool) < self._n_offsprings:
             raise ValueError('size of breeding pool must be at least as large as the desired number of offsprings')
         return sorted(breeding_pool, key=lambda x: -x.fitness)[:self._n_offsprings]
 
-    def _mutate(self, offsprings):
+    def _mutate(self, offsprings, rng):
 
         n_mutations = int(self._mutation_rate * len(offsprings[0].genome))
         assert n_mutations > 0
@@ -57,7 +60,7 @@ class CGPPopulation(AbstractPopulation):
         for off in offsprings:
             graph = CGPGraph(off.genome)
             active_regions = graph.determine_active_regions()
-            only_silent_mutations = off.genome.mutate(n_mutations, active_regions)
+            only_silent_mutations = off.genome.mutate(n_mutations, active_regions, rng)
 
             if not only_silent_mutations:
                 off.fitness = None

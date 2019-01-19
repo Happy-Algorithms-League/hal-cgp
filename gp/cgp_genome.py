@@ -40,7 +40,7 @@ class CGPGenome():
         s += ')'
         return s
 
-    def randomize(self):
+    def randomize(self, rng):
 
         dna = []
 
@@ -64,11 +64,11 @@ class CGPGenome():
             # construct dna region consisting of function allele and
             # input alleles
             region = []
-            node_id = self._primitives.sample()
+            node_id = self._primitives.sample(rng)
             region.append(node_id)
 
             # choose inputs for coding region
-            region += list(np.random.choice(permissable_inputs, self._primitives[node_id]._arity))
+            region += list(rng.choice(permissable_inputs, self._primitives[node_id]._arity))
 
             # mark non-coding region
             region += [self._non_coding_allele] * (self._primitives.max_arity - self._primitives[node_id]._arity)
@@ -83,7 +83,7 @@ class CGPGenome():
             # gene determining input
             region = []
             region.append(self._id_output_node)
-            region.append(np.random.choice(permissable_inputs))
+            region.append(rng.choice(permissable_inputs))
             region += [self._non_coding_allele] * (self._primitives.max_arity - 1)
 
             dna += region
@@ -239,7 +239,7 @@ class CGPGenome():
     def _is_input_gene(self, idx):
         return not self._is_function_gene(idx)
 
-    def mutate(self, n_mutations, active_regions):
+    def mutate(self, n_mutations, active_regions, rng):
 
         assert isinstance(n_mutations, int) and 0 < n_mutations
 
@@ -247,7 +247,7 @@ class CGPGenome():
         only_silent_mutations = True
         while successful_mutations < n_mutations:
 
-            gene_idx = np.random.randint(0, len(self))
+            gene_idx = rng.randint(0, len(self))
 
             region_idx = gene_idx // self._length_per_region
 
@@ -257,13 +257,13 @@ class CGPGenome():
                 continue  # nothing to do here
 
             elif self._is_output_region(region_idx):
-                success = self._mutate_output_region(gene_idx, region_idx)
+                success = self._mutate_output_region(gene_idx, region_idx, rng)
                 if success:
                     only_silent_mutations = only_silent_mutations and (region_idx not in active_regions)
                     successful_mutations += 1
 
             else:
-                success = self._mutate_hidden_region(gene_idx, region_idx)
+                success = self._mutate_hidden_region(gene_idx, region_idx, rng)
                 if success:
                     only_silent_mutations = only_silent_mutations and (region_idx not in active_regions)
                     successful_mutations += 1
@@ -272,22 +272,22 @@ class CGPGenome():
 
         return only_silent_mutations
 
-    def _mutate_output_region(self, gene_idx, region_idx):
+    def _mutate_output_region(self, gene_idx, region_idx, rng):
         assert(self._is_output_region(region_idx))
 
         # only mutate coding output gene
         if self._is_input_gene(gene_idx) and self._dna[gene_idx] is not self._non_coding_allele:
             permissable_inputs = self._permissable_inputs_for_output_region()
-            self._dna[gene_idx] = np.random.choice(permissable_inputs)
+            self._dna[gene_idx] = rng.choice(permissable_inputs)
             return True
 
         return False
 
-    def _mutate_hidden_region(self, gene_idx, region_idx):
+    def _mutate_hidden_region(self, gene_idx, region_idx, rng):
         assert(self._is_hidden_region(region_idx))
 
         if self._is_function_gene(gene_idx):
-            self._dna[gene_idx] = self._primitives.sample()
+            self._dna[gene_idx] = self._primitives.sample(rng)
 
             # since we have changed the function gene, we need
             # to update the input genes to match the arity of
@@ -297,7 +297,7 @@ class CGPGenome():
             permissable_inputs = self._permissable_inputs(region_idx)
 
             for j in range(1, 1 + self._primitives[self._dna[gene_idx]]._arity):
-                self._dna[gene_idx + j] = np.random.choice(permissable_inputs)
+                self._dna[gene_idx + j] = rng.choice(permissable_inputs)
 
             # second: set non-coding genes to non-coding allele
             for j in range(1 + self._primitives[self._dna[gene_idx]]._arity, 1 + self._primitives.max_arity):
@@ -308,7 +308,7 @@ class CGPGenome():
         else:
             if self._dna[gene_idx] is not self._non_coding_allele:
                 permissable_inputs = self._permissable_inputs(region_idx)
-                self._dna[gene_idx] = np.random.choice(permissable_inputs)
+                self._dna[gene_idx] = rng.choice(permissable_inputs)
                 return True
 
         return False

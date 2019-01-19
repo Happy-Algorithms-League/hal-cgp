@@ -1,5 +1,3 @@
-import numpy as np
-import types
 
 
 class CGPPrimitives():
@@ -32,8 +30,8 @@ class CGPPrimitives():
 
         self._max_arity = arity
 
-    def sample(self):
-        return np.random.choice(self.alleles)
+    def sample(self, rng):
+        return rng.choice(self.alleles)
 
     def __getitem__(self, key):
         return self._primitives[key]

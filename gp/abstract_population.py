@@ -33,7 +33,7 @@ class AbstractPopulation():
     Deb, K., Pratap, A., Agarwal, S., & Meyarivan, T. A. M. T. (2002). A fast and elitist multiobjective genetic algorithm: NSGA-II. IEEE transactions on evolutionary computation, 6(2), 182-197.
     """
 
-    def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate, *, n_threads=1):
+    def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate, seed, *, n_threads=1):
 
         self._n_parents = n_parents  # number of individuals in parent population
         self._n_offsprings = n_offsprings  # number of individuals in offspring population
@@ -49,17 +49,19 @@ class AbstractPopulation():
 
         self._max_idx = -1  # keeps track of maximal idx in population used to label individuals
 
+        self.seed = seed
+        self.rng = np.random.RandomState(seed)
         self.n_threads = n_threads  # number of threads to use for evaluating fitness
 
     def __getitem__(self, idx):
         return self._parents[idx]
 
     def generate_random_parent_population(self):
-        self._parents = self._generate_random_individuals(self._n_parents)
+        self._parents = self._generate_random_individuals(self._n_parents, self.rng)
         self._label_new_individuals(self._parents)
 
     def generate_random_offspring_population(self):
-        self._offsprings = self._generate_random_individuals(self._n_offsprings)
+        self._offsprings = self._generate_random_individuals(self._n_offsprings, self.rng)
         self._label_new_individuals(self._offsprings)
 
     def _label_new_individuals(self, individuals):
@@ -122,12 +124,12 @@ class AbstractPopulation():
         # population
         breeding_pool = []
         while len(breeding_pool) < self._n_breeding:
-            tournament_pool = np.random.permutation(self._parents)[:self._tournament_size]
+            tournament_pool = self.rng.permutation(self._parents)[:self._tournament_size]
             best_in_tournament = sorted(tournament_pool, key=lambda x: -x.fitness)[0]
             breeding_pool.append(best_in_tournament.clone())
 
-        offsprings = self._crossover(breeding_pool)
-        offsprings = self._mutate(offsprings)
+        offsprings = self._crossover(breeding_pool, self.rng)
+        offsprings = self._mutate(offsprings, self.rng)
 
         self._offsprings = offsprings
 
@@ -174,9 +176,9 @@ class AbstractPopulation():
             if np.mean(self.fitness_parents()) + 1e-10 >= min_fitness:
                 break
 
-        return history_fitness[:generation], history_dna_parents[:generation]
+        return history_fitness[:generation + 1], history_dna_parents[:generation + 1]
 
-    def _generate_random_individuals(self, n):
+    def _generate_random_individuals(self, n, rng):
         raise NotImplementedError()
 
     def _crossover(self, breeding_pool):
