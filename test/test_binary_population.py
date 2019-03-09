@@ -65,7 +65,7 @@ def test_binary_population():
 
         history_fitness.append(pop.fitness_parents())
 
-    for ind in pop.parents:
+    for ind in pop._parents:
         assert(target_sequence == ind.genome)
 
     # plt.plot(np.mean(history_fitness, axis=1))

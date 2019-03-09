@@ -93,6 +93,9 @@ class AbstractPopulation():
         self._combined = sorted(self._combined, key=lambda x: -x.fitness)
 
     def create_new_parent_population(self):
+
+        # create new parent population by picking the `n_parents` individuals
+        # with the highest fitness
         self._parents = []
         for i in range(self._n_parents):
             new_individual = self._combined[i].clone()
@@ -113,11 +116,12 @@ class AbstractPopulation():
             best_in_tournament = sorted(tournament_pool, key=lambda x: -x.fitness)[0]
             breeding_pool.append(best_in_tournament.clone())
 
+        # create offsprings by applying crossover to breeding pool and mutating
+        # resulting individuals
         offsprings = self._crossover(breeding_pool)
         offsprings = self._mutate(offsprings)
 
         self._offsprings = offsprings
-
         self._label_new_individuals(self._offsprings)
 
     @property
@@ -132,13 +136,6 @@ class AbstractPopulation():
 
     def _mutate(self, offsprings):
         raise NotImplementedError()
-
-    def local_search(self, objective):
-        raise NotImplementedError()
-
-    @property
-    def parents(self):
-        return self._parents
 
     def fitness_parents(self):
         return [ind.fitness for ind in self._parents]

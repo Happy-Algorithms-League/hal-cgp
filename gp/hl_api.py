@@ -32,9 +32,6 @@ def evolve(pop, objective, max_generations, min_fitness, *, label=None):
         # generate new offspring population from parent population
         pop.create_new_offspring_population()
 
-        # perform local search to tune values of constants
-        # TODO pop.local_search(objective)
-
         history_fitness[generation] = pop.fitness_parents()
         history_dna_parents[generation] = pop.dna_parents()
 

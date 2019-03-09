@@ -9,8 +9,7 @@ class AbstractIndividual():
     def __init__(self, fitness, genome):
         self.fitness = fitness
         self.genome = genome
-
-        self.idx = None
+        self.idx = None  # an identifier to keep track of all unique genomes
 
     def __repr__(self):
         return 'Individual(idx={}, fitness={}, genome={}))'.format(self.idx, self.fitness, self.genome)
