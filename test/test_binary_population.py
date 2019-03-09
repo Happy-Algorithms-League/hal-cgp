@@ -35,8 +35,8 @@ def test_binary_population():
 
     # create population object that will be evolved
     pop = gp.BinaryPopulation(
-        params['n_parents'], params['n_offsprings'], params['genome_length'], params['n_breeding'],
-        params['tournament_size'], params['mutation_rate'], SEED)
+        params['n_parents'], params['n_offsprings'], params['n_breeding'],
+        params['tournament_size'], params['mutation_rate'], SEED, params['genome_length'])
 
     # generate initial parent population of size N
     pop.generate_random_parent_population()
