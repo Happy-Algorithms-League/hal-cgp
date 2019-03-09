@@ -9,8 +9,6 @@ class BinaryIndividual(AbstractIndividual):
     def __init__(self, fitness, genome):
         super().__init__(fitness, genome)
 
-        self._graph = None
-
     def clone(self):
         return BinaryIndividual(self.fitness, self.genome)
 
