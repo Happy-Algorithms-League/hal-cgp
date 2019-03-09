@@ -27,7 +27,8 @@ class AbstractPopulation():
         self._n_breeding = n_breeding  # size of breeding population
         self._tournament_size = tournament_size  # size of tournament for selection breeding population
 
-        assert 0. < mutation_rate and mutation_rate < 1.
+        if not (0. < mutation_rate and mutation_rate < 1.):
+            raise ValueError('mutation rate needs to be in (0, 1)')
         self._mutation_rate = mutation_rate  # probability of mutation per gene
 
         self._parents = None  # list of parent individuals
