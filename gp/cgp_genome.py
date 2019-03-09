@@ -71,11 +71,11 @@ class CGPGenome():
 
     def __repr__(self):
         s = self.__class__.__name__ + '('
-        for region_idx, input_region in self.input_regions():
+        for region_idx, input_region in self.iter_input_regions():
             s += str(region_idx) + ': ' + str(input_region) + ' | '
-        for region_idx, hidden_region in self.hidden_regions():
+        for region_idx, hidden_region in self.iter_hidden_regions():
             s += str(region_idx) + ': ' + str(hidden_region) + ' | '
-        for region_idx, output_region in self.output_regions():
+        for region_idx, output_region in self.iter_output_regions():
             s += str(region_idx) + ': ' + str(output_region) + ' | '
         s = s[:-3]
         s += ')'
