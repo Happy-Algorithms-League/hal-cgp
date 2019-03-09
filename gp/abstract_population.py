@@ -141,7 +141,7 @@ class AbstractPopulation():
         return [ind.fitness for ind in self._parents]
 
     def dna_parents(self):
-        dnas = np.empty((self._n_parents, len(self._parents[0].genome)))
+        dnas = np.empty((self._n_parents, self._parents[0].genome._n_genes))
         for i in range(self._n_parents):
             dnas[i] = self._parents[i].genome.dna
         return dnas

@@ -78,15 +78,15 @@ class CGPGraph():
         self._nodes = []
 
         idx = 0
-        for region_idx, input_region in genome.input_regions():
+        for region_idx, input_region in genome.iter_input_regions():
             self._nodes.append(CGPInputNode(idx, input_region[1:]))
             idx += 1
 
-        for region_idx, hidden_region in genome.hidden_regions():
+        for region_idx, hidden_region in genome.iter_hidden_regions():
             self._nodes.append(genome.primitives[hidden_region[0]](idx, hidden_region[1:]))
             idx += 1
 
-        for region_idx, output_region in genome.output_regions():
+        for region_idx, output_region in genome.iter_output_regions():
             self._nodes.append(CGPOutputNode(idx, output_region[1:]))
             idx += 1
 

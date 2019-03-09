@@ -2,17 +2,24 @@ import numpy as np
 
 
 class CGPGenome():
-    _n_regions = None
-    _length_per_region = None
-    _dna = None
 
     def __init__(self, n_inputs, n_outputs, n_columns, n_rows, levels_back, primitives):
-        self._n_inputs = n_inputs
-        self._n_hidden = n_columns * n_rows
-        self._n_outputs = n_outputs
 
+        if n_inputs <= 0:
+            raise ValueError('n_inputs must be strictly positive')
+        self._n_inputs = n_inputs
+
+        if n_columns < 0:
+            raise ValueError('n_columns must be non-negative')
         self._n_columns = n_columns
+
+        if n_rows < 0:
+            raise ValueError('n_rows must be non-negative')
         self._n_rows = n_rows
+
+        if n_outputs <= 0:
+            raise ValueError('n_outputs must be strictly positive')
+        self._n_outputs = n_outputs
 
         if levels_back == 0:
             raise ValueError('levels_back must be strictly positive')
@@ -21,12 +28,46 @@ class CGPGenome():
         self._levels_back = levels_back
 
         self._primitives = primitives
-        self._length_per_region = 1 + primitives.max_arity  # function gene + input genes
+        self._length_per_region = 1 + primitives.max_arity  # one function gene + multiple input genes
+
+        self._dna = None  # stores dna as list of alleles for all regions
 
         # constants used as identifiers for input and output nodes
         self._id_input_node = -1
         self._id_output_node = -2
         self._non_coding_allele = None
+
+    def __getitem__(self, key):
+        if self._dna is None:
+            raise RuntimeError('dna not initialized')
+        return self._dna[key]
+
+    def __setitem__(self, key, value):
+        dna = list(self._dna)
+        dna[key] = value
+        self._validate_dna(dna)
+        self._dna = dna
+
+    @property
+    def dna(self):
+        return self._dna
+
+    @dna.setter
+    def dna(self, value):
+        self._validate_dna(value)
+        self._dna = value
+
+    @property
+    def _n_hidden(self):
+        return self._n_columns * self._n_rows
+
+    @property
+    def _n_regions(self):
+        return self._n_inputs + self._n_hidden + self._n_outputs
+
+    @property
+    def _n_genes(self):
+        return self._n_regions * self._length_per_region
 
     def __repr__(self):
         s = self.__class__.__name__ + '('
@@ -40,26 +81,16 @@ class CGPGenome():
         s += ')'
         return s
 
-    def randomize(self, rng):
+    def _create_input_region(self):
 
-        dna = []
+        # fill region with identifier for input node and zeros,
+        # since input nodes do not have any inputs
+        region = []
+        region.append(self._id_input_node)
+        region += [self._non_coding_allele] * self._primitives.max_arity
+        return region
 
-        # add input regions
-        for i in range(self._n_inputs):
-
-            # fill region with identifier for input node and zeros,
-            # since input nodes do not have any inputs
-            region = []
-            region.append(self._id_input_node)
-            region += [self._non_coding_allele] * self._primitives.max_arity
-
-            dna += region
-
-        # add hidden nodes
-        for i in range(self._n_hidden):
-
-            if i % self._n_rows == 0:  # only compute permissable inputs once per column
-                permissable_inputs = self._permissable_inputs(i + self._n_inputs)
+    def _create_random_hidden_region(self, rng, permissable_inputs):
 
             # construct dna region consisting of function allele and
             # input alleles
@@ -73,11 +104,9 @@ class CGPGenome():
             # mark non-coding region
             region += [self._non_coding_allele] * (self._primitives.max_arity - self._primitives[node_id]._arity)
 
-            dna += region
+            return region
 
-        permissable_inputs = self._permissable_inputs_for_output_region()
-        # add output nodes
-        for i in range(self._n_outputs):
+    def _create_random_output_region(self, rng, permissable_inputs):
 
             # fill region with identifier for output node and single
             # gene determining input
@@ -86,10 +115,31 @@ class CGPGenome():
             region.append(rng.choice(permissable_inputs))
             region += [self._non_coding_allele] * (self._primitives.max_arity - 1)
 
-            dna += region
+            return region
 
+    def randomize(self, rng):
+
+        dna = []
+
+        # add input nodes
+        for i in range(self._n_inputs):
+            dna += self._create_input_region()
+
+        # add hidden nodes
+        for i in range(self._n_hidden):
+
+            if i % self._n_rows == 0:  # only compute permissable inputs once per column
+                permissable_inputs = self._permissable_inputs(i + self._n_inputs)
+
+            dna += self._create_random_hidden_region(rng, permissable_inputs)
+
+        # add output nodes
+        permissable_inputs = self._permissable_inputs_for_output_region()  # identical for outputs
+        for i in range(self._n_outputs):
+            dna += self._create_random_output_region(rng, permissable_inputs)
+
+        # accept generated dna if it is valid
         self._validate_dna(dna)
-
         self._dna = dna
 
     def _permissable_inputs(self, region_idx):
@@ -118,47 +168,12 @@ class CGPGenome():
     def _permissable_inputs_for_output_region(self):
         return self._permissable_inputs(self._n_inputs + self._n_rows * self._n_columns)
 
-    def __iter__(self):
-        if self._dna is None:
-            raise RuntimeError('dna not initialized')
-        for i in range(self._n_regions):
-            yield self._dna[i * self._length_per_region:(i + 1) * self._length_per_region]
-
-    def __getitem__(self, key):
-        if self._dna is None:
-            raise RuntimeError('dna not initialized')
-        return self._dna[key]
-
-    def __setitem__(self, key, value):
-        dna = list(self._dna)
-        dna[key] = value
-        self._validate_dna(dna)
-        self._dna = dna
-
-    def __len__(self):
-        return self._n_regions * self._length_per_region
-
-    @property
-    def _n_regions(self):
-        return self._n_inputs + self._n_hidden + self._n_outputs
-
-    @property
-    def dna(self):
-        return self._dna
-
-    @dna.setter
-    def dna(self, value):
-
-        self._validate_dna(value)
-
-        self._dna = value
-
     def _validate_dna(self, dna):
 
-        if len(dna) != len(self):
+        if len(dna) != self._n_genes:
             raise ValueError('dna length mismatch')
 
-        for region_idx, input_region in self.input_regions(dna):
+        for region_idx, input_region in self.iter_input_regions(dna):
 
             if input_region[0] != self._id_input_node:
                 raise ValueError('function genes for input nodes need to be identical to input node identifiers')
@@ -166,7 +181,7 @@ class CGPGenome():
             if input_region[1:] != ([self._non_coding_allele] * self._primitives.max_arity):
                 raise ValueError('input genes for input nodes need to be identical to non-coding allele')
 
-        for region_idx, hidden_region in self.hidden_regions(dna):
+        for region_idx, hidden_region in self.iter_hidden_regions(dna):
 
             if hidden_region[0] not in self._primitives.alleles:
                 raise ValueError('function gene for hidden node has invalid value')
@@ -181,7 +196,7 @@ class CGPGenome():
             if non_coding_input_genes != [self._non_coding_allele] * (self._primitives.max_arity - self._primitives[hidden_region[0]]._arity):
                 raise ValueError('non-coding input genes for hidden nodes need to be identical to non-coding allele')
 
-        for region_idx, output_region in self.output_regions(dna):
+        for region_idx, output_region in self.iter_output_regions(dna):
 
             if output_region[0] != self._id_output_node:
                 raise ValueError('function genes for output nodes need to be identical to output node identifiers')
@@ -200,7 +215,7 @@ class CGPGenome():
         assert hidden_column_idx < self._n_columns
         return hidden_column_idx
 
-    def input_regions(self, dna=None):
+    def iter_input_regions(self, dna=None):
         if dna is None:
             dna = self.dna
         for i in range(self._n_inputs):
@@ -208,7 +223,7 @@ class CGPGenome():
             region = dna[region_idx * self._length_per_region:(region_idx + 1) * self._length_per_region]
             yield region_idx, region
 
-    def hidden_regions(self, dna=None):
+    def iter_hidden_regions(self, dna=None):
         if dna is None:
             dna = self.dna
         for i in range(self._n_hidden):
@@ -216,7 +231,7 @@ class CGPGenome():
             region = dna[region_idx * self._length_per_region:(region_idx + 1) * self._length_per_region]
             yield region_idx, region
 
-    def output_regions(self, dna=None):
+    def iter_output_regions(self, dna=None):
         if dna is None:
             dna = self.dna
         for i in range(self._n_outputs):
@@ -247,8 +262,7 @@ class CGPGenome():
         only_silent_mutations = True
         while successful_mutations < n_mutations:
 
-            gene_idx = rng.randint(0, len(self))
-
+            gene_idx = rng.randint(0, self._n_genes)
             region_idx = gene_idx // self._length_per_region
 
             # TODO: parameters to control mutation rates of specific

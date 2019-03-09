@@ -55,7 +55,7 @@ class CGPPopulation(AbstractPopulation):
 
     def _mutate(self, offsprings):
 
-        n_mutations = int(self._mutation_rate * len(offsprings[0].genome))
+        n_mutations = int(self._mutation_rate * offsprings[0].genome._n_genes)
         assert n_mutations > 0
 
         for off in offsprings:
