@@ -42,11 +42,11 @@ class AbstractPopulation():
         return self._parents[idx]
 
     def generate_random_parent_population(self):
-        self._parents = self._generate_random_individuals(self._n_parents, self.rng)
+        self._parents = self._generate_random_individuals(self._n_parents)
         self._label_new_individuals(self._parents)
 
     def generate_random_offspring_population(self):
-        self._offsprings = self._generate_random_individuals(self._n_offsprings, self.rng)
+        self._offsprings = self._generate_random_individuals(self._n_offsprings)
         self._label_new_individuals(self._offsprings)
 
     def _label_new_individuals(self, individuals):
@@ -113,8 +113,8 @@ class AbstractPopulation():
             best_in_tournament = sorted(tournament_pool, key=lambda x: -x.fitness)[0]
             breeding_pool.append(best_in_tournament.clone())
 
-        offsprings = self._crossover(breeding_pool, self.rng)
-        offsprings = self._mutate(offsprings, self.rng)
+        offsprings = self._crossover(breeding_pool)
+        offsprings = self._mutate(offsprings)
 
         self._offsprings = offsprings
 
@@ -124,7 +124,7 @@ class AbstractPopulation():
     def champion(self):
         return sorted(self._parents, key=lambda x: -x.fitness)[0]
 
-    def _generate_random_individuals(self, n, rng):
+    def _generate_random_individuals(self, n):
         raise NotImplementedError()
 
     def _crossover(self, breeding_pool):
