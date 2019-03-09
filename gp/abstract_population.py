@@ -124,45 +124,6 @@ class AbstractPopulation():
     def champion(self):
         return sorted(self._parents, key=lambda x: -x.fitness)[0]
 
-    def evolve(self, objective, max_generations, min_fitness, *, label=None):
-
-        # generate initial parent population of size N
-        self.generate_random_parent_population()
-
-        # generate initial offspring population of size N
-        self.generate_random_offspring_population()
-
-        # perform evolution
-        history_fitness = np.empty((max_generations, self._n_parents))
-        history_dna_parents = np.empty((max_generations, self._n_parents, len(self._parents[0].genome.dna)))
-        for generation in range(max_generations):
-
-            # combine parent and offspring populations
-            self.create_combined_population()
-
-            #  compute fitness for all objectives for all individuals
-            self.compute_fitness(objective, label=label)
-
-            # sort population according to fitness & crowding distance
-            self.sort()
-
-            # fill new parent population according to sorting
-            self.create_new_parent_population()
-
-            # generate new offspring population from parent population
-            self.create_new_offspring_population()
-
-            # perform local search to tune values of constants
-            # TODO pop.local_search(objective)
-
-            history_fitness[generation] = self.fitness_parents()
-            history_dna_parents[generation] = self.dna_parents()
-
-            if np.mean(self.fitness_parents()) + 1e-10 >= min_fitness:
-                break
-
-        return history_fitness[:generation + 1], history_dna_parents[:generation + 1]
-
     def _generate_random_individuals(self, n, rng):
         raise NotImplementedError()
 

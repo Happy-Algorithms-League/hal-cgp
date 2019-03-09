@@ -4,3 +4,5 @@ from .cgp_primitives import CGPPrimitives
 from .cgp_node import CGPAdd, CGPSub, CGPMul, CGPDiv, CGPConstantFloat, CGPPow
 from .binary_population import BinaryPopulation, BinaryIndividual
 from .cgp_population import CGPPopulation, CGPIndividual
+
+from .hl_api import evolve
