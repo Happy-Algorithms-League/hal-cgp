@@ -259,7 +259,7 @@ class _C(torch.nn.Module):
         # comprehension due to scope; we hence first store the locals
         # of the function and use that in the list comprehension
         local_dict = locals()
-        return [local_dict['y_0'] for name in sympy_output_var_names]
+        return [local_dict[name] for name in sympy_output_var_names]
 
     def to_sympy(self):
         return self.compile_sympy_expression()
