@@ -29,8 +29,8 @@ def test_binary_population():
         if individual.fitness is not None:
             return individual
 
-        individual.fitness = np.sum(1 if individual.genome[i] == target_sequence[i] else 0
-                                    for i in range(len(target_sequence)))
+        individual.fitness = sum(1 if individual.genome[i] == target_sequence[i] else 0
+                                 for i in range(len(target_sequence)))
         return individual
 
     # create population object that will be evolved
