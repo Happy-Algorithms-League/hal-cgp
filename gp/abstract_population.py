@@ -1,5 +1,4 @@
 import concurrent.futures
-import functools
 import numpy as np
 
 from .individual import Individual
@@ -73,7 +72,7 @@ class AbstractPopulation():
     def compute_fitness(self, objective, *, label=None):
 
         if label is not None:
-            tmp_objective = functools.partial(objective, label=label)
+            tmp_objective = lambda x: objective(x, label=label)
         else:
             tmp_objective = objective
 
