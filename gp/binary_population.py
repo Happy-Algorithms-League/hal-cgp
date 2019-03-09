@@ -1,9 +1,10 @@
 import numpy as np
 
-from .abstract_population import AbstractPopulation, Individual
+from .abstract_population import AbstractPopulation
+from .abstract_individual import AbstractIndividual
 
 
-class BinaryIndividual(Individual):
+class BinaryIndividual(AbstractIndividual):
 
     def __init__(self, fitness, genome):
         super().__init__(fitness, genome)

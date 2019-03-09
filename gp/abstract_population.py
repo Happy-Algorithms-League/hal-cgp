@@ -1,8 +1,6 @@
 import concurrent.futures
 import numpy as np
 
-from .individual import Individual
-
 
 class AbstractPopulation():
     """

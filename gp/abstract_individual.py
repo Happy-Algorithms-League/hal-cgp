@@ -1,4 +1,10 @@
-class Individual():
+class AbstractIndividual():
+    """
+    Generic individual class for evolutionary algorithms. Provides container
+    for fitness and genome. Derived classes need to define how individuals
+    should be cloned.
+
+    """
 
     def __init__(self, fitness, genome):
         self.fitness = fitness
