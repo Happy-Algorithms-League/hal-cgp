@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def evolve(pop, objective, max_generations, min_fitness, *, label=None):
+def evolve(pop, objective, max_generations, min_fitness, record_history=False, *, label=None):
     """
     Evolves a population and returns the history of fitness of parents.
     """
@@ -12,9 +12,12 @@ def evolve(pop, objective, max_generations, min_fitness, *, label=None):
     # generate initial offspring population of size N
     pop.generate_random_offspring_population()
 
+    # data structure for recording evolution history
+    history = {}
+    if record_history:
+        history['fitness'] = np.empty((max_generations, pop._n_parents))
+
     # perform evolution
-    history_fitness = np.empty((max_generations, pop._n_parents))
-    history_dna_parents = np.empty((max_generations, pop._n_parents, len(pop._parents[0].genome.dna)))
     for generation in range(max_generations):
 
         # combine parent and offspring populations
@@ -32,10 +35,12 @@ def evolve(pop, objective, max_generations, min_fitness, *, label=None):
         # generate new offspring population from parent population
         pop.create_new_offspring_population()
 
-        history_fitness[generation] = pop.fitness_parents()
-        history_dna_parents[generation] = pop.dna_parents()
+        if record_history:
+            history['fitness'][generation] = pop.fitness_parents()
 
         if np.mean(pop.fitness_parents()) + 1e-10 >= min_fitness:
+            if record_history:
+                history['fitness'] = history['fitness'][:generation]
             break
 
-    return history_fitness[:generation + 1], history_dna_parents[:generation + 1]
+    return history

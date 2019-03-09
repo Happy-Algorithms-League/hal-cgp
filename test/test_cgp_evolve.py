@@ -63,7 +63,7 @@ def _test_cgp_population(n_threads):
     pop = gp.CGPPopulation(
         params['n_parents'], params['n_offsprings'], params['n_breeding'], params['tournament_size'], params['mutation_rate'], SEED, params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives, n_threads=n_threads)
 
-    history_fitness, _ = gp.evolve(pop, objective, params['max_generations'], params['min_fitness'])
+    gp.evolve(pop, objective, params['max_generations'], params['min_fitness'])
 
     assert abs(np.mean(pop.fitness_parents())) < 1e-10
 
