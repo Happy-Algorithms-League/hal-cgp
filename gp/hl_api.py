@@ -38,7 +38,7 @@ def evolve(pop, objective, max_generations, min_fitness, record_history=False, *
         if record_history:
             history['fitness'][generation] = pop.fitness_parents()
 
-        if np.mean(pop.fitness_parents()) + 1e-10 >= min_fitness:
+        if pop.champion.fitness + 1e-10 >= min_fitness:
             if record_history:
                 history['fitness'] = history['fitness'][:generation]
             break
