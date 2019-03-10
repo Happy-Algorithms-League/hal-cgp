@@ -11,9 +11,6 @@ class CGPNode():
         self._idx = idx
         self._inputs = inputs
 
-        self.sympy_var_name = None
-        self.sympy_expr = None
-
         assert(idx not in inputs)
 
     @property
@@ -92,9 +89,6 @@ class CGPNode():
     def format_parameter_str(self):
         raise NotImplementedError
 
-    def format_sympy_expression(self, graph):
-        raise NotImplementedError
-
     @property
     def output_str(self):
         return self._output_str
@@ -126,9 +120,6 @@ class CGPAdd(CGPNode):
     def format_output_str(self, graph):
         self._output_str = '({} + {})'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
 
-    def format_sympy_expression(self, graph):
-        self.sympy_expr = '({} + {})'.format(graph[self._inputs[0]].sympy_expr, graph[self._inputs[1]].sympy_expr)
-
 
 class CGPSub(CGPNode):
     _arity = 2
@@ -144,9 +135,6 @@ class CGPSub(CGPNode):
     def format_output_str(self, graph):
         self._output_str = '({} - {})'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
 
-    def format_sympy_expression(self, graph):
-        self.sympy_expr = '({} - {})'.format(graph[self._inputs[0]].sympy_expr, graph[self._inputs[1]].sympy_expr)
-
 
 class CGPMul(CGPNode):
     _arity = 2
@@ -161,9 +149,6 @@ class CGPMul(CGPNode):
 
     def format_output_str(self, graph):
         self._output_str = '({} * {})'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
-
-    def format_sympy_expression(self, graph):
-        self.sympy_expr = '({} * {})'.format(graph[self._inputs[0]].sympy_expr, graph[self._inputs[1]].sympy_expr)
 
 
 class CGPDiv(CGPNode):
@@ -181,9 +166,6 @@ class CGPDiv(CGPNode):
     def format_output_str(self, graph):
         self._output_str = '({inp0} / {inp1})'.format(
             inp0=graph[self._inputs[0]].output_str, inp1=graph[self._inputs[1]].output_str)
-
-    def format_sympy_expression(self, graph):
-        self.sympy_expr = '({} / {})'.format(graph[self._inputs[0]].sympy_expr, graph[self._inputs[1]].sympy_expr)
 
 
 class CGPConstantFloat(CGPNode):
@@ -209,9 +191,6 @@ class CGPConstantFloat(CGPNode):
     def format_parameter_str(self):
         self._parameter_str = 'self._p{} = torch.nn.Parameter(torch.Tensor([{}]))\n'.format(self._idx, self._output)
 
-    def format_sympy_expression(self, graph):
-        self.sympy_expr = '{}'.format(self._output)
-
 
 class CGPInputNode(CGPNode):
     _arity = 0
@@ -230,10 +209,6 @@ class CGPInputNode(CGPNode):
     def format_output_str_torch(self, graph):
         self._output_str = 'x[:, {}]'.format(self._idx)
 
-    def format_sympy_expression(self, graph):
-        self.sympy_var_name = 'x_{}'.format(self._idx)
-        self.sympy_expr = 'x_{}'.format(self._idx)
-
 
 class CGPOutputNode(CGPNode):
     _arity = 1
@@ -249,11 +224,6 @@ class CGPOutputNode(CGPNode):
     def format_output_str(self, graph):
         self._output_str = '{}'.format(graph[self._inputs[0]].output_str)
 
-    def format_sympy_expression(self, graph):
-        output_idx = self._idx - graph._n_inputs - graph._n_rows * graph._n_columns
-        self.sympy_var_name = 'y_{}'.format(output_idx)
-        self.sympy_expr = 'y_{} = {}'.format(output_idx, graph[self._inputs[0]].sympy_expr)
-
 
 class CGPPow(CGPNode):
     _arity = 2
@@ -268,6 +238,3 @@ class CGPPow(CGPNode):
 
     def format_output_str(self, graph):
         self._output_str = '({} ** {})'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
-
-    def format_sympy_expression(self, graph):
-        self.sympy_expr = '({} ** {})'.format(graph[self._inputs[0]].sympy_expr, graph[self._inputs[1]].sympy_expr)

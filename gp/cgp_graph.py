@@ -1,6 +1,5 @@
 import collections
 import sympy
-from sympy.core.evaluate import evaluate
 import torch
 
 from .cgp_node import CGPInputNode, CGPOutputNode
@@ -235,44 +234,30 @@ class _C(torch.nn.Module):
                 except AttributeError:
                     pass
 
-    def _format_sympy_expressions_of_active_nodes(self):
+    def compile_sympy_expr(self, simplify=False):
 
-        for node in self.input_nodes:
-            node.format_sympy_expression(self)
+        self._format_output_str_of_all_nodes()
 
-        active_nodes = self._determine_active_nodes()
-        for hidden_column_idx in sorted(active_nodes):
-            for node in active_nodes[hidden_column_idx]:
-                node.format_sympy_expression(self)
+        sympy_exprs = []
+        for output_node in self.output_nodes:
 
-    def compile_sympy_expression(self):
+            # replace all input-variable strings with sympy-compatible symbol
+            # strings (i.e., x[0] -> x_0)
+            s = output_node.output_str
+            for input_node in self.input_nodes:
+                s = s.replace(input_node.output_str, input_node.output_str.replace('[', '_').replace(']', ''))
 
-        self._format_sympy_expressions_of_active_nodes()
+            # to get an expression that reflects the computational graph,
+            # sympy should not automatically simplify the expression
+            with sympy.evaluate(False):
+                sympy_exprs.append(sympy.sympify(s))
 
-        sympy_expr = ''
-        # to get an expression that reflects the computational graph,
-        # sympy should not automatically simplify the expression; if a
-        # simplified expression is, run {expr}.simplify() on the output
-        sympy_expr += 'with evaluate(False):\n'
+            # simplify expression if desired
+            if simplify:
+                for i, expr in enumerate(sympy_exprs):
+                    sympy_exprs[i] = expr.simplify()
 
-        # register sympy symbol for inputs
-        for node in self.input_nodes:
-            sympy_expr += "    {name} = sympy.symbols('{name}')\n".format(name=node.sympy_var_name)
+        return sympy_exprs
 
-        # collect variable names for outputs
-        sympy_output_var_names = []
-        for node in self.output_nodes:
-            sympy_output_var_names.append(node.sympy_var_name)
-
-        # construct and execute sympy expression
-        sympy_expr += '    {}'.format('\n'.join(node.sympy_expr for node in self.output_nodes))
-        exec(sympy_expr)
-
-        # can not use the dict returned by locals() in list
-        # comprehension due to scope; we hence first store the locals
-        # of the function and use that in the list comprehension
-        local_dict = locals()
-        return [local_dict[name] for name in sympy_output_var_names]
-
-    def to_sympy(self):
-        return self.compile_sympy_expression()
+    def to_sympy(self, simplify=False):
+        return self.compile_sympy_expr(simplify)
