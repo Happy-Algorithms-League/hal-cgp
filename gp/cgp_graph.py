@@ -158,7 +158,13 @@ class CGPGraph():
     def __getitem__(self, key):
         return self._nodes[key]
 
-    def compile_func(self):
+    def to_str(self):
+
+        self._update_output_str_for_output_nodes()
+
+        return '[{}]'.format(', '.join(node.output_str for node in self.output_nodes))
+
+    def _update_output_str_for_output_nodes(self):
 
         for i, node in enumerate(self.input_nodes):
             node.format_output_str(self)
@@ -168,9 +174,16 @@ class CGPGraph():
             for node in active_nodes[hidden_column_idx]:
                 node.format_output_str(self)
 
+    def compile_func(self):
+
+        self._update_output_str_for_output_nodes()
+
         func_str = 'def _f(x): return [{}]'.format(', '.join(node.output_str for node in self.output_nodes))
         exec(func_str)
         return locals()['_f']
+
+    def to_func(self):
+        return self.compile_func()
 
     def compile_torch_class(self):
 
