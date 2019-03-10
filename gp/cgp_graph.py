@@ -160,11 +160,11 @@ class CGPGraph():
 
     def to_str(self):
 
-        self._update_output_str_for_output_nodes()
+        self._format_output_str_of_all_nodes()
 
         return '[{}]'.format(', '.join(node.output_str for node in self.output_nodes))
 
-    def _update_output_str_for_output_nodes(self):
+    def _format_output_str_of_all_nodes(self):
 
         for i, node in enumerate(self.input_nodes):
             node.format_output_str(self)
@@ -176,7 +176,7 @@ class CGPGraph():
 
     def compile_func(self):
 
-        self._update_output_str_for_output_nodes()
+        self._format_output_str_of_all_nodes()
 
         func_str = 'def _f(x): return [{}]'.format(', '.join(node.output_str for node in self.output_nodes))
         exec(func_str)
