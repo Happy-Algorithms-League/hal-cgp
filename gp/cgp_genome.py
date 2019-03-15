@@ -21,6 +21,8 @@ class CGPGenome():
             raise ValueError('n_outputs must be strictly positive')
         self._n_outputs = n_outputs
 
+        if levels_back is None:
+            levels_back = n_columns
         if levels_back == 0:
             raise ValueError('levels_back must be strictly positive')
         if levels_back > n_columns:
