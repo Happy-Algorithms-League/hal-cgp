@@ -252,12 +252,13 @@ class _C(torch.nn.Module):
             with sympy.evaluate(False):
                 sympy_exprs.append(sympy.sympify(s))
 
-            # simplify expression if desired
-            if simplify:
-                for i, expr in enumerate(sympy_exprs):
-                    sympy_exprs[i] = expr.simplify()
+        if not simplify:
+            return sympy_exprs
+        else:  # simplify expression if desired
+            for i, expr in enumerate(sympy_exprs):
+                sympy_exprs[i] = expr.simplify()
+            return sympy_exprs
 
-        return sympy_exprs
 
     def to_sympy(self, simplify=False):
         return self.compile_sympy_expr(simplify)
