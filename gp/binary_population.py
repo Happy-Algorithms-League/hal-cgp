@@ -1,16 +1,7 @@
 import numpy as np
 
 from .abstract_population import AbstractPopulation
-from .abstract_individual import AbstractIndividual
-
-
-class BinaryIndividual(AbstractIndividual):
-
-    def __init__(self, fitness, genome):
-        super().__init__(fitness, genome)
-
-    def clone(self):
-        return BinaryIndividual(self.fitness, self.genome)
+from .binary_individual import BinaryIndividual
 
 
 class BinaryPopulation(AbstractPopulation):
@@ -31,11 +22,8 @@ class BinaryPopulation(AbstractPopulation):
     def _crossover(self, breeding_pool):
         offsprings = []
         while len(offsprings) < self._n_offsprings:
-            # choose parents and perform crossover at random position in genome
-            parents = self.rng.permutation(breeding_pool)[:2]
-            split_pos = self.rng.randint(self._genome_length)
-            offsprings.append(
-                BinaryIndividual(None, parents[0].genome[:split_pos] + parents[1].genome[split_pos:]))
+            first_parent, second_parent = self.rng.permutation(breeding_pool)[:2]
+            offsprings.append(first_parent.crossover(second_parent, self.rng))
 
         return offsprings
 
@@ -45,10 +33,6 @@ class BinaryPopulation(AbstractPopulation):
         assert n_mutations > 0
 
         for off in offsprings:
-            for i in range(n_mutations):
-                # mutate random gene
-                genome = list(off.genome)
-                genome[self.rng.randint(self._genome_length)] = str(self.rng.randint(10))
-                off.genome = ''.join(genome)
+            off.mutate(n_mutations, self.rng)
 
         return offsprings
