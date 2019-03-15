@@ -65,7 +65,7 @@ def _test_cgp_population(n_threads):
 
     gp.evolve(pop, objective, params['max_generations'], params['min_fitness'])
 
-    assert abs(np.mean(pop.fitness_parents())) < 1e-10
+    assert abs(np.mean(pop.champion.fitness)) < 1e-10
 
     return np.mean(pop.fitness_parents())
 
