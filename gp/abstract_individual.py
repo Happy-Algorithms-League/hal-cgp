@@ -23,5 +23,5 @@ class AbstractIndividual():
     def mutate(self, n_mutations, rng):
         raise NotImplementedError()
 
-    def randomize_genome(self, rng):
+    def randomize_genome(self, genome_params, rng):
         raise NotImplementedError()

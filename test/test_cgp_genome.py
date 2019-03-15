@@ -141,7 +141,7 @@ def test_catch_no_non_coding_allele_in_non_coding_region():
     primitives = gp.CGPPrimitives([gp.CGPConstantFloat])
     genome = gp.CGPGenome(1, 1, 1, 1, 1, primitives)
 
-    # wrong: ConstantFloat node has no inputs, but input gene has
+    # should raise error: ConstantFloat node has no inputs, but input gene has
     # value different from the non-coding allele
     with pytest.raises(ValueError):
         genome.dna = [-1, None, 0, 0, -2, 1]
@@ -152,27 +152,26 @@ def test_catch_no_non_coding_allele_in_non_coding_region():
 
 def test_individuals_have_different_genomes():
 
-    params = {
-        # evo parameters
+    population_params = {
         'n_parents': 5,
         'n_offspring': 5,
         'generations': 50000,
         'n_breeding': 5,
         'tournament_size': 2,
         'mutation_rate': 0.05,
+    }
 
-        # cgp parameters
+    genome_params = {
         'n_inputs': 2,
         'n_outputs': 1,
         'n_columns': 6,
         'n_rows': 6,
         'levels_back': 2,
+        'primitives': gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat]),
     }
 
-    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat])
-
     pop = gp.CGPPopulation(
-        params['n_parents'], params['n_offspring'], params['n_breeding'], params['tournament_size'], params['mutation_rate'], SEED, params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+        population_params['n_parents'], population_params['n_offspring'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params)
 
     pop.generate_random_parent_population()
     pop.generate_random_offspring_population()

@@ -10,11 +10,14 @@ SEED = np.random.randint(2 ** 31)
 params = {
     'n_parents': 5,
     'n_offsprings': 5,
-    'genome_length': 10,
-    'generations': 100,
+    'generations': 500,
     'n_breeding': 5,
     'tournament_size': 6,
     'mutation_rate': 0.1,
+}
+
+genome_params = {
+    'genome_length': 10,
 }
 
 
@@ -22,7 +25,7 @@ def test_binary_population():
 
     np.random.seed(SEED + 123)
 
-    target_sequence = str(np.random.randint(10 ** params['genome_length'])).zfill(params['genome_length'])
+    target_sequence = str(np.random.randint(10 ** genome_params['genome_length'])).zfill(genome_params['genome_length'])
 
     def objective(individual):
 
@@ -36,7 +39,7 @@ def test_binary_population():
     # create population object that will be evolved
     pop = gp.BinaryPopulation(
         params['n_parents'], params['n_offsprings'], params['n_breeding'],
-        params['tournament_size'], params['mutation_rate'], SEED, params['genome_length'])
+        params['tournament_size'], params['mutation_rate'], SEED, genome_params)
 
     # generate initial parent population of size N
     pop.generate_random_parent_population()

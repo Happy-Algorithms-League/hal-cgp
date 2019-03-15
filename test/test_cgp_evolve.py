@@ -37,8 +37,7 @@ def objective(individual):
 
 def _test_cgp_population(n_threads):
 
-    params = {
-        # evo parameters
+    population_params = {
         'n_parents': 5,
         'n_offsprings': 5,
         'max_generations': 500,
@@ -46,24 +45,24 @@ def _test_cgp_population(n_threads):
         'tournament_size': 2,
         'mutation_rate': 0.05,
         'min_fitness': 1e-12,
+    }
 
-        # cgp parameters
+    genome_params = {
         'n_inputs': 2,
         'n_outputs': 1,
         'n_columns': 3,
         'n_rows': 3,
         'levels_back': 2,
+        'primitives': gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat])
     }
 
     np.random.seed(SEED)
     torch.manual_seed(SEED)
 
-    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat])
-
     pop = gp.CGPPopulation(
-        params['n_parents'], params['n_offsprings'], params['n_breeding'], params['tournament_size'], params['mutation_rate'], SEED, params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives, n_threads=n_threads)
+        population_params['n_parents'], population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params, n_threads=n_threads)
 
-    gp.evolve(pop, objective, params['max_generations'], params['min_fitness'])
+    gp.evolve(pop, objective, population_params['max_generations'], population_params['min_fitness'])
 
     assert abs(pop.champion.fitness) < 1e-10
 
@@ -85,8 +84,7 @@ def test_parallel_cgp_population():
 
 def test_cgp_pop_uses_own_rng():
 
-    params = {
-        # evo parameters
+    population_params = {
         'n_parents': 5,
         'n_offsprings': 5,
         'max_generations': 500,
@@ -94,19 +92,19 @@ def test_cgp_pop_uses_own_rng():
         'tournament_size': 2,
         'mutation_rate': 0.05,
         'min_fitness': 1e-12,
+    }
 
-        # cgp parameters
+    genome_params = {
         'n_inputs': 2,
         'n_outputs': 1,
         'n_columns': 3,
         'n_rows': 3,
         'levels_back': 2,
+        'primitives': gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat])
     }
 
-    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat])
-
     pop = gp.CGPPopulation(
-        params['n_parents'], params['n_offsprings'], params['n_breeding'], params['tournament_size'], params['mutation_rate'], SEED, params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+        population_params['n_parents'], population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params)
 
     # test for generating random parent population
     np.random.seed(SEED)

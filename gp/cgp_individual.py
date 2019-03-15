@@ -1,4 +1,5 @@
 from .abstract_individual import AbstractIndividual
+from .cgp_genome import CGPGenome
 from .cgp_graph import CGPGraph
 
 
@@ -18,6 +19,7 @@ class CGPIndividual(AbstractIndividual):
         if not only_silent_mutations:
             self.fitness = None
 
-    def randomize_genome(self, rng):
+    def randomize_genome(self, genome_params, rng):
+        self.genome = CGPGenome(**genome_params)
         self.genome.randomize(rng)
 
