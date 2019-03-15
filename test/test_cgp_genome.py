@@ -114,3 +114,92 @@ def test_region_iterators():
         assert(region == [-2, 0, None])
 
 
+def test_check_levels_back_consistency():
+    params = {
+        'n_inputs': 2,
+        'n_outputs': 1,
+        'n_columns': 4,
+        'n_rows': 3,
+        'levels_back': None,
+    }
+
+    primitives = gp.CGPPrimitives([gp.CGPAdd])
+
+    params['levels_back'] = 0
+    with pytest.raises(ValueError):
+        gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+
+    params['levels_back'] = params['n_columns'] + 1
+    with pytest.raises(ValueError):
+        gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+
+    params['levels_back'] = params['n_columns'] - 1
+    gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+
+
+def test_catch_no_non_coding_allele_in_non_coding_region():
+    primitives = gp.CGPPrimitives([gp.CGPConstantFloat])
+    genome = gp.CGPGenome(1, 1, 1, 1, 1, primitives)
+
+    # wrong: ConstantFloat node has no inputs, but input gene has
+    # value different from the non-coding allele
+    with pytest.raises(ValueError):
+        genome.dna = [-1, None, 0, 0, -2, 1]
+
+    # correct
+    genome.dna = [-1, None, 0, None, -2, 1]
+
+
+def test_individuals_have_different_genomes():
+
+    params = {
+        # evo parameters
+        'n_parents': 5,
+        'n_offspring': 5,
+        'generations': 50000,
+        'n_breeding': 5,
+        'tournament_size': 2,
+        'mutation_rate': 0.05,
+
+        # cgp parameters
+        'n_inputs': 2,
+        'n_outputs': 1,
+        'n_columns': 6,
+        'n_rows': 6,
+        'levels_back': 2,
+    }
+
+    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat])
+
+    pop = gp.CGPPopulation(
+        params['n_parents'], params['n_offspring'], params['n_breeding'], params['tournament_size'], params['mutation_rate'], SEED, params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+
+    pop.generate_random_parent_population()
+    pop.generate_random_offspring_population()
+
+    for i, ind in enumerate(pop):
+        ind.fitness = -i
+
+    pop.create_combined_population()
+
+    for i, ind in enumerate(pop._combined):
+        ind.fitness = -i
+
+    pop.sort()
+
+    pop.create_new_parent_population()
+    pop.create_new_offspring_population()
+
+    for i, parent_i in enumerate(pop._parents):
+
+        for j, parent_j in enumerate(pop._parents):
+            if i != j:
+                assert parent_i is not parent_j
+                assert parent_i.genome is not parent_j.genome
+                assert parent_i.genome.dna is not parent_j.genome.dna
+
+        for j, offspring_j in enumerate(pop._offsprings):
+            if i != j:
+                assert parent_i is not offspring_j
+                assert parent_i.genome is not offspring_j.genome
+                assert parent_i.genome.dna is not offspring_j.genome.dna

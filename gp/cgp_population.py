@@ -2,18 +2,10 @@ import numpy as np
 import torch
 
 from .abstract_population import AbstractPopulation
-from .abstract_individual import AbstractIndividual
 from .cgp_genome import CGPGenome
 from .cgp_graph import CGPGraph
+from .cgp_individual import CGPIndividual
 
-
-class CGPIndividual(AbstractIndividual):
-
-    def __init__(self, fitness, genome):
-        super().__init__(fitness, genome)
-
-    def clone(self):
-        return CGPIndividual(self.fitness, self.genome.clone())
 
 
 class CGPPopulation(AbstractPopulation):
