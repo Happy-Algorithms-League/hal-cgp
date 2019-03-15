@@ -3,6 +3,7 @@ import sympy
 import torch
 
 from .cgp_node import CGPInputNode, CGPOutputNode
+from .exceptions import InvalidSympyExpression
 
 
 class CGPGraph():
@@ -256,9 +257,17 @@ class _C(torch.nn.Module):
             return sympy_exprs
         else:  # simplify expression if desired
             for i, expr in enumerate(sympy_exprs):
-                sympy_exprs[i] = expr.simplify()
+                sympy_exprs[i] = self._validate_sympy_expr(expr.simplify())
             return sympy_exprs
-
 
     def to_sympy(self, simplify=False):
         return self.compile_sympy_expr(simplify)
+
+    def _validate_sympy_expr(self, expr):
+
+        if 'zoo' in str(expr) \
+           or 'nan' in str(expr):
+            raise InvalidSympyExpression()
+
+        return expr
+

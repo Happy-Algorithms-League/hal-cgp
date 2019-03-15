@@ -161,3 +161,14 @@ def test_compile_sympy_expr():
 
     for x in np.random.normal(size=100):
         assert abs(y_0_target.subs('x_0_target', x).evalf() - y_0.subs('x_0', x).evalf()) < 1e-12
+
+def test_catch_invalid_sympy_expr():
+    primitives = gp.CGPPrimitives([gp.CGPSub, gp.CGPDiv])
+    genome = gp.CGPGenome(1, 1, 2, 1, 1, primitives)
+
+    # x[0] / (x[0] - x[0])
+    genome.dna = [-1, None, None, 0, 0, 0, 1, 0, 1, -2, 2, None]
+    graph = gp.CGPGraph(genome)
+
+    with pytest.raises(gp.exceptions.InvalidSympyExpression):
+        graph.to_sympy(simplify=True)
