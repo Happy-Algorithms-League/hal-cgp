@@ -20,21 +20,3 @@ class BinaryPopulation(AbstractPopulation):
             individuals.append(individual)
 
         return individuals
-
-    def _crossover(self, breeding_pool):
-        offsprings = []
-        while len(offsprings) < self._n_offsprings:
-            first_parent, second_parent = self.rng.permutation(breeding_pool)[:2]
-            offsprings.append(first_parent.crossover(second_parent, self.rng))
-
-        return offsprings
-
-    def _mutate(self, offsprings):
-
-        n_mutations = int(self._mutation_rate * len(offsprings[0].genome))
-        assert n_mutations > 0
-
-        for off in offsprings:
-            off.mutate(n_mutations, self.rng)
-
-        return offsprings

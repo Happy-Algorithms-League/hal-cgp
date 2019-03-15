@@ -32,16 +32,6 @@ class CGPPopulation(AbstractPopulation):
             raise ValueError('size of breeding pool must be at least as large as the desired number of offsprings')
         return sorted(breeding_pool, key=lambda x: -x.fitness)[:self._n_offsprings]
 
-    def _mutate(self, offsprings):
-
-        n_mutations = int(self._mutation_rate * offsprings[0].genome._n_genes)
-        assert n_mutations > 0
-
-        for off in offsprings:
-            off.mutate(n_mutations, self.rng)
-
-        return offsprings
-
     # def local_search(self, objective):
 
     #     for off in self._offsprings:

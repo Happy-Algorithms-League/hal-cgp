@@ -11,7 +11,11 @@ class CGPIndividual(AbstractIndividual):
     def clone(self):
         return CGPIndividual(self.fitness, self.genome.clone())
 
-    def mutate(self, n_mutations, rng):
+    def mutate(self, mutation_rate, rng):
+
+        n_mutations = int(mutation_rate * len(self.genome.dna))
+        assert n_mutations > 0
+
         graph = CGPGraph(self.genome)
         active_regions = graph.determine_active_regions()
         only_silent_mutations = self.genome.mutate(n_mutations, active_regions, rng)

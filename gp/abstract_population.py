@@ -132,10 +132,17 @@ class AbstractPopulation():
         raise NotImplementedError()
 
     def _crossover(self, breeding_pool):
-        raise NotImplementedError()
+        offsprings = []
+        while len(offsprings) < self._n_offsprings:
+            first_parent, second_parent = self.rng.permutation(breeding_pool)[:2]
+            offsprings.append(first_parent.crossover(second_parent, self.rng))
+
+        return offsprings
 
     def _mutate(self, offsprings):
-        raise NotImplementedError()
+        for off in offsprings:
+            off.mutate(self._mutation_rate, self.rng)
+        return offsprings
 
     def fitness_parents(self):
         return [ind.fitness for ind in self._parents]

@@ -20,7 +20,7 @@ class AbstractIndividual():
     def crossover(self, other_parent, rng):
         raise NotImplementedError()
 
-    def mutate(self, n_mutations, rng):
+    def mutate(self, mutation_rate, rng):
         raise NotImplementedError()
 
     def randomize_genome(self, genome_params, rng):
