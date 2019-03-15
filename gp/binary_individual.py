@@ -20,3 +20,6 @@ class BinaryIndividual(AbstractIndividual):
             l_genome[rng.randint(len(self.genome))] = str(rng.randint(10))  # mutate random gene
             self.genome = ''.join(l_genome)
 
+    def randomize_genome(self, rng):
+        self.genome = str(rng.randint(10 ** len(self.genome))).zfill(len(self.genome))
+

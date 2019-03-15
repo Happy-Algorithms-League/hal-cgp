@@ -15,8 +15,10 @@ class BinaryPopulation(AbstractPopulation):
     def _generate_random_individuals(self, n):
         individuals = []
         for i in range(n):
-            individuals.append(
-                BinaryIndividual(None, str(self.rng.randint(10 ** self._genome_length)).zfill(self._genome_length)))
+            individual = BinaryIndividual(fitness=None, genome=[0] * self._genome_length)
+            individual.randomize_genome(self.rng)
+            individuals.append(individual)
+
         return individuals
 
     def _crossover(self, breeding_pool):

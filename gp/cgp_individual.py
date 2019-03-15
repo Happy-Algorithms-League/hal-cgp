@@ -18,3 +18,6 @@ class CGPIndividual(AbstractIndividual):
         if not only_silent_mutations:
             self.fitness = None
 
+    def randomize_genome(self, rng):
+        self.genome.randomize(rng)
+
