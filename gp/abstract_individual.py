@@ -2,7 +2,7 @@ class AbstractIndividual():
     """
     Generic individual class for evolutionary algorithms. Provides container
     for fitness and genome. Derived classes need to define how individuals
-    should be cloned.
+    should be cloned, crossovered and mutated.
 
     """
 
@@ -16,3 +16,9 @@ class AbstractIndividual():
 
     def clone(self):
         raise NotImplementedError()
+
+    def crossover(self, other_parent, rng):
+        raise NotImplementedError()
+
+    def mutate(self, n_mutations, rng):
+        raise NotImplementedError
