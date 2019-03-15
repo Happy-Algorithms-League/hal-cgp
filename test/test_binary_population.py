@@ -20,7 +20,7 @@ params = {
 
 def test_binary_population():
 
-    np.random.seed(SEED)
+    np.random.seed(SEED + 123)
 
     target_sequence = str(np.random.randint(10 ** params['genome_length'])).zfill(params['genome_length'])
 
@@ -45,7 +45,6 @@ def test_binary_population():
     pop.generate_random_offspring_population()
 
     # perform evolution
-    history_fitness = []
     for i in range(params['generations']):
 
         # combine parent and offspring populations
@@ -63,10 +62,7 @@ def test_binary_population():
         # generate new offspring population from parent population
         pop.create_new_offspring_population()
 
-        history_fitness.append(pop.fitness_parents())
+        if abs(pop.champion.fitness) < 1e-10:
+            break
 
-    for ind in pop._parents:
-        assert(target_sequence == ind.genome)
-
-    # plt.plot(np.mean(history_fitness, axis=1))
-    # plt.show()
+    assert target_sequence == pop.champion.genome, SEED
