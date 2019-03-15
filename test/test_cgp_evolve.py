@@ -149,3 +149,66 @@ def test_cgp_pop_uses_own_rng():
 
     for o_0, o_1 in zip(offsprings_0, offsprings_1):
         assert o_0.genome.dna != o_1.genome.dna
+
+
+def test_evolve_two_expressions():
+
+    def _objective(individual):
+
+        if individual.fitness is not None:
+            return individual
+
+        def f0(x):
+            return x[0] * (x[0] + x[0])
+
+        def f1(x):
+            return (x[0] * x[1]) - x[1]
+
+        y0 = gp.CGPGraph(individual.genome[0]).to_func()
+        y1 = gp.CGPGraph(individual.genome[1]).to_func()
+
+        loss = 0
+        for _ in range(100):
+
+            x0 = np.random.uniform(size=1)
+            x1 = np.random.uniform(size=2)
+
+            loss += (f0(x0) - y0(x0)) ** 2
+            loss += (f1(x1) - y1(x1)) ** 2
+
+        individual.fitness  = -loss
+
+        return individual
+
+
+    population_params = {
+        'n_parents': 5,
+        'n_offsprings': 5,
+        'max_generations': 1000,
+        'n_breeding': 5,
+        'tournament_size': 2,
+        'mutation_rate': 0.05,
+        'min_fitness': 1e-12,
+    }
+
+    genome_params = [
+        {'n_inputs': 1,
+         'n_outputs': 1,
+         'n_columns': 3,
+         'n_rows': 3,
+         'levels_back': 2,
+         'primitives': gp.CGPPrimitives([gp.CGPAdd, gp.CGPMul]),
+         },
+        {'n_inputs': 2,
+         'n_outputs': 1,
+         'n_columns': 2,
+         'n_rows': 2,
+         'levels_back': 2,
+         'primitives': gp.CGPPrimitives([gp.CGPSub, gp.CGPMul]),
+         }]
+
+    pop = gp.CGPPopulation(population_params['n_parents'], population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params)
+
+    gp.evolve(pop, _objective, population_params['max_generations'], population_params['min_fitness'])
+
+    assert abs(pop.champion.fitness) < 1e-10

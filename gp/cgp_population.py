@@ -4,8 +4,7 @@ import torch
 from .abstract_population import AbstractPopulation
 from .cgp_genome import CGPGenome
 from .cgp_graph import CGPGraph
-from .cgp_individual import CGPIndividual
-
+from .cgp_individual import CGPIndividual, CGPIndividualMultiGenome
 
 
 class CGPPopulation(AbstractPopulation):
@@ -19,7 +18,12 @@ class CGPPopulation(AbstractPopulation):
     def _generate_random_individuals(self, n):
         individuals = []
         for i in range(n):
-            individual = CGPIndividual(fitness=None, genome=None)
+            if isinstance(self._genome_params, dict):
+                individual = CGPIndividual(fitness=None, genome=None)
+            elif isinstance(self._genome_params, list) and isinstance(self._genome_params[0], dict):
+                individual = CGPIndividualMultiGenome(fitness=None, genome=None)
+            else:
+                raise NotImplementedError()
             individual.randomize_genome(self._genome_params, self.rng)
             individuals.append(individual)
 

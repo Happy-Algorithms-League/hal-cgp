@@ -11,19 +11,37 @@ class CGPIndividual(AbstractIndividual):
     def clone(self):
         return CGPIndividual(self.fitness, self.genome.clone())
 
-    def mutate(self, mutation_rate, rng):
+    def _mutate(self, genome, mutation_rate, rng):
 
-        n_mutations = int(mutation_rate * len(self.genome.dna))
+        n_mutations = int(mutation_rate * len(genome.dna))
         assert n_mutations > 0
 
-        graph = CGPGraph(self.genome)
+        graph = CGPGraph(genome)
         active_regions = graph.determine_active_regions()
-        only_silent_mutations = self.genome.mutate(n_mutations, active_regions, rng)
+        only_silent_mutations = genome.mutate(n_mutations, active_regions, rng)
 
         if not only_silent_mutations:
             self.fitness = None
+
+    def mutate(self, mutation_rate, rng):
+        self._mutate(self.genome, mutation_rate, rng)
 
     def randomize_genome(self, genome_params, rng):
         self.genome = CGPGenome(**genome_params)
         self.genome.randomize(rng)
 
+
+class CGPIndividualMultiGenome(CGPIndividual):
+
+    def clone(self):
+        return CGPIndividualMultiGenome(self.fitness, [g.clone() for g in self.genome])
+
+    def mutate(self, mutation_rate, rng):
+        for g in self.genome:
+            self._mutate(g, mutation_rate, rng)
+
+    def randomize_genome(self, genome_params, rng):
+        self.genome = []
+        for g_params in genome_params:
+            self.genome.append(CGPGenome(**g_params))
+            self.genome[-1].randomize(rng)
