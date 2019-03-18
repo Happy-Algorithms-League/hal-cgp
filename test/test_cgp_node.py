@@ -18,7 +18,7 @@ def test_add():
         'levels_back': 1,
     }
 
-    primitives = gp.CGPPrimitives([gp.CGPAdd])
+    primitives = [gp.CGPAdd]
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
     graph = gp.CGPGraph(genome)
@@ -38,7 +38,7 @@ def test_sub():
         'levels_back': 1,
     }
 
-    primitives = gp.CGPPrimitives([gp.CGPSub])
+    primitives = [gp.CGPSub]
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
     graph = gp.CGPGraph(genome)
@@ -58,7 +58,7 @@ def test_mul():
         'levels_back': 1,
     }
 
-    primitives = gp.CGPPrimitives([gp.CGPMul])
+    primitives = [gp.CGPMul]
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
     graph = gp.CGPGraph(genome)

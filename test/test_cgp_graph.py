@@ -21,7 +21,7 @@ def test_direct_input_output():
         'n_rows': 3,
         'levels_back': 2,
     }
-    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub])
+    primitives = [gp.CGPAdd, gp.CGPSub]
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
     genome.randomize(np.random)
 
@@ -35,7 +35,7 @@ def test_direct_input_output():
 
 
 def test_compile_simple():
-    primitives = gp.CGPPrimitives([gp.CGPAdd])
+    primitives = [gp.CGPAdd]
     genome = gp.CGPGenome(2, 1, 1, 1, 1, primitives)
 
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
@@ -47,7 +47,7 @@ def test_compile_simple():
 
     assert abs(x[0] + x[1] - y[0]) < 1e-15
 
-    primitives = gp.CGPPrimitives([gp.CGPSub])
+    primitives = [gp.CGPSub]
     genome = gp.CGPGenome(2, 1, 1, 1, 1, primitives)
 
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
@@ -61,7 +61,7 @@ def test_compile_simple():
 
 
 def test_compile_two_columns():
-    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub])
+    primitives = [gp.CGPAdd, gp.CGPSub]
     genome = gp.CGPGenome(2, 1, 2, 1, 1, primitives)
 
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, 1, 0, 2, -2, 3, None]
@@ -75,7 +75,7 @@ def test_compile_two_columns():
 
 
 def test_compile_two_columns_two_rows():
-    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub])
+    primitives = [gp.CGPAdd, gp.CGPSub]
     genome = gp.CGPGenome(2, 2, 2, 2, 1, primitives)
 
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, 1, 0, 1, 0, 0, 2, 0, 2, 3, -2, 4, None, -2, 5, None]
@@ -98,7 +98,7 @@ def test_compile_addsubmul():
         'levels_back': 1,
     }
 
-    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul])
+    primitives = [gp.CGPAdd, gp.CGPSub, gp.CGPMul]
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
     genome.dna = [
         -1, None, None, -1, None, None,
@@ -115,7 +115,7 @@ def test_compile_addsubmul():
 
 
 def test_compile_torch_and_backprop():
-    primitives = gp.CGPPrimitives([gp.CGPMul, gp.CGPConstantFloat])
+    primitives = [gp.CGPMul, gp.CGPConstantFloat]
     genome = gp.CGPGenome(1, 1, 2, 2, 1, primitives)
     genome.dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 3, None]
     graph = gp.CGPGraph(genome)
@@ -148,7 +148,7 @@ def test_compile_torch_and_backprop():
 
 
 def test_compile_sympy_expr():
-    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPConstantFloat])
+    primitives = [gp.CGPAdd, gp.CGPConstantFloat]
     genome = gp.CGPGenome(1, 1, 2, 2, 1, primitives)
 
     genome.dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 3, None]
@@ -163,7 +163,7 @@ def test_compile_sympy_expr():
         assert abs(y_0_target.subs('x_0_target', x).evalf() - y_0.subs('x_0', x).evalf()) < 1e-12
 
 def test_catch_invalid_sympy_expr():
-    primitives = gp.CGPPrimitives([gp.CGPSub, gp.CGPDiv])
+    primitives = [gp.CGPSub, gp.CGPDiv]
     genome = gp.CGPGenome(1, 1, 2, 1, 1, primitives)
 
     # x[0] / (x[0] - x[0])

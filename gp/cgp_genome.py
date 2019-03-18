@@ -1,5 +1,7 @@
 import numpy as np
 
+from .cgp_primitives import CGPPrimitives
+
 
 class CGPGenome():
 
@@ -29,8 +31,8 @@ class CGPGenome():
             raise ValueError('levels_back can not be larger than n_columns')
         self._levels_back = levels_back
 
-        self._primitives = primitives
-        self._length_per_region = 1 + primitives.max_arity  # one function gene + multiple input genes
+        self._primitives = CGPPrimitives(primitives)
+        self._length_per_region = 1 + self._primitives.max_arity  # one function gene + multiple input genes
 
         self._dna = None  # stores dna as list of alleles for all regions
 

@@ -4,13 +4,14 @@ import sys
 
 sys.path.insert(0, '../')
 import gp
+from gp.cgp_primitives import CGPPrimitives
 
 
 SEED = np.random.randint(2 ** 31)
 
 
 def test_immutable_primitives():
-    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub])
+    primitives = CGPPrimitives([gp.CGPAdd, gp.CGPSub])
     with pytest.raises(TypeError):
         primitives[0] = gp.CGPAdd
 
@@ -23,7 +24,7 @@ def test_immutable_primitives():
 
 def test_max_arity():
     plain_primitives = [gp.CGPAdd, gp.CGPSub, gp.CGPConstantFloat]
-    primitives = gp.CGPPrimitives(plain_primitives)
+    primitives = CGPPrimitives(plain_primitives)
 
     arity = 0
     for p in plain_primitives:

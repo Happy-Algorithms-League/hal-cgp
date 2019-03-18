@@ -16,7 +16,7 @@ SEED = np.random.randint(2 ** 31)
 
 def test_pickle_individual():
 
-    primitives = gp.CGPPrimitives([gp.CGPAdd])
+    primitives = [gp.CGPAdd]
     genome = gp.CGPGenome(1, 1, 1, 1, 1, primitives)
     individual = CGPIndividual(None, genome)
 

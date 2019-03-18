@@ -18,7 +18,7 @@ def test_check_dna_consistency():
         'levels_back': 1,
     }
 
-    primitives = gp.CGPPrimitives([gp.CGPAdd])
+    primitives = [gp.CGPAdd]
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 0, None]
 
@@ -64,7 +64,7 @@ def test_permissable_inputs():
         'levels_back': 2,
     }
 
-    primitives = gp.CGPPrimitives([gp.CGPAdd])
+    primitives = [gp.CGPAdd]
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
     genome.randomize(np.random)
 
@@ -100,7 +100,7 @@ def test_region_iterators():
         'levels_back': 1,
     }
 
-    primitives = gp.CGPPrimitives([gp.CGPAdd])
+    primitives = [gp.CGPAdd]
     genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 0, None]
 
@@ -123,7 +123,7 @@ def test_check_levels_back_consistency():
         'levels_back': None,
     }
 
-    primitives = gp.CGPPrimitives([gp.CGPAdd])
+    primitives = [gp.CGPAdd]
 
     params['levels_back'] = 0
     with pytest.raises(ValueError):
@@ -138,7 +138,7 @@ def test_check_levels_back_consistency():
 
 
 def test_catch_no_non_coding_allele_in_non_coding_region():
-    primitives = gp.CGPPrimitives([gp.CGPConstantFloat])
+    primitives = [gp.CGPConstantFloat]
     genome = gp.CGPGenome(1, 1, 1, 1, 1, primitives)
 
     # should raise error: ConstantFloat node has no inputs, but input gene has
@@ -167,7 +167,7 @@ def test_individuals_have_different_genomes():
         'n_columns': 6,
         'n_rows': 6,
         'levels_back': 2,
-        'primitives': gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat]),
+        'primitives': [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat],
     }
 
     pop = gp.CGPPopulation(

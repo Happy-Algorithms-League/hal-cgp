@@ -53,7 +53,7 @@ def _test_cgp_population(n_threads):
         'n_columns': 3,
         'n_rows': 3,
         'levels_back': 2,
-        'primitives': gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat])
+        'primitives': [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat]
     }
 
     np.random.seed(SEED)
@@ -100,7 +100,7 @@ def test_cgp_pop_uses_own_rng():
         'n_columns': 3,
         'n_rows': 3,
         'levels_back': 2,
-        'primitives': gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat])
+        'primitives': [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat]
     }
 
     pop = gp.CGPPopulation(
@@ -197,14 +197,14 @@ def test_evolve_two_expressions():
          'n_columns': 3,
          'n_rows': 3,
          'levels_back': 2,
-         'primitives': gp.CGPPrimitives([gp.CGPAdd, gp.CGPMul]),
+         'primitives': [gp.CGPAdd, gp.CGPMul],
          },
         {'n_inputs': 2,
          'n_outputs': 1,
          'n_columns': 2,
          'n_rows': 2,
          'levels_back': 2,
-         'primitives': gp.CGPPrimitives([gp.CGPSub, gp.CGPMul]),
+         'primitives': [gp.CGPSub, gp.CGPMul],
          }]
 
     pop = gp.CGPPopulation(population_params['n_parents'], population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params)
