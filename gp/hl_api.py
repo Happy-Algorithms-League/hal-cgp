@@ -49,7 +49,7 @@ def evolve(pop, objective, max_generations, min_fitness,
 
         if pop.champion.fitness + 1e-10 >= min_fitness:
             if record_history:
-                history['fitness'] = history['fitness'][:generation]
+                history['fitness'] = history['fitness'][:generation+1]
             break
 
     if print_progress:
