@@ -39,7 +39,7 @@ def evolve(pop, objective, max_generations, min_fitness,
             print(generation, max_fitness)
         if print_progress:
             print(f'\r[{generation + 1}/{max_generations}'
-                  '({pop.champion.idx})] max fitness: {max_fitness}\033[K', end='')
+                  f'({pop.champion.idx})] max fitness: {max_fitness}\033[K', end='')
 
         # generate new offspring population from parent population
         pop.create_new_offspring_population()
