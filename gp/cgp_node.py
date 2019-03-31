@@ -192,6 +192,16 @@ class CGPConstantFloat(CGPNode):
         self._parameter_str = 'self._p{} = torch.nn.Parameter(torch.Tensor([{}]))\n'.format(self._idx, self._output)
 
 
+def custom_cgp_constant_float(val):
+
+    class CustomCGPConstantFloat(CGPConstantFloat):
+        def __init__(self, idx, inputs):
+            super().__init__(idx, inputs)
+            self._output = val
+
+    return CustomCGPConstantFloat
+
+
 class CGPInputNode(CGPNode):
     _arity = 0
 
