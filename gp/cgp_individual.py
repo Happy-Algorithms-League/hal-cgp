@@ -30,6 +30,9 @@ class CGPIndividual(AbstractIndividual):
         self.genome = CGPGenome(**genome_params)
         self.genome.randomize(rng)
 
+    def to_func(self):
+        return CGPGraph(self.genome).to_func()
+
     def to_sympy(self, simplify=False):
         return CGPGraph(self.genome).to_sympy(simplify)
 
