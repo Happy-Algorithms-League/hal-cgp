@@ -1,0 +1,21 @@
+sudo: false
+language: python
+python:
+  - "3.7"
+branches:
+  only:
+    - master
+before_install:
+  - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b
+  - export PATH=$HOME/miniconda3/bin:$PATH
+  - conda create --yes -n myenv python=$TRAVIS_PYTHON_VERSION
+  - source activate myenv
+  - pip install --upgrade pip
+install:
+  - pip install --upgrade matplotlib numpy scipy sympy
+  - pip install https://download.pytorch.org/whl/cpu/torch-1.0.1.post2-cp37-cp37m-linux_x86_64.whl
+  - pip install torchvision
+script:
+- cd test && pytest
