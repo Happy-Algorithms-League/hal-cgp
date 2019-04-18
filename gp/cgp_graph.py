@@ -266,8 +266,7 @@ class _C(torch.nn.Module):
     def _validate_sympy_expr(self, expr):
 
         if 'zoo' in str(expr) \
-           or 'nan' in str(expr) \
-           or '0**' in str(expr):
+           or 'nan' in str(expr):
             raise InvalidSympyExpression(str(expr))
 
         return expr
