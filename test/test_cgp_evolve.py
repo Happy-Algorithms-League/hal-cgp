@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 import sys
 import torch
 import time
@@ -9,7 +10,7 @@ import gp
 SEED = np.random.randint(2 ** 31)
 
 
-def objective(individual):
+def objective_parallel_cgp_population(individual):
 
     if individual.fitness is not None:
         return individual
@@ -22,7 +23,6 @@ def objective(individual):
     f_graph = graph.compile_torch_class()
 
     def f_target(x):  # target function
-        # return 2.7182 + x[0] - x[1]
         return 1. + x[:, 0] - x[:, 1]
 
     x = torch.Tensor(n_function_evaluations, 2).normal_()
@@ -40,7 +40,7 @@ def _test_cgp_population(n_threads):
     population_params = {
         'n_parents': 5,
         'n_offsprings': 5,
-        'max_generations': 500,
+        'max_generations': 2000,
         'n_breeding': 5,
         'tournament_size': 2,
         'mutation_rate': 0.05,
@@ -62,7 +62,7 @@ def _test_cgp_population(n_threads):
     pop = gp.CGPPopulation(
         population_params['n_parents'], population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params, n_threads=n_threads)
 
-    gp.evolve(pop, objective, population_params['max_generations'], population_params['min_fitness'])
+    gp.evolve(pop, objective_parallel_cgp_population, population_params['max_generations'], population_params['min_fitness'])
 
     assert abs(pop.champion.fitness) < 1e-10
 
@@ -212,3 +212,57 @@ def test_evolve_two_expressions():
     gp.evolve(pop, _objective, population_params['max_generations'], population_params['min_fitness'])
 
     assert abs(pop.champion.fitness) < 1e-10
+
+
+def objective_speedup_parallel_evolve(individual):
+
+    time.sleep(0.1)
+
+    individual.fitness = np.random.rand()
+
+    return individual
+
+
+def test_speedup_parallel_evolve():
+
+    population_params = {
+        'n_parents': 4,
+        'n_offsprings': 4,
+        'max_generations': 2,
+        'n_breeding': 5,
+        'tournament_size': 2,
+        'mutation_rate': 0.05,
+        'min_fitness': 1.,
+    }
+
+    genome_params = {
+        'n_inputs': 2,
+        'n_outputs': 1,
+        'n_columns': 3,
+        'n_rows': 3,
+        'levels_back': 2,
+        'primitives': [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat]
+    }
+
+    np.random.seed(SEED)
+
+    pop_one_thread = gp.CGPPopulation(
+        population_params['n_parents'], population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params)
+
+    t0 = time.time()
+    gp.evolve(pop_one_thread, objective_speedup_parallel_evolve, population_params['max_generations'], population_params['min_fitness'])
+    assert time.time() - t0 == pytest.approx((population_params['n_parents'] + population_params['n_offsprings']) * population_params['max_generations'] * 0.1, rel=0.25)
+
+    pop_two_threads = gp.CGPPopulation(
+        population_params['n_parents'], population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params, n_threads=2)
+
+    t0 = time.time()
+    gp.evolve(pop_two_threads, objective_speedup_parallel_evolve, population_params['max_generations'], population_params['min_fitness'])
+    assert time.time() - t0 == pytest.approx((population_params['n_parents'] + population_params['n_offsprings']) * population_params['max_generations'] * 0.1 / 2., rel=0.25)
+
+    pop_4_threads = gp.CGPPopulation(
+        population_params['n_parents'], population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params, n_threads=4)
+
+    t0 = time.time()
+    gp.evolve(pop_4_threads, objective_speedup_parallel_evolve, population_params['max_generations'], population_params['min_fitness'])
+    assert time.time() - t0 == pytest.approx((population_params['n_parents'] + population_params['n_offsprings']) * population_params['max_generations'] * 0.1 / 4., rel=0.25)
