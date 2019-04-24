@@ -33,7 +33,7 @@ class CGPIndividual(AbstractIndividual):
     def to_func(self):
         return CGPGraph(self.genome).to_func()
 
-    def to_sympy(self, simplify=False):
+    def to_sympy(self, simplify=True):
         return CGPGraph(self.genome).to_sympy(simplify)
 
 
@@ -52,5 +52,5 @@ class CGPIndividualMultiGenome(CGPIndividual):
             self.genome.append(CGPGenome(**g_params))
             self.genome[-1].randomize(rng)
 
-    def to_sympy(self, simplify=False):
+    def to_sympy(self, simplify=True):
         return [CGPGraph(g).to_sympy(simplify) for g in self.genome]

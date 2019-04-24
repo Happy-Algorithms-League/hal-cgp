@@ -235,7 +235,7 @@ class _C(torch.nn.Module):
                 except AttributeError:
                     pass
 
-    def compile_sympy_expr(self, simplify=False):
+    def compile_sympy_expr(self, simplify=True):
 
         self._format_output_str_of_all_nodes()
 
@@ -260,7 +260,7 @@ class _C(torch.nn.Module):
                 sympy_exprs[i] = self._validate_sympy_expr(expr.simplify())
             return sympy_exprs
 
-    def to_sympy(self, simplify=False):
+    def to_sympy(self, simplify=True):
         return self.compile_sympy_expr(simplify)
 
     def _validate_sympy_expr(self, expr):
