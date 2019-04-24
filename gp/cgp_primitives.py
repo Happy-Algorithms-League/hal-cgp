@@ -8,9 +8,11 @@ class CGPPrimitives():
 
     def __init__(self, primitives):
 
-        for p in primitives:
-            if not isinstance(p, CGPNode):
-                raise TypeError(f'expected class CGPNode but received {type(p)}')
+        for i in range(len(primitives)):
+            if not isinstance(primitives[i], type):
+                raise TypeError(f'expected class but received {type(primitives[i])}')
+            if not issubclass(primitives[i], CGPNode):
+                raise TypeError(f'expected subclass of CGPNode but received {primitives[i].__name__}')
 
         self._n_primitives = len(primitives)
 

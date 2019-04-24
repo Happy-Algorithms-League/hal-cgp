@@ -32,3 +32,11 @@ def test_max_arity():
             arity = p._arity
 
     assert arity == primitives.max_arity
+
+
+def test_check_for_correct_class():
+    with pytest.raises(TypeError):
+        CGPPrimitives(['test'])
+
+    with pytest.raises(TypeError):
+        CGPPrimitives([str])
