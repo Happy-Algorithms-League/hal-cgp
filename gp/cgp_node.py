@@ -2,7 +2,7 @@ primitives_dict = {}  # maps string of class names to classes
 
 
 def register(cls):
-    name = cls(1, [0])._name[3:]  # cut of "CGP" prefix of class name
+    name = cls.__name__
     if name not in primitives_dict:
         primitives_dict[name] = cls
 
@@ -12,7 +12,6 @@ class CGPNode():
     _active = False
     _inputs = None
     _output = None
-    _name = None
     _idx = None
     _is_parameter = False
 
@@ -43,7 +42,7 @@ class CGPNode():
         return self._idx
 
     def __repr__(self):
-        return '{}(idx: {}, active: {}, arity: {}, inputs {}, output {})'.format(self._name, self._idx, self._active, self._arity, self._inputs, self._output)
+        return '{}(idx: {}, active: {}, arity: {}, inputs {}, output {})'.format(self.__class__.__name__, self._idx, self._active, self._arity, self._inputs, self._output)
 
     def pretty_str(self, n):
         used_characters = 0
@@ -125,8 +124,6 @@ class CGPAdd(CGPNode):
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
 
-        self._name = self.__class__.__name__
-
     def __call__(self, x, graph):
         self._output = graph[self._inputs[0]].output + graph[self._inputs[1]].output
 
@@ -139,8 +136,6 @@ class CGPSub(CGPNode):
 
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
-
-        self._name = self.__class__.__name__
 
     def __call__(self, x, graph):
         self._output = graph[self._inputs[0]].output - graph[self._inputs[1]].output
@@ -155,8 +150,6 @@ class CGPMul(CGPNode):
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
 
-        self._name = self.__class__.__name__
-
     def __call__(self, x, graph):
         self._output = graph[self._inputs[0]].output * graph[self._inputs[1]].output
 
@@ -169,8 +162,6 @@ class CGPDiv(CGPNode):
 
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
-
-        self._name = self.__class__.__name__
 
     def __call__(self, x, graph):
 
@@ -187,8 +178,6 @@ class CGPConstantFloat(CGPNode):
 
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
-
-        self._name = self.__class__.__name__
 
         self._output = 1.
 
@@ -228,8 +217,6 @@ class CGPInputNode(CGPNode):
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
 
-        self._name = self.__class__.__name__
-
     def __call__(self, x, graph):
         assert(False)
 
@@ -246,8 +233,6 @@ class CGPOutputNode(CGPNode):
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
 
-        self._name = self.__class__.__name__
-
     def __call__(self, x, graph):
         self._output = graph[self._inputs[0]].output
 
@@ -260,8 +245,6 @@ class CGPPow(CGPNode):
 
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
-
-        self._name = self.__class__.__name__
 
     def __call__(self, x, graph):
         self._output = graph[self._inputs[0]].output ** graph[self._inputs[1]].output

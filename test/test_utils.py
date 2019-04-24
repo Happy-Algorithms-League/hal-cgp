@@ -86,9 +86,15 @@ def test_history_recording():
 
 def test_primitives_from_class_names():
 
-    primitives_str = ['Add', 'Sub', 'Mul']
+    primitives_str = ['CGPAdd', 'CGPSub', 'CGPMul']
     primitives = gp.utils.primitives_from_class_names(primitives_str)
-
     assert issubclass(primitives[0], gp.CGPAdd)
     assert issubclass(primitives[1], gp.CGPSub)
     assert issubclass(primitives[2], gp.CGPMul)
+
+    # make sure custom classes are registered as well
+    class MyCustomCGPNodeClass(gp.cgp_node.CGPNode):
+        pass
+
+    primitives = gp.utils.primitives_from_class_names(['MyCustomCGPNodeClass'])
+    assert issubclass(primitives[0], MyCustomCGPNodeClass)
