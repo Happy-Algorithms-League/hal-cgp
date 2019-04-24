@@ -32,6 +32,7 @@ class AbstractPopulation():
         self._offsprings = None  # list of offspring individuals
         self._combined = None  # list of all individuals
 
+        self.generation = 0  # keeps track of the number of generations, increases with every new offspring generation
         self._max_idx = -1  # keeps track of maximal idx in population used to label individuals
 
         self.seed = seed
@@ -123,6 +124,8 @@ class AbstractPopulation():
 
         self._offsprings = offsprings
         self._label_new_individuals(self._offsprings)
+
+        self.generation += 1
 
     @property
     def champion(self):
