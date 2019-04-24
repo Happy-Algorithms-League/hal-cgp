@@ -1,3 +1,12 @@
+primitives_dict = {}  # maps string of class names to classes
+
+
+def register(cls):
+    name = cls(1, [0])._name[3:]  # cut of "CGP" prefix of class name
+    if name not in primitives_dict:
+        primitives_dict[name] = cls
+
+
 class CGPNode():
     _arity = None
     _active = False
@@ -12,6 +21,10 @@ class CGPNode():
         self._inputs = inputs
 
         assert(idx not in inputs)
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        register(cls)
 
     @property
     def arity(self):

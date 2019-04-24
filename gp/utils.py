@@ -3,6 +3,8 @@ import hashlib
 import os
 import pickle
 
+from .cgp_node import primitives_dict
+
 
 def disk_cache(fn):
     """
@@ -49,3 +51,12 @@ def disk_cache(fn):
         return wrapper
 
     return decorator
+
+
+def primitives_from_class_names(primitives_str):
+
+    primitives = []
+    for s in primitives_str:
+        primitives.append(primitives_dict[s])
+
+    return primitives

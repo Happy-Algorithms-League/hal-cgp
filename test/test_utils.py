@@ -82,3 +82,13 @@ def test_history_recording():
     assert np.all(history['fitness'] == pytest.approx(1.))
     assert np.all(history['fitness_champion'] == pytest.approx(1.))
     assert 'expr_champion' in history
+
+
+def test_primitives_from_class_names():
+
+    primitives_str = ['Add', 'Sub', 'Mul']
+    primitives = gp.utils.primitives_from_class_names(primitives_str)
+
+    assert issubclass(primitives[0], gp.CGPAdd)
+    assert issubclass(primitives[1], gp.CGPSub)
+    assert issubclass(primitives[2], gp.CGPMul)
