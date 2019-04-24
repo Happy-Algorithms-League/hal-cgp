@@ -1,3 +1,4 @@
+from .cgp_node import CGPNode
 
 
 class CGPPrimitives():
@@ -6,6 +7,11 @@ class CGPPrimitives():
     _primitives = None
 
     def __init__(self, primitives):
+
+        for p in primitives:
+            if not isinstance(p, CGPNode):
+                raise TypeError(f'expected class CGPNode but received {type(p)}')
+
         self._n_primitives = len(primitives)
 
         self._primitives = {}
