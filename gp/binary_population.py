@@ -1,7 +1,7 @@
 import numpy as np
 
 from .abstract_population import AbstractPopulation
-from .binary_individual import BinaryIndividual
+from .binary_individual import BinaryIndividual, BinaryGenome
 
 
 class BinaryPopulation(AbstractPopulation):
@@ -15,8 +15,9 @@ class BinaryPopulation(AbstractPopulation):
     def _generate_random_individuals(self, n):
         individuals = []
         for i in range(n):
-            individual = BinaryIndividual(fitness=None, genome=None, primitives = self._genome_params['primitives'])
-            individual.randomize_genome(self._genome_params, self.rng)
+            genome = BinaryGenome(self._genome_params['genome_length'], self._genome_params['primitives'])
+            individual = BinaryIndividual(fitness=None, genome=genome)
+            individual.randomize_genome(self.rng)
             individuals.append(individual)
 
         return individuals

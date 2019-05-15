@@ -1,31 +1,59 @@
 from .abstract_individual import AbstractIndividual
 
 
-class BinaryIndividual(AbstractIndividual):
+class BinaryGenome():
 
-    def __init__(self, fitness, genome, primitives):
-        super().__init__(fitness, genome)
+    def __init__(self, genome_length, primitives):
 
+        self.dna = None
+        self.genome_length = genome_length
         self.primitives = primitives
 
+    def __len__(self):
+        return self.genome_length
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(' + ''.join(str(d) for d in self.dna) + ')'
+
+    def __getitem__(self, key):
+        return self.dna[key]
+
     def clone(self):
-        return BinaryIndividual(self.fitness, self.genome, self.primitives)
+        new = BinaryGenome(self.genome_length, self.primitives)
+        new.dna = list(self.dna)
+        return new
+
+    def randomize(self, rng):
+        self.dna = list(rng.choice(
+            self.primitives,
+            size=self.genome_length))
+
+    def mutate(self, n_mutations, rng):
+        for i in range(n_mutations):
+            self.dna[rng.randint(self.genome_length)] = self.primitives[rng.randint(len(self.primitives))]  # mutate random gene
+
+
+class BinaryIndividual(AbstractIndividual):
+
+    def __init__(self, fitness, genome):
+        super().__init__(fitness, genome)
+
+    def clone(self):
+        return BinaryIndividual(self.fitness, self.genome.clone())
 
     def crossover(self, other_parent, rng):
         # perform crossover at random position in genome
         split_pos = rng.randint(len(self.genome))
-        return BinaryIndividual(None, self.genome[:split_pos] + other_parent.genome[split_pos:], self.primitives)
+        new_genome = self.genome.clone()
+        new_genome.dna = self.genome.dna[:split_pos] + other_parent.genome.dna[split_pos:]
+        return BinaryIndividual(None, new_genome)
 
     def mutate(self, mutation_rate, rng):
 
         n_mutations = int(mutation_rate * len(self.genome))
         assert n_mutations > 0
 
-        for i in range(n_mutations):
-            self.genome[rng.randint(len(self.genome))] = self.primitives[rng.randint(len(self.primitives))]  # mutate random gene
+        self.genome.mutate(n_mutations, rng)
 
-    def randomize_genome(self, genome_params, rng):
-        self.genome = list(rng.choice(
-            genome_params['primitives'],
-            size=genome_params['genome_length']))
-
+    def randomize_genome(self, rng):
+        self.genome.randomize(rng)

@@ -27,7 +27,7 @@ def test_binary_population():
 
     np.random.seed(SEED + 123)
 
-    target_sequence =     target_sequence = list(np.random.choice(
+    target_sequence = list(np.random.choice(
         genome_params['primitives'],
         size=genome_params['genome_length']))
 
@@ -72,4 +72,4 @@ def test_binary_population():
         if pop.champion.fitness > params['max_fitness']:
             break
 
-    assert target_sequence == pop.champion.genome, SEED
+    assert target_sequence == pop.champion.genome.dna, SEED
