@@ -15,7 +15,7 @@ class BinaryPopulation(AbstractPopulation):
     def _generate_random_individuals(self, n):
         individuals = []
         for i in range(n):
-            individual = BinaryIndividual(fitness=None, genome=None)
+            individual = BinaryIndividual(fitness=None, genome=None, primitives = self._genome_params['primitives'])
             individual.randomize_genome(self._genome_params, self.rng)
             individuals.append(individual)
 

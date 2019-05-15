@@ -14,10 +14,12 @@ params = {
     'n_breeding': 5,
     'tournament_size': 6,
     'mutation_rate': 0.1,
+    'max_fitness': -1e-8,
 }
 
 genome_params = {
     'genome_length': 10,
+    'primitives': list(range(10)),
 }
 
 
@@ -25,14 +27,16 @@ def test_binary_population():
 
     np.random.seed(SEED + 123)
 
-    target_sequence = str(np.random.randint(10 ** genome_params['genome_length'])).zfill(genome_params['genome_length'])
+    target_sequence =     target_sequence = list(np.random.choice(
+        genome_params['primitives'],
+        size=genome_params['genome_length']))
 
     def objective(individual):
 
         if individual.fitness is not None:
             return individual
 
-        individual.fitness = sum(1 if individual.genome[i] == target_sequence[i] else 0
+        individual.fitness = sum(0 if individual.genome[i] == target_sequence[i] else -1
                                  for i in range(len(target_sequence)))
         return individual
 
@@ -65,7 +69,7 @@ def test_binary_population():
         # generate new offspring population from parent population
         pop.create_new_offspring_population()
 
-        if abs(pop.champion.fitness) < 1e-10:
+        if pop.champion.fitness > params['max_fitness']:
             break
 
     assert target_sequence == pop.champion.genome, SEED
