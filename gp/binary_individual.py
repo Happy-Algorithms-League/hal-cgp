@@ -3,11 +3,12 @@ from .abstract_individual import AbstractIndividual
 
 class BinaryGenome():
 
-    def __init__(self, genome_length, primitives):
+    def __init__(self, genome_length, primitives, p_primitives=None):
 
         self.dna = None
         self.genome_length = genome_length
         self.primitives = primitives
+        self.p_primitives = p_primitives
 
     def __len__(self):
         return self.genome_length
@@ -19,7 +20,7 @@ class BinaryGenome():
         return self.dna[key]
 
     def clone(self):
-        new = BinaryGenome(self.genome_length, self.primitives)
+        new = BinaryGenome(self.genome_length, self.primitives, self.p_primitives)
         new.dna = list(self.dna)
         return new
 
@@ -30,7 +31,11 @@ class BinaryGenome():
 
     def mutate(self, n_mutations, rng):
         for i in range(n_mutations):
-            self.dna[rng.randint(self.genome_length)] = self.primitives[rng.randint(len(self.primitives))]  # mutate random gene
+            if self.p_primitives:
+                # mutate random gene according to distribution of primitives
+                self.dna[rng.randint(self.genome_length)] = rng.choice(self.primitives, p=self.p_primitives)
+            else:
+                self.dna[rng.randint(self.genome_length)] = rng.choice(self.primitives)  # mutate random gene
 
 
 class BinaryIndividual(AbstractIndividual):
