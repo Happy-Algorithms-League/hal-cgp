@@ -47,6 +47,8 @@ def evolve(pop, objective, max_generations, min_fitness,
             record_history(pop, history)
 
         if pop.champion.fitness + 1e-10 >= min_fitness:
+            for key in history:
+                history[key] = history[key][:generation + 1]
             break
 
         # generate new offspring population from parent population
