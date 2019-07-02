@@ -5,9 +5,6 @@ from .cgp_graph import CGPGraph
 
 class CGPIndividual(AbstractIndividual):
 
-    def __init__(self, fitness, genome):
-        super().__init__(fitness, genome)
-
     def clone(self):
         return CGPIndividual(self.fitness, self.genome.clone())
 
@@ -51,6 +48,9 @@ class CGPIndividualMultiGenome(CGPIndividual):
         for g_params in genome_params:
             self.genome.append(CGPGenome(**g_params))
             self.genome[-1].randomize(rng)
+
+    def to_func(self):
+        return [CGPGraph(g).to_func() for g in self.genome]
 
     def to_sympy(self, simplify=True):
         return [CGPGraph(g).to_sympy(simplify) for g in self.genome]

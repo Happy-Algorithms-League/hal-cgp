@@ -11,6 +11,10 @@ class CGPPopulation(AbstractPopulation):
 
     def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate, seed,
                  genome_params, *, n_threads=1):
+
+        if n_breeding < n_offsprings:
+            raise ValueError('size of breeding pool must be at least as large as the desired number of offsprings')
+
         super().__init__(n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate, seed, n_threads=n_threads)
 
         self._genome_params = genome_params
@@ -30,10 +34,9 @@ class CGPPopulation(AbstractPopulation):
         return individuals
 
     def _crossover(self, breeding_pool):
+        assert len(breeding_pool) >= self._n_offsprings
         # do not perform crossover for CGP, just choose the best
         # individuals from breeding pool
-        if len(breeding_pool) < self._n_offsprings:
-            raise ValueError('size of breeding pool must be at least as large as the desired number of offsprings')
         return sorted(breeding_pool, key=lambda x: -x.fitness)[:self._n_offsprings]
 
     # def local_search(self, objective):
