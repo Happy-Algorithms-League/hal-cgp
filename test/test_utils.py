@@ -57,10 +57,9 @@ def test_history_recording():
         'primitives': [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat]
     }
 
-    pop = gp.CGPPopulation(
-        population_params['n_parents'], population_params['n_offsprings'],
-        population_params['n_breeding'], population_params['tournament_size'],
-        population_params['mutation_rate'], SEED, genome_params)
+    pop = gp.CGPPopulation(population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
+    ea = gp.ea.MuPlusLambda(population_params['n_parents'], population_params['n_offsprings'],
+                            population_params['n_breeding'], population_params['tournament_size'],)
 
     def record_history(pop, history):
         if 'fitness' not in history:
@@ -76,8 +75,9 @@ def test_history_recording():
             history['expr_champion'] = []
         history['expr_champion'].append(str(pop.champion.to_sympy(simplify=True)[0]))
 
-    history = gp.evolve(pop, objective_history_recording, population_params['max_generations'],
+    history = gp.evolve(pop, objective_history_recording, ea, population_params['max_generations'],
                         population_params['min_fitness'], record_history=record_history)
+
 
     assert np.all(history['fitness'] == pytest.approx(1.))
     assert np.all(history['fitness_champion'] == pytest.approx(1.))

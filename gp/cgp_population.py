@@ -9,15 +9,11 @@ from .cgp_individual import CGPIndividual, CGPIndividualMultiGenome
 
 class CGPPopulation(AbstractPopulation):
 
-    def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate, seed,
-                 genome_params, *, n_threads=1):
-
-        if n_breeding < n_offsprings:
-            raise ValueError('size of breeding pool must be at least as large as the desired number of offsprings')
-
-        super().__init__(n_parents, n_offsprings, n_breeding, tournament_size, mutation_rate, seed, n_threads=n_threads)
+    def __init__(self, n_parents, mutation_rate, seed, genome_params):
 
         self._genome_params = genome_params
+
+        super().__init__(n_parents, mutation_rate, seed)
 
     def _generate_random_individuals(self, n):
         individuals = []
@@ -33,11 +29,11 @@ class CGPPopulation(AbstractPopulation):
 
         return individuals
 
-    def _crossover(self, breeding_pool):
-        assert len(breeding_pool) >= self._n_offsprings
+    def crossover(self, breeding_pool, n_offsprings):
+        assert len(breeding_pool) >= n_offsprings
         # do not perform crossover for CGP, just choose the best
         # individuals from breeding pool
-        return sorted(breeding_pool, key=lambda x: -x.fitness)[:self._n_offsprings]
+        return sorted(breeding_pool, key=lambda x: -x.fitness)[:n_offsprings]
 
     # def local_search(self, objective):
 

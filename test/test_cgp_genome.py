@@ -170,24 +170,18 @@ def test_individuals_have_different_genomes():
         'primitives': [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat],
     }
 
-    pop = gp.CGPPopulation(
-        population_params['n_parents'], population_params['n_offspring'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params)
+    def objective(ind):
+        ind.fitness = ind.idx
+        return ind
 
-    pop.generate_random_parent_population()
-    pop.generate_random_offspring_population()
+    pop = gp.CGPPopulation(population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
+    ea = gp.ea.MuPlusLambda(population_params['n_parents'], population_params['n_offspring'], population_params['n_breeding'], population_params['tournament_size'])
 
-    for i, ind in enumerate(pop):
-        ind.fitness = -i
+    pop._generate_random_parent_population()
 
-    pop.create_combined_population()
+    ea.initialize_fitness_parents(pop, objective)
 
-    for i, ind in enumerate(pop._combined):
-        ind.fitness = -i
-
-    pop.sort()
-
-    pop.create_new_parent_population()
-    pop.create_new_offspring_population()
+    ea.step(pop, objective)
 
     for i, parent_i in enumerate(pop._parents):
 
@@ -196,9 +190,3 @@ def test_individuals_have_different_genomes():
                 assert parent_i is not parent_j
                 assert parent_i.genome is not parent_j.genome
                 assert parent_i.genome.dna is not parent_j.genome.dna
-
-        for j, offspring_j in enumerate(pop._offsprings):
-            if i != j:
-                assert parent_i is not offspring_j
-                assert parent_i.genome is not offspring_j.genome
-                assert parent_i.genome.dna is not offspring_j.genome.dna
