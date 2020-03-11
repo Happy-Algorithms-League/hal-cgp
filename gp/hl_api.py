@@ -28,7 +28,7 @@ def evolve(pop, objective, ea, max_generations, min_fitness,
             max_fitness = pop.champion.fitness
 
         if print_progress:
-            print(f'\r[{generation + 1}/{max_generations}'
+            print(f'\r[{pop.generation + 1}/{max_generations}'
                   f'({pop.champion.idx})] max fitness: {max_fitness}\033[K', end='')
 
         if record_history is not None:
@@ -36,7 +36,7 @@ def evolve(pop, objective, ea, max_generations, min_fitness,
 
         if pop.champion.fitness + 1e-10 >= min_fitness:
             for key in history:
-                history[key] = history[key][:generation + 1]
+                history[key] = history[key][:pop.generation + 1]
             break
 
     if print_progress:
