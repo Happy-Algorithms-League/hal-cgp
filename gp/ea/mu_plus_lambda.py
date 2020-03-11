@@ -96,15 +96,20 @@ class MuPlusLambda():
         return combined
 
     def _sort(self, combined):
+        # create copy of population
+        combined_copy = [ind.clone() for ind in combined]
+
         # replace all nan by -inf to make sure they end up at the end
         # after sorting
-        for ind in combined:
+        for ind in combined_copy:
             if np.isnan(ind.fitness):
                 ind.fitness = -np.inf
 
-        combined = sorted(combined, key=lambda x: -x.fitness)
+        # get list of indices that sorts combined_copy ("argsort")
+        combined_sorted_indices = [idx for (idx, _) in sorted(enumerate(combined_copy), key=lambda x: -x[1].fitness)]
 
-        return combined
+        # return sorted original list of individuals
+        return [combined[idx] for idx in combined_sorted_indices]
 
     def _create_new_parent_population(self, combined):
 
