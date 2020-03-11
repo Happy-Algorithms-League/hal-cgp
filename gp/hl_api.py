@@ -16,7 +16,7 @@ def evolve(pop, objective, ea, max_generations, min_fitness,
         record_history(pop, history)
 
     # perform evolution
-    max_fitness = -1e15
+    max_fitness = np.finfo(np.float).min
     while pop.generation < max_generations - 1:  # -1 offset since the last loop iteration will still increase generation by one
 
         pop = ea.step(pop, objective, label=label)
