@@ -26,7 +26,7 @@ class AbstractPopulation():
 
     @property
     def champion(self):
-        return sorted(self._parents, key=lambda x: -x.fitness)[0]
+        return max(self._parents, key=lambda ind: ind.fitness)
 
     @property
     def parents(self):
