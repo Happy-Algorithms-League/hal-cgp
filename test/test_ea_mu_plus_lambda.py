@@ -23,7 +23,7 @@ def test_label():
         return individual
 
     pop = gp.BinaryPopulation(1, 0.5, SEED, {'genome_length': 2, 'primitives': [0, 1]})
-    ea = gp.ea.MuPlusLambda(1, 1, 2, 1)
+    ea = gp.ea.MuPlusLambda(1, 2, 1)
     ea.initialize_fitness_parents(pop, objective_without_label)
     ea.step(pop, objective_without_label)
     ea.step(pop, objective_with_label, label='test')
@@ -38,7 +38,7 @@ def test_fitness_contains_nan():
             individual.fitness = np.random.rand()
         return individual
 
-    pop = gp.BinaryPopulation(1, 0.5, SEED, {'genome_length': 2, 'primitives': [0, 1]})
-    ea = gp.ea.MuPlusLambda(5, 10, 10, 1)
+    pop = gp.BinaryPopulation(5, 0.5, SEED, {'genome_length': 2, 'primitives': [0, 1]})
+    ea = gp.ea.MuPlusLambda(10, 10, 1)
     ea.initialize_fitness_parents(pop, objective)
     ea.step(pop, objective)

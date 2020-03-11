@@ -58,7 +58,7 @@ def test_history_recording():
     }
 
     pop = gp.CGPPopulation(population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
-    ea = gp.ea.MuPlusLambda(population_params['n_parents'], population_params['n_offsprings'],
+    ea = gp.ea.MuPlusLambda(population_params['n_offsprings'],
                             population_params['n_breeding'], population_params['tournament_size'],)
 
     def record_history(pop, history):

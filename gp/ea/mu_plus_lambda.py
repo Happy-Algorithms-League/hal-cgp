@@ -18,8 +18,7 @@ import numpy as np
 
 class MuPlusLambda():
 
-    def __init__(self, n_parents, n_offsprings, n_breeding, tournament_size, *, n_processes=1):
-        self.n_parents = n_parents
+    def __init__(self, n_offsprings, n_breeding, tournament_size, *, n_processes=1):
         self.n_offsprings = n_offsprings
 
         if n_breeding < n_offsprings:
@@ -56,7 +55,7 @@ class MuPlusLambda():
         combined = self._sort(combined)
 
         # create new parent population
-        pop.parents = self._create_new_parent_population(combined)
+        pop.parents = self._create_new_parent_population(pop.n_parents, combined)
 
         return pop
 
@@ -111,12 +110,12 @@ class MuPlusLambda():
         # return sorted original list of individuals
         return [combined[idx] for idx in combined_sorted_indices]
 
-    def _create_new_parent_population(self, combined):
+    def _create_new_parent_population(self, n_parents, combined):
 
         # create new parent population by picking the `n_parents` individuals
         # with the highest fitness
         parents = []
-        for i in range(self.n_parents):
+        for i in range(n_parents):
             new_individual = combined[i].clone()
 
             # since this individual is genetically identical to its

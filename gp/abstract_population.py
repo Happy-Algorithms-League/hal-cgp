@@ -8,7 +8,7 @@ class AbstractPopulation():
 
     def __init__(self, n_parents, mutation_rate, seed):
 
-        self._n_parents = n_parents  # number of individuals in parent population
+        self.n_parents = n_parents  # number of individuals in parent population
 
         if not (0. < mutation_rate and mutation_rate < 1.):
             raise ValueError('mutation rate needs to be in (0, 1)')
@@ -41,7 +41,7 @@ class AbstractPopulation():
         return self._parents[idx]
 
     def _generate_random_parent_population(self):
-        self._parents = self._generate_random_individuals(self._n_parents)
+        self._parents = self._generate_random_individuals(self.n_parents)
         self._label_new_individuals(self._parents)
 
     def _label_new_individuals(self, individuals):
@@ -69,7 +69,7 @@ class AbstractPopulation():
         return [ind.fitness for ind in self._parents]
 
     def dna_parents(self):
-        dnas = np.empty((self._n_parents, self._parents[0].genome._n_genes))
-        for i in range(self._n_parents):
+        dnas = np.empty((self.n_parents, self._parents[0].genome._n_genes))
+        for i in range(self.n_parents):
             dnas[i] = self._parents[i].genome.dna
         return dnas

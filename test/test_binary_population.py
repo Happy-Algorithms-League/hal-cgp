@@ -57,7 +57,7 @@ def test_binary_population():
 
     # create population object that will be evolved
     pop = gp.BinaryPopulation(params['n_parents'], params['mutation_rate'], SEED, genome_params)
-    ea = gp.ea.MuPlusLambda(params['n_parents'], params['n_offsprings'], params['n_breeding'], params['tournament_size'])
+    ea = gp.ea.MuPlusLambda(params['n_offsprings'], params['n_breeding'], params['tournament_size'])
 
     gp.evolve(pop, objective, ea, params['max_generations'], params['min_fitness'])
 

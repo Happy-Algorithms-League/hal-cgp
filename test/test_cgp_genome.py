@@ -175,7 +175,7 @@ def test_individuals_have_different_genomes():
         return ind
 
     pop = gp.CGPPopulation(population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
-    ea = gp.ea.MuPlusLambda(population_params['n_parents'], population_params['n_offspring'], population_params['n_breeding'], population_params['tournament_size'])
+    ea = gp.ea.MuPlusLambda(population_params['n_offspring'], population_params['n_breeding'], population_params['tournament_size'])
 
     pop._generate_random_parent_population()
 
