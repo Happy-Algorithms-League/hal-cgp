@@ -116,6 +116,9 @@ class MuPlusLambda():
         # with the highest fitness
         parents = []
         for i in range(n_parents):
+            # note: unclear whether clone() is needed here; using
+            # clone() avoids accidentally sharing references across
+            # individuals, but might incur a performance penalty
             new_individual = combined[i].clone()
 
             # since this individual is genetically identical to its
