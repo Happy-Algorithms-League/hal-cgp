@@ -9,3 +9,4 @@ from .exceptions import InvalidSympyExpression
 from .hl_api import evolve
 
 import gp.utils
+import gp.ea

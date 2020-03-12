@@ -35,7 +35,7 @@ def objective_parallel_cgp_population(individual):
     return individual
 
 
-def _test_cgp_population(n_threads):
+def _test_cgp_population(n_processes):
 
     population_params = {
         'n_parents': 5,
@@ -60,9 +60,11 @@ def _test_cgp_population(n_threads):
     torch.manual_seed(SEED)
 
     pop = gp.CGPPopulation(
-        population_params['n_parents'], population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params, n_threads=n_threads)
+        population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
+    ea = gp.ea.MuPlusLambda(population_params['n_offsprings'], population_params['n_breeding'],
+                            population_params['tournament_size'], n_processes=n_processes)
 
-    gp.evolve(pop, objective_parallel_cgp_population, population_params['max_generations'], population_params['min_fitness'])
+    gp.evolve(pop, objective_parallel_cgp_population, ea, population_params['max_generations'], population_params['min_fitness'])
 
     assert abs(pop.champion.fitness) < 1e-10
 
@@ -71,15 +73,15 @@ def _test_cgp_population(n_threads):
 
 def test_parallel_cgp_population():
 
-    time_per_n_threads = []
-    fitness_per_n_threads = []
-    for n_threads in [1, 2, 4]:
+    time_per_n_processes = []
+    fitness_per_n_processes = []
+    for n_processes in [1, 2, 4]:
         t1 = time.time()
-        fitness_per_n_threads.append(_test_cgp_population(n_threads))
-        time_per_n_threads.append(time.time() - t1)
+        fitness_per_n_processes.append(_test_cgp_population(n_processes))
+        time_per_n_processes.append(time.time() - t1)
 
-    assert abs(fitness_per_n_threads[0] - fitness_per_n_threads[1]) < 1e-10
-    assert abs(fitness_per_n_threads[0] - fitness_per_n_threads[2]) < 1e-10
+    assert abs(fitness_per_n_processes[0] - fitness_per_n_processes[1]) < 1e-10
+    assert abs(fitness_per_n_processes[0] - fitness_per_n_processes[2]) < 1e-10
 
 
 def test_cgp_pop_uses_own_rng():
@@ -103,52 +105,22 @@ def test_cgp_pop_uses_own_rng():
         'primitives': [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat]
     }
 
-    pop = gp.CGPPopulation(
-        population_params['n_parents'], population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params)
+    pop = gp.CGPPopulation(population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
+    ea = gp.ea.MuPlusLambda(population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'])
 
     # test for generating random parent population
     np.random.seed(SEED)
 
-    pop.generate_random_parent_population()
+    pop._generate_random_parent_population()
     parents_0 = list(pop._parents)
 
     np.random.seed(SEED)
 
-    pop.generate_random_parent_population()
+    pop._generate_random_parent_population()
     parents_1 = list(pop._parents)
 
     for p_0, p_1 in zip(parents_0, parents_1):
         assert p_0.genome.dna != p_1.genome.dna
-
-    # test for generating random offspring population
-    np.random.seed(SEED)
-
-    pop.generate_random_offspring_population()
-    offsprings_0 = list(pop._offsprings)
-
-    np.random.seed(SEED)
-
-    pop.generate_random_offspring_population()
-    offsprings_1 = list(pop._offsprings)
-
-    for o_0, o_1 in zip(offsprings_0, offsprings_1):
-        assert o_0.genome.dna != o_1.genome.dna
-
-    # test for generating new offspring population
-    for i, p in enumerate(pop._parents):  # dummy fitness
-        p.fitness = i
-    np.random.seed(SEED)
-
-    pop.create_new_offspring_population()
-    offsprings_0 = list(pop._offsprings)
-
-    np.random.seed(SEED)
-
-    pop.create_new_offspring_population()
-    offsprings_1 = list(pop._offsprings)
-
-    for o_0, o_1 in zip(offsprings_0, offsprings_1):
-        assert o_0.genome.dna != o_1.genome.dna
 
 
 def test_evolve_two_expressions():
@@ -207,9 +179,10 @@ def test_evolve_two_expressions():
          'primitives': [gp.CGPSub, gp.CGPMul],
          }]
 
-    pop = gp.CGPPopulation(population_params['n_parents'], population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params)
+    pop = gp.CGPPopulation(population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
+    ea = gp.ea.MuPlusLambda(population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'])
 
-    gp.evolve(pop, _objective, population_params['max_generations'], population_params['min_fitness'])
+    gp.evolve(pop, _objective, ea, population_params['max_generations'], population_params['min_fitness'])
 
     assert abs(pop.champion.fitness) < 1e-10
 
@@ -246,23 +219,23 @@ def test_speedup_parallel_evolve():
 
     np.random.seed(SEED)
 
-    pop_one_thread = gp.CGPPopulation(
-        population_params['n_parents'], population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params)
+    pop_one_thread = gp.CGPPopulation(population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
+    ea = gp.ea.MuPlusLambda(population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'])
 
     t0 = time.time()
-    gp.evolve(pop_one_thread, objective_speedup_parallel_evolve, population_params['max_generations'], population_params['min_fitness'])
+    gp.evolve(pop_one_thread, objective_speedup_parallel_evolve, ea, population_params['max_generations'], population_params['min_fitness'])
     assert time.time() - t0 == pytest.approx((population_params['n_parents'] + population_params['n_offsprings']) * population_params['max_generations'] * 0.1, rel=0.25)
 
-    pop_two_threads = gp.CGPPopulation(
-        population_params['n_parents'], population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params, n_threads=2)
+    pop_two_threads = gp.CGPPopulation(population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
+    ea = gp.ea.MuPlusLambda(population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], n_processes=2)
 
     t0 = time.time()
-    gp.evolve(pop_two_threads, objective_speedup_parallel_evolve, population_params['max_generations'], population_params['min_fitness'])
+    gp.evolve(pop_two_threads, objective_speedup_parallel_evolve, ea, population_params['max_generations'], population_params['min_fitness'])
     assert time.time() - t0 == pytest.approx((population_params['n_parents'] + population_params['n_offsprings']) * population_params['max_generations'] * 0.1 / 2., rel=0.25)
 
-    pop_4_threads = gp.CGPPopulation(
-        population_params['n_parents'], population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], population_params['mutation_rate'], SEED, genome_params, n_threads=4)
+    pop_4_threads = gp.CGPPopulation(population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
+    ea = gp.ea.MuPlusLambda(population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], n_processes=4)
 
     t0 = time.time()
-    gp.evolve(pop_4_threads, objective_speedup_parallel_evolve, population_params['max_generations'], population_params['min_fitness'])
+    gp.evolve(pop_4_threads, objective_speedup_parallel_evolve, ea, population_params['max_generations'], population_params['min_fitness'])
     assert time.time() - t0 == pytest.approx((population_params['n_parents'] + population_params['n_offsprings']) * population_params['max_generations'] * 0.1 / 4., rel=0.25)
