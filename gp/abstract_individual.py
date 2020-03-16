@@ -10,7 +10,7 @@ class AbstractIndividual():
         """Init function.
 
         fitness : float
-            Fitness value of the individual.
+            Fitness of the individual.
         genome: gp.CGPGenome
             Genome of the invididual.
         """

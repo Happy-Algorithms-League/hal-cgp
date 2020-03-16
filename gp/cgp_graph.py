@@ -210,7 +210,8 @@ class CGPGraph():
         return locals()['_f']
 
     def to_torch(self):
-        """
+        """Compile the function represented by the computational graph to a Torch class.
+
         Generates a definition of the Torch class in Python code and
         executes it to create an instance of the class.
 
@@ -257,7 +258,9 @@ class _C(torch.nn.Module):
         return locals()['_c']
 
     def update_parameters_from_torch_class(self, torch_cls):
-        """Update output nodes of graph nodes from a given Torch instance.
+        """Update values stored in constant nodes of graph from parameters of a given Torch instance.
+        
+        Can be used to import new values from a Torch class after a autograd step.
         
         Parameters
         ----------
@@ -319,4 +322,3 @@ class _C(torch.nn.Module):
             raise InvalidSympyExpression(str(expr))
 
         return expr
-

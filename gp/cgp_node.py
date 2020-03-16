@@ -2,7 +2,7 @@ primitives_dict = {}  # maps string of class names to classes
 
 
 def register(cls):
-    """Register a primitive in the global dictionary of primities
+    """Register a primitive in the global dictionary of primitives
 
     Parameters
     ----------
@@ -19,7 +19,7 @@ def register(cls):
 
 
 class CGPNode():
-    """Base class for primitives within the Cartesian Genetic Programming framework.
+    """Base class for primitive functions used in Cartesian computational graphs.
     """
     _arity = None
     _active = False

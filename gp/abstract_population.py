@@ -37,7 +37,7 @@ class AbstractPopulation():
 
     @property
     def champion(self):
-        """Parent with the highest fitness.
+        """Returns parent with the highest fitness.
         """
         return max(self._parents, key=lambda ind: ind.fitness)
 
@@ -106,7 +106,7 @@ class AbstractPopulation():
         return offsprings
 
     def fitness_parents(self):
-        """Compute fitness for all parents of the population.
+        """Returns fitness for all parents of the population.
 
         Returns
         ----------

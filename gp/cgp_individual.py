@@ -4,7 +4,7 @@ from .cgp_graph import CGPGraph
 
 
 class CGPIndividual(AbstractIndividual):
-    """Individual of the Cartesian Genetic Programming framework.
+    """Individual representing a particular Cartesian computational graph.
 
     Derived from gp.AbstractIndividual.
     """

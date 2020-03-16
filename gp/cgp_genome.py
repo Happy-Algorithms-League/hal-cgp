@@ -20,7 +20,7 @@ class CGPGenome():
         n_rows : int
             Number of rows in the representation of the genome.
         levels_back : int
-            Number of columns back that an entry in the genome can be
+            Number of previous columns that an entry in the genome can be
             connected with.
         primitives : List[gp.CPGNode]
            List of primitives that the genome can refer to.
@@ -294,13 +294,13 @@ class CGPGenome():
         n_mutations : int
             Number of entries in the genome to be mutated.
         active_regions: List[int]
-            Regions in the genome that are available for mutation.
+            Regions in the genome that are currently used in the computational graph. Used to check whether mutations are silent or require reevaluation of fitness.
         rng : numpy.RandomState
             Random number generator instance to use for crossover.
 
         Returns
         ----------
-        None
+        True if only inactive regions of the genome were mutated, False otherwise.
         """
         assert isinstance(n_mutations, int) and 0 < n_mutations
 
