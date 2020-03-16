@@ -34,34 +34,3 @@ class CGPPopulation(AbstractPopulation):
         # do not perform crossover for CGP, just choose the best
         # individuals from breeding pool
         return sorted(breeding_pool, key=lambda x: -x.fitness)[:n_offsprings]
-
-    # def local_search(self, objective):
-
-    #     for off in self._offsprings:
-
-    #         graph = CGPGraph(off.genome)
-    #         f = graph.compile_torch_class()
-
-    #         if len(list(f.parameters())) > 0:
-    #             optimizer = torch.optim.SGD(f.parameters(), lr=1e-1)
-    #             criterion = torch.nn.MSELoss()
-
-    #         history_loss_trial = []
-    #         history_loss_bp = []
-    #         for j in range(100):
-    #             x = torch.Tensor(2).normal_()
-    #             y = f(x)
-    #             loss = objective()
-    #             history_loss_trial.append(loss.detach().numpy())
-
-    #             if len(list(f.parameters())) > 0:
-    #                 y_target = 2.7182 + x[0] - x[1]
-
-    #                 loss = criterion(y[0], y_target)
-    #                 f.zero_grad()
-    #                 loss.backward()
-    #                 optimizer.step()
-
-    #                 history_loss_bp.append(loss.detach().numpy())
-
-    #         graph.update_parameter_values(f)

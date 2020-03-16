@@ -1,24 +1,33 @@
-""" Generic (mu + lambda) evolution strategy based on Deb et al. (2002).
-
-    Population class needs to implement functions to
-    - generate random individuals
-    - perform crossover
-    - perform mutations
-    - [perform local search]
-
-    Currently only uses a single objective.
-
-    Deb, K., Pratap, A., Agarwal, S., & Meyarivan, T. A. M. T. (2002). A fast and elitist multiobjective genetic algorithm: NSGA-II.
-    IEEE transactions on evolutionary computation, 6(2), 182-197.
-"""
-
 import concurrent.futures
 import numpy as np
 
 
 class MuPlusLambda():
+    """Generic (mu + lambda) evolution strategy based on Deb et al. (2002).
+
+    Currently only uses a single objective.
+
+    Deb, K., Pratap, A., Agarwal, S., & Meyarivan, T. A. M. T. (2002).
+    A fast and elitist multiobjective genetic algorithm: NSGA-II. IEEE
+    transactions on evolutionary computation, 6(2), 182-197.
+    """
 
     def __init__(self, n_offsprings, n_breeding, tournament_size, *, n_processes=1):
+        """Init function
+
+        Parameters
+        ----------
+        n_offsprings : int
+            Number of offspring in each iteration.
+        n_breeding : int
+            Number of parents to use for breeding in each iteration.
+        tournament_size : int
+            Tournament size in each iteration.
+        n_processes : int, optional
+            Number of parallel processes to be used. If greater than 1,
+            parallel evaluation of the objective is supported. Currently
+            not implemented. Defaults to 1.
+        """
         self.n_offsprings = n_offsprings
 
         if n_breeding < n_offsprings:
@@ -29,11 +38,43 @@ class MuPlusLambda():
         self.n_processes = n_processes
 
     def initialize_fitness_parents(self, pop, objective, *, label=None):
+        """Initialize the fitness of all parents in the given population.
+
+        Parameters
+        ----------
+        pop : gp.AbstractPopulation
+            Population instance.
+        objective : Callable
+            An objective function used for the evolution. Needs to take an
+            invidual (gp.AbstractIndividual) as input parameter and return
+            a modified individual (with updated fitness).
+        label : str, optional
+            Optional label to be passed to the objective function.
+
+        """
         # TODO can we avoid this function? how should a population be
         # initialized?
         pop._parents = self._compute_fitness(pop, objective, label=label)
 
     def step(self, pop, objective, *, label=None):
+        """Perform one step in the evolution.
+
+        Parameters
+        ----------
+        pop : gp.AbstractPopulation
+            Population instance.
+        objective : Callable
+            An objective function used for the evolution. Needs to take an
+            invidual (gp.AbstractIndividual) as input parameter and return
+            a modified individual (with updated fitness).
+        label : str, optional
+            Optional label to be passed to the objective function.
+
+        Returns
+        ----------
+        pop : gp.AbstractPopulation
+            Modified population with new parents.
+        """
         # create new offspring generation
         offsprings = self._create_new_offspring_generation(pop)
 
@@ -111,7 +152,6 @@ class MuPlusLambda():
         return [combined[idx] for idx in combined_sorted_indices]
 
     def _create_new_parent_population(self, n_parents, combined):
-
         # create new parent population by picking the `n_parents` individuals
         # with the highest fitness
         parents = []

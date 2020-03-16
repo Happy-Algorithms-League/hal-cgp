@@ -7,7 +7,8 @@ from .cgp_node import primitives_dict
 
 
 def disk_cache(fn):
-    """
+    """Cache function return values on disk.
+
     Decorator that caches a functions return values on disk. Next time the
     decorated function is called with the same arguments it returns the stored
     values from disk instead of executing the function.
@@ -15,6 +16,10 @@ def disk_cache(fn):
     Warning: this implementation is neither optimized for speed nor storage
     space and does not limit the size of the cache file.
 
+    Parameters
+    ----------
+    fn : Callable
+        Function to be cached.
     """
 
     def decorator(func):

@@ -2,12 +2,20 @@ from .cgp_node import CGPNode
 
 
 class CGPPrimitives():
+    """Class collecting primitives of the Cartesian Genetic Programming framework.
+    """
     _n_primitives = 0
     _max_arity = 0
     _primitives = None
 
     def __init__(self, primitives):
-
+        """Init function.
+        
+        Parameters
+        ----------
+        primitives : List[gp.CPGNode]
+            List of primitives.
+        """
         for i in range(len(primitives)):
             if not isinstance(primitives[i], type):
                 raise TypeError(f'expected class but received {type(primitives[i])}')
@@ -39,6 +47,17 @@ class CGPPrimitives():
         self._max_arity = arity
 
     def sample(self, rng):
+        """Sample a random primitive.
+
+        Parameters
+        ----------
+        rng : numpy.RandomState
+            Random number generator instance to use for crossover.
+
+        Returns
+        -------
+        List[Tuple(str, gp.CPGNode)]
+        """
         return rng.choice(self.alleles)
 
     def __getitem__(self, key):
