@@ -24,7 +24,6 @@ class CGPIndividual(AbstractIndividual):
             self.fitness = None
 
     def mutate(self, mutation_rate, rng):
-        
         self._mutate(self.genome, mutation_rate, rng)
 
     def randomize_genome(self, genome_params, rng):

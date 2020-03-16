@@ -10,7 +10,23 @@ from .cgp_individual import CGPIndividual, CGPIndividualMultiGenome
 class CGPPopulation(AbstractPopulation):
 
     def __init__(self, n_parents, mutation_rate, seed, genome_params):
+        """Init function.
+        
+        Extends AbstractPopulation.__init__
 
+
+        Parameters
+        ----------
+        n_parents : int
+            Number of parent individuals.
+        mutation_rate : float
+            Rate of mutations determining the number of genes to be
+            mutated for offspring creation, between 0 and 1.
+        seed : int
+            Seed for internal random number generator.
+        genome_params : dict
+            Parameters for the genomes of the population's individuals.
+        """
         self._genome_params = genome_params
 
         super().__init__(n_parents, mutation_rate, seed)
