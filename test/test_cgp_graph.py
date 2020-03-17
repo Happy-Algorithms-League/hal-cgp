@@ -5,6 +5,7 @@ import pytest
 import sympy
 import sys
 import torch
+from itertools import product
 
 sys.path.insert(0, '../')
 import gp
@@ -145,6 +146,24 @@ def test_to_torch_and_backprop():
     assert(abs(c(x_torch)[0].detach().numpy() - graph(x))[0] > 1e-15)
     graph.update_parameters_from_torch_class(c)
     assert(abs(c(x_torch)[0].detach().numpy() - graph(x))[0] < 1e-15)
+
+
+batch_sizes = [1, 10]
+primitives = [gp.CGPMul, gp.CGPConstantFloat]
+genomes = [gp.CGPGenome(1, 1, 2, 2, 1, primitives) for i in range(2)]
+# Function: f(x) = 1*x
+genomes[0].dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 3, None]
+# Function: f(x) = 1
+genomes[1].dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 1, None]
+
+
+@pytest.mark.parametrize("genome, batch_size", product(genomes, batch_sizes))
+def test_compile_torch_output_shape(genome, batch_size):
+    graph = gp.CGPGraph(genome)
+    c = graph.compile_torch_class()
+    x = torch.Tensor(batch_size, 1).normal_()
+    y = c(x)
+    assert(y.shape == (batch_size, 1))
 
 
 def test_to_sympy():
