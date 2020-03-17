@@ -291,8 +291,8 @@ class _C(torch.nn.Module):
 
         Returns
         ----------
-        List[str]
-            List of sympy-compatible string expressions.
+        List[sympy.core.Expr]
+            List of sympy expressions.
         """
         self._format_output_str_of_all_nodes()
 
