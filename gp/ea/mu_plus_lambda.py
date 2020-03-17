@@ -25,8 +25,7 @@ class MuPlusLambda():
             Tournament size in each iteration.
         n_processes : int, optional
             Number of parallel processes to be used. If greater than 1,
-            parallel evaluation of the objective is supported. Currently
-            not implemented. Defaults to 1.
+            parallel evaluation of the objective is supported. Defaults to 1.
         """
         self.n_offsprings = n_offsprings
 

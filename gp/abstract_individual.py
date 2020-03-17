@@ -11,7 +11,7 @@ class AbstractIndividual():
 
         fitness : float
             Fitness of the individual.
-        genome: gp.CGPGenome
+        genome: Genome instance
             Genome of the invididual.
         """
         self.fitness = fitness
@@ -52,7 +52,7 @@ class AbstractIndividual():
         Parameters
         ----------
         mutation_rate : float
-            Rate of mutations determining the number of genes to be mutated, between 0 and 1.
+            Proportion of mutations determining the number of genes to be mutated, between 0 and 1.
         rng : numpy.RandomState
             Random number generator instance to use for crossover.
 

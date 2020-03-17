@@ -279,7 +279,9 @@ class _C(torch.nn.Module):
                     pass
 
     def to_sympy(self, simplify=True):
-        """Compile computational graph into a sympy-compatible string expression.
+        """Compile computational graph into a list of sympy-compatible string expressions.
+
+        Generates one sympy expression for each output node.
 
         Parameters
         ----------
