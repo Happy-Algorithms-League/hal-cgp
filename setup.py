@@ -2,7 +2,7 @@
 from setuptools import setup
 
 setup(
-    name='cgprog',
+    name='python-gp',
     version='0.1',
     author='Jakob Jordan, Maximilian Schmidt',
     author_email='j.jordan@fz-juelich.de',
