@@ -20,7 +20,7 @@ def objective_parallel_cgp_population(individual):
     n_function_evaluations = 100
 
     graph = gp.CGPGraph(individual.genome)
-    f_graph = graph.compile_torch_class()
+    f_graph = graph.to_torch()
 
     def f_target(x):  # target function
         return 1. + x[:, 0] - x[:, 1]
