@@ -92,7 +92,7 @@ class AbstractPopulation():
 
         Parameters
         ----------
-        offsprings : List[gp.AbstractPopulation]
+        offsprings : List[gp.AbstractIndividual]
             List of offspring individuals to be mutated.
 
         Returns
