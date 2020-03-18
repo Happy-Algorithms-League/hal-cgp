@@ -7,8 +7,17 @@ from .exceptions import InvalidSympyExpression
 
 
 class CGPGraph():
-
+    """Class representing the computational graph defined by a genome
+    in the Cartesian Genetic Programming Framework.
+    """
     def __init__(self, genome):
+        """Init function.
+
+        Parameters
+        ----------
+        genome: CGP.genome
+            Genome defining the computational graph.
+        """
         self._n_outputs = None
         self._n_inputs = None
         self._n_columns = None
@@ -23,10 +32,13 @@ class CGPGraph():
         return 'CGPGraph(' + str(self._nodes) + ')'
 
     def print_active_nodes(self):
+        """Print a representation of all active nodes in the graph.
+        """
         return 'CGPGraph(' + str([node for node in self._nodes if node._active]) + ')'
 
     def pretty_print(self):
-
+        """Print a pretty representation of the computational graph.
+        """
         n_characters = 18
 
         def pretty_node_str(node):
@@ -132,6 +144,13 @@ class CGPGraph():
         return active_nodes_by_hidden_column_idx
 
     def determine_active_regions(self):
+        """Determine the active regions in the computational graph.
+
+        Returns
+        -------
+        List[int]
+            List of ids of the active nodes.
+        """
         active_regions = []
         active_nodes_by_hidden_column_idx = self._determine_active_nodes()
         for column_idx in active_nodes_by_hidden_column_idx:
@@ -141,7 +160,6 @@ class CGPGraph():
         return active_regions
 
     def __call__(self, x):
-
         # store values of x in input nodes
         for i, xi in enumerate(x):
             assert(isinstance(self._nodes[i], CGPInputNode))
@@ -175,7 +193,16 @@ class CGPGraph():
                 node.format_output_str(self)
 
     def to_func(self):
+        """Compile the function represented by the computational graph.
 
+        Generates a definition of the function in Python code and
+        executes the function definition to create a Callable.
+
+        Returns
+        -------
+        Callable
+            Callable executing the function represented by the computational graph.
+        """
         self._format_output_str_of_all_nodes()
 
         func_str = 'def _f(x): return [{}]'.format(', '.join(node.output_str for node in self.output_nodes))
@@ -183,7 +210,16 @@ class CGPGraph():
         return locals()['_f']
 
     def to_torch(self):
+        """Compile the function represented by the computational graph to a Torch class.
 
+        Generates a definition of the Torch class in Python code and
+        executes it to create an instance of the class.
+
+        Returns
+        -------
+        torch.nn.Module
+            Instance of the PyTorch class.
+        """
         for i, node in enumerate(self.input_nodes):
             node.format_output_str_torch(self)
 
@@ -222,6 +258,19 @@ class _C(torch.nn.Module):
         return locals()['_c']
 
     def update_parameters_from_torch_class(self, torch_cls):
+        """Update values stored in constant nodes of graph from parameters of a given Torch instance.
+        
+        Can be used to import new values from a Torch class after a autograd step.
+        
+        Parameters
+        ----------
+        torch_cls : torch.nn.module
+            Instance of a torch class.
+
+        Returns
+        -------
+        None
+        """
         for n in self._nodes:
             if n.is_parameter:
                 try:
@@ -230,7 +279,21 @@ class _C(torch.nn.Module):
                     pass
 
     def to_sympy(self, simplify=True):
+        """Compile computational graph into a list of sympy-compatible string expressions.
 
+        Generates one sympy expression for each output node.
+
+        Parameters
+        ----------
+        simplify : boolean, optional
+            Whether to simplify the expression using sympy's
+            simplify() method. Defaults to True.
+
+        Returns
+        ----------
+        List[sympy.core.Expr]
+            List of sympy expressions.
+        """
         self._format_output_str_of_all_nodes()
 
         sympy_exprs = []
@@ -261,4 +324,3 @@ class _C(torch.nn.Module):
             raise InvalidSympyExpression(str(expr))
 
         return expr
-

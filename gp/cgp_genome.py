@@ -4,9 +4,27 @@ from .cgp_primitives import CGPPrimitives
 
 
 class CGPGenome():
-
+    """Genome class for CGP individuals.
+    """
     def __init__(self, n_inputs, n_outputs, n_columns, n_rows, levels_back, primitives):
+        """Init function.
 
+        Parameters
+        ----------
+        n_inputs : int
+            Number of inputs of the function represented by the genome.
+        n_outputs : int
+            Number of outputs of the function represented by the genome.
+        n_columns : int
+            Number of columns in the representation of the genome.
+        n_rows : int
+            Number of rows in the representation of the genome.
+        levels_back : int
+            Number of previous columns that an entry in the genome can be
+            connected with.
+        primitives : List[gp.CPGNode]
+           List of primitives that the genome can refer to.
+        """
         if n_inputs <= 0:
             raise ValueError('n_inputs must be strictly positive')
         self._n_inputs = n_inputs
@@ -122,7 +140,17 @@ class CGPGenome():
             return region
 
     def randomize(self, rng):
+        """Randomize the genome.
 
+        Parameters
+        ----------
+        rng : numpy.RandomState
+            Random number generator instance to use for crossover.
+
+        Returns
+        ----------
+        None
+        """
         dna = []
 
         # add input nodes
@@ -259,7 +287,21 @@ class CGPGenome():
         return not self._is_function_gene(idx)
 
     def mutate(self, n_mutations, active_regions, rng):
+        """Mutate the genome.
 
+        Parameters
+        ----------
+        n_mutations : int
+            Number of entries in the genome to be mutated.
+        active_regions: List[int]
+            Regions in the genome that are currently used in the computational graph. Used to check whether mutations are silent or require reevaluation of fitness.
+        rng : numpy.RandomState
+            Random number generator instance to use for crossover.
+
+        Returns
+        ----------
+        True if only inactive regions of the genome were mutated, False otherwise.
+        """
         assert isinstance(n_mutations, int) and 0 < n_mutations
 
         successful_mutations = 0
@@ -336,6 +378,12 @@ class CGPGenome():
         return self._primitives
 
     def clone(self):
+        """Clone the genome.
+        
+        Returns
+        -------
+        gp.CGPGenome
+        """
         new = CGPGenome(self._n_inputs, self._n_outputs, self._n_columns, self._n_rows, self._levels_back, self._primitives)
         new.dna = self._dna.copy()
         return new

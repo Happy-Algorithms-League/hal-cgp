@@ -7,7 +7,18 @@ class AbstractPopulation():
     """
 
     def __init__(self, n_parents, mutation_rate, seed):
+        """Init function.
 
+        Parameters
+        ----------
+        n_parents : int
+            Number of parent individuals.
+        mutation_rate : float
+            Rate of mutations determining the number of genes to be
+            mutated for offspring creation, between 0 and 1.
+        seed : int
+            Seed for internal random number generator.
+        """
         self.n_parents = n_parents  # number of individuals in parent population
 
         if not (0. < mutation_rate and mutation_rate < 1.):
@@ -26,6 +37,8 @@ class AbstractPopulation():
 
     @property
     def champion(self):
+        """Return parent with the highest fitness.
+        """
         return max(self._parents, key=lambda ind: ind.fitness)
 
     @property
@@ -53,6 +66,20 @@ class AbstractPopulation():
         raise NotImplementedError()
 
     def crossover(self, breeding_pool, n_offsprings):
+        """Create an offspring population via crossover.
+
+        Parameters
+        ----------
+        breeding_pool : List[gp.AbstractPopulation]
+            List of individuals from which the offspring are created.
+        n_offsprings : int
+            Number of offspring to be created.
+
+        Returns
+        ----------
+        List[gp.AbstractIndividual]
+            List of offspring individuals.
+        """
         offsprings = []
         while len(offsprings) < n_offsprings:
             first_parent, second_parent = self.rng.permutation(breeding_pool)[:2]
@@ -61,14 +88,42 @@ class AbstractPopulation():
         return offsprings
 
     def mutate(self, offsprings):
+        """Mutate a list of offspring invididuals.
+
+        Parameters
+        ----------
+        offsprings : List[gp.AbstractIndividual]
+            List of offspring individuals to be mutated.
+
+        Returns
+        ----------
+        List[gp.AbstractIndividual]
+            List of mutated offspring individuals.
+        """
+
         for off in offsprings:
             off.mutate(self._mutation_rate, self.rng)
         return offsprings
 
     def fitness_parents(self):
+        """Return fitness for all parents of the population.
+
+        Returns
+        ----------
+        List[float]
+            List of fitness values for all parents.
+        """
         return [ind.fitness for ind in self._parents]
 
     def dna_parents(self):
+        """Return a list of the DNA of all parents.
+
+        Returns
+        ----------
+        List[List[int]]
+            List of dna of all parents.
+        """
+
         dnas = np.empty((self.n_parents, self._parents[0].genome._n_genes))
         for i in range(self.n_parents):
             dnas[i] = self._parents[i].genome.dna

@@ -2,12 +2,25 @@ primitives_dict = {}  # maps string of class names to classes
 
 
 def register(cls):
+    """Register a primitive in the global dictionary of primitives
+
+    Parameters
+    ----------
+    cls : gp.CPGNode
+       Primitive to be registered.
+
+    Returns
+    ----------
+    None
+    """
     name = cls.__name__
     if name not in primitives_dict:
         primitives_dict[name] = cls
 
 
 class CGPNode():
+    """Base class for primitive functions used in Cartesian computational graphs.
+    """
     _arity = None
     _active = False
     _inputs = None
@@ -16,6 +29,15 @@ class CGPNode():
     _is_parameter = False
 
     def __init__(self, idx, inputs):
+        """Init function.
+        
+        Parameters
+        ----------
+        idx : int
+            id of the node.
+        inputs : List[int]
+            List of integers specifying the input nodes to this node.
+        """
         self._idx = idx
         self._inputs = inputs
 
@@ -88,14 +110,21 @@ class CGPNode():
         return self._output
 
     def activate(self):
+        """Set node to active.
+        """
         self._active = True
 
     def format_output_str(self, graph):
+        """Format output string of the node.
+        """
         raise NotImplementedError()
 
     def format_output_str_torch(self, graph):
-        # in case output_str_torch implementation is not provided, use
-        # standard output_str
+        """Format output string for torch representation.
+
+        If output_str_torch implementation is not provided, use
+        standard output_str.
+        """
         self.format_output_str(graph)
 
     def format_parameter_str(self):
@@ -119,6 +148,8 @@ class CGPNode():
 
 
 class CGPAdd(CGPNode):
+    """Node representing addition.
+    """
     _arity = 2
 
     def __init__(self, idx, inputs):
@@ -132,6 +163,8 @@ class CGPAdd(CGPNode):
 
 
 class CGPSub(CGPNode):
+    """Node representing subtraction.
+    """
     _arity = 2
 
     def __init__(self, idx, inputs):
@@ -145,6 +178,8 @@ class CGPSub(CGPNode):
 
 
 class CGPMul(CGPNode):
+    """Node representing multiplication.
+    """
     _arity = 2
 
     def __init__(self, idx, inputs):
@@ -158,6 +193,8 @@ class CGPMul(CGPNode):
 
 
 class CGPDiv(CGPNode):
+    """Node representing division.
+    """
     _arity = 2
 
     def __init__(self, idx, inputs):
@@ -173,6 +210,8 @@ class CGPDiv(CGPNode):
 
 
 class CGPConstantFloat(CGPNode):
+    """Node representing a constant float number.
+    """
     _arity = 0
     _is_parameter = True
 
@@ -200,7 +239,6 @@ def custom_cgp_constant_float(val):
     Warning: relies on closures, hence does neither with pickle nor with
     ProcessPoolExecutor. You need to create your own top-level classes if you
     want to use those libraries.
-
     """
 
     class CustomCGPConstantFloat(CGPConstantFloat):
@@ -212,6 +250,8 @@ def custom_cgp_constant_float(val):
 
 
 class CGPInputNode(CGPNode):
+    """Node representing a generic input node.
+    """
     _arity = 0
 
     def __init__(self, idx, inputs):
@@ -228,6 +268,8 @@ class CGPInputNode(CGPNode):
 
 
 class CGPOutputNode(CGPNode):
+    """Node representing a generic output node.
+    """
     _arity = 1
 
     def __init__(self, idx, inputs):
@@ -241,6 +283,8 @@ class CGPOutputNode(CGPNode):
 
 
 class CGPPow(CGPNode):
+    """Node representing the power operation.
+    """
     _arity = 2
 
     def __init__(self, idx, inputs):

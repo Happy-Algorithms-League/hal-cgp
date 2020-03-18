@@ -5,6 +5,38 @@ def evolve(pop, objective, ea, max_generations, min_fitness,
            record_history=None, print_progress=False, *, label=None, n_processes=1):
     """
     Evolves a population and returns the history of fitness of parents.
+
+    Parameters
+    ----------
+    pop : gp.AbstractPopulation
+        A population class that will be evolved.
+    objective : Callable
+        An objective function used for the evolution. Needs to take an
+        invidual (gp.AbstractIndividual) as input parameter and return
+        a modified individual (with updated fitness).
+    ea : EA algorithm instance
+        The evolution algorithm. Needs to be a class instance with an
+        `initialize_fitness_parents` and `step` method.
+    max_generations : int
+        Maximum number of generations.
+    min_fitness : float
+        Minimum fitness at which the evolution is stopped.
+    record_history :  callable
+        Function that accepts a population instance and a dictionary
+        and records properties of interest in the dictionary. Defaults to None.
+    print_progress : boolean, optional
+        Switch to print out the progress of the algorithm. Defaults to False.
+    label : str, optional
+        Optional label to be passed to the objective function.
+    n_processes : int, optional
+        Number of parallel processes to be used. If greater than 1,
+        parallel evaluation of the objective is supported. Currently
+        not implemented. Defaults to 1.
+
+    Returns
+    -------
+    dict
+        History of the evolution.
     """
 
     # data structure for recording evolution history; can be populated via user
