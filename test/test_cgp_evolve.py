@@ -245,6 +245,9 @@ def test_speedup_parallel_evolve():
         T = time.time() - t0
         if n_processes == 1:
             T_baseline = T
+            # assert that total execution time is roughly equal to
+            # number of objective calls x time per call
             assert T == pytest.approx(n_calls_objective * 0.1, rel=0.25)
         else:
+            # assert that multiprocessing roughly follows a linear speedup.
             assert T == pytest.approx(T_baseline / n_processes, rel=0.25)
