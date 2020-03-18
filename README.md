@@ -7,7 +7,7 @@ python-gp
 
 Cartesian genetic programming (CGP) in Python.
 
-This library implements Cartesian genetic programming in pure Python. It implements Python data structures to represent computational graphs in the Cartesian Genetic programming and provides one evolutionary algorithm,  (mu + lambda) evoluation strategies, to evolve a population of computational graphs given an objective function.
+This library implements Cartesian genetic programming in pure Python. It implements Python data structures to represent computational graphs in the Cartesian Genetic programming and provides one evolutionary algorithm,  (mu + lambda) evolution strategies, to evolve a population of computational graphs given an objective function.
 
 ![CGP Sketch](cgp-sketch.png)
 
@@ -73,7 +73,16 @@ pop = gp.CGPPopulation(**params['population_params'],
                           seed=params['seed'], genome_params=params['genome_params'])
 ea = gp.ea.MuPlusLambda(**params['ea_params'])
 ```
-4. Use the `evolve` function that ties everything together and executes the evolution:
+4. Define a callback function to record information about the evolution of the population:
+```
+def record_history(pop, history):
+    keys = ['fitness']
+    for key in keys:
+        if key not in history:
+            history[key] = []
+    history['fitness'].append(pop.fitness_parents())
+```
+5. Use the `evolve` function that ties everything together and executes the evolution:
 ```
 history = gp.evolve(pop, obj, ea, params['max_generations'],
                        params['min_fitness'], record_history=record_history, print_progress=True)
