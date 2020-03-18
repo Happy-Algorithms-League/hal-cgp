@@ -2,10 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import scipy.constants
-import sympy
-from functools import partial
+import functools
 import sys
-import time
 import torch
 
 from sympy.printing.dot import dotprint
@@ -50,7 +48,6 @@ def objective(individual, target_function):
     graph = gp.CGPGraph(individual.genome)
     f_graph = graph.to_torch()
     x = torch.Tensor(n_function_evaluations, 2).uniform_(-5, 5)
-    # x[torch.abs(x) < 1e-5] = 1.  # avoid infinities due to zero division
     y = f_graph(x)
     loss = torch.mean((target_function(x) - y[:, 0]) ** 2)
     individual.fitness = -loss.item()
@@ -69,7 +66,7 @@ def evolution(f_target):
     Returns
     -------
     dict
-        Dictionary containing the history of the evoluation
+        Dictionary containing the history of the evolution
     """
     params = {
         'seed': 8188212,
@@ -103,7 +100,7 @@ def evolution(f_target):
     pop = gp.CGPPopulation(**params['population_params'],
                            seed=params['seed'], genome_params=params['genome_params'])
 
-    # create instance of EA
+    # create instance of evolutionary algorithm
     ea = gp.ea.MuPlusLambda(**params['ea_params'])
 
     def record_history(pop, history):
@@ -114,8 +111,8 @@ def evolution(f_target):
         history['champion'].append(pop.champion)
         history['fitness_parents'].append(pop.fitness_parents())
 
-    obj = partial(objective, target_function=f_target)
-    # Perform evoluation
+    obj = functools.partial(objective, target_function=f_target)
+    # Perform evolution
     history = gp.evolve(pop, obj, ea, params['max_generations'],
                         params['min_fitness'], record_history=record_history, print_progress=True)
     return history, pop
