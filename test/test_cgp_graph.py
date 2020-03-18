@@ -34,13 +34,13 @@ def test_direct_input_output():
     assert abs(x[0] - y[0]) < 1e-15
 
 
-def test_compile_simple():
+def test_to_func_simple():
     primitives = [gp.CGPAdd]
     genome = gp.CGPGenome(2, 1, 1, 1, 1, primitives)
 
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
     graph = gp.CGPGraph(genome)
-    f = graph.compile_func()
+    f = graph.to_func()
 
     x = [5., 2.]
     y = f(x)
@@ -52,7 +52,7 @@ def test_compile_simple():
 
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
     graph = gp.CGPGraph(genome)
-    f = graph.compile_func()
+    f = graph.to_func()
 
     x = [5., 2.]
     y = f(x)
@@ -66,7 +66,7 @@ def test_compile_two_columns():
 
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, 1, 0, 2, -2, 3, None]
     graph = gp.CGPGraph(genome)
-    f = graph.compile_func()
+    f = graph.to_func()
 
     x = [5., 2.]
     y = f(x)
@@ -80,7 +80,7 @@ def test_compile_two_columns_two_rows():
 
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, 1, 0, 1, 0, 0, 2, 0, 2, 3, -2, 4, None, -2, 5, None]
     graph = gp.CGPGraph(genome)
-    f = graph.compile_func()
+    f = graph.to_func()
 
     x = [5., 2.]
     y = f(x)
@@ -106,7 +106,7 @@ def test_compile_addsubmul():
         1, 2, 3, 0, 0, 0,
         -2, 4, None]
     graph = gp.CGPGraph(genome)
-    f = graph.compile_func()
+    f = graph.to_func()
 
     x = [5., 2.]
     y = f(x)
@@ -114,13 +114,13 @@ def test_compile_addsubmul():
     assert(abs(((x[0] * x[1]) - (x[0] - x[1])) - y[0]) < 1e-15)
 
 
-def test_compile_torch_and_backprop():
+def test_to_torch_and_backprop():
     primitives = [gp.CGPMul, gp.CGPConstantFloat]
     genome = gp.CGPGenome(1, 1, 2, 2, 1, primitives)
     genome.dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 3, None]
     graph = gp.CGPGraph(genome)
 
-    c = graph.compile_torch_class()
+    c = graph.to_torch()
 
     optimizer = torch.optim.SGD(c.parameters(), lr=1e-1)
     criterion = torch.nn.MSELoss()
@@ -147,7 +147,7 @@ def test_compile_torch_and_backprop():
     assert(abs(c(x_torch)[0].detach().numpy() - graph(x))[0] < 1e-15)
 
 
-def test_compile_sympy_expr():
+def test_to_sympy():
     primitives = [gp.CGPAdd, gp.CGPConstantFloat]
     genome = gp.CGPGenome(1, 1, 2, 2, 1, primitives)
 
@@ -157,7 +157,7 @@ def test_compile_sympy_expr():
     x_0_target, y_0_target = sympy.symbols('x_0_target y_0_target')
     y_0_target = x_0_target + 1.
 
-    y_0 = graph.compile_sympy_expr()[0]
+    y_0 = graph.to_sympy()[0]
 
     for x in np.random.normal(size=100):
         assert abs(y_0_target.subs('x_0_target', x).evalf() - y_0.subs('x_0', x).evalf()) < 1e-12

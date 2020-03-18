@@ -174,7 +174,7 @@ class CGPGraph():
             for node in active_nodes[hidden_column_idx]:
                 node.format_output_str(self)
 
-    def compile_func(self):
+    def to_func(self):
 
         self._format_output_str_of_all_nodes()
 
@@ -182,10 +182,7 @@ class CGPGraph():
         exec(func_str)
         return locals()['_f']
 
-    def to_func(self):
-        return self.compile_func()
-
-    def compile_torch_class(self):
+    def to_torch(self):
 
         for i, node in enumerate(self.input_nodes):
             node.format_output_str_torch(self)
@@ -224,9 +221,6 @@ class _C(torch.nn.Module):
 
         return locals()['_c']
 
-    def to_torch(self):
-        return self.compile_torch_class()
-
     def update_parameters_from_torch_class(self, torch_cls):
         for n in self._nodes:
             if n.is_parameter:
@@ -235,7 +229,7 @@ class _C(torch.nn.Module):
                 except AttributeError:
                     pass
 
-    def compile_sympy_expr(self, simplify=True):
+    def to_sympy(self, simplify=True):
 
         self._format_output_str_of_all_nodes()
 
@@ -259,9 +253,6 @@ class _C(torch.nn.Module):
             for i, expr in enumerate(sympy_exprs):
                 sympy_exprs[i] = self._validate_sympy_expr(expr.simplify())
             return sympy_exprs
-
-    def to_sympy(self, simplify=True):
-        return self.compile_sympy_expr(simplify)
 
     def _validate_sympy_expr(self, expr):
 
