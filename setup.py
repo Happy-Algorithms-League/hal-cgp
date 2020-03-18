@@ -6,7 +6,7 @@ setup(
     version='0.1',
     author='Jakob Jordan, Maximilian Schmidt',
     author_email='jakobjordan@posteo.de',
-    description=('Cartesian genetic programming in Python.'),
+    description=('Cartesian Genetic Programming in Python.'),
     license='GPLv3',
     keywords='genetic programming',
     url='https://github.com/jakobj/python-gp',
