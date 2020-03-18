@@ -77,7 +77,7 @@ class AbstractPopulation():
 
         Returns
         ----------
-        List[gp.AbstractPopulation]
+        List[gp.AbstractIndividual]
             List of offspring individuals.
         """
         offsprings = []
