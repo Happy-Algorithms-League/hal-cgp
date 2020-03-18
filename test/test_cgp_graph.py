@@ -156,6 +156,12 @@ genomes[0].dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1
 # Function: f(x) = 1
 genomes[1].dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 1, None]
 
+genomes += [gp.CGPGenome(1, 2, 2, 2, 1, primitives) for i in range(2)]
+# Function: f(x) = (1*x, 1*1)
+genomes[2].dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 1, 1, -2, 3, None, -2, 4, None]
+# Function: f(x) = (1, x*x)
+genomes[3].dna = [-1, None, None, 1, None, None, 1, None, None, 0, 1, 1, 0, 0, 1, -2, 1, None, -2, 3, None]
+
 
 @pytest.mark.parametrize("genome, batch_size", product(genomes, batch_sizes))
 def test_compile_torch_output_shape(genome, batch_size):
@@ -163,7 +169,11 @@ def test_compile_torch_output_shape(genome, batch_size):
     c = graph.compile_torch_class()
     x = torch.Tensor(batch_size, 1).normal_()
     y = c(x)
-    assert(y.shape == (batch_size, 1))
+    # if isinstance(y, tuple):
+    #     assert(y[0].shape == (batch_size, ))
+    #     assert(y[1].shape == (batch_size, ))
+    # else:
+    assert(y.shape == (batch_size, genome._n_outputs))
 
 
 def test_to_sympy():

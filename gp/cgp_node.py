@@ -227,7 +227,7 @@ class CGPConstantFloat(CGPNode):
         self._output_str = '{}'.format(self._output)
 
     def format_output_str_torch(self, graph):
-        self._output_str = 'self._p{}'.format(self._idx)
+        self._output_str = 'torch.cat(x.shape[0] * [self._p{}])'.format(self._idx)
 
     def format_parameter_str(self):
         self._parameter_str = 'self._p{} = torch.nn.Parameter(torch.Tensor([{}]))\n'.format(self._idx, self._output)
