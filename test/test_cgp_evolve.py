@@ -242,6 +242,7 @@ def test_speedup_parallel_evolve():
                   population_params['max_generations'],
                   population_params['min_fitness'])
         T = time.time() - t0
+        print(T)
         if n_processes == 1:
             T_baseline = T
             assert T == pytest.approx(n_calls_objective * 0.1, rel=0.25)
