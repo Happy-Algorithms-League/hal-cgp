@@ -196,6 +196,7 @@ def objective_speedup_parallel_evolve(individual):
     return individual
 
 
+@pytest.mark.skip(reason="Test is not robust against execution in CI.")
 def test_speedup_parallel_evolve():
 
     population_params = {
@@ -217,25 +218,36 @@ def test_speedup_parallel_evolve():
         'primitives': [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat]
     }
 
+    # Number of calls to objective: Number of parents + (Number of
+    # parents + offspring) * (N_generations - 1) Initially, we need to
+    # compute the fitness for all parents. Then we compute the fitness
+    # for each parents and offspring in each iteration.
+    n_calls_objective = (population_params['n_parents'] +
+                         (population_params['n_parents'] +
+                          population_params['n_offsprings']) *
+                         (population_params['max_generations'] - 1))
     np.random.seed(SEED)
 
-    pop_one_thread = gp.CGPPopulation(population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
-    ea = gp.ea.MuPlusLambda(population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'])
+    # Serial execution
+    
+    for n_processes in [1, 2, 4]:
+        pop = gp.CGPPopulation(population_params['n_parents'],
+                               population_params['mutation_rate'], SEED, genome_params)
+        ea = gp.ea.MuPlusLambda(population_params['n_offsprings'],
+                                population_params['n_breeding'],
+                                population_params['tournament_size'],
+                                n_processes=n_processes)
 
-    t0 = time.time()
-    gp.evolve(pop_one_thread, objective_speedup_parallel_evolve, ea, population_params['max_generations'], population_params['min_fitness'])
-    assert time.time() - t0 == pytest.approx((population_params['n_parents'] + population_params['n_offsprings']) * population_params['max_generations'] * 0.1, rel=0.25)
-
-    pop_two_threads = gp.CGPPopulation(population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
-    ea = gp.ea.MuPlusLambda(population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], n_processes=2)
-
-    t0 = time.time()
-    gp.evolve(pop_two_threads, objective_speedup_parallel_evolve, ea, population_params['max_generations'], population_params['min_fitness'])
-    assert time.time() - t0 == pytest.approx((population_params['n_parents'] + population_params['n_offsprings']) * population_params['max_generations'] * 0.1 / 2., rel=0.25)
-
-    pop_4_threads = gp.CGPPopulation(population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
-    ea = gp.ea.MuPlusLambda(population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'], n_processes=4)
-
-    t0 = time.time()
-    gp.evolve(pop_4_threads, objective_speedup_parallel_evolve, ea, population_params['max_generations'], population_params['min_fitness'])
-    assert time.time() - t0 == pytest.approx((population_params['n_parents'] + population_params['n_offsprings']) * population_params['max_generations'] * 0.1 / 4., rel=0.25)
+        t0 = time.time()
+        gp.evolve(pop, objective_speedup_parallel_evolve, ea,
+                  population_params['max_generations'],
+                  population_params['min_fitness'])
+        T = time.time() - t0
+        if n_processes == 1:
+            T_baseline = T
+            # assert that total execution time is roughly equal to
+            # number of objective calls x time per call
+            assert T == pytest.approx(n_calls_objective * 0.1, rel=0.25)
+        else:
+            # assert that multiprocessing roughly follows a linear speedup.
+            assert T == pytest.approx(T_baseline / n_processes, rel=0.25)
