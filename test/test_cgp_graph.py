@@ -169,10 +169,6 @@ def test_compile_torch_output_shape(genome, batch_size):
     c = graph.compile_torch_class()
     x = torch.Tensor(batch_size, 1).normal_()
     y = c(x)
-    # if isinstance(y, tuple):
-    #     assert(y[0].shape == (batch_size, ))
-    #     assert(y[1].shape == (batch_size, ))
-    # else:
     assert(y.shape == (batch_size, genome._n_outputs))
 
 
