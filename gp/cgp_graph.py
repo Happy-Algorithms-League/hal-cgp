@@ -1,5 +1,6 @@
 import collections
 import sympy
+import torch  # noqa: F401
 
 from .cgp_node import CGPInputNode, CGPOutputNode
 from .exceptions import InvalidSympyExpression
@@ -206,8 +207,8 @@ class CGPGraph:
             Callable executing the function represented by the computational graph.
         """
         self._format_output_str_of_all_nodes()
-        s = ', '.join(node.output_str for node in self.output_nodes)
-        func_str = f'def _f(x): return [{s}]'
+        s = ", ".join(node.output_str for node in self.output_nodes)
+        func_str = f"def _f(x): return [{s}]"
         exec(func_str)
         return locals()["_f"]
 
@@ -271,7 +272,7 @@ class _C(torch.nn.Module):
         for n in self._nodes:
             if n.is_parameter:
                 try:
-                    n._output = eval(f'torch_cls._p{n._idx}[0]')
+                    n._output = eval(f"torch_cls._p{n._idx}[0]")
                 except AttributeError:
                     pass
 
