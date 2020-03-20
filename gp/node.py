@@ -1,12 +1,17 @@
+from typing import List, Type, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .cartesian_graph import CartesianGraph
+
 primitives_dict = {}  # maps string of class names to classes
 
 
-def register(cls):
+def register(cls: Type["Node"]) -> None:
     """Register a primitive in the global dictionary of primitives
 
     Parameters
     ----------
-    cls : gp.CPGNode
+    cls : Type[gp.Node]
        Primitive to be registered.
 
     Returns
@@ -22,13 +27,15 @@ class Node:
     """Base class for primitive functions used in Cartesian computational graphs.
     """
 
-    _arity = None
-    _active = False
-    _inputs = None
-    _output = None
-    _idx = None
+    _arity: int
+    _active: bool = False
+    _inputs: List[int]
+    _output: float
+    _output_str: str
+    _parameter_str: str
+    _idx: int
 
-    def __init__(self, idx, inputs):
+    def __init__(self, idx: int, inputs: List[int]) -> None:
         """Init function.
 
         Parameters
@@ -43,33 +50,36 @@ class Node:
 
         assert idx not in inputs
 
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
+    def __init_subclass__(cls: Type["Node"]) -> None:
+        super().__init_subclass__()
         register(cls)
 
+    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
+        raise NotImplementedError
+
     @property
-    def arity(self):
+    def arity(self) -> int:
         return self._arity
 
     @property
-    def max_arity(self):
+    def max_arity(self) -> int:
         return len(self._inputs)
 
     @property
-    def inputs(self):
+    def inputs(self) -> List[int]:
         return self._inputs
 
     @property
-    def idx(self):
+    def idx(self) -> int:
         return self._idx
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(idx: {self.idx}, active: {self._active}, "
             f"arity: {self._arity}, inputs {self._inputs}, output {self._output})"
         )
 
-    def pretty_str(self, n):
+    def pretty_str(self, n: int) -> str:
         used_characters = 0
         used_characters += 3  # for two digit idx and following whitespace
         used_characters += 3  # for "active" marker
@@ -110,15 +120,15 @@ class Node:
         return s.ljust(n)
 
     @property
-    def output(self):
+    def output(self) -> float:
         return self._output
 
-    def activate(self):
+    def activate(self) -> None:
         """Set node to active.
         """
         self._active = True
 
-    def format_output_str(self, graph):
+    def format_output_str(self, graph: "CartesianGraph") -> None:
         """Format output string of the node.
         """
         raise NotImplementedError()
@@ -139,15 +149,15 @@ class Node:
         """
         self.format_output_str(graph)
 
-    def format_parameter_str(self):
+    def format_parameter_str(self) -> None:
         raise NotImplementedError
 
     @property
-    def output_str(self):
+    def output_str(self) -> str:
         return self._output_str
 
     @property
-    def parameter_str(self):
+    def parameter_str(self) -> str:
         return self._parameter_str
 
 
@@ -157,13 +167,13 @@ class Add(Node):
 
     _arity = 2
 
-    def __init__(self, idx, inputs):
+    def __init__(self, idx: int, inputs: List[int]) -> None:
         super().__init__(idx, inputs)
 
-    def __call__(self, x, graph):
+    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
         self._output = graph[self._inputs[0]].output + graph[self._inputs[1]].output
 
-    def format_output_str(self, graph):
+    def format_output_str(self, graph: "CartesianGraph") -> None:
         self._output_str = (
             f"({graph[self._inputs[0]].output_str} + {graph[self._inputs[1]].output_str})"
         )
@@ -175,13 +185,13 @@ class Sub(Node):
 
     _arity = 2
 
-    def __init__(self, idx, inputs):
+    def __init__(self, idx: int, inputs: List[int]) -> None:
         super().__init__(idx, inputs)
 
-    def __call__(self, x, graph):
+    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
         self._output = graph[self._inputs[0]].output - graph[self._inputs[1]].output
 
-    def format_output_str(self, graph):
+    def format_output_str(self, graph: "CartesianGraph") -> None:
         self._output_str = (
             f"({graph[self._inputs[0]].output_str} - {graph[self._inputs[1]].output_str})"
         )
@@ -193,13 +203,13 @@ class Mul(Node):
 
     _arity = 2
 
-    def __init__(self, idx, inputs):
+    def __init__(self, idx: int, inputs: List[int]) -> None:
         super().__init__(idx, inputs)
 
-    def __call__(self, x, graph):
+    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
         self._output = graph[self._inputs[0]].output * graph[self._inputs[1]].output
 
-    def format_output_str(self, graph):
+    def format_output_str(self, graph: "CartesianGraph") -> None:
         self._output_str = (
             f"({graph[self._inputs[0]].output_str} * {graph[self._inputs[1]].output_str})"
         )
@@ -211,14 +221,14 @@ class Div(Node):
 
     _arity = 2
 
-    def __init__(self, idx, inputs):
+    def __init__(self, idx: int, inputs: List[int]) -> None:
         super().__init__(idx, inputs)
 
-    def __call__(self, x, graph):
+    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
 
         self._output = graph[self._inputs[0]].output / graph[self._inputs[1]].output
 
-    def format_output_str(self, graph):
+    def format_output_str(self, graph: "CartesianGraph") -> None:
         self._output_str = (
             f"({graph[self._inputs[0]].output_str} / {graph[self._inputs[1]].output_str})"
         )
@@ -230,21 +240,21 @@ class ConstantFloat(Node):
 
     _arity = 0
 
-    def __init__(self, idx, inputs):
+    def __init__(self, idx: int, inputs: List[int]) -> None:
         super().__init__(idx, inputs)
 
         self._output = 1.0
 
-    def __call__(self, x, graph):
+    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
         pass
 
-    def format_output_str(self, graph):
+    def format_output_str(self, graph: "CartesianGraph") -> None:
         self._output_str = f"{self._output}"
 
-    def format_output_str_numpy(self, graph):
+    def format_output_str_numpy(self, graph: "CartesianGraph") -> None:
         self._output_str = f"np.ones(x.shape[0]) * {self._output}"
 
-    def format_output_str_torch(self, graph):
+    def format_output_str_torch(self, graph: "CartesianGraph") -> None:
         self._output_str = f"torch.ones(1).expand(x.shape[0]) * {self._output}"
 
 
@@ -255,22 +265,22 @@ class Parameter(Node):
 
     _arity = 0
 
-    def __init__(self, idx, inputs):
+    def __init__(self, idx: int, inputs: List[int]) -> None:
         super().__init__(idx, inputs)
 
-    def __call__(self, x, graph):
+    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
         pass
 
-    def format_output_str(self, graph):
+    def format_output_str(self, graph: "CartesianGraph") -> None:
         self._output_str = f"<p{self._idx}>"
 
-    def format_output_str_numpy(self, graph):
+    def format_output_str_numpy(self, graph: "CartesianGraph") -> None:
         self._output_str = f"np.ones(x.shape[0]) * <p{self._idx}>"
 
-    def format_output_str_torch(self, graph):
+    def format_output_str_torch(self, graph: "CartesianGraph") -> None:
         self._output_str = f"self._p{self._idx}.expand(x.shape[0])"
 
-    def format_parameter_str(self):
+    def format_parameter_str(self) -> None:
         self._parameter_str = (
             f"self._p{self._idx} = torch.nn.Parameter(torch.DoubleTensor([<p{self._idx}>]))\n"
         )
@@ -282,19 +292,19 @@ class InputNode(Node):
 
     _arity = 0
 
-    def __init__(self, idx, inputs):
+    def __init__(self, idx: int, inputs: List[int]) -> None:
         super().__init__(idx, inputs)
 
-    def __call__(self, x, graph):
+    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
         assert False
 
-    def format_output_str(self, graph):
+    def format_output_str(self, graph: "CartesianGraph") -> None:
         self._output_str = f"x[{self._idx}]"
 
-    def format_output_str_numpy(self, graph):
+    def format_output_str_numpy(self, graph: "CartesianGraph") -> None:
         self._output_str = f"x[:, {self._idx}]"
 
-    def format_output_str_torch(self, graph):
+    def format_output_str_torch(self, graph: "CartesianGraph") -> None:
         self._output_str = f"x[:, {self._idx}]"
 
 
@@ -304,13 +314,13 @@ class OutputNode(Node):
 
     _arity = 1
 
-    def __init__(self, idx, inputs):
+    def __init__(self, idx: int, inputs: List[int]) -> None:
         super().__init__(idx, inputs)
 
-    def __call__(self, x, graph):
+    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
         self._output = graph[self._inputs[0]].output
 
-    def format_output_str(self, graph):
+    def format_output_str(self, graph: "CartesianGraph") -> None:
         self._output_str = f"{graph[self._inputs[0]].output_str}"
 
 
@@ -320,13 +330,13 @@ class Pow(Node):
 
     _arity = 2
 
-    def __init__(self, idx, inputs):
+    def __init__(self, idx: int, inputs: List[int]) -> None:
         super().__init__(idx, inputs)
 
-    def __call__(self, x, graph):
+    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
         self._output = graph[self._inputs[0]].output ** graph[self._inputs[1]].output
 
-    def format_output_str(self, graph):
+    def format_output_str(self, graph: "CartesianGraph") -> None:
         self._output_str = (
             f"({graph[self._inputs[0]].output_str} ** {graph[self._inputs[1]].output_str})"
         )

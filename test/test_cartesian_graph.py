@@ -3,6 +3,7 @@ import numpy as np
 import pytest
 
 import gp
+from gp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
 
 
 def test_direct_input_output():
@@ -18,7 +19,7 @@ def test_direct_input_output():
     )
     genome.randomize(np.random)
 
-    genome[-2:] = [0, None]  # set inputs for output node to input node
+    genome[-2:] = [0, ID_NON_CODING_GENE]  # set inputs for output node to input node
     graph = gp.CartesianGraph(genome)
 
     x = [2.14159]
@@ -31,7 +32,20 @@ def test_to_func_simple():
     primitives = [gp.Add]
     genome = gp.Genome(2, 1, 1, 1, 1, primitives)
 
-    genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
     graph = gp.CartesianGraph(genome)
     f = graph.to_func()
 
@@ -43,7 +57,20 @@ def test_to_func_simple():
     primitives = [gp.Sub]
     genome = gp.Genome(2, 1, 1, 1, 1, primitives)
 
-    genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
     graph = gp.CartesianGraph(genome)
     f = graph.to_func()
 
@@ -57,7 +84,23 @@ def test_compile_two_columns():
     primitives = [gp.Add, gp.Sub]
     genome = gp.Genome(2, 1, 2, 1, 1, primitives)
 
-    genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, 1, 0, 2, -2, 3, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        1,
+        1,
+        0,
+        2,
+        ID_OUTPUT_NODE,
+        3,
+        ID_NON_CODING_GENE,
+    ]
     graph = gp.CartesianGraph(genome)
     f = graph.to_func()
 
@@ -72,12 +115,12 @@ def test_compile_two_columns_two_rows():
     genome = gp.Genome(2, 2, 2, 2, 1, primitives)
 
     genome.dna = [
-        -1,
-        None,
-        None,
-        -1,
-        None,
-        None,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
         0,
         0,
         1,
@@ -90,12 +133,12 @@ def test_compile_two_columns_two_rows():
         0,
         2,
         3,
-        -2,
+        ID_OUTPUT_NODE,
         4,
-        None,
-        -2,
+        ID_NON_CODING_GENE,
+        ID_OUTPUT_NODE,
         5,
-        None,
+        ID_NON_CODING_GENE,
     ]
     graph = gp.CartesianGraph(genome)
     f = graph.to_func()
@@ -119,7 +162,29 @@ def test_compile_addsubmul():
         params["levels_back"],
         primitives,
     )
-    genome.dna = [-1, None, None, -1, None, None, 2, 0, 1, 1, 0, 1, 1, 2, 3, 0, 0, 0, -2, 4, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        2,
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        2,
+        3,
+        0,
+        0,
+        0,
+        ID_OUTPUT_NODE,
+        4,
+        ID_NON_CODING_GENE,
+    ]
     graph = gp.CartesianGraph(genome)
     f = graph.to_func()
 
@@ -133,7 +198,26 @@ def test_to_numpy():
     primitives = [gp.Add, gp.Mul, gp.ConstantFloat]
     genome = gp.Genome(1, 1, 2, 2, 1, primitives)
     # f(x) = x ** 2 + 1.
-    genome.dna = [-1, None, None, 2, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0, 1, -2, 3, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        2,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        2,
+        0,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        3,
+        ID_NON_CODING_GENE,
+    ]
     graph = gp.CartesianGraph(genome)
     f = graph.to_numpy()
 
@@ -148,16 +232,54 @@ batch_sizes = [1, 10]
 primitives = [gp.Mul, gp.ConstantFloat]
 genomes = [gp.Genome(1, 1, 2, 2, 1, primitives) for i in range(2)]
 # Function: f(x) = 1*x
-genomes[0].dna = [-1, None, None, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, -2, 3, None]
+genomes[0].dna = [
+    ID_INPUT_NODE,
+    ID_NON_CODING_GENE,
+    ID_NON_CODING_GENE,
+    1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1,
+    ID_OUTPUT_NODE,
+    3,
+    ID_NON_CODING_GENE,
+]
 # Function: f(x) = 1
-genomes[1].dna = [-1, None, None, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, -2, 1, None]
+genomes[1].dna = [
+    ID_INPUT_NODE,
+    ID_NON_CODING_GENE,
+    ID_NON_CODING_GENE,
+    1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1,
+    ID_OUTPUT_NODE,
+    1,
+    ID_NON_CODING_GENE,
+]
 
 genomes += [gp.Genome(1, 2, 2, 2, 1, primitives) for i in range(2)]
 # Function: f(x) = (1*x, 1*1)
 genomes[2].dna = [
-    -1,
-    None,
-    None,
+    ID_INPUT_NODE,
+    ID_NON_CODING_GENE,
+    ID_NON_CODING_GENE,
     1,
     0,
     0,
@@ -170,18 +292,18 @@ genomes[2].dna = [
     0,
     1,
     1,
-    -2,
+    ID_OUTPUT_NODE,
     3,
-    None,
-    -2,
+    ID_NON_CODING_GENE,
+    ID_OUTPUT_NODE,
     4,
-    None,
+    ID_NON_CODING_GENE,
 ]
 # Function: f(x) = (1, x*x)
 genomes[3].dna = [
-    -1,
-    None,
-    None,
+    ID_INPUT_NODE,
+    ID_NON_CODING_GENE,
+    ID_NON_CODING_GENE,
     1,
     0,
     0,
@@ -194,12 +316,12 @@ genomes[3].dna = [
     0,
     0,
     1,
-    -2,
+    ID_OUTPUT_NODE,
     1,
-    None,
-    -2,
+    ID_NON_CODING_GENE,
+    ID_OUTPUT_NODE,
     3,
-    None,
+    ID_NON_CODING_GENE,
 ]
 
 
@@ -228,7 +350,26 @@ def test_to_sympy():
     primitives = [gp.Add, gp.ConstantFloat]
     genome = gp.Genome(1, 1, 2, 2, 1, primitives)
 
-    genome.dna = [-1, None, None, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, -2, 3, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        3,
+        ID_NON_CODING_GENE,
+    ]
     graph = gp.CartesianGraph(genome)
 
     x_0_target, y_0_target = sympy.symbols("x_0_target y_0_target")
@@ -249,7 +390,20 @@ def test_catch_invalid_sympy_expr():
     genome = gp.Genome(1, 1, 2, 1, 1, primitives)
 
     # x[0] / (x[0] - x[0])
-    genome.dna = [-1, None, None, 0, 0, 0, 1, 0, 1, -2, 2, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
     graph = gp.CartesianGraph(genome)
 
     with pytest.raises(Exception):
@@ -263,7 +417,20 @@ def test_allow_powers_of_x_0():
     genome = gp.Genome(1, 1, 2, 1, 1, primitives)
 
     # x[0] ** 2
-    genome.dna = [-1, None, None, 0, 0, 0, 1, 0, 0, -2, 2, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
     graph = gp.CartesianGraph(genome)
     graph.to_sympy(simplify=True)
 
@@ -340,7 +507,20 @@ def test_pretty_str():
     genome = gp.Genome(1, 1, 2, 1, 1, primitives)
 
     # x[0] ** 2
-    genome.dna = [-1, None, None, 0, 0, 0, 1, 0, 0, -2, 2, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
     graph = gp.CartesianGraph(genome)
 
     pretty_str = graph.pretty_str()
@@ -359,7 +539,20 @@ def test_pretty_str_with_unequal_inputs_rows_outputs():
     # less rows than inputs/outputs
     genome = gp.Genome(1, 1, 1, 2, 1, primitives)
     # f(x) = x[0] + x[0]
-    genome.dna = [-1, None, None, 0, 0, 0, 0, 0, 0, -2, 1, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        ID_OUTPUT_NODE,
+        1,
+        ID_NON_CODING_GENE,
+    ]
     graph = gp.CartesianGraph(genome)
 
     expected_pretty_str = """
@@ -372,30 +565,30 @@ def test_pretty_str_with_unequal_inputs_rows_outputs():
     genome = gp.Genome(3, 3, 1, 2, 1, primitives)
     # f(x) = [x[0] + x[1], x[0] + x[1], x[1] + x[2]]
     genome.dna = [
-        -1,
-        None,
-        None,
-        -1,
-        None,
-        None,
-        -1,
-        None,
-        None,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
         0,
         0,
         1,
         0,
         1,
         2,
-        -2,
+        ID_OUTPUT_NODE,
         3,
-        None,
-        -2,
+        ID_NON_CODING_GENE,
+        ID_OUTPUT_NODE,
         3,
-        None,
-        -2,
+        ID_NON_CODING_GENE,
+        ID_OUTPUT_NODE,
         4,
-        None,
+        ID_NON_CODING_GENE,
     ]
     graph = gp.CartesianGraph(genome)
 

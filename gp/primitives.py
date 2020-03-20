@@ -1,3 +1,7 @@
+import numpy as np
+
+from typing import Iterator, List, Tuple, Type
+
 from .node import Node
 
 
@@ -6,14 +10,14 @@ class Primitives:
     """
 
     _max_arity = 0
-    _primitives = None
+    _primitives: dict = {}
 
-    def __init__(self, primitives):
+    def __init__(self, primitives: List[Type[Node]]) -> None:
         """Init function.
 
         Parameters
         ----------
-        primitives : List[gp.CPGNode]
+        primitives : List[Type[Node]]
             List of primitives.
         """
         for i in range(len(primitives)):
@@ -34,7 +38,10 @@ class Primitives:
 
         self._determine_max_arity()
 
-    def _determine_max_arity(self):
+    def __iter__(self) -> Iterator:
+        return iter([self[i] for i in range(len(self._primitives))])
+
+    def _determine_max_arity(self) -> None:
 
         arity = 1  # minimal possible arity (output nodes need one input)
 
@@ -44,7 +51,7 @@ class Primitives:
 
         self._max_arity = arity
 
-    def sample(self, rng):
+    def sample(self, rng: np.random.RandomState) -> int:
         """Sample a random primitive.
 
         Parameters
@@ -54,19 +61,20 @@ class Primitives:
 
         Returns
         -------
-        List[Tuple(str, gp.CPGNode)]
+        int
+            Index of the sample primitive
         """
         return rng.choice(self.alleles)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: int) -> Type[Node]:
         return self._primitives[key]
 
     @property
-    def max_arity(self):
+    def max_arity(self) -> int:
         return self._max_arity
 
     @property
-    def alleles(self):
+    def alleles(self) -> Tuple:
         return tuple(self._primitives.keys())
 
     def __len__(self):

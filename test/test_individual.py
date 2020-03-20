@@ -5,6 +5,7 @@ import torch
 
 import gp
 from gp.individual import Individual
+from gp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
 
 
 def test_pickle_individual():
@@ -22,7 +23,20 @@ def test_individual_with_parameter_python():
     primitives = [gp.Add, gp.Parameter]
     genome = gp.Genome(1, 1, 2, 1, 2, primitives)
     # f(x) = x + c
-    genome.dna = [-1, None, None, 1, 0, 0, 0, 0, 1, -2, 2, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
     individual = Individual(None, genome)
 
     c = 1.0
@@ -47,7 +61,20 @@ def test_individual_with_parameter_torch():
     primitives = [gp.Add, gp.Parameter]
     genome = gp.Genome(1, 1, 2, 1, 2, primitives)
     # f(x) = x + c
-    genome.dna = [-1, None, None, 1, 0, 0, 0, 0, 1, -2, 2, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
     individual = Individual(None, genome)
 
     c = 1.0
@@ -74,7 +101,20 @@ def test_individual_with_parameter_sympy():
     primitives = [gp.Add, gp.Parameter]
     genome = gp.Genome(1, 1, 2, 1, 2, primitives)
     # f(x) = x + c
-    genome.dna = [-1, None, None, 1, 0, 0, 0, 0, 1, -2, 2, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
     individual = Individual(None, genome)
 
     c = 1.0
@@ -98,7 +138,26 @@ def test_to_and_from_torch_plus_backprop():
     primitives = [gp.Mul, gp.Parameter]
     genome = gp.Genome(1, 1, 2, 2, 1, primitives)
     # f(x) = c * x
-    genome.dna = [-1, None, None, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, -2, 3, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        3,
+        ID_NON_CODING_GENE,
+    ]
     individual = Individual(None, genome)
 
     def f_target(x):

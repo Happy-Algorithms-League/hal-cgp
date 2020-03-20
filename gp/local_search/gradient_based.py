@@ -1,12 +1,27 @@
 import numpy as np
 
 try:
-    import torch
+    import torch  # noqa: F401
+    from torch.optim.optimizer import Optimizer
+
+    torch_available = True
 except ModuleNotFoundError:
-    torch = None
+    torch_available = False
+
+from typing import Callable, List, Optional
 
 
-def gradient_based(individuals, objective, lr, gradient_steps, optimizer=None, clip_value=None):
+from ..individual import Individual  # noqa: F401
+
+
+def gradient_based(
+    individuals: List[Individual],
+    objective: Callable[[torch.nn.Module], torch.Tensor],
+    lr: float,
+    gradient_steps: int,
+    optimizer: Optional[Optimizer] = None,
+    clip_value: Optional[float] = None,
+) -> None:
     """Perform a local search for numeric leaf values for the list of
     individuals based on gradient information obtained via automatic
     differentiation.
@@ -31,7 +46,7 @@ def gradient_based(individuals, objective, lr, gradient_steps, optimizer=None, c
         that the maximal update step is 0.1.
 
     """
-    if torch is None:
+    if not torch_available:
         raise ModuleNotFoundError("No module named 'torch' (extra requirement)")
 
     if optimizer is None:

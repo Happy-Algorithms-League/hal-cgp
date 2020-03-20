@@ -1,5 +1,7 @@
 import numpy as np
 
+from typing import List
+
 from .individual import Individual, IndividualMultiGenome
 
 
@@ -8,7 +10,9 @@ class Population:
     A population of individuals.
     """
 
-    def __init__(self, n_parents, mutation_rate, seed, genome_params):
+    def __init__(
+        self, n_parents: int, mutation_rate: float, seed: int, genome_params: dict
+    ) -> None:
         """Init function.
 
         Parameters
@@ -34,7 +38,7 @@ class Population:
 
         self._genome_params = genome_params
 
-        self._parents = None  # list of parent individuals
+        self._parents: List[Individual] = []  # list of parent individuals
 
         # keeps track of the number of generations, increases with
         # every new offspring generation
@@ -44,33 +48,33 @@ class Population:
         self._generate_random_parent_population()
 
     @property
-    def champion(self):
+    def champion(self) -> Individual:
         """Return parent with the highest fitness.
         """
         return max(self._parents, key=lambda ind: ind.fitness)
 
     @property
-    def parents(self):
+    def parents(self) -> List[Individual]:
         return self._parents
 
     @parents.setter
-    def parents(self, new_parents):
+    def parents(self, new_parents: List[Individual]) -> None:
         self.generation += 1
         self._parents = new_parents
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Individual:
         return self._parents[idx]
 
-    def _generate_random_parent_population(self):
+    def _generate_random_parent_population(self) -> None:
         self._parents = self._generate_random_individuals(self.n_parents)
         self._label_new_individuals(self._parents)
 
-    def _label_new_individuals(self, individuals):
+    def _label_new_individuals(self, individuals: List[Individual]) -> None:
         for ind in individuals:
             ind.idx = self._max_idx + 1
             self._max_idx += 1
 
-    def _generate_random_individuals(self, n):
+    def _generate_random_individuals(self, n: int) -> List[Individual]:
         individuals = []
         for i in range(n):
             if isinstance(self._genome_params, dict):
@@ -86,12 +90,12 @@ class Population:
 
         return individuals
 
-    def crossover(self, breeding_pool, n_offsprings):
+    def crossover(self, breeding_pool: List[Individual], n_offsprings: int) -> List[Individual]:
         """Create an offspring population via crossover.
 
         Parameters
         ----------
-        breeding_pool : List[gp.Population]
+        breeding_pool : List[gp.Individual]
             List of individuals from which the offspring are created.
         n_offsprings : int
             Number of offspring to be created.
@@ -121,7 +125,7 @@ class Population:
         assert len(breeding_pool) >= n_offsprings
         return sorted(breeding_pool, key=lambda x: -x.fitness)[:n_offsprings]
 
-    def mutate(self, offsprings):
+    def mutate(self, offsprings: List[Individual]) -> List[Individual]:
         """Mutate a list of offspring invididuals.
 
         Parameters
@@ -139,7 +143,7 @@ class Population:
             off.mutate(self._mutation_rate, self.rng)
         return offsprings
 
-    def fitness_parents(self):
+    def fitness_parents(self) -> List[float]:
         """Return fitness for all parents of the population.
 
         Returns
@@ -149,7 +153,7 @@ class Population:
         """
         return [ind.fitness for ind in self._parents]
 
-    def dna_parents(self):
+    def dna_parents(self) -> List[List[int]]:
         """Return a list of the DNA of all parents.
 
         Returns
