@@ -166,7 +166,7 @@ genomes[3].dna = [-1, None, None, 1, None, None, 1, None, None, 0, 1, 1, 0, 0, 1
 @pytest.mark.parametrize("genome, batch_size", product(genomes, batch_sizes))
 def test_compile_torch_output_shape(genome, batch_size):
     graph = gp.CGPGraph(genome)
-    c = graph.compile_torch_class()
+    c = graph.to_torch()
     x = torch.Tensor(batch_size, 1).normal_()
     y = c(x)
     assert(y.shape == (batch_size, genome._n_outputs))
