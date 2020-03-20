@@ -179,8 +179,8 @@ class CGPGraph():
     def to_str(self):
 
         self._format_output_str_of_all_nodes()
-
-        return '[{}]'.format(', '.join(node.output_str for node in self.output_nodes))
+        out_str = ', '.join(node.output_str for node in self.output_nodes)
+        return f'[{out_str}]'
 
     def _format_output_str_of_all_nodes(self):
 
@@ -204,8 +204,8 @@ class CGPGraph():
             Callable executing the function represented by the computational graph.
         """
         self._format_output_str_of_all_nodes()
-
-        func_str = 'def _f(x): return [{}]'.format(', '.join(node.output_str for node in self.output_nodes))
+        s = ', '.join(node.output_str for node in self.output_nodes)
+        func_str = f'def _f(x): return [{s}]'
         exec(func_str)
         return locals()['_f']
 
@@ -231,7 +231,7 @@ class CGPGraph():
                 if node.is_parameter:
                     node.format_parameter_str()
                     all_parameter_str.append(node.parameter_str)
-
+        forward_str = ', '.join(node.output_str_torch for node in self.output_nodes)
         class_str = \
 """
 class _C(torch.nn.Module):
@@ -242,14 +242,10 @@ class _C(torch.nn.Module):
         for s in all_parameter_str:
             class_str += '        ' + s
 
-        func_str = \
-"""
+        func_str = f"""
     def forward(self, x):
-        return torch.stack([{}], dim=1)
-"""
-
-        func_str = func_str.format(', '.join(node.output_str_torch for node in self.output_nodes))
-
+        return torch.stack([{forward_str}], dim=1)
+        """
         class_str += func_str
 
         exec(class_str)
@@ -274,7 +270,7 @@ class _C(torch.nn.Module):
         for n in self._nodes:
             if n.is_parameter:
                 try:
-                    n._output = eval('torch_cls._p{}[0]'.format(n._idx))
+                    n._output = eval(f'torch_cls._p{n._idx}[0]')
                 except AttributeError:
                     pass
 

@@ -19,7 +19,7 @@ class AbstractIndividual():
         self.idx = None  # an identifier to keep track of all unique genomes
 
     def __repr__(self):
-        return 'Individual(idx={}, fitness={}, genome={}))'.format(self.idx, self.fitness, self.genome)
+        return f'Individual(idx={self.idx}, fitness={self.fitness}, genome={self.genome}))'
 
     def clone(self):
         """Clone the individual.
