@@ -391,7 +391,7 @@ class CGPGenome:
 
             # second: set non-coding genes to non-coding allele
             for j in range(
-                1 + self._primitives[self._dna[gene_idx]]._arity, 1 + self._primitives.max_arity,
+                1 + self._primitives[self._dna[gene_idx]]._arity, 1 + self._primitives.max_arity
             ):
                 self._dna[gene_idx + j] = self._non_coding_allele
 

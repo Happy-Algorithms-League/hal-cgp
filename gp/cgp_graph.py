@@ -301,8 +301,7 @@ class _C(torch.nn.Module):
             s = output_node.output_str
             for input_node in self.input_nodes:
                 s = s.replace(
-                    input_node.output_str,
-                    input_node.output_str.replace("[", "_").replace("]", ""),
+                    input_node.output_str, input_node.output_str.replace("[", "_").replace("]", "")
                 )
 
             # to get an expression that reflects the computational graph,

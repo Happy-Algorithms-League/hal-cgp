@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import sys
 
-sys.path.insert(0, '../')
+sys.path.insert(0, "../")
 import gp
 
 
@@ -10,16 +10,17 @@ SEED = np.random.randint(2 ** 31)
 
 
 def test_check_dna_consistency():
-    params = {
-        'n_inputs': 2,
-        'n_outputs': 1,
-        'n_columns': 1,
-        'n_rows': 1,
-        'levels_back': 1,
-    }
+    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
     primitives = [gp.CGPAdd]
-    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+    genome = gp.CGPGenome(
+        params["n_inputs"],
+        params["n_outputs"],
+        params["n_columns"],
+        params["n_rows"],
+        params["levels_back"],
+        primitives,
+    )
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 0, None]
 
     # invalid length
@@ -56,19 +57,20 @@ def test_check_dna_consistency():
 
 
 def test_permissable_inputs():
-    params = {
-        'n_inputs': 2,
-        'n_outputs': 1,
-        'n_columns': 4,
-        'n_rows': 3,
-        'levels_back': 2,
-    }
+    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 4, "n_rows": 3, "levels_back": 2}
 
     primitives = [gp.CGPAdd]
-    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+    genome = gp.CGPGenome(
+        params["n_inputs"],
+        params["n_outputs"],
+        params["n_columns"],
+        params["n_rows"],
+        params["levels_back"],
+        primitives,
+    )
     genome.randomize(np.random)
 
-    for input_idx in range(params['n_inputs']):
+    for input_idx in range(params["n_inputs"]):
         region_idx = input_idx
         with pytest.raises(AssertionError):
             genome._permissable_inputs(region_idx)
@@ -80,61 +82,77 @@ def test_permissable_inputs():
         [0, 1, 5, 6, 7, 8, 9, 10],
     ]
 
-    for column_idx in range(params['n_columns']):
-        region_idx = params['n_inputs'] + params['n_rows'] * column_idx
+    for column_idx in range(params["n_columns"]):
+        region_idx = params["n_inputs"] + params["n_rows"] * column_idx
         assert expected_for_hidden[column_idx] == genome._permissable_inputs(region_idx)
 
-    expected_for_output = list(range(params['n_inputs'] + params['n_rows'] * params['n_columns']))
+    expected_for_output = list(range(params["n_inputs"] + params["n_rows"] * params["n_columns"]))
 
-    for output_idx in range(params['n_outputs']):
-        region_idx = params['n_inputs'] + params['n_rows'] * params['n_columns'] + output_idx
+    for output_idx in range(params["n_outputs"]):
+        region_idx = params["n_inputs"] + params["n_rows"] * params["n_columns"] + output_idx
         assert expected_for_output == genome._permissable_inputs(region_idx)
 
 
 def test_region_iterators():
-    params = {
-        'n_inputs': 2,
-        'n_outputs': 1,
-        'n_columns': 1,
-        'n_rows': 1,
-        'levels_back': 1,
-    }
+    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
     primitives = [gp.CGPAdd]
-    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+    genome = gp.CGPGenome(
+        params["n_inputs"],
+        params["n_outputs"],
+        params["n_columns"],
+        params["n_rows"],
+        params["levels_back"],
+        primitives,
+    )
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 0, None]
 
     for region_idx, region in genome.iter_input_regions():
-        assert(region == [-1, None, None])
+        assert region == [-1, None, None]
 
     for region_idx, region in genome.iter_hidden_regions():
-        assert(region == [0, 0, 1])
+        assert region == [0, 0, 1]
 
     for region_idx, region in genome.iter_output_regions():
-        assert(region == [-2, 0, None])
+        assert region == [-2, 0, None]
 
 
 def test_check_levels_back_consistency():
-    params = {
-        'n_inputs': 2,
-        'n_outputs': 1,
-        'n_columns': 4,
-        'n_rows': 3,
-        'levels_back': None,
-    }
+    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 4, "n_rows": 3, "levels_back": None}
 
     primitives = [gp.CGPAdd]
 
-    params['levels_back'] = 0
+    params["levels_back"] = 0
     with pytest.raises(ValueError):
-        gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+        gp.CGPGenome(
+            params["n_inputs"],
+            params["n_outputs"],
+            params["n_columns"],
+            params["n_rows"],
+            params["levels_back"],
+            primitives,
+        )
 
-    params['levels_back'] = params['n_columns'] + 1
+    params["levels_back"] = params["n_columns"] + 1
     with pytest.raises(ValueError):
-        gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+        gp.CGPGenome(
+            params["n_inputs"],
+            params["n_outputs"],
+            params["n_columns"],
+            params["n_rows"],
+            params["levels_back"],
+            primitives,
+        )
 
-    params['levels_back'] = params['n_columns'] - 1
-    gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], params['levels_back'], primitives)
+    params["levels_back"] = params["n_columns"] - 1
+    gp.CGPGenome(
+        params["n_inputs"],
+        params["n_outputs"],
+        params["n_columns"],
+        params["n_rows"],
+        params["levels_back"],
+        primitives,
+    )
 
 
 def test_catch_no_non_coding_allele_in_non_coding_region():
@@ -153,29 +171,35 @@ def test_catch_no_non_coding_allele_in_non_coding_region():
 def test_individuals_have_different_genomes():
 
     population_params = {
-        'n_parents': 5,
-        'n_offspring': 5,
-        'generations': 50000,
-        'n_breeding': 5,
-        'tournament_size': 2,
-        'mutation_rate': 0.05,
+        "n_parents": 5,
+        "n_offspring": 5,
+        "generations": 50000,
+        "n_breeding": 5,
+        "tournament_size": 2,
+        "mutation_rate": 0.05,
     }
 
     genome_params = {
-        'n_inputs': 2,
-        'n_outputs': 1,
-        'n_columns': 6,
-        'n_rows': 6,
-        'levels_back': 2,
-        'primitives': [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat],
+        "n_inputs": 2,
+        "n_outputs": 1,
+        "n_columns": 6,
+        "n_rows": 6,
+        "levels_back": 2,
+        "primitives": [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat],
     }
 
     def objective(ind):
         ind.fitness = ind.idx
         return ind
 
-    pop = gp.CGPPopulation(population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
-    ea = gp.ea.MuPlusLambda(population_params['n_offspring'], population_params['n_breeding'], population_params['tournament_size'])
+    pop = gp.CGPPopulation(
+        population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
+    )
+    ea = gp.ea.MuPlusLambda(
+        population_params["n_offspring"],
+        population_params["n_breeding"],
+        population_params["tournament_size"],
+    )
 
     pop._generate_random_parent_population()
 
