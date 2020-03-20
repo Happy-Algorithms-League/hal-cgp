@@ -245,7 +245,8 @@ class _C(torch.nn.Module):
         func_str = f"""
     def forward(self, x):
         return torch.stack([{forward_str}], dim=1)
-        """
+"""
+
         class_str += func_str
 
         exec(class_str)
