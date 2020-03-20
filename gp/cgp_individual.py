@@ -8,6 +8,7 @@ class CGPIndividual(AbstractIndividual):
 
     Derived from gp.AbstractIndividual.
     """
+
     def clone(self):
         return CGPIndividual(self.fitness, self.genome.clone())
 

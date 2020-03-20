@@ -1,8 +1,18 @@
 import numpy as np
 
 
-def evolve(pop, objective, ea, max_generations, min_fitness,
-           record_history=None, print_progress=False, *, label=None, n_processes=1):
+def evolve(
+    pop,
+    objective,
+    ea,
+    max_generations,
+    min_fitness,
+    record_history=None,
+    print_progress=False,
+    *,
+    label=None,
+    n_processes=1,
+):
     """
     Evolves a population and returns the history of fitness of parents.
 
@@ -49,7 +59,8 @@ def evolve(pop, objective, ea, max_generations, min_fitness,
 
     # perform evolution
     max_fitness = np.finfo(np.float).min
-    while pop.generation < max_generations - 1:  # -1 offset since the last loop iteration will still increase generation by one
+    # Main loop: -1 offset since the last loop iteration will still increase generation by one
+    while pop.generation < max_generations - 1:
 
         pop = ea.step(pop, objective, label=label)
 
@@ -60,15 +71,18 @@ def evolve(pop, objective, ea, max_generations, min_fitness,
             max_fitness = pop.champion.fitness
 
         if print_progress:
-            print(f'\r[{pop.generation + 1}/{max_generations}'
-                  f'({pop.champion.idx})] max fitness: {max_fitness}\033[K', end='')
+            print(
+                f"\r[{pop.generation + 1}/{max_generations}"
+                f"({pop.champion.idx})] max fitness: {max_fitness}\033[K",
+                end="",
+            )
 
         if record_history is not None:
             record_history(pop, history)
 
         if pop.champion.fitness + 1e-10 >= min_fitness:
             for key in history:
-                history[key] = history[key][:pop.generation + 1]
+                history[key] = history[key][: pop.generation + 1]
             break
 
     if print_progress:

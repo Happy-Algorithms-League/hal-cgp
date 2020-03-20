@@ -1,4 +1,4 @@
-class AbstractIndividual():
+class AbstractIndividual:
     """
     Generic individual class for evolutionary algorithms. Provides container
     for fitness and genome. Derived classes need to define how individuals
@@ -19,7 +19,7 @@ class AbstractIndividual():
         self.idx = None  # an identifier to keep track of all unique genomes
 
     def __repr__(self):
-        return f'Individual(idx={self.idx}, fitness={self.fitness}, genome={self.genome}))'
+        return f"Individual(idx={self.idx}, fitness={self.fitness}, genome={self.genome}))"
 
     def clone(self):
         """Clone the individual.
@@ -48,7 +48,7 @@ class AbstractIndividual():
 
     def mutate(self, mutation_rate, rng):
         """Mutate the individual in place.
-        
+
         Parameters
         ----------
         mutation_rate : float

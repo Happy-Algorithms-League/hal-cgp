@@ -1,17 +1,11 @@
-import numpy as np
-import torch
-
 from .abstract_population import AbstractPopulation
-from .cgp_genome import CGPGenome
-from .cgp_graph import CGPGraph
 from .cgp_individual import CGPIndividual, CGPIndividualMultiGenome
 
 
 class CGPPopulation(AbstractPopulation):
-
     def __init__(self, n_parents, mutation_rate, seed, genome_params):
         """Init function.
-        
+
         Extends AbstractPopulation.__init__
 
 
@@ -36,7 +30,8 @@ class CGPPopulation(AbstractPopulation):
         for i in range(n):
             if isinstance(self._genome_params, dict):
                 individual = CGPIndividual(fitness=None, genome=None)
-            elif isinstance(self._genome_params, list) and isinstance(self._genome_params[0], dict):
+            elif (isinstance(self._genome_params, list)
+                  and isinstance(self._genome_params[0], dict)):
                 individual = CGPIndividualMultiGenome(fitness=None, genome=None)
             else:
                 raise NotImplementedError()
