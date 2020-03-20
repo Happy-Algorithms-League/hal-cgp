@@ -18,8 +18,9 @@ before_install:
 install:
   - pip install -r requirements.txt
   - pip install pytest pytest-cov coveralls
+  - pip install flake8 black
 script:
-  - cd test/ && pytest --cov
+  - pytest test/ --cov
   - black --check .
   - flake8 --config=.flake8 .
 after_success:
