@@ -225,8 +225,8 @@ class CGPGenome:
             if hidden_region[0] not in self._primitives.alleles:
                 raise ValueError("function gene for hidden node has invalid value")
 
-            coding_input_genes = hidden_region[1: self._primitives[hidden_region[0]]._arity + 1]
-            non_coding_input_genes = hidden_region[self._primitives[hidden_region[0]]._arity + 1:]
+            coding_input_genes = hidden_region[1 : self._primitives[hidden_region[0]]._arity + 1]
+            non_coding_input_genes = hidden_region[self._primitives[hidden_region[0]]._arity + 1 :]
 
             permissable_inputs = set(self._permissable_inputs(region_idx))
             if not set(coding_input_genes).issubset(permissable_inputs):
@@ -271,7 +271,7 @@ class CGPGenome:
         for i in range(self._n_inputs):
             region_idx = i
             region = dna[
-                region_idx * self._length_per_region: (region_idx + 1) * self._length_per_region
+                region_idx * self._length_per_region : (region_idx + 1) * self._length_per_region
             ]
             yield region_idx, region
 
@@ -281,7 +281,7 @@ class CGPGenome:
         for i in range(self._n_hidden):
             region_idx = i + self._n_inputs
             region = dna[
-                region_idx * self._length_per_region: (region_idx + 1) * self._length_per_region
+                region_idx * self._length_per_region : (region_idx + 1) * self._length_per_region
             ]
             yield region_idx, region
 
@@ -291,7 +291,7 @@ class CGPGenome:
         for i in range(self._n_outputs):
             region_idx = i + self._n_inputs + self._n_hidden
             region = dna[
-                region_idx * self._length_per_region: (region_idx + 1) * self._length_per_region
+                region_idx * self._length_per_region : (region_idx + 1) * self._length_per_region
             ]
             yield region_idx, region
 

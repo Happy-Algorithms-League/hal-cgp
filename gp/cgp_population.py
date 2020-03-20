@@ -30,8 +30,9 @@ class CGPPopulation(AbstractPopulation):
         for i in range(n):
             if isinstance(self._genome_params, dict):
                 individual = CGPIndividual(fitness=None, genome=None)
-            elif (isinstance(self._genome_params, list)
-                  and isinstance(self._genome_params[0], dict)):
+            elif isinstance(self._genome_params, list) and isinstance(
+                self._genome_params[0], dict
+            ):
                 individual = CGPIndividualMultiGenome(fitness=None, genome=None)
             else:
                 raise NotImplementedError()

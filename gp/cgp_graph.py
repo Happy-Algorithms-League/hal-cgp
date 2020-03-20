@@ -113,11 +113,11 @@ class CGPGraph:
 
     @property
     def hidden_nodes(self):
-        return self._nodes[self._n_inputs: -self._n_outputs]
+        return self._nodes[self._n_inputs : -self._n_outputs]
 
     @property
     def output_nodes(self):
-        return self._nodes[-self._n_outputs:]
+        return self._nodes[-self._n_outputs :]
 
     def _determine_active_nodes(self):
 
