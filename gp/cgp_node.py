@@ -64,7 +64,7 @@ class CGPNode():
         return self._idx
 
     def __repr__(self):
-        return '{}(idx: {}, active: {}, arity: {}, inputs {}, output {})'.format(self.__class__.__name__, self._idx, self._active, self._arity, self._inputs, self._output)
+        return f'{self.__class__.__name__}(idx: {self.idx}, active: {self._active}, arity: {self._arity}, inputs {self._inputs}, output {self._outputs})'
 
     def pretty_str(self, n):
         used_characters = 0
@@ -77,7 +77,7 @@ class CGPNode():
         name = self.__class__.__name__[3:]  # cut of "CGP" prefix of class name
         name = name[:n - used_characters]  # cut to correct size
 
-        s = '{:02d}'.format(self._idx)
+        s = f'{self._idx:02d}'
 
         if self._active:
             s += ' * '
@@ -85,7 +85,7 @@ class CGPNode():
             if self._arity > 0:
                 s += '('
                 for i in range(self._arity):
-                    s += '{:02d},'.format(self._inputs[i])
+                    s += f'{self._inputs[i]:02d},'
                 s = s[:-1]
                 s += ')'
                 for i in range(self.max_arity - self._arity):
@@ -159,7 +159,7 @@ class CGPAdd(CGPNode):
         self._output = graph[self._inputs[0]].output + graph[self._inputs[1]].output
 
     def format_output_str(self, graph):
-        self._output_str = '({} + {})'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
+        self._output_str = f'({graph[self._inputs[0]].output_str} + {graph[self._inputs[1]].output_str})'
 
 
 class CGPSub(CGPNode):
@@ -174,7 +174,7 @@ class CGPSub(CGPNode):
         self._output = graph[self._inputs[0]].output - graph[self._inputs[1]].output
 
     def format_output_str(self, graph):
-        self._output_str = '({} - {})'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
+        self._output_str = f'({graph[self._inputs[0]].output_str} - {graph[self._inputs[1]].output_str})'
 
 
 class CGPMul(CGPNode):
@@ -189,7 +189,7 @@ class CGPMul(CGPNode):
         self._output = graph[self._inputs[0]].output * graph[self._inputs[1]].output
 
     def format_output_str(self, graph):
-        self._output_str = '({} * {})'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
+        self._output_str = f'({graph[self._inputs[0]].output_str} * {graph[self._inputs[1]].output_str})'
 
 
 class CGPDiv(CGPNode):
@@ -205,8 +205,7 @@ class CGPDiv(CGPNode):
         self._output = graph[self._inputs[0]].output / graph[self._inputs[1]].output
 
     def format_output_str(self, graph):
-        self._output_str = '({inp0} / {inp1})'.format(
-            inp0=graph[self._inputs[0]].output_str, inp1=graph[self._inputs[1]].output_str)
+        self._output_str = f'({graph[self._inputs[0]].output_str} / {graph[self._inputs[1]].output_str})'
 
 
 class CGPConstantFloat(CGPNode):
@@ -224,13 +223,13 @@ class CGPConstantFloat(CGPNode):
         pass
 
     def format_output_str(self, graph):
-        self._output_str = '{}'.format(self._output)
+        self._output_str = f'{self._output}'
 
     def format_output_str_torch(self, graph):
-        self._output_str = 'self._p{}.expand(x.shape[0])'.format(self._idx)
+        self._output_str = f'self._p{self._idx}.expand(x.shape[0])'
 
     def format_parameter_str(self):
-        self._parameter_str = 'self._p{} = torch.nn.Parameter(torch.Tensor([{}]))\n'.format(self._idx, self._output)
+        self._parameter_str = f'self._p{self._idx} = torch.nn.Parameter(torch.Tensor([{self._output}]))\n'
 
 
 def custom_cgp_constant_float(val):
@@ -261,10 +260,10 @@ class CGPInputNode(CGPNode):
         assert(False)
 
     def format_output_str(self, graph):
-        self._output_str = 'x[{}]'.format(self._idx)
+        self._output_str = f'x[{self._idx}]'
 
     def format_output_str_torch(self, graph):
-        self._output_str = 'x[:, {}]'.format(self._idx)
+        self._output_str = f'x[:, {self._idx}]'
 
 
 class CGPOutputNode(CGPNode):
@@ -279,7 +278,7 @@ class CGPOutputNode(CGPNode):
         self._output = graph[self._inputs[0]].output
 
     def format_output_str(self, graph):
-        self._output_str = '{}'.format(graph[self._inputs[0]].output_str)
+        self._output_str = f'{graph[self._inputs[0]].output_str}'
 
 
 class CGPPow(CGPNode):
@@ -294,4 +293,4 @@ class CGPPow(CGPNode):
         self._output = graph[self._inputs[0]].output ** graph[self._inputs[1]].output
 
     def format_output_str(self, graph):
-        self._output_str = '({} ** {})'.format(graph[self._inputs[0]].output_str, graph[self._inputs[1]].output_str)
+        self._output_str = f'({graph[self._inputs[0]].output_str} ** {graph[self._inputs[1]].output_str})'
