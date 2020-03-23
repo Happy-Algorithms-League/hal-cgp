@@ -3,12 +3,10 @@ import matplotlib.pyplot as plt
 import os
 import scipy.constants
 import functools
-import sys
 import torch
 
 from sympy.printing.dot import dotprint
 
-sys.path.insert(0, "../")
 import gp
 
 """

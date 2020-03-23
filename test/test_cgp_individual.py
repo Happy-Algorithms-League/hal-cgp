@@ -1,8 +1,6 @@
 import numpy as np
 import pickle
-import sys
 
-sys.path.insert(0, "../")
 import gp
 from gp.cgp_individual import CGPIndividual
 

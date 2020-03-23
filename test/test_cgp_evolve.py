@@ -1,10 +1,8 @@
 import numpy as np
 import pytest
-import sys
 import torch
 import time
 
-sys.path.insert(0, "../")
 import gp
 
 SEED = np.random.randint(2 ** 31)

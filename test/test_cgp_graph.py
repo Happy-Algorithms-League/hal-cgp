@@ -1,11 +1,9 @@
 import numpy as np
 import pytest
 import sympy
-import sys
 import torch
 from itertools import product
 
-sys.path.insert(0, "../")
 import gp
 
 
