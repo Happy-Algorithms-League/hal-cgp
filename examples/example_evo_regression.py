@@ -22,7 +22,7 @@ def f_target_easy(x):  # target function
 
 
 def f_target_hard(x):  # target function
-    return 1.0 / (1.0 + 1.0 / x[:, 0] ** 2) + 1.0 / (1.0 + 1.0 / x[:, 1] ** 2)
+    return 1.0 + 1.0 / (x[:, 0] + x[:, 1])
 
 
 def objective(individual, target_function):
@@ -69,17 +69,21 @@ def evolution(f_target):
         Dictionary containing the history of the evolution
     """
     params = {
-        "seed": 8188212,
-        "n_threads": 1,
+        "seed": 8188211,
         "max_generations": 1000,
         "min_fitness": 0.0,
         "population_params": {"n_parents": 10, "mutation_rate": 0.5},
-        "ea_params": {"n_offsprings": 10, "n_breeding": 10, "tournament_size": 1},
+        "ea_params": {
+            "n_offsprings": 10,
+            "n_breeding": 10,
+            "tournament_size": 1,
+            "n_processes": 2,
+        },
         "genome_params": {
             "n_inputs": 2,
             "n_outputs": 1,
             "n_columns": 10,
-            "n_rows": 5,
+            "n_rows": 2,
             "levels_back": 2,
             "primitives": [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat],
         },
