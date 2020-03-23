@@ -8,8 +8,7 @@ python-gp
 Cartesian Genetic Programming (CGP) in Python.
 
 This library implements Cartesian Genetic Programming in pure Python. It provides Python data structures to represent and evolve a two-dimensional directed graph (the genotype) that can be translated into a computational graph (the phenotype) implementing a particular mathematical expression. The current implementation uses an evolutionary algorithm,  (mu + lambda) evolution strategies, to evolve a population of Cartesian graphs in order to optimize an objective function.
-
-![CGP Sketch](cgp-sketch.png)
+<img src="cgp-sketch.png" alt="CGP Sketch" width="600"/>
 
 Basic usage
 ===========
