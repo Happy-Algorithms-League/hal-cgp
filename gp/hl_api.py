@@ -75,6 +75,7 @@ def evolve(
                 f"\r[{pop.generation + 1}/{max_generations}"
                 f"({pop.champion.idx})] max fitness: {max_fitness}\033[K",
                 end="",
+                flush=True,
             )
 
         if record_history is not None:
