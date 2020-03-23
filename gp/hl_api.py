@@ -7,9 +7,9 @@ def evolve(
     ea,
     max_generations,
     min_fitness,
-    record_history=None,
     print_progress=False,
     *,
+    callback=None,
     label=None,
     n_processes=1,
 ):
@@ -31,11 +31,11 @@ def evolve(
         Maximum number of generations.
     min_fitness : float
         Minimum fitness at which the evolution is stopped.
-    record_history :  callable
-        Function that accepts a population instance and a dictionary
-        and records properties of interest in the dictionary. Defaults to None.
     print_progress : boolean, optional
         Switch to print out the progress of the algorithm. Defaults to False.
+    callback :  callable, optional
+        Called after each iteration with the population instance.
+        Defaults to None.
     label : str, optional
         Optional label to be passed to the objective function.
     n_processes : int, optional
@@ -49,13 +49,9 @@ def evolve(
         History of the evolution.
     """
 
-    # data structure for recording evolution history; can be populated via user
-    # defined recording function
-    history = {}
-
     ea.initialize_fitness_parents(pop, objective, label=label)
-    if record_history is not None:
-        record_history(pop, history)
+    if callback is not None:
+        callback(pop)
 
     # perform evolution
     max_fitness = np.finfo(np.float).min
@@ -77,15 +73,11 @@ def evolve(
                 end="",
             )
 
-        if record_history is not None:
-            record_history(pop, history)
+        if callback is not None:
+            callback(pop)
 
         if pop.champion.fitness + 1e-10 >= min_fitness:
-            for key in history:
-                history[key] = history[key][: pop.generation + 1]
             break
 
     if print_progress:
         print()
-
-    return history
