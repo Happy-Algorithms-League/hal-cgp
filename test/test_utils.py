@@ -1,10 +1,8 @@
 import numpy as np
 import pytest
-import sys
 import tempfile
 import time
 
-sys.path.insert(0, "../")
 import gp
 
 
