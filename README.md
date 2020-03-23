@@ -17,72 +17,72 @@ A simple example of CGP applied to a symbolic regression problem can be found in
 
 The basic steps are:
 
-1. **Define an objective function**. 
+1. Define an objective function. 
 
    The objective function needs to take an individual as input variable and update the `fitness` of the individual.
-```
+```python
 def objective(individual):
-    """Objective function of the regression task.
+      """Objective function of the regression task.
 
-    Parameters
-    ----------
-    individual : gp.CGPIndividual
-        Individual of the Cartesian Genetic Programming Framework.
+       Parameters
+      ----------
+      individual : gp.CGPIndividual
+          Individual of the Cartesian Genetic Programming Framework.
 
-    Returns
-    -------
-    gp.CGPIndividual
-        Modified individual with updated fitness value.
-    """
-	# Compute the fitness value
-	fitness = ...
-	individual.fitness = fitness
-	return individual
+      Returns
+      -------
+      gp.CGPIndividual
+          Modified individual with updated fitness value.
+      """
+      # Compute the fitness value
+      fitness = ...
+	  individual.fitness = fitness
+	  return individual
 ```
 2. Define parameters for the genome, the population and the evolutionary algorithm
-```
+```python
 params = {
-   'seed': 8188212,
-   'n_threads': 1,
-   'max_generations': 1000,
-   'min_fitness': 0.,
+     'seed': 8188212,
+     'n_threads': 1,
+     'max_generations': 1000,
+     'min_fitness': 0.,
 
-   'population_params': {
-        'n_parents': 10,
-        'mutation_rate': 0.5,
-    },
+     'population_params': {
+          'n_parents': 10,
+          'mutation_rate': 0.5,
+      },
 
-   'ea_params': {
-       'n_offsprings': 10,
-       'n_breeding': 10,
-       'tournament_size': 1},
+     'ea_params': {
+         'n_offsprings': 10,
+         'n_breeding': 10,
+         'tournament_size': 1},
 
-   'genome_params': {
-       'n_inputs': 2,
-       'n_outputs': 1,
-       'n_columns': 10,
-       'n_rows': 5,
-       'levels_back': 2,
-       'primitives': [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat]},
-    }
+     'genome_params': {
+         'n_inputs': 2,
+         'n_outputs': 1,
+         'n_columns': 10,
+         'n_rows': 5,
+         'levels_back': 2,
+         'primitives': [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat]},
+      }
 ```
 3. Initialize the population and an evolutionary algorithm instance:
-```
+```python
 pop = gp.CGPPopulation(**params['population_params'],
                           seed=params['seed'], genome_params=params['genome_params'])
 ea = gp.ea.MuPlusLambda(**params['ea_params'])
 ```
 4. Define a callback function to record information about the evolution of the population:
-```
+```python
 def record_history(pop, history):
-    keys = ['fitness']
-    for key in keys:
-        if key not in history:
-            history[key] = []
-    history['fitness'].append(pop.fitness_parents())
+        keys = ['fitness']
+        for key in keys:
+            if key not in history:
+                history[key] = []
+        history['fitness'].append(pop.fitness_parents())
 ```
 5. Use the `evolve` function from the high-level API that ties everything together and executes the evolution:
-```
+```python
 history = gp.evolve(pop, obj, ea, params['max_generations'],
                        params['min_fitness'], record_history=record_history, print_progress=True)
 ```
