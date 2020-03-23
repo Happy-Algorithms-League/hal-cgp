@@ -94,24 +94,24 @@ def evolution(f_target):
     # create instance of evolutionary algorithm
     ea = gp.ea.MuPlusLambda(**params["ea_params"])
 
-    def record_history(pop, history):
-        keys = ["champion", "fitness_parents"]
-        for key in keys:
-            if key not in history:
-                history[key] = []
+    history = {}
+    history["champion"] = []
+    history["fitness_parents"] = []
+
+    def recording_callback(pop):
         history["champion"].append(pop.champion)
         history["fitness_parents"].append(pop.fitness_parents())
 
     obj = functools.partial(objective, target_function=f_target)
     # Perform evolution
-    history = gp.evolve(
+    gp.evolve(
         pop,
         obj,
         ea,
         params["max_generations"],
         params["min_fitness"],
-        record_history=record_history,
         print_progress=True,
+        callback=recording_callback,
     )
     return history, pop
 

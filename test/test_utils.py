@@ -64,28 +64,25 @@ def test_history_recording():
         population_params["tournament_size"],
     )
 
-    def record_history(pop, history):
-        if "fitness" not in history:
-            history["fitness"] = np.empty(
-                (population_params["max_generations"], population_params["n_parents"])
-            )
+    history = {}
+    history["fitness"] = np.empty(
+        (population_params["max_generations"], population_params["n_parents"])
+    )
+    history["fitness_champion"] = np.empty(population_params["max_generations"])
+    history["expr_champion"] = []
+
+    def recording_callback(pop):
         history["fitness"][pop.generation] = pop.fitness_parents()
-
-        if "fitness_champion" not in history:
-            history["fitness_champion"] = np.empty(population_params["max_generations"])
         history["fitness_champion"][pop.generation] = pop.champion.fitness
-
-        if "expr_champion" not in history:
-            history["expr_champion"] = []
         history["expr_champion"].append(str(pop.champion.to_sympy(simplify=True)[0]))
 
-    history = gp.evolve(
+    gp.evolve(
         pop,
         objective_history_recording,
         ea,
         population_params["max_generations"],
         population_params["min_fitness"],
-        record_history=record_history,
+        callback=recording_callback,
     )
 
     assert np.all(history["fitness"] == pytest.approx(1.0))
