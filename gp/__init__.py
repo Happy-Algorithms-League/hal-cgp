@@ -6,7 +6,6 @@ from .cgp_node import (
     CGPMul,
     CGPDiv,
     CGPConstantFloat,
-    custom_cgp_constant_float,
     CGPPow,
 )
 from .binary_population import BinaryPopulation
@@ -16,5 +15,6 @@ from .exceptions import InvalidSympyExpression
 
 from .hl_api import evolve
 
-import gp.utils
-import gp.ea
+from . import utils
+from . import ea
+from . import cgp_node_factories as node_factories
