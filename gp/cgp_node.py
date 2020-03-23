@@ -18,9 +18,10 @@ def register(cls):
         primitives_dict[name] = cls
 
 
-class CGPNode():
+class CGPNode:
     """Base class for primitive functions used in Cartesian computational graphs.
     """
+
     _arity = None
     _active = False
     _inputs = None
@@ -30,7 +31,7 @@ class CGPNode():
 
     def __init__(self, idx, inputs):
         """Init function.
-        
+
         Parameters
         ----------
         idx : int
@@ -41,7 +42,7 @@ class CGPNode():
         self._idx = idx
         self._inputs = inputs
 
-        assert(idx not in inputs)
+        assert idx not in inputs
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -57,50 +58,54 @@ class CGPNode():
 
     @property
     def inputs(self):
-        return self._inputs[:self._arity]
+        return self._inputs[: self._arity]
 
     @property
     def idx(self):
         return self._idx
 
     def __repr__(self):
-        return f'{self.__class__.__name__}(idx: {self.idx}, active: {self._active}, arity: {self._arity}, inputs {self._inputs}, output {self._outputs})'
+        return (
+            f"{self.__class__.__name__}(idx: {self.idx}, active: {self._active}, "
+            f"arity: {self._arity}, inputs {self._inputs}, output {self._outputs})"
+        )
 
     def pretty_str(self, n):
         used_characters = 0
         used_characters += 3  # for two digit idx and following whitespace
         used_characters += 3  # for "active" marker
-        # for brackets around inputs, two digits inputs separated by comma and last input without comma
+        # for brackets around inputs, two digits inputs separated by
+        # comma and last input without comma
         used_characters += 2 + self.max_arity * 3 - 1
 
         assert n > used_characters
         name = self.__class__.__name__[3:]  # cut of "CGP" prefix of class name
-        name = name[:n - used_characters]  # cut to correct size
+        name = name[: n - used_characters]  # cut to correct size
 
-        s = f'{self._idx:02d}'
+        s = f"{self._idx:02d}"
 
         if self._active:
-            s += ' * '
-            s += name + ' '
+            s += " * "
+            s += name + " "
             if self._arity > 0:
-                s += '('
+                s += "("
                 for i in range(self._arity):
-                    s += f'{self._inputs[i]:02d},'
+                    s += f"{self._inputs[i]:02d},"
                 s = s[:-1]
-                s += ')'
+                s += ")"
                 for i in range(self.max_arity - self._arity):
-                    s += '   '
+                    s += "   "
             else:
-                s += '  '
+                s += "  "
                 for i in range(self.max_arity):
-                    s += '   '
+                    s += "   "
                 s = s[:-1]
         else:
-            s += '   '
-            s += name + ' '
-            s += '  '
+            s += "   "
+            s += name + " "
+            s += "  "
             for i in range(self.max_arity):
-                s += '   '
+                s += "   "
             s = s[:-1]
 
         return s.ljust(n)
@@ -150,6 +155,7 @@ class CGPNode():
 class CGPAdd(CGPNode):
     """Node representing addition.
     """
+
     _arity = 2
 
     def __init__(self, idx, inputs):
@@ -159,12 +165,15 @@ class CGPAdd(CGPNode):
         self._output = graph[self._inputs[0]].output + graph[self._inputs[1]].output
 
     def format_output_str(self, graph):
-        self._output_str = f'({graph[self._inputs[0]].output_str} + {graph[self._inputs[1]].output_str})'
+        self._output_str = (
+            f"({graph[self._inputs[0]].output_str} + {graph[self._inputs[1]].output_str})"
+        )
 
 
 class CGPSub(CGPNode):
     """Node representing subtraction.
     """
+
     _arity = 2
 
     def __init__(self, idx, inputs):
@@ -174,12 +183,15 @@ class CGPSub(CGPNode):
         self._output = graph[self._inputs[0]].output - graph[self._inputs[1]].output
 
     def format_output_str(self, graph):
-        self._output_str = f'({graph[self._inputs[0]].output_str} - {graph[self._inputs[1]].output_str})'
+        self._output_str = (
+            f"({graph[self._inputs[0]].output_str} - {graph[self._inputs[1]].output_str})"
+        )
 
 
 class CGPMul(CGPNode):
     """Node representing multiplication.
     """
+
     _arity = 2
 
     def __init__(self, idx, inputs):
@@ -189,12 +201,15 @@ class CGPMul(CGPNode):
         self._output = graph[self._inputs[0]].output * graph[self._inputs[1]].output
 
     def format_output_str(self, graph):
-        self._output_str = f'({graph[self._inputs[0]].output_str} * {graph[self._inputs[1]].output_str})'
+        self._output_str = (
+            f"({graph[self._inputs[0]].output_str} * {graph[self._inputs[1]].output_str})"
+        )
 
 
 class CGPDiv(CGPNode):
     """Node representing division.
     """
+
     _arity = 2
 
     def __init__(self, idx, inputs):
@@ -205,31 +220,36 @@ class CGPDiv(CGPNode):
         self._output = graph[self._inputs[0]].output / graph[self._inputs[1]].output
 
     def format_output_str(self, graph):
-        self._output_str = f'({graph[self._inputs[0]].output_str} / {graph[self._inputs[1]].output_str})'
+        self._output_str = (
+            f"({graph[self._inputs[0]].output_str} / {graph[self._inputs[1]].output_str})"
+        )
 
 
 class CGPConstantFloat(CGPNode):
     """Node representing a constant float number.
     """
+
     _arity = 0
     _is_parameter = True
 
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
 
-        self._output = 1.
+        self._output = 1.0
 
     def __call__(self, x, graph):
         pass
 
     def format_output_str(self, graph):
-        self._output_str = f'{self._output}'
+        self._output_str = f"{self._output}"
 
     def format_output_str_torch(self, graph):
-        self._output_str = f'self._p{self._idx}.expand(x.shape[0])'
+        self._output_str = f"self._p{self._idx}.expand(x.shape[0])"
 
     def format_parameter_str(self):
-        self._parameter_str = f'self._p{self._idx} = torch.nn.Parameter(torch.Tensor([{self._output}]))\n'
+        self._parameter_str = (
+            f"self._p{self._idx} = torch.nn.Parameter(torch.Tensor([{self._output}]))\n"
+        )
 
 
 def custom_cgp_constant_float(val):
@@ -251,24 +271,26 @@ def custom_cgp_constant_float(val):
 class CGPInputNode(CGPNode):
     """Node representing a generic input node.
     """
+
     _arity = 0
 
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
 
     def __call__(self, x, graph):
-        assert(False)
+        assert False
 
     def format_output_str(self, graph):
-        self._output_str = f'x[{self._idx}]'
+        self._output_str = f"x[{self._idx}]"
 
     def format_output_str_torch(self, graph):
-        self._output_str = f'x[:, {self._idx}]'
+        self._output_str = f"x[:, {self._idx}]"
 
 
 class CGPOutputNode(CGPNode):
     """Node representing a generic output node.
     """
+
     _arity = 1
 
     def __init__(self, idx, inputs):
@@ -278,12 +300,13 @@ class CGPOutputNode(CGPNode):
         self._output = graph[self._inputs[0]].output
 
     def format_output_str(self, graph):
-        self._output_str = f'{graph[self._inputs[0]].output_str}'
+        self._output_str = f"{graph[self._inputs[0]].output_str}"
 
 
 class CGPPow(CGPNode):
     """Node representing the power operation.
     """
+
     _arity = 2
 
     def __init__(self, idx, inputs):
@@ -293,4 +316,6 @@ class CGPPow(CGPNode):
         self._output = graph[self._inputs[0]].output ** graph[self._inputs[1]].output
 
     def format_output_str(self, graph):
-        self._output_str = f'({graph[self._inputs[0]].output_str} ** {graph[self._inputs[1]].output_str})'
+        self._output_str = (
+            f"({graph[self._inputs[0]].output_str} ** {graph[self._inputs[1]].output_str})"
+        )

@@ -23,17 +23,16 @@ def disk_cache(fn):
     """
 
     def decorator(func):
-
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
 
             # compute hash from function arguments
             s = str(args) + str(kwargs)
-            key = hashlib.sha1(s.encode('utf-8')).hexdigest()
+            key = hashlib.sha1(s.encode("utf-8")).hexdigest()
 
             # check whether result exists in cache file
             if os.path.isfile(fn):
-                with open(fn, 'rb') as f:
+                with open(fn, "rb") as f:
                     # iterate over all stored pickle streams
                     while True:
                         try:
@@ -42,13 +41,13 @@ def disk_cache(fn):
                             break
 
                         if key in cursor:
-                            return cursor[key] # result was found
+                            return cursor[key]  # result was found
 
             # if result does not exist, compute return values and store new entry
             # in cache file
             return_values = func(*args, **kwargs)
 
-            with open(fn, 'ab') as f: # append new pickle stream
+            with open(fn, "ab") as f:  # append new pickle stream
                 pickle.dump({key: return_values}, f)
 
             return return_values

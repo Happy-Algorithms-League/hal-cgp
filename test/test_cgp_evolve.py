@@ -4,7 +4,7 @@ import sys
 import torch
 import time
 
-sys.path.insert(0, '../')
+sys.path.insert(0, "../")
 import gp
 
 SEED = np.random.randint(2 ** 31)
@@ -23,7 +23,7 @@ def objective_parallel_cgp_population(individual):
     f_graph = graph.to_torch()
 
     def f_target(x):  # target function
-        return 1. + x[:, 0] - x[:, 1]
+        return 1.0 + x[:, 0] - x[:, 1]
 
     x = torch.Tensor(n_function_evaluations, 2).normal_()
     y = f_graph(x)
@@ -38,33 +38,44 @@ def objective_parallel_cgp_population(individual):
 def _test_cgp_population(n_processes):
 
     population_params = {
-        'n_parents': 5,
-        'n_offsprings': 5,
-        'max_generations': 2000,
-        'n_breeding': 5,
-        'tournament_size': 2,
-        'mutation_rate': 0.05,
-        'min_fitness': 1e-12,
+        "n_parents": 5,
+        "n_offsprings": 5,
+        "max_generations": 2000,
+        "n_breeding": 5,
+        "tournament_size": 2,
+        "mutation_rate": 0.05,
+        "min_fitness": 1e-12,
     }
 
     genome_params = {
-        'n_inputs': 2,
-        'n_outputs': 1,
-        'n_columns': 3,
-        'n_rows': 3,
-        'levels_back': 2,
-        'primitives': [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat]
+        "n_inputs": 2,
+        "n_outputs": 1,
+        "n_columns": 3,
+        "n_rows": 3,
+        "levels_back": 2,
+        "primitives": [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat],
     }
 
     np.random.seed(SEED)
     torch.manual_seed(SEED)
 
     pop = gp.CGPPopulation(
-        population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
-    ea = gp.ea.MuPlusLambda(population_params['n_offsprings'], population_params['n_breeding'],
-                            population_params['tournament_size'], n_processes=n_processes)
+        population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
+    )
+    ea = gp.ea.MuPlusLambda(
+        population_params["n_offsprings"],
+        population_params["n_breeding"],
+        population_params["tournament_size"],
+        n_processes=n_processes,
+    )
 
-    gp.evolve(pop, objective_parallel_cgp_population, ea, population_params['max_generations'], population_params['min_fitness'])
+    gp.evolve(
+        pop,
+        objective_parallel_cgp_population,
+        ea,
+        population_params["max_generations"],
+        population_params["min_fitness"],
+    )
 
     assert abs(pop.champion.fitness) < 1e-10
 
@@ -87,26 +98,27 @@ def test_parallel_cgp_population():
 def test_cgp_pop_uses_own_rng():
 
     population_params = {
-        'n_parents': 5,
-        'n_offsprings': 5,
-        'max_generations': 500,
-        'n_breeding': 5,
-        'tournament_size': 2,
-        'mutation_rate': 0.05,
-        'min_fitness': 1e-12,
+        "n_parents": 5,
+        "n_offsprings": 5,
+        "max_generations": 500,
+        "n_breeding": 5,
+        "tournament_size": 2,
+        "mutation_rate": 0.05,
+        "min_fitness": 1e-12,
     }
 
     genome_params = {
-        'n_inputs': 2,
-        'n_outputs': 1,
-        'n_columns': 3,
-        'n_rows': 3,
-        'levels_back': 2,
-        'primitives': [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat]
+        "n_inputs": 2,
+        "n_outputs": 1,
+        "n_columns": 3,
+        "n_rows": 3,
+        "levels_back": 2,
+        "primitives": [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat],
     }
 
-    pop = gp.CGPPopulation(population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
-    ea = gp.ea.MuPlusLambda(population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'])
+    pop = gp.CGPPopulation(
+        population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
+    )
 
     # test for generating random parent population
     np.random.seed(SEED)
@@ -124,7 +136,6 @@ def test_cgp_pop_uses_own_rng():
 
 
 def test_evolve_two_expressions():
-
     def _objective(individual):
 
         if individual.fitness is not None:
@@ -148,41 +159,51 @@ def test_evolve_two_expressions():
             loss += (f0(x0) - y0(x0)) ** 2
             loss += (f1(x1) - y1(x1)) ** 2
 
-        individual.fitness  = -loss
+        individual.fitness = -loss
 
         return individual
 
-
     population_params = {
-        'n_parents': 5,
-        'n_offsprings': 5,
-        'max_generations': 1000,
-        'n_breeding': 5,
-        'tournament_size': 2,
-        'mutation_rate': 0.05,
-        'min_fitness': 1e-12,
+        "n_parents": 5,
+        "n_offsprings": 5,
+        "max_generations": 1000,
+        "n_breeding": 5,
+        "tournament_size": 2,
+        "mutation_rate": 0.05,
+        "min_fitness": 1e-12,
     }
 
     genome_params = [
-        {'n_inputs': 1,
-         'n_outputs': 1,
-         'n_columns': 3,
-         'n_rows': 3,
-         'levels_back': 2,
-         'primitives': [gp.CGPAdd, gp.CGPMul],
-         },
-        {'n_inputs': 2,
-         'n_outputs': 1,
-         'n_columns': 2,
-         'n_rows': 2,
-         'levels_back': 2,
-         'primitives': [gp.CGPSub, gp.CGPMul],
-         }]
+        {
+            "n_inputs": 1,
+            "n_outputs": 1,
+            "n_columns": 3,
+            "n_rows": 3,
+            "levels_back": 2,
+            "primitives": [gp.CGPAdd, gp.CGPMul],
+        },
+        {
+            "n_inputs": 2,
+            "n_outputs": 1,
+            "n_columns": 2,
+            "n_rows": 2,
+            "levels_back": 2,
+            "primitives": [gp.CGPSub, gp.CGPMul],
+        },
+    ]
 
-    pop = gp.CGPPopulation(population_params['n_parents'], population_params['mutation_rate'], SEED, genome_params)
-    ea = gp.ea.MuPlusLambda(population_params['n_offsprings'], population_params['n_breeding'], population_params['tournament_size'])
+    pop = gp.CGPPopulation(
+        population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
+    )
+    ea = gp.ea.MuPlusLambda(
+        population_params["n_offsprings"],
+        population_params["n_breeding"],
+        population_params["tournament_size"],
+    )
 
-    gp.evolve(pop, _objective, ea, population_params['max_generations'], population_params['min_fitness'])
+    gp.evolve(
+        pop, _objective, ea, population_params["max_generations"], population_params["min_fitness"]
+    )
 
     assert abs(pop.champion.fitness) < 1e-10
 
@@ -200,48 +221,54 @@ def objective_speedup_parallel_evolve(individual):
 def test_speedup_parallel_evolve():
 
     population_params = {
-        'n_parents': 4,
-        'n_offsprings': 4,
-        'max_generations': 2,
-        'n_breeding': 5,
-        'tournament_size': 2,
-        'mutation_rate': 0.05,
-        'min_fitness': 1.,
+        "n_parents": 4,
+        "n_offsprings": 4,
+        "max_generations": 2,
+        "n_breeding": 5,
+        "tournament_size": 2,
+        "mutation_rate": 0.05,
+        "min_fitness": 1.0,
     }
 
     genome_params = {
-        'n_inputs': 2,
-        'n_outputs': 1,
-        'n_columns': 3,
-        'n_rows': 3,
-        'levels_back': 2,
-        'primitives': [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat]
+        "n_inputs": 2,
+        "n_outputs": 1,
+        "n_columns": 3,
+        "n_rows": 3,
+        "levels_back": 2,
+        "primitives": [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat],
     }
 
     # Number of calls to objective: Number of parents + (Number of
     # parents + offspring) * (N_generations - 1) Initially, we need to
     # compute the fitness for all parents. Then we compute the fitness
     # for each parents and offspring in each iteration.
-    n_calls_objective = (population_params['n_parents'] +
-                         (population_params['n_parents'] +
-                          population_params['n_offsprings']) *
-                         (population_params['max_generations'] - 1))
+    n_calls_objective = population_params["n_parents"] + (
+        population_params["n_parents"] + population_params["n_offsprings"]
+    ) * (population_params["max_generations"] - 1)
     np.random.seed(SEED)
 
     # Serial execution
-    
+
     for n_processes in [1, 2, 4]:
-        pop = gp.CGPPopulation(population_params['n_parents'],
-                               population_params['mutation_rate'], SEED, genome_params)
-        ea = gp.ea.MuPlusLambda(population_params['n_offsprings'],
-                                population_params['n_breeding'],
-                                population_params['tournament_size'],
-                                n_processes=n_processes)
+        pop = gp.CGPPopulation(
+            population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
+        )
+        ea = gp.ea.MuPlusLambda(
+            population_params["n_offsprings"],
+            population_params["n_breeding"],
+            population_params["tournament_size"],
+            n_processes=n_processes,
+        )
 
         t0 = time.time()
-        gp.evolve(pop, objective_speedup_parallel_evolve, ea,
-                  population_params['max_generations'],
-                  population_params['min_fitness'])
+        gp.evolve(
+            pop,
+            objective_speedup_parallel_evolve,
+            ea,
+            population_params["max_generations"],
+            population_params["min_fitness"],
+        )
         T = time.time() - t0
         if n_processes == 1:
             T_baseline = T

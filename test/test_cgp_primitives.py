@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import sys
 
-sys.path.insert(0, '../')
+sys.path.insert(0, "../")
 import gp
 from gp.cgp_primitives import CGPPrimitives
 
@@ -36,7 +36,7 @@ def test_max_arity():
 
 def test_check_for_correct_class():
     with pytest.raises(TypeError):
-        CGPPrimitives(['test'])
+        CGPPrimitives(["test"])
 
     with pytest.raises(TypeError):
         CGPPrimitives([str])

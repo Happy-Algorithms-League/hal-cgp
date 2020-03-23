@@ -1,8 +1,7 @@
 from .abstract_individual import AbstractIndividual
 
 
-class BinaryGenome():
-
+class BinaryGenome:
     def __init__(self, genome_length, primitives, p_primitives=None):
 
         self.dna = None
@@ -14,7 +13,7 @@ class BinaryGenome():
         return self.genome_length
 
     def __repr__(self):
-        return self.__class__.__name__ + '(' + ''.join(str(d) for d in self.dna) + ')'
+        return self.__class__.__name__ + "(" + "".join(str(d) for d in self.dna) + ")"
 
     def __getitem__(self, key):
         return self.dna[key]
@@ -25,21 +24,22 @@ class BinaryGenome():
         return new
 
     def randomize(self, rng):
-        self.dna = list(rng.choice(
-            self.primitives,
-            size=self.genome_length))
+        self.dna = list(rng.choice(self.primitives, size=self.genome_length))
 
     def mutate(self, n_mutations, rng):
         for i in range(n_mutations):
             if self.p_primitives:
                 # mutate random gene according to distribution of primitives
-                self.dna[rng.randint(self.genome_length)] = rng.choice(self.primitives, p=self.p_primitives)
+                self.dna[rng.randint(self.genome_length)] = rng.choice(
+                    self.primitives, p=self.p_primitives
+                )
             else:
-                self.dna[rng.randint(self.genome_length)] = rng.choice(self.primitives)  # mutate random gene
+                self.dna[rng.randint(self.genome_length)] = rng.choice(
+                    self.primitives
+                )  # mutate random gene
 
 
 class BinaryIndividual(AbstractIndividual):
-
     def __init__(self, fitness, genome):
         super().__init__(fitness, genome)
 

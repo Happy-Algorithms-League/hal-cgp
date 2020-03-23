@@ -1,15 +1,16 @@
 import collections
 import sympy
-import torch
+import torch  # noqa: F401
 
 from .cgp_node import CGPInputNode, CGPOutputNode
 from .exceptions import InvalidSympyExpression
 
 
-class CGPGraph():
+class CGPGraph:
     """Class representing the computational graph defined by a genome
     in the Cartesian Genetic Programming Framework.
     """
+
     def __init__(self, genome):
         """Init function.
 
@@ -29,12 +30,12 @@ class CGPGraph():
         self._genome = genome
 
     def __repr__(self):
-        return 'CGPGraph(' + str(self._nodes) + ')'
+        return "CGPGraph(" + str(self._nodes) + ")"
 
     def print_active_nodes(self):
         """Print a representation of all active nodes in the graph.
         """
-        return 'CGPGraph(' + str([node for node in self._nodes if node._active]) + ')'
+        return "CGPGraph(" + str([node for node in self._nodes if node._active]) + ")"
 
     def pretty_print(self):
         """Print a pretty representation of the computational graph.
@@ -47,9 +48,9 @@ class CGPGraph():
             return s
 
         def empty_node_str():
-            return ' ' * n_characters
+            return " " * n_characters
 
-        s = '\n'
+        s = "\n"
 
         for row in range(self._n_rows):
             for column in range(-1, self._n_columns + 1):
@@ -59,26 +60,26 @@ class CGPGraph():
                         s += pretty_node_str(self.input_nodes[row])
                     else:
                         s += empty_node_str()
-                    s += '\t'
+                    s += "\t"
 
                 elif column < self._n_columns:
                     s += pretty_node_str(self.hidden_nodes[row + column * self._n_rows])
-                    s += '\t'
+                    s += "\t"
 
                 else:
                     if row < self._n_outputs:
                         s += pretty_node_str(self.output_nodes[row])
                     else:
                         s += empty_node_str()
-                    s += '\t'
+                    s += "\t"
 
-            s += '\n'
+            s += "\n"
 
         return s
 
     def parse_genome(self, genome):
         if genome.dna is None:
-            raise RuntimeError('dna not initialized')
+            raise RuntimeError("dna not initialized")
 
         self._genome = genome
 
@@ -109,20 +110,22 @@ class CGPGraph():
 
     @property
     def input_nodes(self):
-        return self._nodes[:self._n_inputs]
+        return self._nodes[: self._n_inputs]
 
     @property
     def hidden_nodes(self):
-        return self._nodes[self._n_inputs:-self._n_outputs]
+        return self._nodes[self._n_inputs : -self._n_outputs]
 
     @property
     def output_nodes(self):
-        return self._nodes[-self._n_outputs:]
+        return self._nodes[-self._n_outputs :]
 
     def _determine_active_nodes(self):
 
         # determine active nodes
-        active_nodes_by_hidden_column_idx = collections.defaultdict(set)  # use set to avoid duplication
+        active_nodes_by_hidden_column_idx = collections.defaultdict(
+            set
+        )  # use set to avoid duplication
         nodes_to_process = self.output_nodes  # output nodes always need to be processed
 
         while len(nodes_to_process) > 0:
@@ -162,7 +165,7 @@ class CGPGraph():
     def __call__(self, x):
         # store values of x in input nodes
         for i, xi in enumerate(x):
-            assert(isinstance(self._nodes[i], CGPInputNode))
+            assert isinstance(self._nodes[i], CGPInputNode)
             self._nodes[i]._output = xi
 
         # evaluate active nodes in order
@@ -179,8 +182,8 @@ class CGPGraph():
     def to_str(self):
 
         self._format_output_str_of_all_nodes()
-        out_str = ', '.join(node.output_str for node in self.output_nodes)
-        return f'[{out_str}]'
+        out_str = ", ".join(node.output_str for node in self.output_nodes)
+        return f"[{out_str}]"
 
     def _format_output_str_of_all_nodes(self):
 
@@ -204,10 +207,10 @@ class CGPGraph():
             Callable executing the function represented by the computational graph.
         """
         self._format_output_str_of_all_nodes()
-        s = ', '.join(node.output_str for node in self.output_nodes)
-        func_str = f'def _f(x): return [{s}]'
+        s = ", ".join(node.output_str for node in self.output_nodes)
+        func_str = f"def _f(x): return [{s}]"
         exec(func_str)
-        return locals()['_f']
+        return locals()["_f"]
 
     def to_torch(self):
         """Compile the function represented by the computational graph to a Torch class.
@@ -231,16 +234,15 @@ class CGPGraph():
                 if node.is_parameter:
                     node.format_parameter_str()
                     all_parameter_str.append(node.parameter_str)
-        forward_str = ', '.join(node.output_str_torch for node in self.output_nodes)
-        class_str = \
-"""
+        forward_str = ", ".join(node.output_str_torch for node in self.output_nodes)
+        class_str = """
 class _C(torch.nn.Module):
 
     def __init__(self):
         super().__init__()
 """
         for s in all_parameter_str:
-            class_str += '        ' + s
+            class_str += "        " + s
 
         func_str = f"""
     def forward(self, x):
@@ -249,15 +251,15 @@ class _C(torch.nn.Module):
         class_str += func_str
 
         exec(class_str)
-        exec('_c = _C()')
+        exec("_c = _C()")
 
-        return locals()['_c']
+        return locals()["_c"]
 
     def update_parameters_from_torch_class(self, torch_cls):
         """Update values stored in constant nodes of graph from parameters of a given Torch instance.
-        
+
         Can be used to import new values from a Torch class after a autograd step.
-        
+
         Parameters
         ----------
         torch_cls : torch.nn.module
@@ -270,7 +272,7 @@ class _C(torch.nn.Module):
         for n in self._nodes:
             if n.is_parameter:
                 try:
-                    n._output = eval(f'torch_cls._p{n._idx}[0]')
+                    n._output = eval(f"torch_cls._p{n._idx}[0]")
                 except AttributeError:
                     pass
 
@@ -299,7 +301,9 @@ class _C(torch.nn.Module):
             # strings (i.e., x[0] -> x_0)
             s = output_node.output_str
             for input_node in self.input_nodes:
-                s = s.replace(input_node.output_str, input_node.output_str.replace('[', '_').replace(']', ''))
+                s = s.replace(
+                    input_node.output_str, input_node.output_str.replace("[", "_").replace("]", "")
+                )
 
             # to get an expression that reflects the computational graph,
             # sympy should not automatically simplify the expression
@@ -315,8 +319,7 @@ class _C(torch.nn.Module):
 
     def _validate_sympy_expr(self, expr):
 
-        if 'zoo' in str(expr) \
-           or 'nan' in str(expr):
+        if "zoo" in str(expr) or "nan" in str(expr):
             raise InvalidSympyExpression(str(expr))
 
         return expr

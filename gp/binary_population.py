@@ -1,11 +1,8 @@
-import numpy as np
-
 from .abstract_population import AbstractPopulation
 from .binary_individual import BinaryIndividual, BinaryGenome
 
 
 class BinaryPopulation(AbstractPopulation):
-
     def __init__(self, n_parents, mutation_rate, seed, genome_params):
         self._genome_params = genome_params
         super().__init__(n_parents, mutation_rate, seed)

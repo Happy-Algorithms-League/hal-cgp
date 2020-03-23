@@ -1,8 +1,9 @@
 import concurrent.futures
+import functools
 import numpy as np
 
 
-class MuPlusLambda():
+class MuPlusLambda:
     """Generic (mu + lambda) evolution strategy based on Deb et al. (2002).
 
     Currently only uses a single objective.
@@ -30,7 +31,10 @@ class MuPlusLambda():
         self.n_offsprings = n_offsprings
 
         if n_breeding < n_offsprings:
-            raise ValueError('size of breeding pool must be at least as large as the desired number of offsprings')
+            raise ValueError(
+                "size of breeding pool must be at least as large "
+                "as the desired number of offsprings"
+            )
         self.n_breeding = n_breeding
 
         self.tournament_size = tournament_size
@@ -104,7 +108,7 @@ class MuPlusLambda():
         # population
         breeding_pool = []
         while len(breeding_pool) < self.n_breeding:
-            tournament_pool = pop.rng.permutation(pop.parents)[:self.tournament_size]
+            tournament_pool = pop.rng.permutation(pop.parents)[: self.tournament_size]
             best_in_tournament = sorted(tournament_pool, key=lambda x: -x.fitness)[0]
             breeding_pool.append(best_in_tournament.clone())
 
@@ -120,7 +124,7 @@ class MuPlusLambda():
 
     def _compute_fitness(self, combined, objective, *, label=None):
         if label is not None:
-            tmp_objective = lambda x: objective(x, label=label)
+            tmp_objective = functools.partial(objective, label=label)
         else:
             tmp_objective = objective
 
@@ -145,7 +149,9 @@ class MuPlusLambda():
                 ind.fitness = -np.inf
 
         # get list of indices that sorts combined_copy ("argsort")
-        combined_sorted_indices = [idx for (idx, _) in sorted(enumerate(combined_copy), key=lambda x: -x[1].fitness)]
+        combined_sorted_indices = [
+            idx for (idx, _) in sorted(enumerate(combined_copy), key=lambda x: -x[1].fitness)
+        ]
 
         # return sorted original list of individuals
         return [combined[idx] for idx in combined_sorted_indices]

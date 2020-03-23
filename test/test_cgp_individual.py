@@ -1,12 +1,8 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import pickle
-import pytest
-import sympy
 import sys
-import torch
 
-sys.path.insert(0, '../')
+sys.path.insert(0, "../")
 import gp
 from gp.cgp_individual import CGPIndividual
 
@@ -20,6 +16,5 @@ def test_pickle_individual():
     genome = gp.CGPGenome(1, 1, 1, 1, 1, primitives)
     individual = CGPIndividual(None, genome)
 
-    with open('individual.pkl', 'wb') as f:
+    with open("individual.pkl", "wb") as f:
         pickle.dump(individual, f)
-

@@ -3,32 +3,34 @@ import matplotlib.pyplot as plt
 import sys
 import torch
 
-sys.path.insert(0, '../')
+sys.path.insert(0, "../")
 import gp
 
 
 def random_regression():
     params = {
-        'seed': 81882,
-        'n_inputs': 2,
-        'n_outputs': 1,
-        'n_columns': 3,
-        'n_rows': 3,
-        'levels_back': 2,
-        'n_mutations': 3,
+        "seed": 81882,
+        "n_inputs": 2,
+        "n_outputs": 1,
+        "n_columns": 3,
+        "n_rows": 3,
+        "levels_back": 2,
+        "n_mutations": 3,
     }
 
-    np.random.seed(params['seed'])
+    np.random.seed(params["seed"])
 
     primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat])
-    genome = gp.CGPGenome(params['n_inputs'], params['n_outputs'], params['n_columns'], params['n_rows'], primitives)
-    genome.randomize(params['levels_back'])
+    genome = gp.CGPGenome(
+        params["n_inputs"], params["n_outputs"], params["n_columns"], params["n_rows"], primitives
+    )
+    genome.randomize(params["levels_back"])
     graph = gp.CGPGraph(genome)
 
     history_loss = []
     for i in range(3000):
 
-        genome.mutate(params['n_mutations'], params['levels_back'])
+        genome.mutate(params["n_mutations"], params["levels_back"])
         graph.parse_genome(genome)
         f = graph.compile_torch_class()
 
@@ -70,5 +72,5 @@ def random_regression():
     plt.show()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     random_regression()

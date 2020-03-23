@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class AbstractPopulation():
+class AbstractPopulation:
     """
     Generic population class for evolutionary algorithms.
     """
@@ -21,13 +21,15 @@ class AbstractPopulation():
         """
         self.n_parents = n_parents  # number of individuals in parent population
 
-        if not (0. < mutation_rate and mutation_rate < 1.):
-            raise ValueError('mutation rate needs to be in (0, 1)')
+        if not (0.0 < mutation_rate and mutation_rate < 1.0):
+            raise ValueError("mutation rate needs to be in (0, 1)")
         self._mutation_rate = mutation_rate  # probability of mutation per gene
 
         self._parents = None  # list of parent individuals
 
-        self.generation = 0  # keeps track of the number of generations, increases with every new offspring generation
+        # keeps track of the number of generations, increases with
+        # every new offspring generation
+        self.generation = 0
         self._max_idx = -1  # keeps track of maximal idx in population used to label individuals
 
         self.seed = seed
