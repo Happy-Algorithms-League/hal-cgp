@@ -74,17 +74,15 @@ ea = gp.ea.MuPlusLambda(**params['ea_params'])
 ```
 4. Define a callback function to record information about the evolution of the population:
 ```python
-def record_history(pop, history):
-        keys = ['fitness']
-        for key in keys:
-            if key not in history:
-                history[key] = []
-        history['fitness'].append(pop.fitness_parents())
+history = {}
+history["fitness_parents"] = []
+def recording_callback(pop):
+    history["fitness_parents"].append(pop.fitness_parents())
 ```
 5. Use the `evolve` function from the high-level API that ties everything together and executes the evolution:
 ```python
 history = gp.evolve(pop, obj, ea, params['max_generations'],
-                       params['min_fitness'], record_history=record_history, print_progress=True)
+                       params['min_fitness'], print_progress=True, callback=recording_callback)
 ```
 
 
