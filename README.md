@@ -20,7 +20,7 @@ The basic steps are:
 
 1. Define an objective function. 
 
-   The objective function needs to take an individual as input variable and update the `fitness` of the individual.
+   The objective function takes an individual as an argument and updates the `fitness` of the individual.
 ```python
 def objective(individual):
       """Objective function of the regression task.
@@ -36,8 +36,8 @@ def objective(individual):
           Modified individual with updated fitness value.
       """
       # Compute the fitness value
-	  individual.fitness = ...
-	  return individual
+	individual.fitness = ...
+	return individual
 ```
 2. Define parameters for the genome, the population and the evolutionary algorithm
 ```python
@@ -55,7 +55,7 @@ params = {
          'n_offsprings': 10,
          'n_breeding': 10,
          'tournament_size': 1,
-		 'n_processes': 2},
+         'n_processes': 2},
 
      'genome_params': {
          'n_inputs': 2,
