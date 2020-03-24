@@ -71,6 +71,7 @@ def evolve(
                 f"\r[{pop.generation + 1}/{max_generations}"
                 f"({pop.champion.idx})] max fitness: {max_fitness}\033[K",
                 end="",
+                flush=True,
             )
 
         if callback is not None:
