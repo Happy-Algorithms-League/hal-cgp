@@ -35,8 +35,7 @@ def objective(individual):
           Modified individual with updated fitness value.
       """
       # Compute the fitness value
-      fitness = ...
-	  individual.fitness = fitness
+	  individual.fitness = ...
 	  return individual
 ```
 2. Define parameters for the genome, the population and the evolutionary algorithm
