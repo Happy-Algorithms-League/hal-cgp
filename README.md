@@ -88,29 +88,6 @@ history = gp.evolve(pop, obj, ea, params['max_generations'],
 
 
 
-Data structures
-===============
-
-The Cartesian Genetic Programming framework is implemented with the following data structures:
-
-- `CGPPopulation` represents a population of `CGPIndividual` individuals and defines the standard procedures to create offspring from these as well as mutation and crossover.
-- `CGPIndividual` represents an individual that is defined by its genome (`CGPGenome`).
-- `CGPGenome` represents the genome of an individual. It is defined by its DNA (a list of integers) and parametrized by the parameters of CGP: `n_inputs`, `n_outputs`, `n_rows`, `levels_back`, and the primitives.
-- `CGPGraph` implements the computational graph represented by a `CGPGenome` and provides a `parse_genome` method to parse the genome into a phenotype, the core algorithm defining the CGP framework. It provides three methods to parse the computational graph into representations that can be used in downstream tasks:
-    - `to_sympy` parses the computational graph into a sympy-expression.
-	- `to_torch` creates a torch.nn.Module child class.
-	- `to_func` creates a Python callable.
-- Primitives are operations that are combined in a computational graphs to produce an output value from given input values. Any operation is supported, the library currently implements:
-   - Addition: `CGPAdd`
-   - Subtraction: `CGPSub`
-   - Multiplication: `CGPMul`
-   - Division: `CGPDiv`
-   - Exponentiation: `CGPPow`
-   - Constants: `CGPConstantFloat`
-   These operations are implemented as child classes of `CGPNode` and are grouped by the umbrella class `CGPPrimitives` inside the `CGPGenome`.
-
-
-
 Code status
 ===========
 
