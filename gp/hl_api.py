@@ -68,8 +68,7 @@ def evolve(
 
         if print_progress:
             print(
-                f"\r[{pop.generation + 1}/{max_generations}"
-                f"({pop.champion.idx})] max fitness: {max_fitness}\033[K",
+                f"\r[{pop.generation + 1}/{max_generations}] max fitness: {max_fitness}\033[K",
                 end="",
                 flush=True,
             )
