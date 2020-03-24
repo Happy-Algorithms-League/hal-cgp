@@ -42,7 +42,6 @@ def objective(individual):
 ```python
 params = {
      'seed': 8188212,
-     'n_threads': 1,
      'max_generations': 1000,
      'min_fitness': 0.,
 
@@ -54,7 +53,8 @@ params = {
      'ea_params': {
          'n_offsprings': 10,
          'n_breeding': 10,
-         'tournament_size': 1},
+         'tournament_size': 1,
+		 'n_processes': 2},
 
      'genome_params': {
          'n_inputs': 2,
