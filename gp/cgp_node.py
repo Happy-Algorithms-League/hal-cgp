@@ -252,22 +252,6 @@ class CGPConstantFloat(CGPNode):
         )
 
 
-def custom_cgp_constant_float(val):
-    """Creates custom constant float classes with given value.
-
-    Warning: relies on closures, hence does neither with pickle nor with
-    ProcessPoolExecutor. You need to create your own top-level classes if you
-    want to use those libraries.
-    """
-
-    class CustomCGPConstantFloat(CGPConstantFloat):
-        def __init__(self, idx, inputs):
-            super().__init__(idx, inputs)
-            self._output = val
-
-    return CustomCGPConstantFloat
-
-
 class CGPInputNode(CGPNode):
     """Node representing a generic input node.
     """
