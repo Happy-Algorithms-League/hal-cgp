@@ -9,8 +9,8 @@ SEED = np.random.randint(2 ** 31)
 def test_add():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.CGPAdd]
-    genome = gp.CGPGenome(
+    primitives = [gp.Add]
+    genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -19,7 +19,7 @@ def test_add():
         primitives,
     )
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
-    graph = gp.CGPGraph(genome)
+    graph = gp.CartesianGraph(genome)
 
     x = [5.0, 1.5]
     y = graph(x)
@@ -30,8 +30,8 @@ def test_add():
 def test_sub():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.CGPSub]
-    genome = gp.CGPGenome(
+    primitives = [gp.Sub]
+    genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -40,7 +40,7 @@ def test_sub():
         primitives,
     )
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
-    graph = gp.CGPGraph(genome)
+    graph = gp.CartesianGraph(genome)
 
     x = [5.0, 1.5]
     y = graph(x)
@@ -51,8 +51,8 @@ def test_sub():
 def test_mul():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.CGPMul]
-    genome = gp.CGPGenome(
+    primitives = [gp.Mul]
+    genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -61,7 +61,7 @@ def test_mul():
         primitives,
     )
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
-    graph = gp.CGPGraph(genome)
+    graph = gp.CartesianGraph(genome)
 
     x = [5.0, 1.5]
     y = graph(x)
@@ -72,8 +72,8 @@ def test_mul():
 def test_div():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.CGPDiv]
-    genome = gp.CGPGenome(
+    primitives = [gp.Div]
+    genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -82,7 +82,7 @@ def test_div():
         primitives,
     )
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
-    graph = gp.CGPGraph(genome)
+    graph = gp.CartesianGraph(genome)
 
     x = [5.0, 1.5]
     y = graph(x)
@@ -93,8 +93,8 @@ def test_div():
 def test_pow():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.CGPPow]
-    genome = gp.CGPGenome(
+    primitives = [gp.Pow]
+    genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -103,7 +103,7 @@ def test_pow():
         primitives,
     )
     genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 2, None]
-    graph = gp.CGPGraph(genome)
+    graph = gp.CartesianGraph(genome)
 
     x = [5.0, 1.5]
     y = graph(x)
@@ -114,8 +114,8 @@ def test_pow():
 def test_constant_float():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.CGPConstantFloat]
-    genome = gp.CGPGenome(
+    primitives = [gp.ConstantFloat]
+    genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -124,7 +124,7 @@ def test_constant_float():
         primitives,
     )
     genome.dna = [-1, None, -1, None, 0, None, -2, 2]
-    graph = gp.CGPGraph(genome)
+    graph = gp.CartesianGraph(genome)
 
     x = [None, None]
     y = graph(x)

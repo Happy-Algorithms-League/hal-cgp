@@ -28,12 +28,12 @@ def objective(individual):
 
        Parameters
       ----------
-      individual : gp.CGPIndividual
+      individual : gp.Individual
           Individual of the Cartesian Genetic Programming Framework.
 
       Returns
       -------
-      gp.CGPIndividual
+      gp.Individual
           Modified individual with updated fitness value.
       """
       # Compute the fitness value
@@ -65,13 +65,13 @@ params = {
          "n_columns": 10,
          "n_rows": 5,
          "levels_back": 2,
-         "primitives": [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat]},
+         "primitives": [gp.Add, gp.Sub, gp.Mul, gp.Div, gp.ConstantFloat]},
       }
 ```
 3. Initialize the population and an evolutionary algorithm instance:
 ```python
-pop = gp.CGPPopulation(**params["population_params"],
-                       seed=params["seed"], genome_params=params["genome_params"])
+pop = gp.Population(**params["population_params"],
+                    seed=params["seed"], genome_params=params["genome_params"])
 ea = gp.ea.MuPlusLambda(**params["ea_params"])
 ```
 4. Define a callback function to record information about the evolution of the population:

@@ -3,7 +3,7 @@ import hashlib
 import os
 import pickle
 
-from .cgp_node import primitives_dict
+from .node import primitives_dict
 
 
 def disk_cache(fn):

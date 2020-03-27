@@ -2,13 +2,13 @@ import collections
 import sympy
 import torch  # noqa: F401
 
-from .cgp_node import CGPInputNode, CGPOutputNode
+from .node import InputNode, OutputNode
 from .exceptions import InvalidSympyExpression
 
 
-class CGPGraph:
-    """Class representing the computational graph defined by a genome
-    in the Cartesian Genetic Programming Framework.
+class CartesianGraph:
+    """Class representing a particular Cartesian graph defined by a
+    Genome.
     """
 
     def __init__(self, genome):
@@ -16,8 +16,8 @@ class CGPGraph:
 
         Parameters
         ----------
-        genome: CGP.genome
-            Genome defining the computational graph.
+        genome: Genome
+            Genome defining graph connectivity and node operations.
         """
         self._n_outputs = None
         self._n_inputs = None
@@ -30,15 +30,15 @@ class CGPGraph:
         self._genome = genome
 
     def __repr__(self):
-        return "CGPGraph(" + str(self._nodes) + ")"
+        return "CartesianGraph(" + str(self._nodes) + ")"
 
     def print_active_nodes(self):
         """Print a representation of all active nodes in the graph.
         """
-        return "CGPGraph(" + str([node for node in self._nodes if node._active]) + ")"
+        return "CartesianGraph(" + str([node for node in self._nodes if node._active]) + ")"
 
     def pretty_print(self):
-        """Print a pretty representation of the computational graph.
+        """Print a pretty representation of the Cartesian graph.
         """
         n_characters = 18
 
@@ -92,7 +92,7 @@ class CGPGraph:
 
         idx = 0
         for region_idx, input_region in genome.iter_input_regions():
-            self._nodes.append(CGPInputNode(idx, input_region[1:]))
+            self._nodes.append(InputNode(idx, input_region[1:]))
             idx += 1
 
         for region_idx, hidden_region in genome.iter_hidden_regions():
@@ -100,7 +100,7 @@ class CGPGraph:
             idx += 1
 
         for region_idx, output_region in genome.iter_output_regions():
-            self._nodes.append(CGPOutputNode(idx, output_region[1:]))
+            self._nodes.append(OutputNode(idx, output_region[1:]))
             idx += 1
 
         self._determine_active_nodes()
@@ -139,7 +139,7 @@ class CGPGraph:
             # need to process all inputs to this node next
             for i in node.inputs:
                 if i is not self._genome._non_coding_allele:
-                    if not isinstance(self._nodes[i], CGPInputNode):
+                    if not isinstance(self._nodes[i], InputNode):
                         nodes_to_process.append(self._nodes[i])
                     else:
                         self._nodes[i].activate()
@@ -165,7 +165,7 @@ class CGPGraph:
     def __call__(self, x):
         # store values of x in input nodes
         for i, xi in enumerate(x):
-            assert isinstance(self._nodes[i], CGPInputNode)
+            assert isinstance(self._nodes[i], InputNode)
             self._nodes[i]._output = xi
 
         # evaluate active nodes in order

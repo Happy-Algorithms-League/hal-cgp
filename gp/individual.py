@@ -1,8 +1,8 @@
-from .cgp_genome import CGPGenome
-from .cgp_graph import CGPGraph
+from .genome import Genome
+from .cartesian_graph import CartesianGraph
 
 
-class CGPIndividual:
+class Individual:
     """An individual representing a particular computational graph.
     """
 
@@ -26,23 +26,23 @@ class CGPIndividual:
 
         Returns
         -------
-        gp.CGPIndividual
+        gp.Individual
         """
-        return CGPIndividual(self.fitness, self.genome.clone())
+        return Individual(self.fitness, self.genome.clone())
 
     def crossover(self, other_parent, rng):
         """Create a new individual by cross over with another individual.
 
         Parameters
         ----------
-        other_parent : gp.CGPIndividual
+        other_parent : gp.Individual
             Other individual to perform crossover with.
         rng : numpy.RandomState
             Random number generator instance to use for crossover.
 
         Returns
         -------
-        gp.CGPIndividual
+        gp.Individual
         """
         raise NotImplementedError("crossover currently not supported")
 
@@ -51,7 +51,7 @@ class CGPIndividual:
         n_mutations = int(mutation_rate * len(genome.dna))
         assert n_mutations > 0
 
-        graph = CGPGraph(genome)
+        graph = CartesianGraph(genome)
         active_regions = graph.determine_active_regions()
         only_silent_mutations = genome.mutate(n_mutations, active_regions, rng)
 
@@ -90,7 +90,7 @@ class CGPIndividual:
         ----------
         None
         """
-        self.genome = CGPGenome(**genome_params)
+        self.genome = Genome(**genome_params)
         self.genome.randomize(rng)
 
     def to_func(self):
@@ -100,7 +100,7 @@ class CGPIndividual:
         ----------
         Callable
         """
-        return CGPGraph(self.genome).to_func()
+        return CartesianGraph(self.genome).to_func()
 
     def to_sympy(self, simplify=True):
         """Return the expression represented by the individual as SymPy
@@ -110,17 +110,17 @@ class CGPIndividual:
         ----------
         SymPy expression
         """
-        return CGPGraph(self.genome).to_sympy(simplify)
+        return CartesianGraph(self.genome).to_sympy(simplify)
 
 
-class CGPIndividualMultiGenome(CGPIndividual):
+class IndividualMultiGenome(Individual):
     """An individual with multiple genomes.
 
-    Derived from gp.CGPIndividual.
+    Derived from gp.Individual.
     """
 
     def clone(self):
-        return CGPIndividualMultiGenome(self.fitness, [g.clone() for g in self.genome])
+        return IndividualMultiGenome(self.fitness, [g.clone() for g in self.genome])
 
     def mutate(self, mutation_rate, rng):
         for g in self.genome:
@@ -129,7 +129,7 @@ class CGPIndividualMultiGenome(CGPIndividual):
     def randomize_genome(self, genome_params, rng):
         self.genome = []
         for g_params in genome_params:
-            self.genome.append(CGPGenome(**g_params))
+            self.genome.append(Genome(**g_params))
             self.genome[-1].randomize(rng)
 
     def to_func(self):
@@ -140,7 +140,7 @@ class CGPIndividualMultiGenome(CGPIndividual):
         List[Callable]
         """
 
-        return [CGPGraph(g).to_func() for g in self.genome]
+        return [CartesianGraph(g).to_func() for g in self.genome]
 
     def to_sympy(self, simplify=True):
         """Return list of str expressions defining the functions represented by the invidual's genomes.
@@ -150,4 +150,4 @@ class CGPIndividualMultiGenome(CGPIndividual):
         str
         """
 
-        return [CGPGraph(g).to_sympy(simplify) for g in self.genome]
+        return [CartesianGraph(g).to_sympy(simplify) for g in self.genome]

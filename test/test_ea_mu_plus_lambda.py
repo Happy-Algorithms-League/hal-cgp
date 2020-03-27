@@ -17,7 +17,7 @@ genome_params = {
     "n_columns": 3,
     "n_rows": 3,
     "levels_back": 2,
-    "primitives": [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat],
+    "primitives": [gp.Add, gp.Sub, gp.Mul, gp.ConstantFloat],
 }
 
 
@@ -32,7 +32,7 @@ def test_label():
         individual.fitness = -1
         return individual
 
-    pop = gp.CGPPopulation(**population_params, genome_params=genome_params)
+    pop = gp.Population(**population_params, genome_params=genome_params)
 
     ea = gp.ea.MuPlusLambda(1, 2, 1)
     ea.initialize_fitness_parents(pop, objective_without_label)
@@ -48,7 +48,7 @@ def test_fitness_contains_nan():
             individual.fitness = np.random.rand()
         return individual
 
-    pop = gp.CGPPopulation(**population_params, genome_params=genome_params)
+    pop = gp.Population(**population_params, genome_params=genome_params)
 
     ea = gp.ea.MuPlusLambda(10, 10, 1)
     ea.initialize_fitness_parents(pop, objective)

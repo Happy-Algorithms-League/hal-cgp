@@ -6,8 +6,8 @@ def test_constant_float():
 
     val = 1.678
 
-    primitives = [gp.node_factories.CGPConstantFloatFactory(val)]
-    genome = gp.CGPGenome(
+    primitives = [gp.node_factories.ConstantFloatFactory(val)]
+    genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -16,7 +16,7 @@ def test_constant_float():
         primitives,
     )
     genome.dna = [-1, None, -1, None, 0, None, -2, 2]
-    graph = gp.CGPGraph(genome)
+    graph = gp.CartesianGraph(genome)
 
     x = [None, None]
     y = graph(x)
@@ -25,8 +25,8 @@ def test_constant_float():
 
     # make sure different classes are created for multiple calls to the class
     # factory
-    prim_0 = gp.node_factories.CGPConstantFloatFactory(val)(0, [None])
-    prim_1 = gp.node_factories.CGPConstantFloatFactory(val)(0, [None])
+    prim_0 = gp.node_factories.ConstantFloatFactory(val)(0, [None])
+    prim_1 = gp.node_factories.ConstantFloatFactory(val)(0, [None])
 
     assert prim_0 is not prim_1
 

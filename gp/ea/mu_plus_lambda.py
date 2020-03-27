@@ -45,11 +45,11 @@ class MuPlusLambda:
 
         Parameters
         ----------
-        pop : gp.CGPPopulation
+        pop : gp.Population
             Population instance.
         objective : Callable
             An objective function used for the evolution. Needs to take an
-            invidual (gp.CGPIndividual) as input parameter and return
+            invidual (gp.Individual) as input parameter and return
             a modified individual (with updated fitness).
         label : str, optional
             Optional label to be passed to the objective function.
@@ -64,18 +64,18 @@ class MuPlusLambda:
 
         Parameters
         ----------
-        pop : gp.CGPPopulation
+        pop : gp.Population
             Population instance.
         objective : Callable
             An objective function used for the evolution. Needs to take an
-            invidual (gp.CGPIndividual) as input parameter and return
+            invidual (gp.Individual) as input parameter and return
             a modified individual (with updated fitness).
         label : str, optional
             Optional label to be passed to the objective function.
 
         Returns
         ----------
-        pop : gp.CGPPopulation
+        pop : gp.Population
             Modified population with new parents.
         """
         # create new offspring generation

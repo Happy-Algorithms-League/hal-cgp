@@ -18,7 +18,7 @@ def register(cls):
         primitives_dict[name] = cls
 
 
-class CGPNode:
+class Node:
     """Base class for primitive functions used in Cartesian computational graphs.
     """
 
@@ -79,7 +79,7 @@ class CGPNode:
         used_characters += 2 + self.max_arity * 3 - 1
 
         assert n > used_characters
-        name = self.__class__.__name__[3:]  # cut of "CGP" prefix of class name
+        name = self.__class__.__name__
         name = name[: n - used_characters]  # cut to correct size
 
         s = f"{self._idx:02d}"
@@ -152,7 +152,7 @@ class CGPNode:
         return self._parameter_str
 
 
-class CGPAdd(CGPNode):
+class Add(Node):
     """Node representing addition.
     """
 
@@ -170,7 +170,7 @@ class CGPAdd(CGPNode):
         )
 
 
-class CGPSub(CGPNode):
+class Sub(Node):
     """Node representing subtraction.
     """
 
@@ -188,7 +188,7 @@ class CGPSub(CGPNode):
         )
 
 
-class CGPMul(CGPNode):
+class Mul(Node):
     """Node representing multiplication.
     """
 
@@ -206,7 +206,7 @@ class CGPMul(CGPNode):
         )
 
 
-class CGPDiv(CGPNode):
+class Div(Node):
     """Node representing division.
     """
 
@@ -225,7 +225,7 @@ class CGPDiv(CGPNode):
         )
 
 
-class CGPConstantFloat(CGPNode):
+class ConstantFloat(Node):
     """Node representing a constant float number.
     """
 
@@ -252,7 +252,7 @@ class CGPConstantFloat(CGPNode):
         )
 
 
-class CGPInputNode(CGPNode):
+class InputNode(Node):
     """Node representing a generic input node.
     """
 
@@ -271,7 +271,7 @@ class CGPInputNode(CGPNode):
         self._output_str = f"x[:, {self._idx}]"
 
 
-class CGPOutputNode(CGPNode):
+class OutputNode(Node):
     """Node representing a generic output node.
     """
 
@@ -287,7 +287,7 @@ class CGPOutputNode(CGPNode):
         self._output_str = f"{graph[self._inputs[0]].output_str}"
 
 
-class CGPPow(CGPNode):
+class Pow(Node):
     """Node representing the power operation.
     """
 

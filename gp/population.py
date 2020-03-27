@@ -1,9 +1,9 @@
 import numpy as np
 
-from .cgp_individual import CGPIndividual, CGPIndividualMultiGenome
+from .individual import Individual, IndividualMultiGenome
 
 
-class CGPPopulation:
+class Population:
     """
     A population of individuals.
     """
@@ -74,11 +74,11 @@ class CGPPopulation:
         individuals = []
         for i in range(n):
             if isinstance(self._genome_params, dict):
-                individual = CGPIndividual(fitness=None, genome=None)
+                individual = Individual(fitness=None, genome=None)
             elif isinstance(self._genome_params, list) and isinstance(
                 self._genome_params[0], dict
             ):
-                individual = CGPIndividualMultiGenome(fitness=None, genome=None)
+                individual = IndividualMultiGenome(fitness=None, genome=None)
             else:
                 raise NotImplementedError()
             individual.randomize_genome(self._genome_params, self.rng)
@@ -91,14 +91,14 @@ class CGPPopulation:
 
         Parameters
         ----------
-        breeding_pool : List[gp.CGPPopulation]
+        breeding_pool : List[gp.Population]
             List of individuals from which the offspring are created.
         n_offsprings : int
             Number of offspring to be created.
 
         Returns
         ----------
-        List[gp.CGPIndividual]
+        List[gp.Individual]
             List of offspring individuals.
         """
         # in principle crossover would rely on a procedure like the
@@ -109,7 +109,7 @@ class CGPPopulation:
         #     offsprings.append(first_parent.crossover(second_parent, self.rng))
 
         # return offsprings
-        # however, as cross over tends to disrupt the search in CGP
+        # however, as cross over tends to disrupt the search in in CGP
         # (Miller, 1999) crossover is skipped, instead the best
         # individuals from breeding pool are returned.
         # reference:
@@ -126,12 +126,12 @@ class CGPPopulation:
 
         Parameters
         ----------
-        offsprings : List[gp.CGPIndividual]
+        offsprings : List[gp.Individual]
             List of offspring individuals to be mutated.
 
         Returns
         ----------
-        List[gp.CGPIndividual]
+        List[gp.Individual]
             List of mutated offspring individuals.
         """
 
