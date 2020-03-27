@@ -1,16 +1,50 @@
-from .abstract_individual import AbstractIndividual
 from .cgp_genome import CGPGenome
 from .cgp_graph import CGPGraph
 
 
-class CGPIndividual(AbstractIndividual):
-    """Individual representing a particular Cartesian computational graph.
-
-    Derived from gp.AbstractIndividual.
+class CGPIndividual:
+    """An individual representing a particular computational graph.
     """
 
+    def __init__(self, fitness, genome):
+        """Init function.
+
+        fitness : float
+            Fitness of the individual.
+        genome: Genome instance
+            Genome of the invididual.
+        """
+        self.fitness = fitness
+        self.genome = genome
+        self.idx = None  # an identifier to keep track of all unique genomes
+
+    def __repr__(self):
+        return f"Individual(idx={self.idx}, fitness={self.fitness}, genome={self.genome}))"
+
     def clone(self):
+        """Clone the individual.
+
+        Returns
+        -------
+        gp.CGPIndividual
+        """
         return CGPIndividual(self.fitness, self.genome.clone())
+
+    def crossover(self, other_parent, rng):
+        """Create a new individual by cross over with another individual.
+
+        Parameters
+        ----------
+        other_parent : gp.CGPIndividual
+            Other individual to perform crossover with.
+        rng : numpy.RandomState
+            Random number generator instance to use for crossover.
+
+        Returns
+        -------
+        gp.CGPIndividual
+        """
+        raise NotImplementedError("crossover currently not supported")
 
     def _mutate(self, genome, mutation_rate, rng):
 
@@ -25,14 +59,42 @@ class CGPIndividual(AbstractIndividual):
             self.fitness = None
 
     def mutate(self, mutation_rate, rng):
+        """Mutate the individual in place.
+
+        Parameters
+        ----------
+        mutation_rate : float
+            Proportion of mutations determining the number of genes to be mutated, between 0 and 1.
+        rng : numpy.RandomState
+            Random number generator instance to use for crossover.
+
+        Returns
+        -------
+        None
+        """
         self._mutate(self.genome, mutation_rate, rng)
 
     def randomize_genome(self, genome_params, rng):
+        """Randomize the individual's genome.
+
+        Parameters
+        ----------
+        genome_params : dict
+            Parameter dictionary for the new randomized genome.
+            Needs to contain: n_inputs, n_outputs, n_columns, n_rows,
+            levels_back, primitives.
+        rng : numpy.RandomState
+            Random number generator instance to use for crossover.
+
+        Returns
+        ----------
+        None
+        """
         self.genome = CGPGenome(**genome_params)
         self.genome.randomize(rng)
 
     def to_func(self):
-        """Return Callable from the individual's genome.
+        """Return the expression represented by the individual as Callable.
 
         Returns
         ----------
@@ -41,17 +103,18 @@ class CGPIndividual(AbstractIndividual):
         return CGPGraph(self.genome).to_func()
 
     def to_sympy(self, simplify=True):
-        """Return str expression defining the function represented by the invidual's genome.
+        """Return the expression represented by the individual as SymPy
+        expression.
 
         Returns
         ----------
-        str
+        SymPy expression
         """
         return CGPGraph(self.genome).to_sympy(simplify)
 
 
 class CGPIndividualMultiGenome(CGPIndividual):
-    """Individual of the Cartesian Genetic Programming framework with multiple genomes.
+    """An individual with multiple genomes.
 
     Derived from gp.CGPIndividual.
     """

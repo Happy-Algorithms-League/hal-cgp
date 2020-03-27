@@ -49,7 +49,7 @@ class MuPlusLambda:
             Population instance.
         objective : Callable
             An objective function used for the evolution. Needs to take an
-            invidual (gp.AbstractIndividual) as input parameter and return
+            invidual (gp.CGPIndividual) as input parameter and return
             a modified individual (with updated fitness).
         label : str, optional
             Optional label to be passed to the objective function.
@@ -68,7 +68,7 @@ class MuPlusLambda:
             Population instance.
         objective : Callable
             An objective function used for the evolution. Needs to take an
-            invidual (gp.AbstractIndividual) as input parameter and return
+            invidual (gp.CGPIndividual) as input parameter and return
             a modified individual (with updated fitness).
         label : str, optional
             Optional label to be passed to the objective function.

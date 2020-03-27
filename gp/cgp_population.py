@@ -98,7 +98,7 @@ class CGPPopulation:
 
         Returns
         ----------
-        List[gp.AbstractIndividual]
+        List[gp.CGPIndividual]
             List of offspring individuals.
         """
         # in principle crossover would rely on a procedure like the
@@ -126,12 +126,12 @@ class CGPPopulation:
 
         Parameters
         ----------
-        offsprings : List[gp.AbstractIndividual]
+        offsprings : List[gp.CGPIndividual]
             List of offspring individuals to be mutated.
 
         Returns
         ----------
-        List[gp.AbstractIndividual]
+        List[gp.CGPIndividual]
             List of mutated offspring individuals.
         """
 
