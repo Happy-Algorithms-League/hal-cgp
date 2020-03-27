@@ -45,7 +45,7 @@ class MuPlusLambda:
 
         Parameters
         ----------
-        pop : gp.AbstractPopulation
+        pop : gp.CGPPopulation
             Population instance.
         objective : Callable
             An objective function used for the evolution. Needs to take an
@@ -64,7 +64,7 @@ class MuPlusLambda:
 
         Parameters
         ----------
-        pop : gp.AbstractPopulation
+        pop : gp.CGPPopulation
             Population instance.
         objective : Callable
             An objective function used for the evolution. Needs to take an
@@ -75,7 +75,7 @@ class MuPlusLambda:
 
         Returns
         ----------
-        pop : gp.AbstractPopulation
+        pop : gp.CGPPopulation
             Modified population with new parents.
         """
         # create new offspring generation

@@ -18,7 +18,7 @@ def evolve(
 
     Parameters
     ----------
-    pop : gp.AbstractPopulation
+    pop : gp.CGPPopulation
         A population class that will be evolved.
     objective : Callable
         An objective function used for the evolution. Needs to take an

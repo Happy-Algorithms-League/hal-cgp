@@ -8,7 +8,6 @@ from .cgp_node import (
     CGPConstantFloat,
     CGPPow,
 )
-from .binary_population import BinaryPopulation
 from .cgp_population import CGPPopulation
 
 from .exceptions import InvalidSympyExpression
