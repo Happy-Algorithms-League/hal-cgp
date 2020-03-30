@@ -1,74 +1,125 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
+import scipy.constants
 
 import gp
 
 
-def random_regression():
+def objective(individual):
+    if individual.fitness is not None:
+        return individual
+
+    n_function_evaluations = 1000
+
+    f_graph = individual.to_torch()
+    x = torch.Tensor(n_function_evaluations, 2).uniform_(-5, 5)
+    y = f_graph(x)
+    loss = torch.mean((f_target(x) - y[:, 0]) ** 2)
+    individual.fitness = -loss.item()
+
+    return individual
+
+
+def evolution():
+
     params = {
-        "seed": 81882,
-        "n_inputs": 2,
-        "n_outputs": 1,
-        "n_columns": 3,
-        "n_rows": 3,
-        "levels_back": 2,
-        "n_mutations": 3,
+        "population_params": {"n_parents": 10, "mutation_rate": 0.5, "seed": 8188211},
+        "genome_params": {
+            "n_inputs": 1,
+            "n_outputs": 1,
+            "n_columns": 10,
+            "n_rows": 2,
+            "levels_back": 2,
+            "primitives": [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPParameter],
+        },
+        "ea_params": {
+            "n_offsprings": 10,
+            "n_breeding": 10,
+            "tournament_size": 1,
+            "n_processes": 1,
+        },
+        "local_search_params": {"lr": 2e-3, "batch_size": 100},
+        "evolve_params": {"max_generations": 500, "min_fitness": -1e-12},
     }
 
-    np.random.seed(params["seed"])
+    np.random.seed(params["population_params"]["seed"])
+    torch.manual_seed(params["population_params"]["seed"])
 
-    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat])
-    genome = gp.CGPGenome(
-        params["n_inputs"], params["n_outputs"], params["n_columns"], params["n_rows"], primitives
+    pop = gp.CGPPopulation(**params["population_params"], genome_params=params["genome_params"])
+
+    ea = gp.ea.MuPlusLambda(**params["ea_params"])
+
+    def local_search(pop):
+        for ind in pop:
+            f = ind.to_torch()
+            if len(list(f.parameters())) > 0:
+                optimizer = torch.optim.SGD(f.parameters(), lr=params["local_search_params"]["lr"])
+                criterion = torch.nn.MSELoss()
+
+                for i in range(10):
+                    x = torch.Tensor(params["local_search_params"]["batch_size"], 1).normal_()
+                    y = f(x)
+                    y_target = f_target(x)
+
+                    loss = criterion(y[:, 0], y_target)
+                    f.zero_grad()
+                    loss.backward()
+                    optimizer.step()
+
+                ind.update_parameters_from_torch_class(f)
+
+    ea.local_search = local_search
+
+    history = {}
+    history["champion"] = []
+    history["fitness_parents"] = []
+
+    def recording_callback(pop):
+        history["champion"].append(pop.champion)
+        history["fitness_parents"].append(pop.fitness_parents())
+
+    gp.evolve(
+        pop,
+        objective,
+        ea,
+        **params["evolve_params"],
+        print_progress=True,
+        callback=recording_callback,
     )
-    genome.randomize(params["levels_back"])
-    graph = gp.CGPGraph(genome)
 
-    history_loss = []
-    for i in range(3000):
+    return history, pop.champion
 
-        genome.mutate(params["n_mutations"], params["levels_back"])
-        graph.parse_genome(genome)
-        f = graph.compile_torch_class()
 
-        if len(list(f.parameters())) > 0:
-            optimizer = torch.optim.SGD(f.parameters(), lr=1e-1)
-            criterion = torch.nn.MSELoss()
-
-        history_loss_trial = []
-        history_loss_bp = []
-        for j in range(100):
-            x = torch.Tensor(2).normal_()
-            y = f(x)
-            loss = (2.7182 + x[0] - x[1] - y[0]) ** 2
-            history_loss_trial.append(loss.detach().numpy())
-
-            if len(list(f.parameters())) > 0:
-                y_target = 2.7182 + x[0] - x[1]
-
-                loss = criterion(y[0], y_target)
-                f.zero_grad()
-                loss.backward()
-                optimizer.step()
-
-                history_loss_bp.append(loss.detach().numpy())
-
-        graph.update_parameter_values(f)
-
-        if np.mean(history_loss_trial[-10:]) < 1e-1:
-            print(graph[-1].output_str)
-            print(graph)
-
-            if len(list(f.parameters())) > 0:
-                plt.plot(history_loss_bp)
-                plt.show()
-
-        history_loss.append(np.sum(np.mean(history_loss_trial)))
-
-    plt.plot(history_loss)
-    plt.show()
+def f_target(x):  # target function
+    return x[:, 0] ** 2 + 1.0 / np.pi
 
 
 if __name__ == "__main__":
-    random_regression()
+
+    width = 9.0
+
+    fig = plt.figure(figsize=(width, width / scipy.constants.golden))
+
+    ax_fitness = fig.add_subplot(121)
+    ax_fitness.set_xlabel("Generation")
+    ax_fitness.set_ylabel("Fitness")
+
+    ax_function = fig.add_subplot(122)
+    ax_function.set_ylabel(r"$f(x)$")
+    ax_function.set_xlabel(r"$x$")
+
+    history, champion = evolution()
+
+    history_fitness = np.array(history["fitness_parents"])
+    ax_fitness.plot(np.max(history_fitness, axis=1), label="Champion")
+    ax_fitness.plot(np.mean(history_fitness, axis=1), label="Population mean")
+
+    x = np.linspace(-5.0, 5, 100).reshape(-1, 1)
+    print(champion.to_sympy(simplify=False))
+    f = champion.to_func()
+    y = [f(xi) for xi in x]
+    ax_function.plot(x, f_target(x), lw=2, label="Target")
+    ax_function.plot(x, y, lw=1, label="Target", marker="x")
+
+    plt.savefig("example_random_regression.pdf", dpi=300)

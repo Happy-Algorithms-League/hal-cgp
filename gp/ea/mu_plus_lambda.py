@@ -101,6 +101,9 @@ class MuPlusLambda:
         # create new parent population
         pop.parents = self._create_new_parent_population(pop.n_parents, combined)
 
+        if hasattr(self, "local_search"):
+            self.local_search(pop)
+
         return pop
 
     def _create_new_offspring_generation(self, pop):
