@@ -1,5 +1,8 @@
+import math
 import numpy as np
 import pickle
+import pytest
+import torch
 
 import gp
 from gp.cgp_individual import CGPIndividual
@@ -16,3 +19,80 @@ def test_pickle_individual():
 
     with open("individual.pkl", "wb") as f:
         pickle.dump(individual, f)
+
+
+def test_individual_with_parameter_python():
+
+    primitives = [gp.CGPAdd, gp.CGPParameter]
+    genome = gp.CGPGenome(1, 1, 2, 1, 2, primitives)
+    # output uses the CGPParameter node, y = x + c; c is initialized
+    # to zero
+    genome.dna = [-1, None, None, 1, None, None, 0, 0, 1, -2, 2, None]
+    individual = CGPIndividual(None, genome)
+
+    x = [3.0]
+
+    f = individual.to_func()
+    y = f(x)
+
+    assert y[0] == pytest.approx(x[0])
+
+    c = 1.0
+    individual.parameter_names_to_values["<p1>"] = c
+
+    f = individual.to_func()
+    y = f(x)
+
+    assert y[0] == pytest.approx(x[0] + c)
+
+
+def test_individual_with_parameter_pytorch():
+
+    primitives = [gp.CGPAdd, gp.CGPParameter]
+    genome = gp.CGPGenome(1, 1, 2, 1, 2, primitives)
+    # output uses the CGPParameter node, y = x + c; c is initialized
+    # to zero
+    genome.dna = [-1, None, None, 1, None, None, 0, 0, 1, -2, 2, None]
+    individual = CGPIndividual(None, genome)
+
+    x = torch.empty(2, 1).normal_()
+
+    f = individual.to_torch()
+    y = f(x)
+
+    assert y[0, 0].item() == pytest.approx(x[0, 0].item())
+    assert y[1, 0].item() == pytest.approx(x[1, 0].item())
+
+    c = 1.0
+    individual.parameter_names_to_values["<p1>"] = c
+
+    f = individual.to_torch()
+    y = f(x)
+
+    assert y[0, 0].item() == pytest.approx(x[0, 0].item() + c)
+    assert y[1, 0].item() == pytest.approx(x[1, 0].item() + c)
+
+
+def test_individual_with_parameter_sympy():
+
+    primitives = [gp.CGPAdd, gp.CGPParameter]
+    genome = gp.CGPGenome(1, 1, 2, 1, 2, primitives)
+    # output uses the CGPParameter node, y = x + c; c is initialized
+    # to zero
+    genome.dna = [-1, None, None, 1, None, None, 0, 0, 1, -2, 2, None]
+    individual = CGPIndividual(None, genome)
+
+    x = [3.0]
+
+    f = individual.to_sympy()[0]
+    y = f.subs("x_0", x[0]).evalf()
+
+    assert y == pytest.approx(x[0])
+
+    c = 1.0
+    individual.parameter_names_to_values["<p1>"] = c
+
+    f = individual.to_sympy()[0]
+    y = f.subs("x_0", x[0]).evalf()
+
+    assert y == pytest.approx(x[0] + c)

@@ -27,7 +27,6 @@ class CGPNode:
     _inputs = None
     _output = None
     _idx = None
-    _is_parameter = False
 
     def __init__(self, idx, inputs):
         """Init function.
@@ -144,10 +143,6 @@ class CGPNode:
         return self.output_str
 
     @property
-    def is_parameter(self):
-        return self._is_parameter
-
-    @property
     def parameter_str(self):
         return self._parameter_str
 
@@ -230,7 +225,6 @@ class CGPConstantFloat(CGPNode):
     """
 
     _arity = 0
-    _is_parameter = True
 
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
@@ -244,11 +238,32 @@ class CGPConstantFloat(CGPNode):
         self._output_str = f"{self._output}"
 
     def format_output_str_torch(self, graph):
+        self._output_str = f"torch.ones(1).expand(x.shape[0]) * {self._output}"
+
+
+class CGPParameter(CGPNode):
+    """Node representing a scalar variable. Its value is stored in the
+    individual holding the corresponding genome.
+
+    """
+
+    _arity = 0
+
+    def __init__(self, idx, inputs):
+        super().__init__(idx, inputs)
+
+    def __call__(self, x, graph):
+        pass
+
+    def format_output_str(self, graph):
+        self._output_str = f"<p{self._idx}>"
+
+    def format_output_str_torch(self, graph):
         self._output_str = f"self._p{self._idx}.expand(x.shape[0])"
 
     def format_parameter_str(self):
         self._parameter_str = (
-            f"self._p{self._idx} = torch.nn.Parameter(torch.Tensor([{self._output}]))\n"
+            f"self._p{self._idx} = torch.nn.Parameter(torch.Tensor([<p{self._idx}>]))\n"
         )
 
 

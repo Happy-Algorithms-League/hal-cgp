@@ -1,8 +1,9 @@
 import collections
+import re
 import sympy
 import torch  # noqa: F401
 
-from .cgp_node import CGPInputNode, CGPOutputNode
+from .cgp_node import CGPParameter, CGPInputNode, CGPOutputNode
 from .exceptions import InvalidSympyExpression
 
 
@@ -195,7 +196,18 @@ class CGPGraph:
             for node in active_nodes[hidden_column_idx]:
                 node.format_output_str(self)
 
-    def to_func(self):
+    def _fill_parameter_values(self, func_str, parameter_names_to_values):
+        g = re.findall("<p[0-9]+>", func_str)
+        if g and parameter_names_to_values is None:
+            raise ValueError("parameter node found but no value dict provided.")
+        for parameter_name in g:
+            # print('parameter name', parameter_name)
+            func_str = func_str.replace(
+                parameter_name, str(parameter_names_to_values[parameter_name])
+            )
+        return func_str
+
+    def to_func(self, parameter_names_to_values=None):
         """Compile the function represented by the computational graph.
 
         Generates a definition of the function in Python code and
@@ -209,10 +221,11 @@ class CGPGraph:
         self._format_output_str_of_all_nodes()
         s = ", ".join(node.output_str for node in self.output_nodes)
         func_str = f"def _f(x): return [{s}]"
+        func_str = self._fill_parameter_values(func_str, parameter_names_to_values)
         exec(func_str)
         return locals()["_f"]
 
-    def to_torch(self):
+    def to_torch(self, parameter_names_to_values=None):
         """Compile the function represented by the computational graph to a Torch class.
 
         Generates a definition of the Torch class in Python code and
@@ -231,7 +244,7 @@ class CGPGraph:
         for hidden_column_idx in sorted(active_nodes_by_hidden_column_idx):
             for node in active_nodes_by_hidden_column_idx[hidden_column_idx]:
                 node.format_output_str_torch(self)
-                if node.is_parameter:
+                if isinstance(node, CGPParameter):
                     node.format_parameter_str()
                     all_parameter_str.append(node.parameter_str)
         forward_str = ", ".join(node.output_str_torch for node in self.output_nodes)
@@ -250,33 +263,14 @@ class _C(torch.nn.Module):
         """
         class_str += func_str
 
+        class_str = self._fill_parameter_values(class_str, parameter_names_to_values)
+
         exec(class_str)
         exec("_c = _C()")
 
         return locals()["_c"]
 
-    def update_parameters_from_torch_class(self, torch_cls):
-        """Update values stored in constant nodes of graph from parameters of a given Torch instance.
-
-        Can be used to import new values from a Torch class after a autograd step.
-
-        Parameters
-        ----------
-        torch_cls : torch.nn.module
-            Instance of a torch class.
-
-        Returns
-        -------
-        None
-        """
-        for n in self._nodes:
-            if n.is_parameter:
-                try:
-                    n._output = eval(f"torch_cls._p{n._idx}[0]")
-                except AttributeError:
-                    pass
-
-    def to_sympy(self, simplify=True):
+    def to_sympy(self, simplify=True, parameter_names_to_values=None):
         """Compile computational graph into a list of sympy-compatible string expressions.
 
         Generates one sympy expression for each output node.
@@ -305,6 +299,7 @@ class _C(torch.nn.Module):
                     input_node.output_str, input_node.output_str.replace("[", "_").replace("]", "")
                 )
 
+            s = self._fill_parameter_values(s, parameter_names_to_values)
             # to get an expression that reflects the computational graph,
             # sympy should not automatically simplify the expression
             with sympy.evaluate(False):

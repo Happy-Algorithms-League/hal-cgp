@@ -10,7 +10,9 @@ class CGPIndividual(AbstractIndividual):
     """
 
     def clone(self):
-        return CGPIndividual(self.fitness, self.genome.clone())
+        new_individual = CGPIndividual(self.fitness, self.genome.clone())
+        new_individual.parameter_names_to_values = self.parameter_names_to_values.copy()
+        return new_individual
 
     def _mutate(self, genome, mutation_rate, rng):
 
@@ -38,7 +40,7 @@ class CGPIndividual(AbstractIndividual):
         ----------
         Callable
         """
-        return CGPGraph(self.genome).to_func()
+        return CGPGraph(self.genome).to_func(self.parameter_names_to_values)
 
     def to_sympy(self, simplify=True):
         """Return str expression defining the function represented by the invidual's genome.
@@ -47,7 +49,10 @@ class CGPIndividual(AbstractIndividual):
         ----------
         str
         """
-        return CGPGraph(self.genome).to_sympy(simplify)
+        return CGPGraph(self.genome).to_sympy(simplify, self.parameter_names_to_values)
+
+    def to_torch(self):
+        return CGPGraph(self.genome).to_torch(self.parameter_names_to_values)
 
 
 class CGPIndividualMultiGenome(CGPIndividual):

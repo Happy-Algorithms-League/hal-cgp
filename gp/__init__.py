@@ -6,6 +6,7 @@ from .cgp_node import (
     CGPMul,
     CGPDiv,
     CGPConstantFloat,
+    CGPParameter,
     CGPPow,
 )
 from .binary_population import BinaryPopulation

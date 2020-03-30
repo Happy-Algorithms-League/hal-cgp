@@ -1,3 +1,6 @@
+import collections
+
+
 class AbstractIndividual:
     """
     Generic individual class for evolutionary algorithms. Provides container
@@ -17,6 +20,9 @@ class AbstractIndividual:
         self.fitness = fitness
         self.genome = genome
         self.idx = None  # an identifier to keep track of all unique genomes
+
+        # dictionary to store values of CGPParameter nodes
+        self.parameter_names_to_values = collections.defaultdict(float)
 
     def __repr__(self):
         return f"Individual(idx={self.idx}, fitness={self.fitness}, genome={self.genome}))"

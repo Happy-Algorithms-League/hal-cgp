@@ -134,39 +134,6 @@ def test_compile_addsubmul():
     assert abs(((x[0] * x[1]) - (x[0] - x[1])) - y[0]) < 1e-15
 
 
-def test_to_torch_and_backprop():
-    primitives = [gp.CGPMul, gp.CGPConstantFloat]
-    genome = gp.CGPGenome(1, 1, 2, 2, 1, primitives)
-    genome.dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 3, None]
-    graph = gp.CGPGraph(genome)
-
-    c = graph.to_torch()
-
-    optimizer = torch.optim.SGD(c.parameters(), lr=1e-1)
-    criterion = torch.nn.MSELoss()
-
-    for i in range(200):
-
-        x = torch.Tensor(1, 1).normal_()
-        y = c(x)
-
-        y_target = -2.14159 * x
-
-        loss = criterion(y, y_target)
-        c.zero_grad()
-        loss.backward()
-
-        optimizer.step()
-
-    assert loss.detach().numpy() < 1e-15
-
-    x = [3.0]
-    x_torch = torch.Tensor(x).view(1, 1)
-    assert abs(c(x_torch)[0].detach().numpy() - graph(x))[0] > 1e-15
-    graph.update_parameters_from_torch_class(c)
-    assert abs(c(x_torch)[0].detach().numpy() - graph(x))[0] < 1e-15
-
-
 batch_sizes = [1, 10]
 primitives = [gp.CGPMul, gp.CGPConstantFloat]
 genomes = [gp.CGPGenome(1, 1, 2, 2, 1, primitives) for i in range(2)]
