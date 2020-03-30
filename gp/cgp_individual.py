@@ -54,6 +54,25 @@ class CGPIndividual(AbstractIndividual):
     def to_torch(self):
         return CGPGraph(self.genome).to_torch(self.parameter_names_to_values)
 
+    def update_parameters_from_torch_class(self, torch_cls):
+        """Update values stored in constant nodes of graph from parameters of a given Torch instance.
+
+        Can be used to import new values from a Torch class after a autograd step.
+
+        Parameters
+        ----------
+        torch_cls : torch.nn.module
+            Instance of a torch class.
+
+        Returns
+        -------
+        None
+        """
+        for name, value in torch_cls.named_parameters():
+            name = f"<{name[1:]}>"
+            if name in self.parameter_names_to_values:
+                self.parameter_names_to_values[name] = value.item()
+
 
 class CGPIndividualMultiGenome(CGPIndividual):
     """Individual of the Cartesian Genetic Programming framework with multiple genomes.

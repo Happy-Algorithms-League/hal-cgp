@@ -96,3 +96,43 @@ def test_individual_with_parameter_sympy():
     y = f.subs("x_0", x[0]).evalf()
 
     assert y == pytest.approx(x[0] + c)
+
+
+def test_to_and_from_torch_plus_backprop():
+    primitives = [gp.CGPMul, gp.CGPParameter]
+    genome = gp.CGPGenome(1, 1, 2, 2, 1, primitives)
+    genome.dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 3, None]
+    individual = CGPIndividual(None, genome)
+
+    c = individual.to_torch()
+
+    optimizer = torch.optim.SGD(c.parameters(), lr=1e-1)
+    criterion = torch.nn.MSELoss()
+
+    for i in range(200):
+
+        x = torch.Tensor(1, 1).normal_()
+        y = c(x)
+
+        y_target = math.pi * x
+
+        loss = criterion(y, y_target)
+        c.zero_grad()
+        loss.backward()
+
+        optimizer.step()
+
+    assert loss.detach().numpy() < 1e-15
+
+    # use old parameter values to compile function
+    x = [3.0]
+    f = individual.to_func()
+    y = f(x)
+    assert y[0] != pytest.approx(math.pi * x[0])
+
+    # update parameter values from torch class and compile new
+    # function with new parameter values
+    individual.update_parameters_from_torch_class(c)
+    f = individual.to_func()
+    y = f(x)
+    assert y[0] == pytest.approx(math.pi * x[0])
