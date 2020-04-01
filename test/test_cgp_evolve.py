@@ -76,9 +76,7 @@ def _test_population(n_processes):
     def recording_callback(pop):
         history["max_fitness_per_generation"].append(pop.champion.fitness)
 
-    gp.evolve(
-        pop, _objective_test_population, ea, **evolve_params, callback=recording_callback
-    )
+    gp.evolve(pop, _objective_test_population, ea, **evolve_params, callback=recording_callback)
 
     assert pop.champion.fitness >= evolve_params["min_fitness"]
 
