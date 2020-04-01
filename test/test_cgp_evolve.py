@@ -8,7 +8,7 @@ import gp
 SEED = np.random.randint(2 ** 31)
 
 
-def objective_parallel_cgp_population(individual):
+def objective_parallel_population(individual):
 
     if individual.fitness is not None:
         return individual
@@ -17,7 +17,7 @@ def objective_parallel_cgp_population(individual):
 
     n_function_evaluations = 100
 
-    graph = gp.CGPGraph(individual.genome)
+    graph = gp.CartesianGraph(individual.genome)
     f_graph = graph.to_torch()
 
     def f_target(x):  # target function
@@ -33,7 +33,7 @@ def objective_parallel_cgp_population(individual):
     return individual
 
 
-def _test_cgp_population(n_processes):
+def _test_population(n_processes):
 
     population_params = {
         "n_parents": 5,
@@ -51,13 +51,13 @@ def _test_cgp_population(n_processes):
         "n_columns": 3,
         "n_rows": 3,
         "levels_back": 2,
-        "primitives": [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat],
+        "primitives": [gp.Add, gp.Sub, gp.Mul, gp.ConstantFloat],
     }
 
     np.random.seed(SEED)
     torch.manual_seed(SEED)
 
-    pop = gp.CGPPopulation(
+    pop = gp.Population(
         population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
     )
     ea = gp.ea.MuPlusLambda(
@@ -69,7 +69,7 @@ def _test_cgp_population(n_processes):
 
     gp.evolve(
         pop,
-        objective_parallel_cgp_population,
+        objective_parallel_population,
         ea,
         population_params["max_generations"],
         population_params["min_fitness"],
@@ -80,20 +80,20 @@ def _test_cgp_population(n_processes):
     return np.mean(pop.fitness_parents())
 
 
-def test_parallel_cgp_population():
+def test_parallel_population():
 
     time_per_n_processes = []
     fitness_per_n_processes = []
     for n_processes in [1, 2, 4]:
         t1 = time.time()
-        fitness_per_n_processes.append(_test_cgp_population(n_processes))
+        fitness_per_n_processes.append(_test_population(n_processes))
         time_per_n_processes.append(time.time() - t1)
 
     assert abs(fitness_per_n_processes[0] - fitness_per_n_processes[1]) < 1e-10
     assert abs(fitness_per_n_processes[0] - fitness_per_n_processes[2]) < 1e-10
 
 
-def test_cgp_pop_uses_own_rng():
+def test_pop_uses_own_rng():
 
     population_params = {
         "n_parents": 5,
@@ -111,10 +111,10 @@ def test_cgp_pop_uses_own_rng():
         "n_columns": 3,
         "n_rows": 3,
         "levels_back": 2,
-        "primitives": [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat],
+        "primitives": [gp.Add, gp.Sub, gp.Mul, gp.ConstantFloat],
     }
 
-    pop = gp.CGPPopulation(
+    pop = gp.Population(
         population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
     )
 
@@ -145,8 +145,8 @@ def test_evolve_two_expressions():
         def f1(x):
             return (x[0] * x[1]) - x[1]
 
-        y0 = gp.CGPGraph(individual.genome[0]).to_func()
-        y1 = gp.CGPGraph(individual.genome[1]).to_func()
+        y0 = gp.CartesianGraph(individual.genome[0]).to_func()
+        y1 = gp.CartesianGraph(individual.genome[1]).to_func()
 
         loss = 0
         for _ in range(100):
@@ -178,7 +178,7 @@ def test_evolve_two_expressions():
             "n_columns": 3,
             "n_rows": 3,
             "levels_back": 2,
-            "primitives": [gp.CGPAdd, gp.CGPMul],
+            "primitives": [gp.Add, gp.Mul],
         },
         {
             "n_inputs": 2,
@@ -186,11 +186,11 @@ def test_evolve_two_expressions():
             "n_columns": 2,
             "n_rows": 2,
             "levels_back": 2,
-            "primitives": [gp.CGPSub, gp.CGPMul],
+            "primitives": [gp.Sub, gp.Mul],
         },
     ]
 
-    pop = gp.CGPPopulation(
+    pop = gp.Population(
         population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
     )
     ea = gp.ea.MuPlusLambda(
@@ -234,7 +234,7 @@ def test_speedup_parallel_evolve():
         "n_columns": 3,
         "n_rows": 3,
         "levels_back": 2,
-        "primitives": [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat],
+        "primitives": [gp.Add, gp.Sub, gp.Mul, gp.ConstantFloat],
     }
 
     # Number of calls to objective: Number of parents + (Number of
@@ -249,7 +249,7 @@ def test_speedup_parallel_evolve():
     # Serial execution
 
     for n_processes in [1, 2, 4]:
-        pop = gp.CGPPopulation(
+        pop = gp.Population(
             population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
         )
         ea = gp.ea.MuPlusLambda(

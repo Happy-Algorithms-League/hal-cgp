@@ -2,27 +2,27 @@ import numpy as np
 import pytest
 
 import gp
-from gp.cgp_primitives import CGPPrimitives
+from gp.primitives import Primitives
 
 
 SEED = np.random.randint(2 ** 31)
 
 
 def test_immutable_primitives():
-    primitives = CGPPrimitives([gp.CGPAdd, gp.CGPSub])
+    primitives = Primitives([gp.Add, gp.Sub])
     with pytest.raises(TypeError):
-        primitives[0] = gp.CGPAdd
+        primitives[0] = gp.Add
 
     # currently setting this possible, since MappingProxy which was
     # used to enforce this behaviour can not be pickled and hence was
     # removed from Primitives
     # with pytest.raises(TypeError):
-    #     primitives._primitives[0] = gp.CGPAdd
+    #     primitives._primitives[0] = gp.Add
 
 
 def test_max_arity():
-    plain_primitives = [gp.CGPAdd, gp.CGPSub, gp.CGPConstantFloat]
-    primitives = CGPPrimitives(plain_primitives)
+    plain_primitives = [gp.Add, gp.Sub, gp.ConstantFloat]
+    primitives = Primitives(plain_primitives)
 
     arity = 0
     for p in plain_primitives:
@@ -34,7 +34,7 @@ def test_max_arity():
 
 def test_check_for_correct_class():
     with pytest.raises(TypeError):
-        CGPPrimitives(["test"])
+        Primitives(["test"])
 
     with pytest.raises(TypeError):
-        CGPPrimitives([str])
+        Primitives([str])

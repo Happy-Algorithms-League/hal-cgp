@@ -52,10 +52,10 @@ def test_history_recording():
         "n_columns": 3,
         "n_rows": 3,
         "levels_back": 2,
-        "primitives": [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat],
+        "primitives": [gp.Add, gp.Sub, gp.Mul, gp.ConstantFloat],
     }
 
-    pop = gp.CGPPopulation(
+    pop = gp.Population(
         population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
     )
     ea = gp.ea.MuPlusLambda(
@@ -92,15 +92,15 @@ def test_history_recording():
 
 def test_primitives_from_class_names():
 
-    primitives_str = ["CGPAdd", "CGPSub", "CGPMul"]
+    primitives_str = ["Add", "Sub", "Mul"]
     primitives = gp.utils.primitives_from_class_names(primitives_str)
-    assert issubclass(primitives[0], gp.CGPAdd)
-    assert issubclass(primitives[1], gp.CGPSub)
-    assert issubclass(primitives[2], gp.CGPMul)
+    assert issubclass(primitives[0], gp.Add)
+    assert issubclass(primitives[1], gp.Sub)
+    assert issubclass(primitives[2], gp.Mul)
 
     # make sure custom classes are registered as well
-    class MyCustomCGPNodeClass(gp.cgp_node.CGPNode):
+    class MyCustomNodeClass(gp.node.Node):
         pass
 
-    primitives = gp.utils.primitives_from_class_names(["MyCustomCGPNodeClass"])
-    assert issubclass(primitives[0], MyCustomCGPNodeClass)
+    primitives = gp.utils.primitives_from_class_names(["MyCustomNodeClass"])
+    assert issubclass(primitives[0], MyCustomNodeClass)

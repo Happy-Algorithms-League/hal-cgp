@@ -28,14 +28,14 @@ def objective(individual, target_function):
 
     Parameters
     ----------
-    individual : gp.CGPIndividual
+    individual : gp.Individual
         Individual of the Cartesian Genetic Programming Framework.
     target_function : Callable
         Target function.
 
     Returns
     -------
-    gp.CGPIndividual
+    gp.Individual
         Modified individual with updated fitness value.
     """
     if individual.fitness is not None:
@@ -43,7 +43,7 @@ def objective(individual, target_function):
 
     n_function_evaluations = 1000
 
-    graph = gp.CGPGraph(individual.genome)
+    graph = gp.CartesianGraph(individual.genome)
     f_graph = graph.to_torch()
     x = torch.Tensor(n_function_evaluations, 2).uniform_(-5, 5)
     y = f_graph(x)
@@ -83,7 +83,7 @@ def evolution(f_target):
             "n_columns": 10,
             "n_rows": 2,
             "levels_back": 2,
-            "primitives": [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat],
+            "primitives": [gp.Add, gp.Sub, gp.Mul, gp.Div, gp.ConstantFloat],
         },
     }
 
@@ -91,7 +91,7 @@ def evolution(f_target):
     torch.manual_seed(params["seed"])
 
     # create population object that will be evolved
-    pop = gp.CGPPopulation(
+    pop = gp.Population(
         **params["population_params"], seed=params["seed"], genome_params=params["genome_params"]
     )
 
@@ -142,7 +142,7 @@ if __name__ == "__main__":
         ax_fitness.legend()
 
         # Evaluate final champion
-        graph = gp.CGPGraph(pop.champion.genome)
+        graph = gp.CartesianGraph(pop.champion.genome)
         sympy_expr = graph.to_sympy(simplify=False)
         print(graph.pretty_print())
         print("evolved expression:", sympy_expr[0])

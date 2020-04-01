@@ -1,12 +1,14 @@
 import numpy as np
 
+from .individual import Individual, IndividualMultiGenome
 
-class AbstractPopulation:
+
+class Population:
     """
-    Generic population class for evolutionary algorithms.
+    A population of individuals.
     """
 
-    def __init__(self, n_parents, mutation_rate, seed):
+    def __init__(self, n_parents, mutation_rate, seed, genome_params):
         """Init function.
 
         Parameters
@@ -18,6 +20,8 @@ class AbstractPopulation:
             mutated for offspring creation, between 0 and 1.
         seed : int
             Seed for internal random number generator.
+        genome_params : dict
+            Parameters for the genomes of the population's individuals.
         """
         self.n_parents = n_parents  # number of individuals in parent population
 
@@ -25,15 +29,17 @@ class AbstractPopulation:
             raise ValueError("mutation rate needs to be in (0, 1)")
         self._mutation_rate = mutation_rate  # probability of mutation per gene
 
+        self.seed = seed
+        self.rng = np.random.RandomState(self.seed)
+
+        self._genome_params = genome_params
+
         self._parents = None  # list of parent individuals
 
         # keeps track of the number of generations, increases with
         # every new offspring generation
         self.generation = 0
         self._max_idx = -1  # keeps track of maximal idx in population used to label individuals
-
-        self.seed = seed
-        self.rng = np.random.RandomState(seed)
 
         self._generate_random_parent_population()
 
@@ -65,41 +71,67 @@ class AbstractPopulation:
             self._max_idx += 1
 
     def _generate_random_individuals(self, n):
-        raise NotImplementedError()
+        individuals = []
+        for i in range(n):
+            if isinstance(self._genome_params, dict):
+                individual = Individual(fitness=None, genome=None)
+            elif isinstance(self._genome_params, list) and isinstance(
+                self._genome_params[0], dict
+            ):
+                individual = IndividualMultiGenome(fitness=None, genome=None)
+            else:
+                raise NotImplementedError()
+            individual.randomize_genome(self._genome_params, self.rng)
+            individuals.append(individual)
+
+        return individuals
 
     def crossover(self, breeding_pool, n_offsprings):
         """Create an offspring population via crossover.
 
         Parameters
         ----------
-        breeding_pool : List[gp.AbstractPopulation]
+        breeding_pool : List[gp.Population]
             List of individuals from which the offspring are created.
         n_offsprings : int
             Number of offspring to be created.
 
         Returns
         ----------
-        List[gp.AbstractIndividual]
+        List[gp.Individual]
             List of offspring individuals.
         """
-        offsprings = []
-        while len(offsprings) < n_offsprings:
-            first_parent, second_parent = self.rng.permutation(breeding_pool)[:2]
-            offsprings.append(first_parent.crossover(second_parent, self.rng))
+        # in principle crossover would rely on a procedure like the
+        # following:
+        # offsprings = []
+        # while len(offsprings) < n_offsprings:
+        #     first_parent, second_parent = self.rng.permutation(breeding_pool)[:2]
+        #     offsprings.append(first_parent.crossover(second_parent, self.rng))
 
-        return offsprings
+        # return offsprings
+        # however, as cross over tends to disrupt the search in in CGP
+        # (Miller, 1999) crossover is skipped, instead the best
+        # individuals from breeding pool are returned.
+        # reference:
+        # Miller, J. F. (1999). An empirical study of the efficiency
+        # of learning boolean functions using a cartesian genetic
+        # programming approach. In Proceedings of the 1st Annual
+        # Conference on Genetic and Evolutionary Computation-Volume 2,
+        # pages 1135–1142. Morgan Kaufmann Publishers Inc.
+        assert len(breeding_pool) >= n_offsprings
+        return sorted(breeding_pool, key=lambda x: -x.fitness)[:n_offsprings]
 
     def mutate(self, offsprings):
         """Mutate a list of offspring invididuals.
 
         Parameters
         ----------
-        offsprings : List[gp.AbstractIndividual]
+        offsprings : List[gp.Individual]
             List of offspring individuals to be mutated.
 
         Returns
         ----------
-        List[gp.AbstractIndividual]
+        List[gp.Individual]
             List of mutated offspring individuals.
         """
 

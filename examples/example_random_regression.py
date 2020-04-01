@@ -18,12 +18,12 @@ def random_regression():
 
     np.random.seed(params["seed"])
 
-    primitives = gp.CGPPrimitives([gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPConstantFloat])
-    genome = gp.CGPGenome(
+    primitives = gp.Primitives([gp.Add, gp.Sub, gp.Mul, gp.ConstantFloat])
+    genome = gp.Genome(
         params["n_inputs"], params["n_outputs"], params["n_columns"], params["n_rows"], primitives
     )
     genome.randomize(params["levels_back"])
-    graph = gp.CGPGraph(genome)
+    graph = gp.CartesianGraph(genome)
 
     history_loss = []
     for i in range(3000):

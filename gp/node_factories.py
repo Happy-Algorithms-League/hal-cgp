@@ -1,8 +1,8 @@
-from .cgp_node import CGPConstantFloat
+from .node import ConstantFloat
 
 
-def CGPConstantFloatFactory(output_value):
-    """Create a custom CGPConstantFloat class with given output value.
+def ConstantFloatFactory(output_value):
+    """Create a custom ConstantFloat class with given output value.
 
     Warning: relies on closures, hence does neither work with pickle
     nor with multiprocessing. Define your own top-level classes if you
@@ -15,13 +15,13 @@ def CGPConstantFloatFactory(output_value):
 
     Returns
     -------
-    CGPConstantFloat
+    ConstantFloat
 
     """
 
-    class CustomCGPConstantFloat(CGPConstantFloat):
+    class CustomConstantFloat(ConstantFloat):
         def __init__(self, idx, inputs):
             super().__init__(idx, inputs)
             self._output = output_value
 
-    return CustomCGPConstantFloat
+    return CustomConstantFloat

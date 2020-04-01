@@ -1,7 +1,7 @@
-from .cgp_node import CGPNode
+from .node import Node
 
 
-class CGPPrimitives:
+class Primitives:
     """Class collecting primitives of the Cartesian Genetic Programming framework.
     """
 
@@ -20,10 +20,8 @@ class CGPPrimitives:
         for i in range(len(primitives)):
             if not isinstance(primitives[i], type):
                 raise TypeError(f"expected class but received {type(primitives[i])}")
-            if not issubclass(primitives[i], CGPNode):
-                raise TypeError(
-                    f"expected subclass of CGPNode but received {primitives[i].__name__}"
-                )
+            if not issubclass(primitives[i], Node):
+                raise TypeError(f"expected subclass of Node but received {primitives[i].__name__}")
 
         self._n_primitives = len(primitives)
 

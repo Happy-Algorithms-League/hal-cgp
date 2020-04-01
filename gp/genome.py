@@ -1,8 +1,8 @@
-from .cgp_primitives import CGPPrimitives
+from .primitives import Primitives
 
 
-class CGPGenome:
-    """Genome class for CGP individuals.
+class Genome:
+    """Genome class for  individuals.
     """
 
     def __init__(self, n_inputs, n_outputs, n_columns, n_rows, levels_back, primitives):
@@ -48,7 +48,7 @@ class CGPGenome:
             raise ValueError("levels_back can not be larger than n_columns")
         self._levels_back = levels_back
 
-        self._primitives = CGPPrimitives(primitives)
+        self._primitives = Primitives(primitives)
         self._length_per_region = (
             1 + self._primitives.max_arity
         )  # one function gene + multiple input genes
@@ -414,9 +414,9 @@ class CGPGenome:
 
         Returns
         -------
-        gp.CGPGenome
+        gp.Genome
         """
-        new = CGPGenome(
+        new = Genome(
             self._n_inputs,
             self._n_outputs,
             self._n_columns,

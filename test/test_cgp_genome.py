@@ -10,8 +10,8 @@ SEED = np.random.randint(2 ** 31)
 def test_check_dna_consistency():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.CGPAdd]
-    genome = gp.CGPGenome(
+    primitives = [gp.Add]
+    genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -57,8 +57,8 @@ def test_check_dna_consistency():
 def test_permissable_inputs():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 4, "n_rows": 3, "levels_back": 2}
 
-    primitives = [gp.CGPAdd]
-    genome = gp.CGPGenome(
+    primitives = [gp.Add]
+    genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -94,8 +94,8 @@ def test_permissable_inputs():
 def test_region_iterators():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.CGPAdd]
-    genome = gp.CGPGenome(
+    primitives = [gp.Add]
+    genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -118,11 +118,11 @@ def test_region_iterators():
 def test_check_levels_back_consistency():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 4, "n_rows": 3, "levels_back": None}
 
-    primitives = [gp.CGPAdd]
+    primitives = [gp.Add]
 
     params["levels_back"] = 0
     with pytest.raises(ValueError):
-        gp.CGPGenome(
+        gp.Genome(
             params["n_inputs"],
             params["n_outputs"],
             params["n_columns"],
@@ -133,7 +133,7 @@ def test_check_levels_back_consistency():
 
     params["levels_back"] = params["n_columns"] + 1
     with pytest.raises(ValueError):
-        gp.CGPGenome(
+        gp.Genome(
             params["n_inputs"],
             params["n_outputs"],
             params["n_columns"],
@@ -143,7 +143,7 @@ def test_check_levels_back_consistency():
         )
 
     params["levels_back"] = params["n_columns"] - 1
-    gp.CGPGenome(
+    gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -154,8 +154,8 @@ def test_check_levels_back_consistency():
 
 
 def test_catch_no_non_coding_allele_in_non_coding_region():
-    primitives = [gp.CGPConstantFloat]
-    genome = gp.CGPGenome(1, 1, 1, 1, 1, primitives)
+    primitives = [gp.ConstantFloat]
+    genome = gp.Genome(1, 1, 1, 1, 1, primitives)
 
     # should raise error: ConstantFloat node has no inputs, but input gene has
     # value different from the non-coding allele
@@ -183,14 +183,14 @@ def test_individuals_have_different_genomes():
         "n_columns": 6,
         "n_rows": 6,
         "levels_back": 2,
-        "primitives": [gp.CGPAdd, gp.CGPSub, gp.CGPMul, gp.CGPDiv, gp.CGPConstantFloat],
+        "primitives": [gp.Add, gp.Sub, gp.Mul, gp.Div, gp.ConstantFloat],
     }
 
     def objective(ind):
         ind.fitness = ind.idx
         return ind
 
-    pop = gp.CGPPopulation(
+    pop = gp.Population(
         population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
     )
     ea = gp.ea.MuPlusLambda(
