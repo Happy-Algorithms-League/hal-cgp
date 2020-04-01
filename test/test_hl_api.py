@@ -5,10 +5,11 @@ import time
 
 import gp
 
+
 SEED = np.random.randint(2 ** 31)
 
 
-def objective_parallel_population(individual):
+def _objective_test_population(individual):
 
     if individual.fitness is not None:
         return individual
@@ -21,7 +22,7 @@ def objective_parallel_population(individual):
     f_graph = graph.to_torch()
 
     def f_target(x):  # target function
-        return 1.0 + x[:, 0] - x[:, 1]
+        return x[:, 0] - x[:, 1]
 
     x = torch.Tensor(n_function_evaluations, 2).normal_()
     y = f_graph(x)
@@ -37,12 +38,8 @@ def _test_population(n_processes):
 
     population_params = {
         "n_parents": 5,
-        "n_offsprings": 5,
-        "max_generations": 2000,
-        "n_breeding": 5,
-        "tournament_size": 2,
         "mutation_rate": 0.05,
-        "min_fitness": 1e-12,
+        "seed": SEED,
     }
 
     genome_params = {
@@ -51,58 +48,61 @@ def _test_population(n_processes):
         "n_columns": 3,
         "n_rows": 3,
         "levels_back": 2,
-        "primitives": [gp.Add, gp.Sub, gp.Mul, gp.ConstantFloat],
+        "primitives": [gp.Add, gp.Sub, gp.ConstantFloat],
+    }
+
+    ea_params = {
+        "n_offsprings": 5,
+        "n_breeding": 5,
+        "tournament_size": 2,
+        "n_processes": n_processes,
+    }
+
+    evolve_params = {
+        "max_generations": 2000,
+        "min_fitness": -1e-12,
     }
 
     np.random.seed(SEED)
     torch.manual_seed(SEED)
 
-    pop = gp.Population(
-        population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
-    )
-    ea = gp.ea.MuPlusLambda(
-        population_params["n_offsprings"],
-        population_params["n_breeding"],
-        population_params["tournament_size"],
-        n_processes=n_processes,
-    )
+    pop = gp.Population(**population_params, genome_params=genome_params)
 
-    gp.evolve(
-        pop,
-        objective_parallel_population,
-        ea,
-        population_params["max_generations"],
-        population_params["min_fitness"],
-    )
+    ea = gp.ea.MuPlusLambda(**ea_params)
 
-    assert abs(pop.champion.fitness) < 1e-10
+    history = {}
+    history["max_fitness_per_generation"] = []
 
-    return np.mean(pop.fitness_parents())
+    def recording_callback(pop):
+        history["max_fitness_per_generation"].append(pop.champion.fitness)
+
+    gp.evolve(pop, _objective_test_population, ea, **evolve_params, callback=recording_callback)
+
+    assert pop.champion.fitness >= evolve_params["min_fitness"]
+
+    return history["max_fitness_per_generation"]
 
 
 def test_parallel_population():
+    """Test consistent evolution independent of the number of processes.
+    """
 
-    time_per_n_processes = []
     fitness_per_n_processes = []
     for n_processes in [1, 2, 4]:
-        t1 = time.time()
         fitness_per_n_processes.append(_test_population(n_processes))
-        time_per_n_processes.append(time.time() - t1)
 
-    assert abs(fitness_per_n_processes[0] - fitness_per_n_processes[1]) < 1e-10
-    assert abs(fitness_per_n_processes[0] - fitness_per_n_processes[2]) < 1e-10
+    assert fitness_per_n_processes[0] == pytest.approx(fitness_per_n_processes[1])
+    assert fitness_per_n_processes[0] == pytest.approx(fitness_per_n_processes[2])
 
 
 def test_pop_uses_own_rng():
+    """Test independence of Population on global numpy rng.
+    """
 
     population_params = {
         "n_parents": 5,
-        "n_offsprings": 5,
-        "max_generations": 500,
-        "n_breeding": 5,
-        "tournament_size": 2,
         "mutation_rate": 0.05,
-        "min_fitness": 1e-12,
+        "seed": SEED,
     }
 
     genome_params = {
@@ -114,11 +114,8 @@ def test_pop_uses_own_rng():
         "primitives": [gp.Add, gp.Sub, gp.Mul, gp.ConstantFloat],
     }
 
-    pop = gp.Population(
-        population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
-    )
+    pop = gp.Population(**population_params, genome_params=genome_params)
 
-    # test for generating random parent population
     np.random.seed(SEED)
 
     pop._generate_random_parent_population()
@@ -129,11 +126,16 @@ def test_pop_uses_own_rng():
     pop._generate_random_parent_population()
     parents_1 = list(pop._parents)
 
+    # since Population does not depend on global rng seed, we
+    # expect different individuals in the two populations
     for p_0, p_1 in zip(parents_0, parents_1):
         assert p_0.genome.dna != p_1.genome.dna
 
 
 def test_evolve_two_expressions():
+    """Test evolution of multiple expressions simultaneously.
+    """
+
     def _objective(individual):
 
         if individual.fitness is not None:
@@ -163,20 +165,18 @@ def test_evolve_two_expressions():
 
     population_params = {
         "n_parents": 5,
-        "n_offsprings": 5,
-        "max_generations": 1000,
-        "n_breeding": 5,
-        "tournament_size": 2,
         "mutation_rate": 0.05,
-        "min_fitness": 1e-12,
+        "seed": SEED,
     }
 
+    # contains parameters for two distinct CartesianGraphs as list of
+    # two dicts
     genome_params = [
         {
             "n_inputs": 1,
             "n_outputs": 1,
-            "n_columns": 3,
-            "n_rows": 3,
+            "n_columns": 4,
+            "n_rows": 2,
             "levels_back": 2,
             "primitives": [gp.Add, gp.Mul],
         },
@@ -190,25 +190,34 @@ def test_evolve_two_expressions():
         },
     ]
 
-    pop = gp.Population(
-        population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
-    )
-    ea = gp.ea.MuPlusLambda(
-        population_params["n_offsprings"],
-        population_params["n_breeding"],
-        population_params["tournament_size"],
-    )
+    ea_params = {
+        "n_offsprings": 5,
+        "n_breeding": 5,
+        "tournament_size": 2,
+    }
+
+    evolve_params = {
+        "max_generations": 2000,
+        "min_fitness": -1e-12,
+    }
+
+    np.random.seed(SEED)
+    torch.manual_seed(SEED)
+
+    pop = gp.Population(**population_params, genome_params=genome_params)
+
+    ea = gp.ea.MuPlusLambda(**ea_params)
 
     gp.evolve(
-        pop, _objective, ea, population_params["max_generations"], population_params["min_fitness"]
+        pop, _objective, ea, **evolve_params,
     )
 
     assert abs(pop.champion.fitness) < 1e-10
 
 
-def objective_speedup_parallel_evolve(individual):
+def _objective_speedup_parallel_evolve(individual):
 
-    time.sleep(0.1)
+    time.sleep(0.25)
 
     individual.fitness = np.random.rand()
 
@@ -220,12 +229,8 @@ def test_speedup_parallel_evolve():
 
     population_params = {
         "n_parents": 4,
-        "n_offsprings": 4,
-        "max_generations": 2,
-        "n_breeding": 5,
-        "tournament_size": 2,
         "mutation_rate": 0.05,
-        "min_fitness": 1.0,
+        "seed": SEED,
     }
 
     genome_params = {
@@ -237,42 +242,47 @@ def test_speedup_parallel_evolve():
         "primitives": [gp.Add, gp.Sub, gp.Mul, gp.ConstantFloat],
     }
 
+    ea_params = {
+        "n_offsprings": 4,
+        "n_breeding": 5,
+        "tournament_size": 2,
+    }
+
+    evolve_params = {
+        "max_generations": 5,
+        "min_fitness": np.inf,
+    }
+
     # Number of calls to objective: Number of parents + (Number of
     # parents + offspring) * (N_generations - 1) Initially, we need to
     # compute the fitness for all parents. Then we compute the fitness
     # for each parents and offspring in each iteration.
     n_calls_objective = population_params["n_parents"] + (
-        population_params["n_parents"] + population_params["n_offsprings"]
-    ) * (population_params["max_generations"] - 1)
+        population_params["n_parents"] + ea_params["n_offsprings"]
+    ) * (evolve_params["max_generations"] - 1)
     np.random.seed(SEED)
+
+    time_per_objective_call = 0.25
 
     # Serial execution
 
     for n_processes in [1, 2, 4]:
-        pop = gp.Population(
-            population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
-        )
-        ea = gp.ea.MuPlusLambda(
-            population_params["n_offsprings"],
-            population_params["n_breeding"],
-            population_params["tournament_size"],
-            n_processes=n_processes,
-        )
+        pop = gp.Population(**population_params, genome_params=genome_params)
+
+        ea = gp.ea.MuPlusLambda(**ea_params, n_processes=n_processes)
 
         t0 = time.time()
         gp.evolve(
-            pop,
-            objective_speedup_parallel_evolve,
-            ea,
-            population_params["max_generations"],
-            population_params["min_fitness"],
+            pop, _objective_speedup_parallel_evolve, ea, **evolve_params,
         )
         T = time.time() - t0
+
         if n_processes == 1:
             T_baseline = T
             # assert that total execution time is roughly equal to
-            # number of objective calls x time per call
-            assert T == pytest.approx(n_calls_objective * 0.1, rel=0.25)
+            # number of objective calls x time per call; serves as a
+            # baseline for subsequent parallel evolutions
+            assert T == pytest.approx(n_calls_objective * time_per_objective_call, rel=0.25)
         else:
             # assert that multiprocessing roughly follows a linear speedup.
             assert T == pytest.approx(T_baseline / n_processes, rel=0.25)
