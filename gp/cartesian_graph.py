@@ -208,7 +208,12 @@ class CartesianGraph:
         """
         self._format_output_str_of_all_nodes()
         s = ", ".join(node.output_str for node in self.output_nodes)
-        func_str = f"def _f(x): return [{s}]"
+        func_str = f"""\
+def _f(x):
+    if len(x) != {self._n_inputs}:
+        raise ValueError(f'input has length {{len(x)}}, expected {self._n_inputs}')
+    return [{s}]
+"""
         exec(func_str)
         return locals()["_f"]
 
@@ -235,17 +240,27 @@ class CartesianGraph:
                     node.format_parameter_str()
                     all_parameter_str.append(node.parameter_str)
         forward_str = ", ".join(node.output_str_torch for node in self.output_nodes)
-        class_str = """
+        class_str = f"""\
 class _C(torch.nn.Module):
 
     def __init__(self):
         super().__init__()
+
 """
         for s in all_parameter_str:
             class_str += "        " + s
 
-        func_str = f"""
+        func_str = f"""\
+
     def forward(self, x):
+        if len(x.shape) != 2:
+            raise ValueError(
+                f"input has shape {{tuple(x.shape)}}, expected (<batch_size>, {self._n_inputs})"
+            )
+        if x.shape[1] != {self._n_inputs}:
+            raise ValueError(
+                f"input has shape {{tuple(x.shape)}}, expected ({{x.shape[0]}}, {self._n_inputs})"
+            )
         return torch.stack([{forward_str}], dim=1)
         """
         class_str += func_str
