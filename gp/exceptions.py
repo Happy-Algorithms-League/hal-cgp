@@ -1,2 +1,0 @@
-class InvalidSympyExpression(Exception):
-    pass

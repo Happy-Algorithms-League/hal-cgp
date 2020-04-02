@@ -69,12 +69,12 @@ def test_history_recording():
         (population_params["max_generations"], population_params["n_parents"])
     )
     history["fitness_champion"] = np.empty(population_params["max_generations"])
-    history["expr_champion"] = []
+    history["champion"] = []
 
     def recording_callback(pop):
         history["fitness"][pop.generation] = pop.fitness_parents()
         history["fitness_champion"][pop.generation] = pop.champion.fitness
-        history["expr_champion"].append(str(pop.champion.to_sympy(simplify=True)[0]))
+        history["champion"].append(pop.champion)
 
     gp.evolve(
         pop,
@@ -87,7 +87,7 @@ def test_history_recording():
 
     assert np.all(history["fitness"] == pytest.approx(1.0))
     assert np.all(history["fitness_champion"] == pytest.approx(1.0))
-    assert "expr_champion" in history
+    assert "champion" in history
 
 
 def test_primitives_from_class_names():

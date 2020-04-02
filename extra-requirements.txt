@@ -1,0 +1,7 @@
+black
+flake8
+matplotlib
+pytest
+scipy
+sympy
+torch

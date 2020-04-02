@@ -1,8 +1,6 @@
+import itertools
 import numpy as np
 import pytest
-import sympy
-import torch
-from itertools import product
 
 import gp
 
@@ -135,6 +133,8 @@ def test_compile_addsubmul():
 
 
 def test_to_torch_and_backprop():
+    torch = pytest.importorskip("torch")
+
     primitives = [gp.Mul, gp.ConstantFloat]
     genome = gp.Genome(1, 1, 2, 2, 1, primitives)
     genome.dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 3, None]
@@ -225,8 +225,10 @@ genomes[3].dna = [
 ]
 
 
-@pytest.mark.parametrize("genome, batch_size", product(genomes, batch_sizes))
+@pytest.mark.parametrize("genome, batch_size", itertools.product(genomes, batch_sizes))
 def test_compile_torch_output_shape(genome, batch_size):
+    torch = pytest.importorskip("torch")
+
     graph = gp.CartesianGraph(genome)
     c = graph.to_torch()
     x = torch.Tensor(batch_size, 1).normal_()
@@ -235,6 +237,8 @@ def test_compile_torch_output_shape(genome, batch_size):
 
 
 def test_to_sympy():
+    sympy = pytest.importorskip("sympy")
+
     primitives = [gp.Add, gp.ConstantFloat]
     genome = gp.Genome(1, 1, 2, 2, 1, primitives)
 
@@ -253,6 +257,8 @@ def test_to_sympy():
 
 
 def test_catch_invalid_sympy_expr():
+    pytest.importorskip("sympy")
+
     primitives = [gp.Sub, gp.Div]
     genome = gp.Genome(1, 1, 2, 1, 1, primitives)
 
@@ -260,11 +266,13 @@ def test_catch_invalid_sympy_expr():
     genome.dna = [-1, None, None, 0, 0, 0, 1, 0, 1, -2, 2, None]
     graph = gp.CartesianGraph(genome)
 
-    with pytest.raises(gp.exceptions.InvalidSympyExpression):
+    with pytest.raises(Exception):
         graph.to_sympy(simplify=True)
 
 
 def test_allow_powers_of_x_0():
+    pytest.importorskip("sympy")
+
     primitives = [gp.Sub, gp.Mul]
     genome = gp.Genome(1, 1, 2, 1, 1, primitives)
 
@@ -294,6 +302,8 @@ def test_input_dim_python():
 
 
 def test_input_dim_torch():
+    torch = pytest.importorskip("torch")
+
     rng = np.random.RandomState(SEED)
 
     genome = gp.Genome(2, 1, 1, 1, 1, [gp.ConstantFloat])

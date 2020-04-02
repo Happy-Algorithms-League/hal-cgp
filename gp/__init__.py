@@ -10,8 +10,6 @@ from .node import (
 )
 from .population import Population
 
-from .exceptions import InvalidSympyExpression
-
 from .hl_api import evolve
 
 from . import utils

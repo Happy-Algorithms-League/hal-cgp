@@ -1,9 +1,17 @@
 import collections
-import sympy
-import torch  # noqa: F401
+
+try:
+    import sympy
+except ModuleNotFoundError:
+    sympy = None
+
+try:
+    import torch  # noqa: F401
+except ModuleNotFoundError:
+    torch = None
+
 
 from .node import InputNode, OutputNode
-from .exceptions import InvalidSympyExpression
 
 
 class CartesianGraph:
@@ -228,6 +236,9 @@ def _f(x):
         torch.nn.Module
             Instance of the PyTorch class.
         """
+        if torch is None:
+            raise ModuleNotFoundError("No module named 'torch' (extra requirement)")
+
         for i, node in enumerate(self.input_nodes):
             node.format_output_str_torch(self)
 
@@ -307,6 +318,23 @@ class _C(torch.nn.Module):
         List[sympy.core.Expr]
             List of sympy expressions.
         """
+        if sympy is None:
+            raise ModuleNotFoundError("No module named 'sympy' (extra requirement)")
+
+        def _validate_sympy_expr(expr):
+            """Helper function that raises an exception upon encountering a SymPy
+            expression that can not be evaluated.
+
+            """
+
+            class InvalidSympyExpression(Exception):
+                pass
+
+            if "zoo" in str(expr) or "nan" in str(expr):
+                raise InvalidSympyExpression(str(expr))
+
+            return expr
+
         self._format_output_str_of_all_nodes()
 
         sympy_exprs = []
@@ -329,12 +357,5 @@ class _C(torch.nn.Module):
             return sympy_exprs
         else:  # simplify expression if desired
             for i, expr in enumerate(sympy_exprs):
-                sympy_exprs[i] = self._validate_sympy_expr(expr.simplify())
+                sympy_exprs[i] = _validate_sympy_expr(expr.simplify())
             return sympy_exprs
-
-    def _validate_sympy_expr(self, expr):
-
-        if "zoo" in str(expr) or "nan" in str(expr):
-            raise InvalidSympyExpression(str(expr))
-
-        return expr
