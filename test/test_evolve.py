@@ -75,7 +75,7 @@ def _test_population(n_processes):
         population_params["min_fitness"],
     )
 
-    assert abs(pop.champion.fitness) < 1e-10
+    assert pytest.approx(pop.champion.fitness == 0.0)
 
     return np.mean(pop.fitness_parents())
 
@@ -88,9 +88,8 @@ def test_parallel_population():
         t1 = time.time()
         fitness_per_n_processes.append(_test_population(n_processes))
         time_per_n_processes.append(time.time() - t1)
-
-    assert abs(fitness_per_n_processes[0] - fitness_per_n_processes[1]) < 1e-10
-    assert abs(fitness_per_n_processes[0] - fitness_per_n_processes[2]) < 1e-10
+    assert fitness_per_n_processes[0] == pytest.approx(fitness_per_n_processes[1])
+    assert fitness_per_n_processes[0] == pytest.approx(fitness_per_n_processes[2])
 
 
 def test_pop_uses_own_rng():
@@ -203,7 +202,7 @@ def test_evolve_two_expressions():
         pop, _objective, ea, population_params["max_generations"], population_params["min_fitness"]
     )
 
-    assert abs(pop.champion.fitness) < 1e-10
+    assert pytest.approx(pop.champion.fitness == 0.0)
 
 
 def objective_speedup_parallel_evolve(individual):

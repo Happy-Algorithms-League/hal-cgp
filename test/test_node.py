@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 import gp
 
@@ -24,7 +25,7 @@ def test_add():
     x = [5.0, 1.5]
     y = graph(x)
 
-    assert abs(x[0] + x[1] - y[0]) < 1e-15
+    assert pytest.approx(x[0] + x[1] == y[0])
 
 
 def test_sub():
@@ -45,7 +46,7 @@ def test_sub():
     x = [5.0, 1.5]
     y = graph(x)
 
-    assert abs(x[0] - x[1] - y[0]) < 1e-15
+    assert pytest.approx(x[0] - x[1] == y[0])
 
 
 def test_mul():
@@ -66,7 +67,7 @@ def test_mul():
     x = [5.0, 1.5]
     y = graph(x)
 
-    assert abs((x[0] * x[1]) - y[0]) < 1e-15
+    assert pytest.approx((x[0] * x[1]) == y[0])
 
 
 def test_div():
@@ -87,7 +88,7 @@ def test_div():
     x = [5.0, 1.5]
     y = graph(x)
 
-    assert abs((x[0] / x[1]) - y[0]) < 1e-15
+    assert pytest.approx((x[0] / x[1]) == y[0])
 
 
 def test_pow():
@@ -108,7 +109,7 @@ def test_pow():
     x = [5.0, 1.5]
     y = graph(x)
 
-    assert abs((x[0] ** x[1]) - y[0]) < 1e-15
+    assert pytest.approx((x[0] ** x[1]) == y[0])
 
 
 def test_constant_float():
@@ -130,4 +131,4 @@ def test_constant_float():
     y = graph(x)
 
     # by default the output value of the ConstantFloat node is 1.0
-    assert abs(1.0 - y[0]) < 1e-15
+    assert pytest.approx(1.0 == y[0])
