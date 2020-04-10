@@ -1,3 +1,5 @@
+import pytest
+
 import gp
 
 
@@ -21,7 +23,7 @@ def test_constant_float():
     x = [None, None]
     y = graph(x)
 
-    assert abs(val - y[0]) < 1e-10
+    assert pytest.approx(val == y[0])
 
     # make sure different classes are created for multiple calls to the class
     # factory
@@ -32,5 +34,5 @@ def test_constant_float():
 
     prim_1._output = 2 * val
 
-    assert abs(val - prim_0._output) < 1e-10
-    assert abs(2 * val - prim_1._output) < 1e-10
+    assert pytest.approx(val == prim_0._output)
+    assert pytest.approx(2 * val == prim_1._output)

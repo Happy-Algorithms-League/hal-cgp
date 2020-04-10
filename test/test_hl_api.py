@@ -36,11 +36,7 @@ def _objective_test_population(individual):
 
 def _test_population(n_processes):
 
-    population_params = {
-        "n_parents": 5,
-        "mutation_rate": 0.05,
-        "seed": SEED,
-    }
+    population_params = {"n_parents": 5, "mutation_rate": 0.05, "seed": SEED}
 
     genome_params = {
         "n_inputs": 2,
@@ -58,10 +54,7 @@ def _test_population(n_processes):
         "n_processes": n_processes,
     }
 
-    evolve_params = {
-        "max_generations": 2000,
-        "min_fitness": -1e-12,
-    }
+    evolve_params = {"max_generations": 2000, "min_fitness": -1e-12}
 
     np.random.seed(SEED)
     torch.manual_seed(SEED)
@@ -99,11 +92,7 @@ def test_pop_uses_own_rng():
     """Test independence of Population on global numpy rng.
     """
 
-    population_params = {
-        "n_parents": 5,
-        "mutation_rate": 0.05,
-        "seed": SEED,
-    }
+    population_params = {"n_parents": 5, "mutation_rate": 0.05, "seed": SEED}
 
     genome_params = {
         "n_inputs": 2,
@@ -163,11 +152,7 @@ def test_evolve_two_expressions():
 
         return individual
 
-    population_params = {
-        "n_parents": 5,
-        "mutation_rate": 0.05,
-        "seed": SEED,
-    }
+    population_params = {"n_parents": 5, "mutation_rate": 0.05, "seed": SEED}
 
     # contains parameters for two distinct CartesianGraphs as list of
     # two dicts
@@ -190,16 +175,9 @@ def test_evolve_two_expressions():
         },
     ]
 
-    ea_params = {
-        "n_offsprings": 5,
-        "n_breeding": 5,
-        "tournament_size": 2,
-    }
+    ea_params = {"n_offsprings": 5, "n_breeding": 5, "tournament_size": 2}
 
-    evolve_params = {
-        "max_generations": 2000,
-        "min_fitness": -1e-12,
-    }
+    evolve_params = {"max_generations": 2000, "min_fitness": -1e-12}
 
     np.random.seed(SEED)
     torch.manual_seed(SEED)
@@ -208,11 +186,9 @@ def test_evolve_two_expressions():
 
     ea = gp.ea.MuPlusLambda(**ea_params)
 
-    gp.evolve(
-        pop, _objective, ea, **evolve_params,
-    )
+    gp.evolve(pop, _objective, ea, **evolve_params)
 
-    assert abs(pop.champion.fitness) < 1e-10
+    assert pytest.approx(abs(pop.champion.fitness) == 0.0)
 
 
 def _objective_speedup_parallel_evolve(individual):
@@ -227,11 +203,7 @@ def _objective_speedup_parallel_evolve(individual):
 @pytest.mark.skip(reason="Test is not robust against execution in CI.")
 def test_speedup_parallel_evolve():
 
-    population_params = {
-        "n_parents": 4,
-        "mutation_rate": 0.05,
-        "seed": SEED,
-    }
+    population_params = {"n_parents": 4, "mutation_rate": 0.05, "seed": SEED}
 
     genome_params = {
         "n_inputs": 2,
@@ -242,16 +214,9 @@ def test_speedup_parallel_evolve():
         "primitives": [gp.Add, gp.Sub, gp.Mul, gp.ConstantFloat],
     }
 
-    ea_params = {
-        "n_offsprings": 4,
-        "n_breeding": 5,
-        "tournament_size": 2,
-    }
+    ea_params = {"n_offsprings": 4, "n_breeding": 5, "tournament_size": 2}
 
-    evolve_params = {
-        "max_generations": 5,
-        "min_fitness": np.inf,
-    }
+    evolve_params = {"max_generations": 5, "min_fitness": np.inf}
 
     # Number of calls to objective: Number of parents + (Number of
     # parents + offspring) * (N_generations - 1) Initially, we need to
@@ -272,9 +237,7 @@ def test_speedup_parallel_evolve():
         ea = gp.ea.MuPlusLambda(**ea_params, n_processes=n_processes)
 
         t0 = time.time()
-        gp.evolve(
-            pop, _objective_speedup_parallel_evolve, ea, **evolve_params,
-        )
+        gp.evolve(pop, _objective_speedup_parallel_evolve, ea, **evolve_params)
         T = time.time() - t0
 
         if n_processes == 1:
