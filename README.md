@@ -83,8 +83,8 @@ def recording_callback(pop):
 ```
 5. Use the `evolve` function from the high-level API that ties everything together and executes the evolution:
 ```python
-history = gp.evolve(pop, obj, ea, params["max_generations"],
-                    params["min_fitness"], print_progress=True, callback=recording_callback)
+gp.evolve(pop, obj, ea, params["max_generations"],
+          params["min_fitness"], print_progress=True, callback=recording_callback)
 ```
 
 
