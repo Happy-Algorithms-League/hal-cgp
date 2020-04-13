@@ -271,3 +271,45 @@ def test_allow_powers_of_x_0():
     genome.dna = [-1, None, None, 0, 0, 0, 1, 0, 0, -2, 2, None]
     graph = gp.CartesianGraph(genome)
     graph.to_sympy(simplify=True)
+
+
+def test_input_dim_python():
+    rng = np.random.RandomState(SEED)
+
+    genome = gp.Genome(2, 1, 1, 1, 1, [gp.ConstantFloat])
+    genome.randomize(rng)
+    f = gp.CartesianGraph(genome).to_func()
+
+    # fail for too short input
+    with pytest.raises(ValueError):
+        f([None])
+
+    # fail for too long input
+    with pytest.raises(ValueError):
+        f([None, None, None])
+
+    # do not fail for input with correct length
+    f([None, None])
+
+
+def test_input_dim_torch():
+    rng = np.random.RandomState(SEED)
+
+    genome = gp.Genome(2, 1, 1, 1, 1, [gp.ConstantFloat])
+    genome.randomize(rng)
+    f = gp.CartesianGraph(genome).to_torch()
+
+    # fail for missing batch dimension
+    with pytest.raises(ValueError):
+        f(torch.Tensor([1.0]))
+
+    # fail for too short input
+    with pytest.raises(ValueError):
+        f(torch.Tensor([1.0]).reshape(-1, 1))
+
+    # fail for too long input
+    with pytest.raises(ValueError):
+        f(torch.Tensor([1.0, 1.0, 1.0]).reshape(-1, 3))
+
+    # do not fail for input with correct shape
+    f(torch.Tensor([1.0, 1.0]).reshape(-1, 2))
