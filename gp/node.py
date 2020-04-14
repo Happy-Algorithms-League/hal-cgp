@@ -67,7 +67,7 @@ class Node:
     def __repr__(self):
         return (
             f"{self.__class__.__name__}(idx: {self.idx}, active: {self._active}, "
-            f"arity: {self._arity}, inputs {self._inputs}, output {self._outputs})"
+            f"arity: {self._arity}, inputs {self._inputs}, output {self._output})"
         )
 
     def pretty_str(self, n):
