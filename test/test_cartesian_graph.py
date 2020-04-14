@@ -314,3 +314,21 @@ def test_input_dim_torch():
 
     # do not fail for input with correct shape
     f(torch.Tensor([1.0, 1.0]).reshape(-1, 2))
+
+
+def test_pretty_str():
+    primitives = [gp.Sub, gp.Mul]
+    genome = gp.Genome(1, 1, 2, 1, 1, primitives)
+
+    # x[0] ** 2
+    genome.dna = [-1, None, None, 0, 0, 0, 1, 0, 0, -2, 2, None]
+    graph = gp.CartesianGraph(genome)
+
+    pretty_str = graph.pretty_str()
+
+    for node in graph.input_nodes:
+        assert node.__class__.__name__ in pretty_str
+    for node in graph.output_nodes:
+        assert node.__class__.__name__ in pretty_str
+    for node in graph.hidden_nodes:
+        assert node.__class__.__name__ in pretty_str

@@ -37,10 +37,10 @@ class CartesianGraph:
         """
         return "CartesianGraph(" + str([node for node in self._nodes if node._active]) + ")"
 
-    def pretty_print(self):
+    def pretty_str(self):
         """Print a pretty representation of the Cartesian graph.
         """
-        n_characters = 18
+        n_characters = 24
 
         def pretty_node_str(node):
             s = node.pretty_str(n_characters)
