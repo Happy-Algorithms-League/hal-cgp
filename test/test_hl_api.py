@@ -185,7 +185,7 @@ def test_evolve_two_expressions():
 
     gp.evolve(pop, _objective, ea, **evolve_params)
 
-    assert pytest.approx(abs(pop.champion.fitness) == 0.0)
+    assert abs(pop.champion.fitness) == pytest.approx(0.0)
 
 
 def _objective_speedup_parallel_evolve(individual):

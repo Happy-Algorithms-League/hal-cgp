@@ -23,7 +23,7 @@ def test_constant_float():
     x = [None, None]
     y = graph(x)
 
-    assert pytest.approx(val == y[0])
+    assert val == pytest.approx(y[0])
 
     # make sure different classes are created for multiple calls to the class
     # factory
@@ -34,5 +34,5 @@ def test_constant_float():
 
     prim_1._output = 2 * val
 
-    assert pytest.approx(val == prim_0._output)
-    assert pytest.approx(2 * val == prim_1._output)
+    assert val == pytest.approx(prim_0._output)
+    assert 2 * val == pytest.approx(prim_1._output)
