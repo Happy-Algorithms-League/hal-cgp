@@ -28,3 +28,13 @@ def population_params(mutation_rate, rng_seed):
 @fixture
 def mutation_rate():
     return np.random.rand()
+
+
+@fixture
+def population_simple_fitness(population_params, genome_params):
+    pop = gp.Population(**population_params, genome_params=genome_params)
+
+    for i, parent in enumerate(pop.parents):
+        parent.fitness = float(i)
+
+    return pop
