@@ -67,7 +67,7 @@ def test_mul():
     x = [5.0, 1.5]
     y = graph(x)
 
-    assert (x[0] * x[1]) == pytest.approx(y[0])
+    assert x[0] * x[1] == pytest.approx(y[0])
 
 
 def test_div():
@@ -88,7 +88,7 @@ def test_div():
     x = [5.0, 1.5]
     y = graph(x)
 
-    assert (x[0] / x[1]) == pytest.approx(y[0])
+    assert x[0] / x[1] == pytest.approx(y[0])
 
 
 def test_pow():
@@ -109,7 +109,7 @@ def test_pow():
     x = [5.0, 1.5]
     y = graph(x)
 
-    assert (x[0] ** x[1]) == pytest.approx(y[0])
+    assert x[0] ** x[1] == pytest.approx(y[0])
 
 
 def test_constant_float():

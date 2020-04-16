@@ -129,7 +129,7 @@ def test_compile_addsubmul():
     x = [5.0, 2.0]
     y = f(x)
 
-    assert ((x[0] * x[1]) - (x[0] - x[1])) == pytest.approx(y[0])
+    assert (x[0] * x[1]) - (x[0] - x[1]) == pytest.approx(y[0])
 
 
 def test_to_torch_and_backprop():
