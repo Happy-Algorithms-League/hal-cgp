@@ -27,7 +27,7 @@ def population_params(mutation_rate, rng_seed):
 
 @fixture
 def mutation_rate():
-    return np.random.rand()
+    return 0.05
 
 
 @fixture
