@@ -20,10 +20,8 @@ def test_init_random_parent_population(population_params, genome_params):
     assert len(pop.parents) == population_params["n_parents"]
 
 
-def test_champion(population_params, genome_params):
-    pop = gp.Population(**population_params, genome_params=genome_params)
-    for i, parent in enumerate(pop.parents):
-        parent.fitness = float(i)
+def test_champion(population_simple_fitness):
+    pop = population_simple_fitness
     assert pop.champion == pop.parents[-1]
 
 

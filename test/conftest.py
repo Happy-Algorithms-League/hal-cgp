@@ -35,6 +35,6 @@ def population_simple_fitness(population_params, genome_params):
     pop = gp.Population(**population_params, genome_params=genome_params)
 
     for i, parent in enumerate(pop.parents):
-        parent.fitness = float(i)
+        parent.fitness = i
 
     return pop
