@@ -1,6 +1,26 @@
 # encoding: utf8
 from setuptools import setup
 
+
+def read_requirements():
+    with open("./requirements.txt") as f:
+        requirements = f.read()
+    return requirements
+
+
+def read_extra_requirements():
+
+    extra_requirements = {}
+    extra_requirements["all"] = []
+    with open("./extra-requirements.txt") as f:
+        for l in f:
+            req = l.replace("\n", " ")
+            extra_requirements[req] = [req]
+            extra_requirements["all"].append(req)
+
+    return extra_requirements
+
+
 setup(
     name="python-gp",
     version="0.1",
@@ -11,7 +31,8 @@ setup(
     keywords="genetic programming",
     url="https://github.com/jakobj/python-gp",
     python_requires=">=3.6, <4",
-    install_requires=["sympy", "torch", "numpy"],
+    install_requires=read_requirements(),
+    extras_require=read_extra_requirements(),
     packages=["gp", "gp.ea"],
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",

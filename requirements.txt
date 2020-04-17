@@ -1,4 +1,1 @@
 numpy
-sympy
-torch
-matplotlib

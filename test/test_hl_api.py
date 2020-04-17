@@ -1,6 +1,5 @@
 import numpy as np
 import pytest
-import torch
 import time
 
 import gp
@@ -14,22 +13,22 @@ def _objective_test_population(individual):
     if individual.fitness is not None:
         return individual
 
-    torch.manual_seed(SEED)
+    np.random.seed(SEED)
 
     n_function_evaluations = 100
 
-    graph = gp.CartesianGraph(individual.genome)
-    f_graph = graph.to_torch()
+    f_graph = individual.to_func()
 
     def f_target(x):  # target function
         return x[:, 0] - x[:, 1]
 
-    x = torch.Tensor(n_function_evaluations, 2).normal_()
-    y = f_graph(x)
+    x = np.random.normal(size=(n_function_evaluations, 2))
+    y = np.empty(n_function_evaluations)
+    for i, x_i in enumerate(x):
+        y[i] = f_graph(x_i)[0]
 
-    loss = torch.mean((f_target(x) - y[:, 0]) ** 2)
-
-    individual.fitness = -loss.item()
+    loss = np.mean((f_target(x) - y) ** 2)
+    individual.fitness = -loss
 
     return individual
 
@@ -57,7 +56,6 @@ def _test_population(n_processes):
     evolve_params = {"max_generations": 2000, "min_fitness": -1e-12}
 
     np.random.seed(SEED)
-    torch.manual_seed(SEED)
 
     pop = gp.Population(**population_params, genome_params=genome_params)
 
@@ -180,7 +178,6 @@ def test_evolve_two_expressions():
     evolve_params = {"max_generations": 2000, "min_fitness": -1e-12}
 
     np.random.seed(SEED)
-    torch.manual_seed(SEED)
 
     pop = gp.Population(**population_params, genome_params=genome_params)
 

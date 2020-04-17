@@ -1,25 +1,20 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import os
 import scipy.constants
 import functools
-import torch
-
-from sympy.printing.dot import dotprint
 
 import gp
 
-"""
-Example script showing how to use Cartesian Genetic Programming for
-a simple regression task.
-"""
+
+"""Example demonstrating the use of Cartesian Genetic Programming for
+two regression tasks."""
 
 
-def f_target_easy(x):  # target function
+def f_target_easy(x):
     return x[:, 0] ** 2 + 2 * x[:, 0] * x[:, 1] + x[:, 1] ** 2
 
 
-def f_target_hard(x):  # target function
+def f_target_hard(x):
     return 1.0 + 1.0 / (x[:, 0] + x[:, 1])
 
 
@@ -43,12 +38,17 @@ def objective(individual, target_function):
 
     n_function_evaluations = 1000
 
-    graph = gp.CartesianGraph(individual.genome)
-    f_graph = graph.to_torch()
-    x = torch.Tensor(n_function_evaluations, 2).uniform_(-5, 5)
-    y = f_graph(x)
-    loss = torch.mean((target_function(x) - y[:, 0]) ** 2)
-    individual.fitness = -loss.item()
+    f_graph = individual.to_func()
+    y = np.empty(n_function_evaluations)
+    x = np.random.uniform(-4, 4, size=(n_function_evaluations, 2))
+    for i, x_i in enumerate(x):
+        try:
+            y[i] = f_graph(x_i)[0]
+        except ZeroDivisionError:
+            y[i] = -np.inf
+
+    loss = np.mean((target_function(x) - y) ** 2)
+    individual.fitness = -loss
 
     return individual
 
@@ -65,6 +65,8 @@ def evolution(f_target):
     -------
     dict
         Dictionary containing the history of the evolution
+    Individual
+        Individual with the highest fitness in the last generation
     """
     params = {
         "seed": 8188211,
@@ -82,15 +84,14 @@ def evolution(f_target):
             "n_outputs": 1,
             "n_columns": 10,
             "n_rows": 2,
-            "levels_back": 2,
+            "levels_back": 5,
             "primitives": [gp.Add, gp.Sub, gp.Mul, gp.Div, gp.ConstantFloat],
         },
     }
 
     np.random.seed(params["seed"])
-    torch.manual_seed(params["seed"])
 
-    # create population object that will be evolved
+    # create population that will be evolved
     pop = gp.Population(
         **params["population_params"], seed=params["seed"], genome_params=params["genome_params"]
     )
@@ -98,16 +99,16 @@ def evolution(f_target):
     # create instance of evolutionary algorithm
     ea = gp.ea.MuPlusLambda(**params["ea_params"])
 
+    # define callback for recording of fitness over generations
     history = {}
-    history["champion"] = []
     history["fitness_parents"] = []
 
     def recording_callback(pop):
-        history["champion"].append(pop.champion)
         history["fitness_parents"].append(pop.fitness_parents())
 
     obj = functools.partial(objective, target_function=f_target)
-    # Perform evolution
+
+    # Perform the evolution
     gp.evolve(
         pop,
         obj,
@@ -117,7 +118,7 @@ def evolution(f_target):
         print_progress=True,
         callback=recording_callback,
     )
-    return history, pop
+    return history, pop.champion
 
 
 if __name__ == "__main__":
@@ -127,7 +128,7 @@ if __name__ == "__main__":
     for i, (label, target_function) in enumerate(
         zip(["easy", "hard"], [f_target_easy, f_target_hard])
     ):
-        history, pop = evolution(target_function)
+        history, champion = evolution(target_function)
 
         ax_fitness, ax_function = axes[i]
         ax_fitness.set_xlabel("Generation")
@@ -141,42 +142,16 @@ if __name__ == "__main__":
         ax_fitness.set_ylim(-1.0e4, 0.0)
         ax_fitness.legend()
 
-        # Evaluate final champion
-        graph = gp.CartesianGraph(pop.champion.genome)
-        sympy_expr = graph.to_sympy(simplify=False)
-        print(graph.pretty_print())
-        print("evolved expression:", sympy_expr[0])
-        print("evolved expression simplified:", sympy_expr[0].simplify())
+        f_graph = champion.to_func()
+        x_0_range = np.linspace(-5.0, 5.0, 20)
+        x_1_range = np.ones_like(x_0_range) * 2.0  # fix x_1 such than 1d plot makes sense
+        y = [f_graph([x_0, x_1_range[0]]) for x_0 in x_0_range]
+        y_target = target_function(np.hstack([x_0_range.reshape(-1, 1), x_1_range.reshape(-1, 1)]))
 
-        x0_range = np.arange(-5.0, 5.0, 0.1)
-        x1_range = [-2.0, 2.0]
-
-        y = [[sympy_expr[0].subs({"x_0": x0, "x_1": x1}) for x0 in x0_range] for x1 in x1_range]
-        y_target = [
-            target_function(np.stack((x0_range, np.ones_like(x0_range) * x1)).T) for x1 in x1_range
-        ]
-
-        ax_function.plot(x0_range, y_target[0], lw=2, alpha=0.5, label="Target")
-        ax_function.plot(x0_range, y[0], "x", label="Champion")
+        ax_function.plot(x_0_range, y_target, lw=2, alpha=0.5, label="Target")
+        ax_function.plot(x_0_range, y, "x", label="Champion")
         ax_function.legend()
         ax_function.set_ylabel(r"$f(x)$")
         ax_function.set_xlabel(r"$x$")
 
-        # export computational graphs
-        # full graph
-        fn = f"example_evo_regression-graph_{label}"
-        with open(f"{fn}.dot", "w") as f:
-            f.write(dotprint(sympy_expr[0]))
-        os.system(f"dot -Tps {fn}.dot -o {fn}.pdf")
-        # simplified graph
-        fn = f"example_evo_regression-graph_{label}_simplified"
-        with open(f"{fn}.dot", "w") as f:
-            f.write(dotprint(sympy_expr[0].simplify()))
-        os.system(f"dot -Tps {fn}.dot -o {fn}.pdf")
-
-        with open(".dot", "w") as f:
-            f.write(dotprint(sympy_expr[0].simplify()))
-        os.system(f"dot -Tps {fn}.dot -o {fn}.pdf")
-
-    # plt.tight_layout()
     fig.savefig("example_evo_regression.pdf")
