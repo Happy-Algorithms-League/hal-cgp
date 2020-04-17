@@ -72,4 +72,4 @@ def test_fitness_parents(population_params, genome_params):
     for fitness, parent in zip(fitness_values, pop.parents):
         parent.fitness = fitness
 
-    assert np.all(pop.fitness_parents() == fitness_values)
+    assert np.all(pop.fitness_parents() == pytest.approx(fitness_values))
