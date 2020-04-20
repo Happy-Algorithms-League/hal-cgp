@@ -87,7 +87,7 @@ class Individual:
             Random number generator instance to use for crossover.
 
         Returns
-        ----------
+        -------
         None
         """
         self.genome = Genome(**genome_params)
@@ -102,12 +102,21 @@ class Individual:
         """
         return CartesianGraph(self.genome).to_func()
 
+    def to_torch(self):
+        """Return the expression represented by the individual as Torch class.
+
+        Returns
+        -------
+        torch.nn.Module
+        """
+        return CartesianGraph(self.genome).to_torch()
+
     def to_sympy(self, simplify=True):
         """Return the expression represented by the individual as SymPy
         expression.
 
         Returns
-        ----------
+        -------
         SymPy expression
         """
         return CartesianGraph(self.genome).to_sympy(simplify)
