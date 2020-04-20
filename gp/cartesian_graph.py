@@ -205,7 +205,7 @@ class CartesianGraph:
                 node.format_output_str(self)
 
     def to_func(self):
-        """Compile the function represented by the computational graph.
+        """Compile the function(s) represented by the graph.
 
         Generates a definition of the function in Python code and
         executes the function definition to create a Callable.
@@ -213,7 +213,7 @@ class CartesianGraph:
         Returns
         -------
         Callable
-            Callable executing the function represented by the computational graph.
+            Callable executing the function(s) represented by the graph.
         """
         self._format_output_str_of_all_nodes()
         s = ", ".join(node.output_str for node in self.output_nodes)
@@ -271,7 +271,7 @@ def _f(x):
         return locals()["_f"]
 
     def to_torch(self):
-        """Compile the function represented by the computational graph to a Torch class.
+        """Compile the function(s) represented by the graph to a Torch class.
 
         Generates a definition of the Torch class in Python code and
         executes it to create an instance of the class.
@@ -348,20 +348,20 @@ class _C(torch.nn.Module):
                     pass
 
     def to_sympy(self, simplify=True):
-        """Compile computational graph into a list of sympy-compatible string expressions.
+        """Compile the function(s) represented by the graph to a SymPy expression.
 
-        Generates one sympy expression for each output node.
+        Generates one SymPy expression for each output node.
 
         Parameters
         ----------
         simplify : boolean, optional
-            Whether to simplify the expression using sympy's
+            Whether to simplify the expression using SymPy's
             simplify() method. Defaults to True.
 
         Returns
         ----------
         List[sympy.core.Expr]
-            List of sympy expressions.
+            List of SymPy expressions.
         """
         if sympy is None:
             raise ModuleNotFoundError("No module named 'sympy' (extra requirement)")
