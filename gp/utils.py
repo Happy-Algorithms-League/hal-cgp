@@ -80,13 +80,23 @@ def disk_cache(fn):
     decorated function is called with the same arguments it returns the stored
     values from disk instead of executing the function.
 
-    Warning: this implementation is neither optimized for speed nor storage
+    Consistency of the cache is checked upon the first call of the
+    decorated function by making sure the decorated function returns
+    the same value as the first argument from the cache.
+
+    WARNING: this implementation is neither optimized for speed nor storage
     space and does not limit the size of the cache file.
+
+    WARNING: the consistency check may pass incorrectly if the
+    decorated function happens to return a consistent value for the
+    first argument from the cache although it returns different values
+    for other arguments.
 
     Parameters
     ----------
     fn : Callable
         Function to be cached.
+
     """
     first_function_call = True
 
