@@ -124,6 +124,14 @@ class Node:
         """
         raise NotImplementedError()
 
+    def format_output_str_numpy(self, graph):
+        """Format output string for NumPy representation.
+
+        If format_output_str_numpy implementation is not provided, use
+        standard output_str.
+        """
+        self.format_output_str(graph)
+
     def format_output_str_torch(self, graph):
         """Format output string for torch representation.
 
@@ -243,6 +251,9 @@ class ConstantFloat(Node):
     def format_output_str(self, graph):
         self._output_str = f"{self._output}"
 
+    def format_output_str_numpy(self, graph):
+        self._output_str = f"np.ones(x.shape[0]) * {self._output}"
+
     def format_output_str_torch(self, graph):
         self._output_str = f"self._p{self._idx}.expand(x.shape[0])"
 
@@ -266,6 +277,9 @@ class InputNode(Node):
 
     def format_output_str(self, graph):
         self._output_str = f"x[{self._idx}]"
+
+    def format_output_str_numpy(self, graph):
+        self._output_str = f"x[:, {self._idx}]"
 
     def format_output_str_torch(self, graph):
         self._output_str = f"x[:, {self._idx}]"
