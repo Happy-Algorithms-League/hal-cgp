@@ -298,7 +298,7 @@ class _C(torch.nn.Module):
         for n in self._nodes:
             if n.is_parameter:
                 try:
-                    n._output = eval(f"torch_cls._p{n._idx}[0]")
+                    n._output = eval(f"torch_cls._p{n._idx}[0].item()")
                 except AttributeError:
                     pass
 
