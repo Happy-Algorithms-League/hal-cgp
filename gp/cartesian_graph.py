@@ -1,4 +1,5 @@
 import collections
+import numpy as np  # noqa: F401
 
 try:
     import sympy
@@ -223,6 +224,50 @@ def _f(x):
     return [{s}]
 """
         exec(func_str)
+        return locals()["_f"]
+
+    def _format_output_str_numpy_of_all_nodes(self):
+
+        for i, node in enumerate(self.input_nodes):
+            node.format_output_str_numpy(self)
+
+        active_nodes = self._determine_active_nodes()
+        for hidden_column_idx in sorted(active_nodes):
+            for node in active_nodes[hidden_column_idx]:
+                node.format_output_str_numpy(self)
+
+    def to_numpy(self):
+        """Compile the function(s) represented by the graph to NumPy
+        expression(s).
+
+        Generates a definition of the function in Python code and
+        executes the function definition to create a Callable
+        accepting NumPy arrays.
+
+        Returns
+        -------
+        Callable
+            Callable executing the function(s) represented by the graph.
+        """
+
+        self._format_output_str_numpy_of_all_nodes()
+        s = ", ".join(node.output_str for node in self.output_nodes)
+        func_str = f"""\
+def _f(x):
+    if len(x.shape) != 2:
+        raise ValueError(
+            f"input has shape {{tuple(x.shape)}}, expected (<batch_size>, {self._n_inputs})"
+        )
+    if x.shape[1] != {self._n_inputs}:
+        raise ValueError(
+            f"input has shape {{tuple(x.shape)}}, expected ({{x.shape[0]}}, {self._n_inputs})"
+        )
+
+    return np.stack([{s}], axis=1)
+"""
+
+        exec(func_str)
+
         return locals()["_f"]
 
     def to_torch(self):

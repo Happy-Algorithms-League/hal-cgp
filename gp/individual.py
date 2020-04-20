@@ -102,6 +102,16 @@ class Individual:
         """
         return CartesianGraph(self.genome).to_func()
 
+    def to_numpy(self):
+        """Return the expression represented by the individual as
+        NumPy-compatible Callable.
+
+        Returns
+        -------
+        Callable
+        """
+        return CartesianGraph(self.genome).to_numpy()
+
     def to_torch(self):
         """Return the expression represented by the individual as Torch class.
 

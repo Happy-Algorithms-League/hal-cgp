@@ -132,6 +132,21 @@ def test_compile_addsubmul():
     assert (x[0] * x[1]) - (x[0] - x[1]) == pytest.approx(y[0])
 
 
+def test_to_numpy():
+    primitives = [gp.Add, gp.Mul, gp.ConstantFloat]
+    genome = gp.Genome(1, 1, 2, 2, 1, primitives)
+    # f(x) = x ** 2 + 1.
+    genome.dna = [-1, None, None, 2, None, None, 1, 0, 0, 0, 1, 2, 0, 0, 1, -2, 3, None]
+    graph = gp.CartesianGraph(genome)
+    f = graph.to_numpy()
+
+    x = np.random.normal(size=(100, 1))
+    y = f(x)
+    y_target = x ** 2 + 1.0
+
+    assert y == pytest.approx(y_target)
+
+
 def test_to_torch_and_backprop():
     torch = pytest.importorskip("torch")
 
@@ -226,6 +241,15 @@ genomes[3].dna = [
 
 
 @pytest.mark.parametrize("genome, batch_size", itertools.product(genomes, batch_sizes))
+def test_compile_numpy_output_shape(genome, batch_size):
+
+    c = gp.CartesianGraph(genome).to_numpy()
+    x = np.random.normal(size=(batch_size, 1))
+    y = c(x)
+    assert y.shape == (batch_size, genome._n_outputs)
+
+
+@pytest.mark.parametrize("genome, batch_size", itertools.product(genomes, batch_sizes))
 def test_compile_torch_output_shape(genome, batch_size):
     torch = pytest.importorskip("torch")
 
@@ -298,6 +322,29 @@ def test_input_dim_python():
 
     # do not fail for input with correct length
     f([None, None])
+
+
+def test_input_dim_numpy():
+    rng = np.random.RandomState(SEED)
+
+    genome = gp.Genome(2, 1, 1, 1, 1, [gp.ConstantFloat])
+    genome.randomize(rng)
+    f = gp.CartesianGraph(genome).to_numpy()
+
+    # fail for missing batch dimension
+    with pytest.raises(ValueError):
+        f(np.array([1.0]))
+
+    # fail for too short input
+    with pytest.raises(ValueError):
+        f(np.array([1.0]).reshape(-1, 1))
+
+    # fail for too long input
+    with pytest.raises(ValueError):
+        f(np.array([1.0, 1.0, 1.0]).reshape(-1, 3))
+
+    # do not fail for input with correct shape
+    f(np.array([1.0, 1.0]).reshape(-1, 2))
 
 
 def test_input_dim_torch():
