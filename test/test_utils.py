@@ -29,6 +29,56 @@ def test_cache_decorator():
     assert time.time() - t0 < sleep_time / 2.0
 
 
+def test_cache_decorator_consistency():
+
+    cache_fn = tempfile.mkstemp()[1]
+
+    @gp.utils.disk_cache(cache_fn)
+    def objective_f(x):
+        return x
+
+    @gp.utils.disk_cache(cache_fn)
+    def objective_g(x):
+        return x ** 2
+
+    @gp.utils.disk_cache(cache_fn)
+    def objective_h(x):
+        return x
+
+    @gp.utils.disk_cache(cache_fn)
+    def objective_f_2d(x, y):
+        return x
+
+    @gp.utils.disk_cache(cache_fn)
+    def objective_f_with_kwargs(x, test=None):
+        return x
+
+    x = 2
+
+    assert objective_f(x) == pytest.approx(x)
+    assert objective_h(x) == pytest.approx(x)
+
+    # calling a different function decorated with same filename but
+    # different output should raise an error
+    with pytest.raises(RuntimeError):
+        objective_g(x)
+
+    # calling a different function decorated with same filename and
+    # same output should not raise an error
+    objective_h(x)
+
+    # calling a different function decorated with same filename and
+    # same output but different arguments should raise an error
+    with pytest.raises(RuntimeError):
+        objective_f_2d(x, x)
+
+    # calling a different function decorated with same filename and
+    # same output but different keyword arguments should raise an
+    # error
+    with pytest.raises(RuntimeError):
+        objective_f_with_kwargs(x, test=2)
+
+
 def objective_history_recording(individual):
     individual.fitness = 1.0
     return individual
