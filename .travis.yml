@@ -19,7 +19,7 @@ install:
   - pip install -r requirements.txt
   - pip install pytest pytest-cov coveralls
   - pip install flake8 black
-  - pip install .
+  - pip install .[all]
 script:
   - pytest --cov
   - black --check .
