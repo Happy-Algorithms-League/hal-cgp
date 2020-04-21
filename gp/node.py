@@ -127,7 +127,7 @@ class Node:
     def format_output_str_torch(self, graph):
         """Format output string for torch representation.
 
-        If output_str_torch implementation is not provided, use
+        If format_output_str_torch implementation is not provided, use
         standard output_str.
         """
         self.format_output_str(graph)
@@ -138,10 +138,6 @@ class Node:
     @property
     def output_str(self):
         return self._output_str
-
-    @property
-    def output_str_torch(self):
-        return self.output_str
 
     @property
     def is_parameter(self):

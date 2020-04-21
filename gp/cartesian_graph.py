@@ -250,7 +250,7 @@ def _f(x):
                 if node.is_parameter:
                     node.format_parameter_str()
                     all_parameter_str.append(node.parameter_str)
-        forward_str = ", ".join(node.output_str_torch for node in self.output_nodes)
+        forward_str = ", ".join(node.output_str for node in self.output_nodes)
         class_str = f"""\
 class _C(torch.nn.Module):
 
