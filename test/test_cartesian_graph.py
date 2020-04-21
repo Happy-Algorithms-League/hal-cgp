@@ -229,8 +229,7 @@ genomes[3].dna = [
 def test_compile_torch_output_shape(genome, batch_size):
     torch = pytest.importorskip("torch")
 
-    graph = gp.CartesianGraph(genome)
-    c = graph.to_torch()
+    c = gp.CartesianGraph(genome).to_torch()
     x = torch.Tensor(batch_size, 1).normal_()
     y = c(x)
     assert y.shape == (batch_size, genome._n_outputs)
