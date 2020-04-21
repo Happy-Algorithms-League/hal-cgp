@@ -27,7 +27,7 @@ def test_direct_input_output():
     x = [2.14159]
     y = graph(x)
 
-    assert pytest.approx(x[0] == y[0])
+    assert x[0] == pytest.approx(y[0])
 
 
 def test_to_func_simple():
@@ -41,7 +41,7 @@ def test_to_func_simple():
     x = [5.0, 2.0]
     y = f(x)
 
-    assert pytest.approx(x[0] + x[1] == y[0])
+    assert x[0] + x[1] == pytest.approx(y[0])
 
     primitives = [gp.Sub]
     genome = gp.Genome(2, 1, 1, 1, 1, primitives)
@@ -53,7 +53,7 @@ def test_to_func_simple():
     x = [5.0, 2.0]
     y = f(x)
 
-    assert pytest.approx(x[0] - x[1] == y[0])
+    assert x[0] - x[1] == pytest.approx(y[0])
 
 
 def test_compile_two_columns():
@@ -67,7 +67,7 @@ def test_compile_two_columns():
     x = [5.0, 2.0]
     y = f(x)
 
-    assert pytest.approx(x[0] - (x[0] + x[1]) == y[0])
+    assert x[0] - (x[0] + x[1]) == pytest.approx(y[0])
 
 
 def test_compile_two_columns_two_rows():
@@ -106,8 +106,8 @@ def test_compile_two_columns_two_rows():
     x = [5.0, 2.0]
     y = f(x)
 
-    assert pytest.approx(x[0] + (x[0] + x[1]) == y[0])
-    assert pytest.approx((x[0] + x[1]) + (x[0] - x[1]) == y[1])
+    assert x[0] + (x[0] + x[1]) == pytest.approx(y[0])
+    assert (x[0] + x[1]) + (x[0] - x[1]) == pytest.approx(y[1])
 
 
 def test_compile_addsubmul():
@@ -129,7 +129,7 @@ def test_compile_addsubmul():
     x = [5.0, 2.0]
     y = f(x)
 
-    assert pytest.approx(((x[0] * x[1]) - (x[0] - x[1])) == y[0])
+    assert (x[0] * x[1]) - (x[0] - x[1]) == pytest.approx(y[0])
 
 
 def test_to_torch_and_backprop():
@@ -157,13 +157,13 @@ def test_to_torch_and_backprop():
         loss.backward()
 
         optimizer.step()
-    assert pytest.approx(float(loss.detach()) == 0.0)
+    assert float(loss.detach()) == pytest.approx(0.0)
 
     x = [3.0]
     x_torch = torch.Tensor(x).view(1, 1)
-    assert pytest.approx(c(x_torch)[0].detach().numpy() != graph(x))
+    assert c(x_torch)[0].detach().numpy() != pytest.approx(graph(x))
     graph.update_parameters_from_torch_class(c)
-    assert pytest.approx(c(x_torch)[0].detach().numpy() == graph(x))
+    assert c(x_torch)[0].detach().numpy() == pytest.approx(graph(x))
 
 
 batch_sizes = [1, 10]
