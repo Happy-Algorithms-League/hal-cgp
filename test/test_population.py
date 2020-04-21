@@ -41,7 +41,8 @@ def test_crossover_one_offspring_all_parents(population_simple_fitness):
 
 def test_crossover_one_offspring_breeding_pool(population_simple_fitness):
     pop = population_simple_fitness
-    # Check is best parent in smaller breeding pool is chosen if n_offsprings = 1
+    # Check is best parent in smaller breeding pool (arbitrarily picking 3 parents)
+    # is chosen if n_offsprings = 1
     offspring = pop.crossover(pop.parents[:3], 1)
     assert offspring[0] == max(pop.parents[:3], key=lambda x: x.fitness)
 
