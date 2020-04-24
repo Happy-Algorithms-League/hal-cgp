@@ -129,28 +129,38 @@ class CartesianGraph:
         return self._nodes[-self._n_outputs :]
 
     def _determine_active_nodes(self):
+        """Determine the active nodes in the graph.
 
-        # determine active nodes
-        active_nodes_by_hidden_column_idx = collections.defaultdict(
-            set
-        )  # use set to avoid duplication
-        nodes_to_process = self.output_nodes  # output nodes always need to be processed
+        Starting from the output nodes, we work backward through the
+        graph to determine all hidden nodes which are encountered on
+        the path from input to output nodes. For each hidden column
+        index we thus construct a set of active nodes. Since nodes can
+        only receive input from previous layers, a forward pass can
+        easily work through the columns in order, updating only the
+        active nodes.
 
-        while len(nodes_to_process) > 0:
+        Returns
+        -------
+        Dict[Set]
+            Dictionary mapping colum indices to sets of active nodes.
+
+        """
+
+        # we use sets to make sure each node index is only stored once
+        active_nodes_by_hidden_column_idx = collections.defaultdict(set)
+        nodes_to_process = list(self.output_nodes)
+
+        while len(nodes_to_process) > 0:  # process active nodes in a stack-based fashion
+
             node = nodes_to_process.pop()
-
-            # add this node to active nodes; sorted by column to
-            # determine evaluation order
-            active_nodes_by_hidden_column_idx[self._hidden_column_idx(node.idx)].add(node)
             node.activate()
+            if node in self.input_nodes:
+                continue
+            active_nodes_by_hidden_column_idx[self._hidden_column_idx(node.idx)].add(node)
 
-            # need to process all inputs to this node next
             for i in node.inputs:
                 if i is not self._genome._non_coding_allele:
-                    if not isinstance(self._nodes[i], InputNode):
-                        nodes_to_process.append(self._nodes[i])
-                    else:
-                        self._nodes[i].activate()
+                    nodes_to_process.append(self._nodes[i])
 
         return active_nodes_by_hidden_column_idx
 
