@@ -86,39 +86,6 @@ def test_parallel_population():
     assert fitness_per_n_processes[0] == pytest.approx(fitness_per_n_processes[2])
 
 
-def test_pop_uses_own_rng():
-    """Test independence of Population on global numpy rng.
-    """
-
-    population_params = {"n_parents": 5, "mutation_rate": 0.05, "seed": SEED}
-
-    genome_params = {
-        "n_inputs": 2,
-        "n_outputs": 1,
-        "n_columns": 3,
-        "n_rows": 3,
-        "levels_back": 2,
-        "primitives": [gp.Add, gp.Sub, gp.Mul, gp.ConstantFloat],
-    }
-
-    pop = gp.Population(**population_params, genome_params=genome_params)
-
-    np.random.seed(SEED)
-
-    pop._generate_random_parent_population()
-    parents_0 = list(pop._parents)
-
-    np.random.seed(SEED)
-
-    pop._generate_random_parent_population()
-    parents_1 = list(pop._parents)
-
-    # since Population does not depend on global rng seed, we
-    # expect different individuals in the two populations
-    for p_0, p_1 in zip(parents_0, parents_1):
-        assert p_0.genome.dna != p_1.genome.dna
-
-
 def test_evolve_two_expressions():
     """Test evolution of multiple expressions simultaneously.
     """
