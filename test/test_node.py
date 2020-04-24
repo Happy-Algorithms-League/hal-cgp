@@ -4,9 +4,6 @@ import pytest
 import gp
 
 
-SEED = np.random.randint(2 ** 31)
-
-
 def test_add():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 

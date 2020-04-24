@@ -1,3 +1,4 @@
+import functools
 import numpy as np
 import pytest
 import time
@@ -5,15 +6,12 @@ import time
 import gp
 
 
-SEED = np.random.randint(2 ** 31)
-
-
-def _objective_test_population(individual):
+def _objective_test_population(individual, rng_seed):
 
     if individual.fitness is not None:
         return individual
 
-    np.random.seed(SEED)
+    np.random.seed(rng_seed)
 
     n_function_evaluations = 100
 
@@ -33,9 +31,9 @@ def _objective_test_population(individual):
     return individual
 
 
-def _test_population(n_processes):
+def _test_population(rng_seed, n_processes):
 
-    population_params = {"n_parents": 5, "mutation_rate": 0.05, "seed": SEED}
+    population_params = {"n_parents": 5, "mutation_rate": 0.05, "seed": rng_seed}
 
     genome_params = {
         "n_inputs": 2,
@@ -55,7 +53,7 @@ def _test_population(n_processes):
 
     evolve_params = {"max_generations": 2000, "min_fitness": -1e-12}
 
-    np.random.seed(SEED)
+    np.random.seed(rng_seed)
 
     pop = gp.Population(**population_params, genome_params=genome_params)
 
@@ -67,26 +65,27 @@ def _test_population(n_processes):
     def recording_callback(pop):
         history["max_fitness_per_generation"].append(pop.champion.fitness)
 
-    gp.evolve(pop, _objective_test_population, ea, **evolve_params, callback=recording_callback)
+    obj = functools.partial(_objective_test_population, rng_seed=rng_seed)
+    gp.evolve(pop, obj, ea, **evolve_params, callback=recording_callback)
 
     assert pop.champion.fitness >= evolve_params["min_fitness"]
 
     return history["max_fitness_per_generation"]
 
 
-def test_parallel_population():
+def test_parallel_population(rng_seed):
     """Test consistent evolution independent of the number of processes.
     """
 
     fitness_per_n_processes = []
     for n_processes in [1, 2, 4]:
-        fitness_per_n_processes.append(_test_population(n_processes))
+        fitness_per_n_processes.append(_test_population(rng_seed, n_processes))
 
     assert fitness_per_n_processes[0] == pytest.approx(fitness_per_n_processes[1])
     assert fitness_per_n_processes[0] == pytest.approx(fitness_per_n_processes[2])
 
 
-def test_evolve_two_expressions():
+def test_evolve_two_expressions(rng_seed):
     """Test evolution of multiple expressions simultaneously.
     """
 
@@ -117,7 +116,7 @@ def test_evolve_two_expressions():
 
         return individual
 
-    population_params = {"n_parents": 5, "mutation_rate": 0.05, "seed": SEED}
+    population_params = {"n_parents": 5, "mutation_rate": 0.05, "seed": rng_seed}
 
     # contains parameters for two distinct CartesianGraphs as list of
     # two dicts
@@ -144,7 +143,7 @@ def test_evolve_two_expressions():
 
     evolve_params = {"max_generations": 2000, "min_fitness": -1e-12}
 
-    np.random.seed(SEED)
+    np.random.seed(rng_seed)
 
     pop = gp.Population(**population_params, genome_params=genome_params)
 
@@ -165,9 +164,9 @@ def _objective_speedup_parallel_evolve(individual):
 
 
 @pytest.mark.skip(reason="Test is not robust against execution in CI.")
-def test_speedup_parallel_evolve():
+def test_speedup_parallel_evolve(rng_seed):
 
-    population_params = {"n_parents": 4, "mutation_rate": 0.05, "seed": SEED}
+    population_params = {"n_parents": 4, "mutation_rate": 0.05, "seed": rng_seed}
 
     genome_params = {
         "n_inputs": 2,
@@ -189,7 +188,7 @@ def test_speedup_parallel_evolve():
     n_calls_objective = population_params["n_parents"] + (
         population_params["n_parents"] + ea_params["n_offsprings"]
     ) * (evolve_params["max_generations"] - 1)
-    np.random.seed(SEED)
+    np.random.seed(rng_seed)
 
     time_per_objective_call = 0.25
 

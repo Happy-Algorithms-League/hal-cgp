@@ -3,25 +3,7 @@ import numpy as np
 import gp
 
 
-SEED = np.random.randint(2 ** 31)
-
-population_params = {
-    "n_parents": 5,
-    "mutation_rate": 0.05,
-    "seed": SEED,
-}
-
-genome_params = {
-    "n_inputs": 2,
-    "n_outputs": 1,
-    "n_columns": 3,
-    "n_rows": 3,
-    "levels_back": 2,
-    "primitives": [gp.Add, gp.Sub, gp.Mul, gp.ConstantFloat],
-}
-
-
-def test_label():
+def test_label(population_params, genome_params):
     def objective_without_label(individual):
         assert True
         individual.fitness = -1
@@ -40,7 +22,7 @@ def test_label():
     ea.step(pop, objective_with_label, label="test")
 
 
-def test_fitness_contains_nan():
+def test_fitness_contains_nan(population_params, genome_params):
     def objective(individual):
         if np.random.rand() < 0.5:
             individual.fitness = np.nan

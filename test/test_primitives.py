@@ -5,9 +5,6 @@ import gp
 from gp.primitives import Primitives
 
 
-SEED = np.random.randint(2 ** 31)
-
-
 def test_immutable_primitives():
     primitives = Primitives([gp.Add, gp.Sub])
     with pytest.raises(TypeError):
