@@ -1,11 +1,7 @@
-import numpy as np
 import pytest
 
 import gp
 from gp.primitives import Primitives
-
-
-SEED = np.random.randint(2 ** 31)
 
 
 def test_immutable_primitives():

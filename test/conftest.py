@@ -1,11 +1,10 @@
 import gp
-import numpy as np
 from pytest import fixture
 
 
 @fixture
 def rng_seed():
-    return np.random.randint(2 ** 31)
+    return 1234
 
 
 @fixture
@@ -23,6 +22,11 @@ def genome_params():
 @fixture
 def population_params(mutation_rate, rng_seed):
     return {"n_parents": 5, "mutation_rate": mutation_rate, "seed": rng_seed}
+
+
+@fixture
+def ea_params():
+    return {"n_offsprings": 5, "n_breeding": 5, "tournament_size": 2}
 
 
 @fixture

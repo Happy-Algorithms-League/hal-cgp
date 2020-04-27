@@ -6,9 +6,6 @@ import time
 import gp
 
 
-SEED = np.random.randint(2 ** 31)
-
-
 def test_cache_decorator():
 
     sleep_time = 0.1
@@ -84,41 +81,21 @@ def objective_history_recording(individual):
     return individual
 
 
-def test_history_recording():
+def test_history_recording(population_params, genome_params, ea_params):
 
-    population_params = {
-        "n_parents": 4,
-        "n_offsprings": 4,
+    pop = gp.Population(**population_params, genome_params=genome_params)
+    ea = gp.ea.MuPlusLambda(**ea_params)
+
+    evolve_params = {
         "max_generations": 2,
-        "n_breeding": 5,
-        "tournament_size": 2,
-        "mutation_rate": 0.05,
-        "min_fitness": 2.0,
+        "min_fitness": 1.0,
     }
-
-    genome_params = {
-        "n_inputs": 2,
-        "n_outputs": 1,
-        "n_columns": 3,
-        "n_rows": 3,
-        "levels_back": 2,
-        "primitives": [gp.Add, gp.Sub, gp.Mul, gp.ConstantFloat],
-    }
-
-    pop = gp.Population(
-        population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
-    )
-    ea = gp.ea.MuPlusLambda(
-        population_params["n_offsprings"],
-        population_params["n_breeding"],
-        population_params["tournament_size"],
-    )
 
     history = {}
     history["fitness"] = np.empty(
-        (population_params["max_generations"], population_params["n_parents"])
+        (evolve_params["max_generations"], population_params["n_parents"])
     )
-    history["fitness_champion"] = np.empty(population_params["max_generations"])
+    history["fitness_champion"] = np.empty(evolve_params["max_generations"])
     history["champion"] = []
 
     def recording_callback(pop):
@@ -127,12 +104,7 @@ def test_history_recording():
         history["champion"].append(pop.champion)
 
     gp.evolve(
-        pop,
-        objective_history_recording,
-        ea,
-        population_params["max_generations"],
-        population_params["min_fitness"],
-        callback=recording_callback,
+        pop, objective_history_recording, ea, **evolve_params, callback=recording_callback,
     )
 
     assert np.all(history["fitness"] == pytest.approx(1.0))

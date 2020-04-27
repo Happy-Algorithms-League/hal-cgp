@@ -5,9 +5,6 @@ import pytest
 import gp
 
 
-SEED = np.random.randint(2 ** 31)
-
-
 def test_direct_input_output():
     params = {"n_inputs": 1, "n_outputs": 1, "n_columns": 3, "n_rows": 3, "levels_back": 2}
     primitives = [gp.Add, gp.Sub]
@@ -305,8 +302,8 @@ def test_allow_powers_of_x_0():
     graph.to_sympy(simplify=True)
 
 
-def test_input_dim_python():
-    rng = np.random.RandomState(SEED)
+def test_input_dim_python(rng_seed):
+    rng = np.random.RandomState(rng_seed)
 
     genome = gp.Genome(2, 1, 1, 1, 1, [gp.ConstantFloat])
     genome.randomize(rng)
@@ -324,8 +321,8 @@ def test_input_dim_python():
     f([None, None])
 
 
-def test_input_dim_numpy():
-    rng = np.random.RandomState(SEED)
+def test_input_dim_numpy(rng_seed):
+    rng = np.random.RandomState(rng_seed)
 
     genome = gp.Genome(2, 1, 1, 1, 1, [gp.ConstantFloat])
     genome.randomize(rng)
@@ -347,10 +344,10 @@ def test_input_dim_numpy():
     f(np.array([1.0, 1.0]).reshape(-1, 2))
 
 
-def test_input_dim_torch():
+def test_input_dim_torch(rng_seed):
     torch = pytest.importorskip("torch")
 
-    rng = np.random.RandomState(SEED)
+    rng = np.random.RandomState(rng_seed)
 
     genome = gp.Genome(2, 1, 1, 1, 1, [gp.ConstantFloat])
     genome.randomize(rng)

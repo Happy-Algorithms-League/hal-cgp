@@ -1,10 +1,6 @@
-import numpy as np
 import pytest
 
 import gp
-
-
-SEED = np.random.randint(2 ** 31)
 
 
 def test_add():

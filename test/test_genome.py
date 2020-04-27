@@ -4,9 +4,6 @@ import pytest
 import gp
 
 
-SEED = np.random.randint(2 ** 31)
-
-
 def test_check_dna_consistency():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
@@ -166,7 +163,7 @@ def test_catch_no_non_coding_allele_in_non_coding_region():
     genome.dna = [-1, None, 0, None, -2, 1]
 
 
-def test_individuals_have_different_genomes():
+def test_individuals_have_different_genomes(rng_seed):
 
     population_params = {
         "n_parents": 5,
@@ -191,7 +188,7 @@ def test_individuals_have_different_genomes():
         return ind
 
     pop = gp.Population(
-        population_params["n_parents"], population_params["mutation_rate"], SEED, genome_params
+        population_params["n_parents"], population_params["mutation_rate"], rng_seed, genome_params
     )
     ea = gp.ea.MuPlusLambda(
         population_params["n_offspring"],
