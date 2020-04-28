@@ -209,3 +209,32 @@ def test_individuals_have_different_genomes(rng_seed):
                 assert parent_i is not parent_j
                 assert parent_i.genome is not parent_j.genome
                 assert parent_i.genome.dna is not parent_j.genome.dna
+
+
+def test_is_gene_in_input_region(rng_seed):
+    genome = gp.Genome(2, 1, 2, 1, None, [gp.Add])
+    rng = np.random.RandomState(rng_seed)
+    genome.randomize(rng)
+
+    assert genome._is_gene_in_input_region(0)
+    assert not genome._is_gene_in_input_region(6)
+
+
+def test_is_gene_in_hidden_region(rng_seed):
+    genome = gp.Genome(2, 1, 2, 1, None, [gp.Add])
+    rng = np.random.RandomState(rng_seed)
+    genome.randomize(rng)
+
+    assert genome._is_gene_in_hidden_region(6)
+    assert genome._is_gene_in_hidden_region(9)
+    assert not genome._is_gene_in_hidden_region(5)
+    assert not genome._is_gene_in_hidden_region(12)
+
+
+def test_is_gene_in_output_region(rng_seed):
+    genome = gp.Genome(2, 1, 2, 1, None, [gp.Add])
+    rng = np.random.RandomState(rng_seed)
+    genome.randomize(rng)
+
+    assert genome._is_gene_in_output_region(12)
+    assert not genome._is_gene_in_output_region(11)

@@ -271,6 +271,17 @@ class Genome:
             ]
             yield region_idx, region
 
+    def _is_gene_in_input_region(self, gene_idx):
+        return gene_idx < (self._n_inputs * self._length_per_region)
+
+    def _is_gene_in_hidden_region(self, gene_idx):
+        return ((self._n_inputs * self._length_per_region) <= gene_idx) & (
+            gene_idx < ((self._n_inputs + self._n_hidden) * self._length_per_region)
+        )
+
+    def _is_gene_in_output_region(self, gene_idx):
+        return ((self._n_inputs + self._n_hidden) * self._length_per_region) <= gene_idx
+
     def _is_input_region(self, region_idx):
         return region_idx < self._n_inputs
 
