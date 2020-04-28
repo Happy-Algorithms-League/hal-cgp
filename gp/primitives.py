@@ -5,7 +5,6 @@ class Primitives:
     """Class collecting primitives of the Cartesian Genetic Programming framework.
     """
 
-    _n_primitives = 0
     _max_arity = 0
     _primitives = None
 
@@ -22,8 +21,6 @@ class Primitives:
                 raise TypeError(f"expected class but received {type(primitives[i])}")
             if not issubclass(primitives[i], Node):
                 raise TypeError(f"expected subclass of Node but received {primitives[i].__name__}")
-
-        self._n_primitives = len(primitives)
 
         self._primitives = {}
         for i in range(len(primitives)):
