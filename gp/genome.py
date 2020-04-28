@@ -231,7 +231,7 @@ class Genome:
                 raise ValueError("input gene for output nodes has invalid value")
 
             if output_region[2:] != [None] * (self._primitives.max_arity - 1):
-                raise ValueError("non-coding input genes for output nodes need to " "be empty")
+                raise ValueError("inactive input genes for output nodes need to be empty")
 
     def _hidden_column_idx(self, region_idx):
         assert self._n_inputs <= region_idx
@@ -291,11 +291,22 @@ class Genome:
     def _is_output_region(self, region_idx):
         return self._n_inputs + self._n_hidden <= region_idx
 
-    def _is_function_gene(self, idx):
-        return (idx % self._length_per_region) == 0
+    def _is_function_gene(self, gene_idx):
+        return (gene_idx % self._length_per_region) == 0
 
-    def _is_input_gene(self, idx):
-        return not self._is_function_gene(idx)
+    def _is_active_input_gene(self, gene_idx):
+        input_index = gene_idx % self._length_per_region
+        assert input_index > 0
+        region_idx = gene_idx // self._length_per_region
+        if self._is_input_region(region_idx):
+            return False
+        elif self._is_hidden_region(region_idx):
+            node_arity = self._primitives[self._dna[region_idx * self._length_per_region]]._arity
+            return input_index <= node_arity
+        elif self._is_output_region(region_idx):
+            return input_index == 1
+        else:
+            assert False  # should never be reached
 
     def mutate(self, n_mutations, active_regions, rng):
         """Mutate the genome.
@@ -324,55 +335,53 @@ class Genome:
             gene_idx = rng.randint(0, self._n_genes)
             region_idx = gene_idx // self._length_per_region
 
-            # TODO: parameters to control mutation rates of specific
-            # genes?
             if self._is_input_region(region_idx):
                 continue  # nothing to do here
 
             elif self._is_output_region(region_idx):
-                success = self._mutate_output_region(gene_idx, region_idx, rng)
+                success = self._mutate_output_region(gene_idx, rng)
                 if success:
-                    only_silent_mutations = only_silent_mutations and (
-                        region_idx not in active_regions
-                    )
+                    silent = False
+                    only_silent_mutations = only_silent_mutations and silent
                     successful_mutations += 1
 
+            elif self._is_hidden_region(region_idx):
+                silent = self._mutate_hidden_region(gene_idx, active_regions, rng)
+                only_silent_mutations = only_silent_mutations and silent
+
             else:
-                success = self._mutate_hidden_region(gene_idx, region_idx, rng)
-                if success:
-                    only_silent_mutations = only_silent_mutations and (
-                        region_idx not in active_regions
-                    )
-                    successful_mutations += 1
+                assert False  # should never be reached
 
         self._validate_dna(self._dna)
 
         return only_silent_mutations
 
-    def _mutate_output_region(self, gene_idx, region_idx, rng):
-        assert self._is_output_region(region_idx)
+    def _mutate_output_region(self, gene_idx, rng):
+        assert self._is_gene_in_output_region(gene_idx)
 
-        # only mutate coding output gene
-        if self._is_input_gene(gene_idx) and self._dna[gene_idx] is not None:
+        if not self._is_function_gene(gene_idx) and self._is_active_input_gene(gene_idx):
             permissable_inputs = self._permissable_inputs_for_output_region()
             self._dna[gene_idx] = rng.choice(permissable_inputs)
             return True
+        else:
+            return False
 
-        return False
+    def _mutate_hidden_region(self, gene_idx, active_regions, rng):
+        assert self._is_gene_in_hidden_region(gene_idx)
 
-    def _mutate_hidden_region(self, gene_idx, region_idx, rng):
-        assert self._is_hidden_region(region_idx)
+        region_idx = gene_idx // self._length_per_region
+        silent_mutation = region_idx not in active_regions
 
         if self._is_function_gene(gene_idx):
             self._dna[gene_idx] = self._primitives.sample(rng)
-            return True
+            return silent_mutation
 
         else:
             permissable_inputs = self._permissable_inputs(region_idx)
             self._dna[gene_idx] = rng.choice(permissable_inputs)
-            return True
 
-        return False
+            silent_mutation = silent_mutation or (not self._is_active_input_gene(gene_idx))
+            return silent_mutation
 
     @property
     def primitives(self):
