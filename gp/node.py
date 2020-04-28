@@ -40,7 +40,7 @@ class Node:
             List of integers specifying the input nodes to this node.
         """
         self._idx = idx
-        self._inputs = inputs
+        self._inputs = inputs[: self._arity]
 
         assert idx not in inputs
 
@@ -58,7 +58,7 @@ class Node:
 
     @property
     def inputs(self):
-        return self._inputs[: self._arity]
+        return self._inputs
 
     @property
     def idx(self):

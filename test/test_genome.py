@@ -150,17 +150,17 @@ def test_check_levels_back_consistency():
     )
 
 
-def test_catch_no_non_coding_allele_in_non_coding_region():
+def test_catch_invalid_allele_in_non_coding_region():
     primitives = [gp.ConstantFloat]
     genome = gp.Genome(1, 1, 1, 1, 1, primitives)
 
-    # should raise error: ConstantFloat node has no inputs, but input gene has
-    # value different from the non-coding allele
+    # should raise error: ConstantFloat node has no inputs, but silent
+    # input gene should still specify valid input
     with pytest.raises(ValueError):
-        genome.dna = [-1, None, 0, 0, -2, 1]
+        genome.dna = [-1, None, 0, None, -2, 1]
 
     # correct
-    genome.dna = [-1, None, 0, None, -2, 1]
+    genome.dna = [-1, None, 0, 0, -2, 1]
 
 
 def test_individuals_have_different_genomes(rng_seed):

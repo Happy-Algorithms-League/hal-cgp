@@ -160,8 +160,7 @@ class CartesianGraph:
             active_nodes_by_hidden_column_idx[self._hidden_column_idx(node.idx)].add(node)
 
             for i in node.inputs:
-                if i is not self._genome._non_coding_allele:
-                    nodes_to_process.append(self._nodes[i])
+                nodes_to_process.append(self._nodes[i])
 
         return active_nodes_by_hidden_column_idx
 

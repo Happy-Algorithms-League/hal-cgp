@@ -133,7 +133,7 @@ def test_to_numpy():
     primitives = [gp.Add, gp.Mul, gp.ConstantFloat]
     genome = gp.Genome(1, 1, 2, 2, 1, primitives)
     # f(x) = x ** 2 + 1.
-    genome.dna = [-1, None, None, 2, None, None, 1, 0, 0, 0, 1, 2, 0, 0, 1, -2, 3, None]
+    genome.dna = [-1, None, None, 2, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0, 1, -2, 3, None]
     graph = gp.CartesianGraph(genome)
     f = graph.to_numpy()
 
@@ -149,7 +149,7 @@ def test_to_torch_and_backprop():
 
     primitives = [gp.Mul, gp.ConstantFloat]
     genome = gp.Genome(1, 1, 2, 2, 1, primitives)
-    genome.dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 3, None]
+    genome.dna = [-1, None, None, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, -2, 3, None]
     graph = gp.CartesianGraph(genome)
 
     c = graph.to_torch()
@@ -182,9 +182,9 @@ batch_sizes = [1, 10]
 primitives = [gp.Mul, gp.ConstantFloat]
 genomes = [gp.Genome(1, 1, 2, 2, 1, primitives) for i in range(2)]
 # Function: f(x) = 1*x
-genomes[0].dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 3, None]
+genomes[0].dna = [-1, None, None, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, -2, 3, None]
 # Function: f(x) = 1
-genomes[1].dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 1, None]
+genomes[1].dna = [-1, None, None, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, -2, 1, None]
 
 genomes += [gp.Genome(1, 2, 2, 2, 1, primitives) for i in range(2)]
 # Function: f(x) = (1*x, 1*1)
@@ -193,11 +193,11 @@ genomes[2].dna = [
     None,
     None,
     1,
-    None,
-    None,
+    0,
+    0,
     1,
-    None,
-    None,
+    0,
+    0,
     0,
     0,
     1,
@@ -217,11 +217,11 @@ genomes[3].dna = [
     None,
     None,
     1,
-    None,
-    None,
+    0,
+    0,
     1,
-    None,
-    None,
+    0,
+    0,
     0,
     1,
     1,
@@ -262,7 +262,7 @@ def test_to_sympy():
     primitives = [gp.Add, gp.ConstantFloat]
     genome = gp.Genome(1, 1, 2, 2, 1, primitives)
 
-    genome.dna = [-1, None, None, 1, None, None, 1, None, None, 0, 0, 1, 0, 0, 1, -2, 3, None]
+    genome.dna = [-1, None, None, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, -2, 3, None]
     graph = gp.CartesianGraph(genome)
 
     x_0_target, y_0_target = sympy.symbols("x_0_target y_0_target")

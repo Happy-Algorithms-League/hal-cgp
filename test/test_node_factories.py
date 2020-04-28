@@ -17,7 +17,7 @@ def test_constant_float():
         params["levels_back"],
         primitives,
     )
-    genome.dna = [-1, None, -1, None, 0, None, -2, 2]
+    genome.dna = [-1, None, -1, None, 0, 0, -2, 2]
     graph = gp.CartesianGraph(genome)
 
     x = [None, None]

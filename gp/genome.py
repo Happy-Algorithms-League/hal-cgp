@@ -58,7 +58,6 @@ class Genome:
         # constants used as identifiers for input and output nodes
         self._id_input_node = -1
         self._id_output_node = -2
-        self._non_coding_allele = None
 
     def __getitem__(self, key):
         if self._dna is None:
@@ -106,39 +105,30 @@ class Genome:
 
     def _create_input_region(self):
 
-        # fill region with identifier for input node and zeros,
-        # since input nodes do not have any inputs
         region = []
         region.append(self._id_input_node)
-        region += [self._non_coding_allele] * self._primitives.max_arity
+        # empty input genes (None) since input nodes do not receive
+        # inputs themselves
+        region += [None] * self._primitives.max_arity
         return region
 
     def _create_random_hidden_region(self, rng, permissable_inputs):
 
-        # construct dna region consisting of function allele and
-        # input alleles
         region = []
         node_id = self._primitives.sample(rng)
         region.append(node_id)
-
-        # choose inputs for coding region
-        region += list(rng.choice(permissable_inputs, self._primitives[node_id]._arity))
-
-        # mark non-coding region
-        region += [self._non_coding_allele] * (
-            self._primitives.max_arity - self._primitives[node_id]._arity
-        )
+        region += list(rng.choice(permissable_inputs, self._primitives.max_arity))
 
         return region
 
     def _create_random_output_region(self, rng, permissable_inputs):
 
-        # fill region with identifier for output node and single
-        # gene determining input
         region = []
         region.append(self._id_output_node)
         region.append(rng.choice(permissable_inputs))
-        region += [self._non_coding_allele] * (self._primitives.max_arity - 1)
+        # output nodes have only on input, other genes are hence left
+        # empty
+        region += [None] * (self._primitives.max_arity - 1)
 
         return region
 
@@ -215,30 +205,19 @@ class Genome:
                     "function genes for input nodes need to be identical to input node identifiers"
                 )
 
-            if input_region[1:] != ([self._non_coding_allele] * self._primitives.max_arity):
-                raise ValueError(
-                    "input genes for input nodes need to be identical to non-coding allele"
-                )
+            if input_region[1:] != ([None] * self._primitives.max_arity):
+                raise ValueError("input genes for input nodes need to be empty")
 
         for region_idx, hidden_region in self.iter_hidden_regions(dna):
 
             if hidden_region[0] not in self._primitives.alleles:
                 raise ValueError("function gene for hidden node has invalid value")
 
-            coding_input_genes = hidden_region[1 : self._primitives[hidden_region[0]]._arity + 1]
-            non_coding_input_genes = hidden_region[self._primitives[hidden_region[0]]._arity + 1 :]
+            input_genes = hidden_region[1:]
 
             permissable_inputs = set(self._permissable_inputs(region_idx))
-            if not set(coding_input_genes).issubset(permissable_inputs):
+            if not set(input_genes).issubset(permissable_inputs):
                 raise ValueError("input genes for hidden nodes have invalid value")
-
-            if non_coding_input_genes != [self._non_coding_allele] * (
-                self._primitives.max_arity - self._primitives[hidden_region[0]]._arity
-            ):
-                raise ValueError(
-                    "non-coding input genes for hidden nodes need to "
-                    "be identical to non-coding allele"
-                )
 
         for region_idx, output_region in self.iter_output_regions(dna):
 
@@ -251,11 +230,8 @@ class Genome:
             if output_region[1] not in self._permissable_inputs_for_output_region():
                 raise ValueError("input gene for output nodes has invalid value")
 
-            if output_region[2:] != [self._non_coding_allele] * (self._primitives.max_arity - 1):
-                raise ValueError(
-                    "non-coding input genes for output nodes need to "
-                    "be identical to non-coding allele"
-                )
+            if output_region[2:] != [None] * (self._primitives.max_arity - 1):
+                raise ValueError("non-coding input genes for output nodes need to " "be empty")
 
     def _hidden_column_idx(self, region_idx):
         assert self._n_inputs <= region_idx
@@ -366,7 +342,7 @@ class Genome:
         assert self._is_output_region(region_idx)
 
         # only mutate coding output gene
-        if self._is_input_gene(gene_idx) and self._dna[gene_idx] is not self._non_coding_allele:
+        if self._is_input_gene(gene_idx) and self._dna[gene_idx] is not None:
             permissable_inputs = self._permissable_inputs_for_output_region()
             self._dna[gene_idx] = rng.choice(permissable_inputs)
             return True
@@ -378,30 +354,12 @@ class Genome:
 
         if self._is_function_gene(gene_idx):
             self._dna[gene_idx] = self._primitives.sample(rng)
-
-            # since we have changed the function gene, we need
-            # to update the input genes to match the arity of
-            # the new function
-
-            # first: set coding genes to valid input allele
-            permissable_inputs = self._permissable_inputs(region_idx)
-
-            for j in range(1, 1 + self._primitives[self._dna[gene_idx]]._arity):
-                self._dna[gene_idx + j] = rng.choice(permissable_inputs)
-
-            # second: set non-coding genes to non-coding allele
-            for j in range(
-                1 + self._primitives[self._dna[gene_idx]]._arity, 1 + self._primitives.max_arity
-            ):
-                self._dna[gene_idx + j] = self._non_coding_allele
-
             return True
 
         else:
-            if self._dna[gene_idx] is not self._non_coding_allele:
-                permissable_inputs = self._permissable_inputs(region_idx)
-                self._dna[gene_idx] = rng.choice(permissable_inputs)
-                return True
+            permissable_inputs = self._permissable_inputs(region_idx)
+            self._dna[gene_idx] = rng.choice(permissable_inputs)
+            return True
 
         return False
 
