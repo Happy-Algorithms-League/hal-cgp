@@ -1,7 +1,8 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import scipy.constants
 import functools
+import matplotlib.pyplot as plt
+import numpy as np
+import scipy.constants
+import warnings
 
 import gp
 
@@ -18,7 +19,7 @@ def f_target_hard(x):
     return 1.0 + 1.0 / (x[:, 0] + x[:, 1])
 
 
-def objective(individual, target_function):
+def objective(individual, target_function, seed):
     """Objective function of the regression task.
 
     Parameters
@@ -38,14 +39,24 @@ def objective(individual, target_function):
 
     n_function_evaluations = 1000
 
+    np.random.seed(seed)
+
     f_graph = individual.to_func()
     y = np.empty(n_function_evaluations)
     x = np.random.uniform(-4, 4, size=(n_function_evaluations, 2))
     for i, x_i in enumerate(x):
-        try:
-            y[i] = f_graph(x_i)[0]
-        except ZeroDivisionError:
-            y[i] = -np.inf
+        with warnings.catch_warnings():  # ignore warnings due to zero division
+            warnings.filterwarnings(
+                "ignore", message="divide by zero encountered in double_scalars"
+            )
+            warnings.filterwarnings(
+                "ignore", message="invalid value encountered in double_scalars"
+            )
+            try:
+                y[i] = f_graph(x_i)[0]
+            except ZeroDivisionError:
+                individual.fitness = -np.inf
+                return individual
 
     loss = np.mean((target_function(x) - y) ** 2)
     individual.fitness = -loss
@@ -68,36 +79,26 @@ def evolution(f_target):
     Individual
         Individual with the highest fitness in the last generation
     """
-    params = {
-        "seed": 8188211,
-        "max_generations": 1000,
-        "min_fitness": 0.0,
-        "population_params": {"n_parents": 10, "mutation_rate": 0.5},
-        "ea_params": {
-            "n_offsprings": 10,
-            "n_breeding": 10,
-            "tournament_size": 1,
-            "n_processes": 2,
-        },
-        "genome_params": {
-            "n_inputs": 2,
-            "n_outputs": 1,
-            "n_columns": 10,
-            "n_rows": 2,
-            "levels_back": 5,
-            "primitives": [gp.Add, gp.Sub, gp.Mul, gp.Div, gp.ConstantFloat],
-        },
+    population_params = {"n_parents": 10, "mutation_rate": 0.5, "seed": 8188211}
+
+    genome_params = {
+        "n_inputs": 2,
+        "n_outputs": 1,
+        "n_columns": 10,
+        "n_rows": 2,
+        "levels_back": 5,
+        "primitives": [gp.Add, gp.Sub, gp.Mul, gp.Div, gp.ConstantFloat],
     }
 
-    np.random.seed(params["seed"])
+    ea_params = {"n_offsprings": 10, "n_breeding": 10, "tournament_size": 2, "n_processes": 2}
+
+    evolve_params = {"max_generations": 1000, "min_fitness": 0.0}
 
     # create population that will be evolved
-    pop = gp.Population(
-        **params["population_params"], seed=params["seed"], genome_params=params["genome_params"]
-    )
+    pop = gp.Population(**population_params, genome_params=genome_params)
 
     # create instance of evolutionary algorithm
-    ea = gp.ea.MuPlusLambda(**params["ea_params"])
+    ea = gp.ea.MuPlusLambda(**ea_params)
 
     # define callback for recording of fitness over generations
     history = {}
@@ -106,17 +107,13 @@ def evolution(f_target):
     def recording_callback(pop):
         history["fitness_parents"].append(pop.fitness_parents())
 
-    obj = functools.partial(objective, target_function=f_target)
+    # the objective passed to evolve should only accept one argument,
+    # the individual
+    obj = functools.partial(objective, target_function=f_target, seed=population_params["seed"])
 
     # Perform the evolution
     gp.evolve(
-        pop,
-        obj,
-        ea,
-        params["max_generations"],
-        params["min_fitness"],
-        print_progress=True,
-        callback=recording_callback,
+        pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback,
     )
     return history, pop.champion
 
