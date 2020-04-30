@@ -120,7 +120,7 @@ def test_constant_float():
         params["levels_back"],
         primitives,
     )
-    genome.dna = [-1, None, -1, None, 0, None, -2, 2]
+    genome.dna = [-1, None, -1, None, 0, 0, -2, 2]
     graph = gp.CartesianGraph(genome)
 
     x = [None, None]
@@ -128,3 +128,22 @@ def test_constant_float():
 
     # by default the output value of the ConstantFloat node is 1.0
     assert 1.0 == pytest.approx(y[0])
+
+
+def test_inputs_are_cut_to_match_arity():
+    """Test that even if a list of inputs longer than the node arity is
+    provided, Node.inputs only returns the initial <arity> inputs,
+    ignoring the inactive genes.
+
+    """
+    idx = 0
+    inputs = [1, 2, 3, 4]
+
+    node = gp.ConstantFloat(idx, inputs)
+    assert node.inputs == []
+
+    node = gp.node.OutputNode(idx, inputs)
+    assert node.inputs == inputs[:1]
+
+    node = gp.Add(idx, inputs)
+    assert node.inputs == inputs[:2]
