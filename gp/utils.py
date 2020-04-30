@@ -92,6 +92,10 @@ def disk_cache(fn):
     first argument from the cache although it returns different values
     for other arguments.
 
+    WARNING: avoid using the decorator on nested functions as the
+    consistency check will be applied after each decoration thus
+    doubling the runtime.
+
     Parameters
     ----------
     fn : Callable

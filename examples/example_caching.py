@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 import gp
 
@@ -15,28 +16,31 @@ def f_target(x):
     return x ** 2 + x + 1.0
 
 
+@gp.utils.disk_cache("example_caching_cache.pkl")
+def inner_objective(expr):
+    """The caching decorator uses the function parameter to identify
+    identical function calls. As many different genotypes produce
+    the same simplified SymPy expression we can use such
+    expressions as an argument to the decorated function to skip
+    reevaluating functionally identical individuals. Note that
+    caching only makes sense for deterministic objective
+    functions, as it assumes that expressions will always return
+    the same fitness values.
+
+    """
+    loss = []
+    for x0 in np.linspace(-2.0, 2.0, 100):
+        y = float(expr[0].subs({"x_0": x0}).evalf())
+        loss.append((f_target(x0) - y) ** 2)
+
+    time.sleep(0.25)  # emulate long fitness evaluation
+
+    return np.mean(loss)
+
+
 def objective(individual):
     if individual.fitness is not None:
         return individual
-
-    @gp.utils.disk_cache("example_caching_cache.pkl")
-    def inner_objective(expr):
-        """The caching decorator uses the function parameter to identify
-        identical function calls. As many different genotypes produce
-        the same simplified SymPy expression we can use such
-        expressions as an argument to the decorated function to skip
-        reevaluating functionally identical individuals. Note that
-        caching only makes sense for deterministic objective
-        functions, as it assumes that expressions will always return
-        the same fitness values.
-
-        """
-        loss = []
-        for x0 in np.linspace(-2.0, 2.0, 100):
-            y = float(expr[0].subs({"x_0": x0}).evalf())
-            loss.append((f_target(x0) - y) ** 2)
-
-        return np.mean(loss)
 
     individual.fitness = -inner_objective(individual.to_sympy())
 
