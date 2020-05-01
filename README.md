@@ -105,4 +105,4 @@ Deb, K., Pratap, A., Agarwal, S., & Meyarivan, T. A. M. T. (2002). A fast and el
 Code status
 ===========
 
-[![Build Status](https://travis-ci.org/jakobj/python-gp.svg?branch=master)](https://travis-ci.org/jakobj/python-gp)
+[![Build Status](https://api.travis-ci.org/Happy-Algorithms-League/python-gp.svg?branch=master)](https://travis-ci.org/Happy-Algorithms-League/python-gp)
