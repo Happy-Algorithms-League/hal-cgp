@@ -1,0 +1,5 @@
+*~
+*.orig
+*.egg-info/
+*.cache/
+*__pycache__/
