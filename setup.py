@@ -33,7 +33,7 @@ setup(
     python_requires=">=3.6, <4",
     install_requires=read_requirements(),
     extras_require=read_extra_requirements(),
-    packages=["gp", "gp.ea"],
+    packages=["gp", "gp.ea", "gp.local_search"],
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     classifiers=[

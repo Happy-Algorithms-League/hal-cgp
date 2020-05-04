@@ -1,5 +1,6 @@
 import collections
 import numpy as np  # noqa: F401
+import re
 
 try:
     import sympy
@@ -12,7 +13,7 @@ except ModuleNotFoundError:
     torch = None
 
 
-from .node import InputNode, OutputNode
+from .node import InputNode, OutputNode, Parameter
 
 
 class CartesianGraph:
@@ -213,7 +214,17 @@ class CartesianGraph:
             for node in active_nodes[hidden_column_idx]:
                 node.format_output_str(self)
 
-    def to_func(self):
+    def _fill_parameter_values(self, func_str, parameter_names_to_values):
+        g = re.findall("<p[0-9]+>", func_str)
+        if g and parameter_names_to_values is None:
+            raise ValueError("parameter node found but no value dict provided")
+        for parameter_name in g:
+            func_str = func_str.replace(
+                parameter_name, str(parameter_names_to_values[parameter_name])
+            )
+        return func_str
+
+    def to_func(self, parameter_names_to_values=None):
         """Compile the function(s) represented by the graph.
 
         Generates a definition of the function in Python code and
@@ -232,6 +243,7 @@ def _f(x):
         raise ValueError(f'input has length {{len(x)}}, expected {self._n_inputs}')
     return [{s}]
 """
+        func_str = self._fill_parameter_values(func_str, parameter_names_to_values)
         exec(func_str)
         return locals()["_f"]
 
@@ -245,7 +257,7 @@ def _f(x):
             for node in active_nodes[hidden_column_idx]:
                 node.format_output_str_numpy(self)
 
-    def to_numpy(self):
+    def to_numpy(self, parameter_names_to_values=None):
         """Compile the function(s) represented by the graph to NumPy
         expression(s).
 
@@ -274,12 +286,12 @@ def _f(x):
 
     return np.stack([{s}], axis=1)
 """
-
+        func_str = self._fill_parameter_values(func_str, parameter_names_to_values)
         exec(func_str)
 
         return locals()["_f"]
 
-    def to_torch(self):
+    def to_torch(self, parameter_names_to_values=None):
         """Compile the function(s) represented by the graph to a Torch class.
 
         Generates a definition of the Torch class in Python code and
@@ -301,7 +313,7 @@ def _f(x):
         for hidden_column_idx in sorted(active_nodes_by_hidden_column_idx):
             for node in active_nodes_by_hidden_column_idx[hidden_column_idx]:
                 node.format_output_str_torch(self)
-                if node.is_parameter:
+                if isinstance(node, Parameter):
                     node.format_parameter_str()
                     all_parameter_str.append(node.parameter_str)
         forward_str = ", ".join(node.output_str for node in self.output_nodes)
@@ -329,34 +341,14 @@ class _C(torch.nn.Module):
         return torch.stack([{forward_str}], dim=1)
         """
         class_str += func_str
+        class_str = self._fill_parameter_values(class_str, parameter_names_to_values)
 
         exec(class_str)
         exec("_c = _C()")
 
         return locals()["_c"]
 
-    def update_parameters_from_torch_class(self, torch_cls):
-        """Update values stored in constant nodes of graph from parameters of a given Torch instance.
-
-        Can be used to import new values from a Torch class after a autograd step.
-
-        Parameters
-        ----------
-        torch_cls : torch.nn.module
-            Instance of a torch class.
-
-        Returns
-        -------
-        None
-        """
-        for n in self._nodes:
-            if n.is_parameter:
-                try:
-                    n._output = eval(f"torch_cls._p{n._idx}[0].item()")
-                except AttributeError:
-                    pass
-
-    def to_sympy(self, simplify=True):
+    def to_sympy(self, simplify=True, parameter_names_to_values=None):
         """Compile the function(s) represented by the graph to a SymPy expression.
 
         Generates one SymPy expression for each output node.
@@ -402,6 +394,7 @@ class _C(torch.nn.Module):
                     input_node.output_str, input_node.output_str.replace("[", "_").replace("]", "")
                 )
 
+            s = self._fill_parameter_values(s, parameter_names_to_values)
             # to get an expression that reflects the computational graph,
             # sympy should not automatically simplify the expression
             with sympy.evaluate(False):

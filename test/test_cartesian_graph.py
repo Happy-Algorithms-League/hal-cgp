@@ -144,40 +144,6 @@ def test_to_numpy():
     assert y == pytest.approx(y_target)
 
 
-def test_to_torch_and_backprop():
-    torch = pytest.importorskip("torch")
-
-    primitives = [gp.Mul, gp.ConstantFloat]
-    genome = gp.Genome(1, 1, 2, 2, 1, primitives)
-    genome.dna = [-1, None, None, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, -2, 3, None]
-    graph = gp.CartesianGraph(genome)
-
-    c = graph.to_torch()
-
-    optimizer = torch.optim.SGD(c.parameters(), lr=1e-1)
-    criterion = torch.nn.MSELoss()
-
-    for i in range(200):
-
-        x = torch.Tensor(1, 1).normal_()
-        y = c(x)
-
-        y_target = -2.14159 * x
-
-        loss = criterion(y, y_target)
-        c.zero_grad()
-        loss.backward()
-
-        optimizer.step()
-    assert float(loss.detach()) == pytest.approx(0.0)
-
-    x = [3.0]
-    x_torch = torch.Tensor(x).view(1, 1)
-    assert c(x_torch)[0].detach().numpy() != pytest.approx(graph(x))
-    graph.update_parameters_from_torch_class(c)
-    assert c(x_torch)[0].detach().numpy() == pytest.approx(graph(x))
-
-
 batch_sizes = [1, 10]
 primitives = [gp.Mul, gp.ConstantFloat]
 genomes = [gp.Genome(1, 1, 2, 2, 1, primitives) for i in range(2)]

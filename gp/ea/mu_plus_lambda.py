@@ -13,7 +13,15 @@ class MuPlusLambda:
     transactions on evolutionary computation, 6(2), 182-197.
     """
 
-    def __init__(self, n_offsprings, n_breeding, tournament_size, *, n_processes=1):
+    def __init__(
+        self,
+        n_offsprings,
+        n_breeding,
+        tournament_size,
+        *,
+        n_processes=1,
+        local_search=lambda combined: None
+    ):
         """Init function
 
         Parameters
@@ -27,6 +35,11 @@ class MuPlusLambda:
         n_processes : int, optional
             Number of parallel processes to be used. If greater than 1,
             parallel evaluation of the objective is supported. Defaults to 1.
+        local_search : Callable, optional
+            Called before each fitness evaluation with a joint list of
+            offsprings and parents to optimize numeric leaf values of
+            the graph. Defaults to identity function.
+
         """
         self.n_offsprings = n_offsprings
 
@@ -39,6 +52,7 @@ class MuPlusLambda:
 
         self.tournament_size = tournament_size
         self.n_processes = n_processes
+        self.local_search = local_search
 
     def initialize_fitness_parents(self, pop, objective, *, label=None):
         """Initialize the fitness of all parents in the given population.
@@ -78,7 +92,6 @@ class MuPlusLambda:
         pop : gp.Population
             Modified population with new parents.
         """
-        # create new offspring generation
         offsprings = self._create_new_offspring_generation(pop)
 
         # we want to prefer offsprings with the same fitness as their
@@ -92,13 +105,12 @@ class MuPlusLambda:
         # population instead of the other way around
         combined = offsprings + pop.parents
 
-        # compute fitness
+        self.local_search(combined)
+
         combined = self._compute_fitness(combined, objective, label=label)
 
-        # sort
         combined = self._sort(combined)
 
-        # create new parent population
         pop.parents = self._create_new_parent_population(pop.n_parents, combined)
 
         return pop

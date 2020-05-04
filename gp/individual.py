@@ -1,5 +1,16 @@
+import collections
+import numpy as np
+
 from .genome import Genome
 from .cartesian_graph import CartesianGraph
+
+
+def return_float_one():
+    """Constructor for default value of defaultdict. Needs to be global to
+    support pickling.
+
+    """
+    return 1.0
 
 
 class Individual:
@@ -18,6 +29,9 @@ class Individual:
         self.genome = genome
         self.idx = None  # an identifier to keep track of all unique genomes
 
+        # dictionary to store values of Parameter nodes
+        self.parameter_names_to_values = collections.defaultdict(return_float_one)
+
     def __repr__(self):
         return f"Individual(idx={self.idx}, fitness={self.fitness}, genome={self.genome}))"
 
@@ -28,7 +42,13 @@ class Individual:
         -------
         gp.Individual
         """
-        return Individual(self.fitness, self.genome.clone())
+        new_individual = Individual(self.fitness, self.genome.clone())
+
+        # Lamarckian strategy: parameter values are passed on to
+        # offspring
+        new_individual.parameter_names_to_values = self.parameter_names_to_values.copy()
+
+        return new_individual
 
     def crossover(self, other_parent, rng):
         """Create a new individual by cross over with another individual.
@@ -100,7 +120,7 @@ class Individual:
         ----------
         Callable
         """
-        return CartesianGraph(self.genome).to_func()
+        return CartesianGraph(self.genome).to_func(self.parameter_names_to_values)
 
     def to_numpy(self):
         """Return the expression represented by the individual as
@@ -110,7 +130,7 @@ class Individual:
         -------
         Callable
         """
-        return CartesianGraph(self.genome).to_numpy()
+        return CartesianGraph(self.genome).to_numpy(self.parameter_names_to_values)
 
     def to_torch(self):
         """Return the expression represented by the individual as Torch class.
@@ -119,7 +139,7 @@ class Individual:
         -------
         torch.nn.Module
         """
-        return CartesianGraph(self.genome).to_torch()
+        return CartesianGraph(self.genome).to_torch(self.parameter_names_to_values)
 
     def to_sympy(self, simplify=True):
         """Return the expression represented by the individual as SymPy
@@ -129,7 +149,33 @@ class Individual:
         -------
         SymPy expression
         """
-        return CartesianGraph(self.genome).to_sympy(simplify)
+        return CartesianGraph(self.genome).to_sympy(simplify, self.parameter_names_to_values)
+
+    def update_parameters_from_torch_class(self, torch_cls):
+        """Update values stored in Parameter nodes of graph from parameters of
+        a given Torch instance.  Can be used to import new values from
+        a Torch class after they have been altered, e.g., by local
+        search.
+
+        Parameters
+        ----------
+        torch_cls : torch.nn.module
+            Instance of a torch class.
+
+        Returns
+        -------
+        None
+
+        """
+        for name, value in torch_cls.named_parameters():
+            name = f"<{name[1:]}>"
+            if name in self.parameter_names_to_values:
+                self.parameter_names_to_values[name] = value.item()
+                assert not np.isnan(self.parameter_names_to_values[name])
+
+                # since a parameter of this individual has changed its
+                # fitness needs to be reevaluated
+                self.fitness = None
 
 
 class IndividualMultiGenome(Individual):
