@@ -3,6 +3,17 @@ import functools
 import numpy as np
 
 
+def objective_reevaluate_fitness(ind, objective):
+    """Wrap an objective function to skip evaluating the fitness of
+    individuals with fitness not None.
+
+    """
+    if ind.fitness is not None:
+        return ind
+
+    return objective(ind)
+
+
 class MuPlusLambda:
     """Generic (mu + lambda) evolution strategy based on Deb et al. (2002).
 
@@ -13,7 +24,9 @@ class MuPlusLambda:
     transactions on evolutionary computation, 6(2), 182-197.
     """
 
-    def __init__(self, n_offsprings, n_breeding, tournament_size, *, n_processes=1):
+    def __init__(
+        self, n_offsprings, n_breeding, tournament_size, *, n_processes=1, reevaluate_fitness=False
+    ):
         """Init function
 
         Parameters
@@ -27,6 +40,12 @@ class MuPlusLambda:
         n_processes : int, optional
             Number of parallel processes to be used. If greater than 1,
             parallel evaluation of the objective is supported. Defaults to 1.
+        reevalutate_fitness : boolean
+            Reevaluate the fitness of an individual with fitness not
+            None, i.e., for which the objective was called already
+            once before. Should be False for deterministic
+            objectives. Defaults to False.
+
         """
         self.n_offsprings = n_offsprings
 
@@ -39,6 +58,7 @@ class MuPlusLambda:
 
         self.tournament_size = tournament_size
         self.n_processes = n_processes
+        self.reevaluate_fitness = reevaluate_fitness
 
     def initialize_fitness_parents(self, pop, objective, *, label=None):
         """Initialize the fitness of all parents in the given population.
@@ -124,17 +144,16 @@ class MuPlusLambda:
 
     def _compute_fitness(self, combined, objective, *, label=None):
         if label is not None:
-            tmp_objective = functools.partial(objective, label=label)
-        else:
-            tmp_objective = objective
+            objective = functools.partial(objective, label=label)
 
-        # computes fitness on all individuals, objective functions
-        # should return immediately if fitness is not None
+        if not self.reevaluate_fitness:
+            objective = functools.partial(objective_reevaluate_fitness, objective=objective)
+
         if self.n_processes == 1:
-            combined = list(map(tmp_objective, combined))
+            combined = list(map(objective, combined))
         else:
             with concurrent.futures.ProcessPoolExecutor(max_workers=self.n_processes) as executor:
-                combined = list(executor.map(tmp_objective, combined))
+                combined = list(executor.map(objective, combined))
 
         return combined
 

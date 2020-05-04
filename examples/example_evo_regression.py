@@ -34,9 +34,6 @@ def objective(individual, target_function, seed):
     gp.Individual
         Modified individual with updated fitness value.
     """
-    if individual.fitness is not None:
-        return individual
-
     n_function_evaluations = 1000
 
     np.random.seed(seed)

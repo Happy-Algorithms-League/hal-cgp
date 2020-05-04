@@ -8,9 +8,6 @@ import gp
 
 def _objective_test_population(individual, rng_seed):
 
-    if individual.fitness is not None:
-        return individual
-
     np.random.seed(rng_seed)
 
     n_function_evaluations = 100
@@ -75,10 +72,6 @@ def test_evolve_two_expressions(population_params, ea_params):
     """
 
     def _objective(individual):
-
-        if individual.fitness is not None:
-            return individual
-
         def f0(x):
             return x[0] * (x[0] + x[0])
 
