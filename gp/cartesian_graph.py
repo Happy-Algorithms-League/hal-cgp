@@ -62,7 +62,7 @@ class CartesianGraph:
 
         s = "\n"
 
-        for row in range(self._n_rows):
+        for row in range(max(self._n_inputs, self._n_rows)):
             for column in range(-1, self._n_columns + 1):
 
                 if column == -1:
@@ -73,9 +73,11 @@ class CartesianGraph:
                     s += "\t"
 
                 elif column < self._n_columns:
-                    s += pretty_node_str(self.hidden_nodes[row + column * self._n_rows])
+                    if row < self._n_rows:
+                        s += pretty_node_str(self.hidden_nodes[row + column * self._n_rows])
+                    else:
+                        s += empty_node_str()
                     s += "\t"
-
                 else:
                     if row < self._n_outputs:
                         s += pretty_node_str(self.output_nodes[row])
