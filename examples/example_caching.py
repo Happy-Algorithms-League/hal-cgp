@@ -18,14 +18,14 @@ def f_target(x):
 
 @gp.utils.disk_cache("example_caching_cache.pkl")
 def inner_objective(expr):
-    """The caching decorator uses the function parameter to identify
-    identical function calls. As many different genotypes produce
-    the same simplified SymPy expression we can use such
-    expressions as an argument to the decorated function to skip
-    reevaluating functionally identical individuals. Note that
-    caching only makes sense for deterministic objective
-    functions, as it assumes that expressions will always return
-    the same fitness values.
+    """The caching decorator uses the function parameters to identify
+    identical function calls. Here, as many different genotypes
+    produce the same simplified SymPy expression we can use such
+    expressions as an argument to the decorated function to avoid
+    reevaluating functionally identical individuals.
+    Note that caching only makes sense for deterministic objective
+    functions, as it assumes that identical expressions will always
+    return the same fitness values.
 
     """
     loss = []

@@ -7,7 +7,7 @@ import pickle
 from .node import primitives_dict
 
 
-def __check_cache_consistency(fn, func, args, kwargs):
+def __check_cache_consistency(fn, func):
     if os.path.isfile(fn):
         with open(fn, "rb") as f:
             try:
@@ -16,21 +16,6 @@ def __check_cache_consistency(fn, func, args, kwargs):
                 return  # no entry yet, so not possible to check
 
             cached_item = list(cursor.values())[0]
-
-            if len(args) != len(cached_item["args"]):
-                raise RuntimeError(
-                    "inconsistent arguments"
-                    " -- are different functions using the same cache file?"
-                    " please use different cache files for different functions"
-                )
-
-            if kwargs.keys() != cached_item["kwargs"].keys():
-                raise RuntimeError(
-                    "inconsistent keyword arguments"
-                    " -- are different functions using the same cache file?"
-                    " please use different cache files for different functions"
-                )
-
             return_value = func(*cached_item["args"], **cached_item["kwargs"])
 
             if not np.isclose(return_value, cached_item["return_value"]):
@@ -80,9 +65,9 @@ def disk_cache(fn):
     decorated function is called with the same arguments it returns the stored
     values from disk instead of executing the function.
 
-    Consistency of the cache is checked upon the first call of the
-    decorated function by making sure the decorated function returns
-    the same value as the first argument from the cache.
+    Consistency of the cache is checked upon decorating the function
+    by making sure the it returns the same value as the first
+    argument/keyword argument combination found in the cache.
 
     WARNING: this implementation is neither optimized for speed nor storage
     space and does not limit the size of the cache file.
@@ -93,8 +78,8 @@ def disk_cache(fn):
     for other arguments.
 
     WARNING: avoid using the decorator on nested functions as the
-    consistency check will be applied after each decoration thus
-    doubling the runtime.
+    consistency check will be applied on each decoration thus doubling
+    the runtime.
 
     Parameters
     ----------
@@ -102,16 +87,12 @@ def disk_cache(fn):
         Function to be cached.
 
     """
-    first_function_call = True
 
     def decorator(func):
+        __check_cache_consistency(fn, func)
+
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-
-            nonlocal first_function_call
-            if first_function_call:
-                __check_cache_consistency(fn, func, args, kwargs)
-                first_function_call = False
 
             key = __compute_key_from_args(*args, **kwargs)
 
