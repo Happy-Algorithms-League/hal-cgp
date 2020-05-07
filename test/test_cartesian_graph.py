@@ -351,3 +351,57 @@ def test_pretty_str():
         assert node.__class__.__name__ in pretty_str
     for node in graph.hidden_nodes:
         assert node.__class__.__name__ in pretty_str
+
+
+def test_pretty_str_with_unequal_inputs_rows_outputs():
+    primitives = [gp.Add]
+
+    # less rows than inputs/outputs
+    genome = gp.Genome(1, 1, 1, 2, 1, primitives)
+    # f(x) = x[0] + x[0]
+    genome.dna = [-1, None, None, 0, 0, 0, 0, 0, 0, -2, 1, None]
+    graph = gp.CartesianGraph(genome)
+
+    expected_pretty_str = """
+00 * InputNode          \t01 * Add (00,00)        \t03 * OutputNode (01)    \t
+                        \t02   Add                \t                        \t
+"""
+    assert graph.pretty_str() == expected_pretty_str
+
+    # more rows than inputs/outputs
+    genome = gp.Genome(3, 3, 1, 2, 1, primitives)
+    # f(x) = [x[0] + x[1], x[0] + x[1], x[1] + x[2]]
+    genome.dna = [
+        -1,
+        None,
+        None,
+        -1,
+        None,
+        None,
+        -1,
+        None,
+        None,
+        0,
+        0,
+        1,
+        0,
+        1,
+        2,
+        -2,
+        3,
+        None,
+        -2,
+        3,
+        None,
+        -2,
+        4,
+        None,
+    ]
+    graph = gp.CartesianGraph(genome)
+
+    expected_pretty_str = """
+00 * InputNode          \t03 * Add (00,01)        \t05 * OutputNode (03)    \t
+01 * InputNode          \t04 * Add (01,02)        \t06 * OutputNode (03)    \t
+02 * InputNode          \t                        \t07 * OutputNode (04)    \t
+"""
+    assert graph.pretty_str() == expected_pretty_str
