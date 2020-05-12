@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 import gp
+from gp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
 
 
 def test_check_dna_consistency():
@@ -16,39 +17,157 @@ def test_check_dna_consistency():
         params["levels_back"],
         primitives,
     )
-    genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 0, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        0,
+        ID_NON_CODING_GENE,
+    ]
 
     # invalid length
     with pytest.raises(ValueError):
-        genome.dna = [-1, None, None, -1, None, None, 0, -2, -1, -2, 0, None, 0]
+        genome.dna = [
+            ID_INPUT_NODE,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            ID_INPUT_NODE,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            0,
+            ID_OUTPUT_NODE,
+            ID_INPUT_NODE,
+            ID_OUTPUT_NODE,
+            0,
+            ID_NON_CODING_GENE,
+            0,
+        ]
 
     # invalid function gene for input node
     with pytest.raises(ValueError):
-        genome.dna = [0, None, None, -1, None, None, 0, -2, 0, -2, 0, None]
+        genome.dna = [
+            0,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            ID_INPUT_NODE,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            0,
+            ID_OUTPUT_NODE,
+            0,
+            ID_OUTPUT_NODE,
+            0,
+            ID_NON_CODING_GENE,
+        ]
 
     # invalid input gene for input node
     with pytest.raises(ValueError):
-        genome.dna = [-1, 0, None, -1, None, None, 0, -2, 0, -2, 0, None]
+        genome.dna = [
+            ID_INPUT_NODE,
+            0,
+            ID_NON_CODING_GENE,
+            ID_INPUT_NODE,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            0,
+            ID_OUTPUT_NODE,
+            0,
+            ID_OUTPUT_NODE,
+            0,
+            ID_NON_CODING_GENE,
+        ]
 
     # invalid function gene for hidden node
     with pytest.raises(ValueError):
-        genome.dna = [-1, None, None, -1, None, None, 2, 0, 1, -2, 0, None]
+        genome.dna = [
+            ID_INPUT_NODE,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            ID_INPUT_NODE,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            2,
+            0,
+            1,
+            ID_OUTPUT_NODE,
+            0,
+            ID_NON_CODING_GENE,
+        ]
 
     # invalid input gene for hidden node
     with pytest.raises(ValueError):
-        genome.dna = [-1, None, None, -1, None, None, 0, 2, 1, -2, 0, None]
+        genome.dna = [
+            ID_INPUT_NODE,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            ID_INPUT_NODE,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            0,
+            2,
+            1,
+            ID_OUTPUT_NODE,
+            0,
+            ID_NON_CODING_GENE,
+        ]
 
     # invalid function gene for output node
     with pytest.raises(ValueError):
-        genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, 0, 0, None]
+        genome.dna = [
+            ID_INPUT_NODE,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            ID_INPUT_NODE,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            0,
+            0,
+            1,
+            0,
+            0,
+            ID_NON_CODING_GENE,
+        ]
 
     # invalid input gene for input node
     with pytest.raises(ValueError):
-        genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 3, None]
+        genome.dna = [
+            ID_INPUT_NODE,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            ID_INPUT_NODE,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            0,
+            0,
+            1,
+            ID_OUTPUT_NODE,
+            3,
+            ID_NON_CODING_GENE,
+        ]
 
     # invalid inactive input gene for output node
     with pytest.raises(ValueError):
-        genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 0, 0]
+        genome.dna = [
+            ID_INPUT_NODE,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            ID_INPUT_NODE,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            0,
+            0,
+            1,
+            ID_OUTPUT_NODE,
+            0,
+            0,
+        ]
 
 
 def test_permissable_inputs():
@@ -100,16 +219,29 @@ def test_region_iterators():
         params["levels_back"],
         primitives,
     )
-    genome.dna = [-1, None, None, -1, None, None, 0, 0, 1, -2, 0, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        0,
+        ID_NON_CODING_GENE,
+    ]
 
     for region_idx, region in genome.iter_input_regions():
-        assert region == [-1, None, None]
+        assert region == [ID_INPUT_NODE, ID_NON_CODING_GENE, ID_NON_CODING_GENE]
 
     for region_idx, region in genome.iter_hidden_regions():
         assert region == [0, 0, 1]
 
     for region_idx, region in genome.iter_output_regions():
-        assert region == [-2, 0, None]
+        assert region == [ID_OUTPUT_NODE, 0, ID_NON_CODING_GENE]
 
 
 def test_check_levels_back_consistency():
@@ -157,10 +289,10 @@ def test_catch_invalid_allele_in_inactive_region():
     # should raise error: ConstantFloat node has no inputs, but silent
     # input gene should still specify valid input
     with pytest.raises(ValueError):
-        genome.dna = [-1, None, 0, None, -2, 1]
+        genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, ID_NON_CODING_GENE, ID_OUTPUT_NODE, 1]
 
     # correct
-    genome.dna = [-1, None, 0, 0, -2, 1]
+    genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
 
 
 def test_individuals_have_different_genomes(rng_seed):
@@ -243,7 +375,23 @@ def test_is_gene_in_output_region(rng_seed):
 def test_mutate_hidden_region(rng_seed):
     rng = np.random.RandomState(rng_seed)
     genome = gp.Genome(1, 1, 3, 1, None, [gp.Add, gp.ConstantFloat])
-    dna = [-1, None, None, 1, 0, 0, 1, 0, 0, 0, 0, 2, -2, 3, None]
+    dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        2,
+        ID_OUTPUT_NODE,
+        3,
+        ID_NON_CODING_GENE,
+    ]
     genome.dna = list(dna)
     active_regions = gp.CartesianGraph(genome).determine_active_regions()
 
@@ -276,7 +424,20 @@ def test_mutate_hidden_region(rng_seed):
 def test_mutate_output_region(rng_seed):
     rng = np.random.RandomState(rng_seed)
     genome = gp.Genome(1, 1, 2, 1, None, [gp.Add])
-    genome.dna = [-1, None, None, 0, 0, 0, 0, 0, 0, -2, 2, None]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
 
     assert genome._mutate_output_region(9, rng) is False
     assert genome._mutate_output_region(10, rng) is True

@@ -5,7 +5,7 @@ python-gp
 [![Python3.8](https://img.shields.io/badge/python-3.8-red.svg)](https://www.python.org/)
 [![GPL license](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-3.0.html)
 [![Build Status](https://api.travis-ci.org/Happy-Algorithms-League/python-gp.svg?branch=master)](https://travis-ci.org/Happy-Algorithms-League/python-gp)
-
+[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
 Cartesian Genetic Programming (CGP) in Python.
 

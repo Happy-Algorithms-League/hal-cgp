@@ -1,11 +1,29 @@
+import numpy as np
+
+from typing import Generator, List, Optional, Tuple, Type
+
+from .node import Node
 from .primitives import Primitives
+
+
+ID_INPUT_NODE: int = -1
+ID_OUTPUT_NODE: int = -2
+ID_NON_CODING_GENE: int = -3
 
 
 class Genome:
     """Genome class for  individuals.
     """
 
-    def __init__(self, n_inputs, n_outputs, n_columns, n_rows, levels_back, primitives):
+    def __init__(
+        self,
+        n_inputs: int,
+        n_outputs: int,
+        n_columns: int,
+        n_rows: int,
+        levels_back: int,
+        primitives: List[Type[Node]],
+    ) -> None:
         """Init function.
 
         Parameters
@@ -21,7 +39,7 @@ class Genome:
         levels_back : int
             Number of previous columns that an entry in the genome can be
             connected with.
-        primitives : List[gp.CPGNode]
+        primitives : List[Type[Node]]
            List of primitives that the genome can refer to.
         """
         if n_inputs <= 0:
@@ -53,45 +71,46 @@ class Genome:
             1 + self._primitives.max_arity
         )  # one function gene + multiple input genes
 
-        self._dna = None  # stores dna as list of alleles for all regions
+        self._dna: List[int] = []  # stores dna as list of alleles for all regions
 
         # constants used as identifiers for input and output nodes
-        self._id_input_node = -1
-        self._id_output_node = -2
+        self._id_input_node: int = ID_INPUT_NODE
+        self._id_output_node: int = ID_OUTPUT_NODE
+        self._id_unused_gene: int = ID_NON_CODING_GENE
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: int) -> int:
         if self._dna is None:
             raise RuntimeError("dna not initialized")
         return self._dna[key]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: int, value: int) -> None:
         dna = list(self._dna)
         dna[key] = value
         self._validate_dna(dna)
         self._dna = dna
 
     @property
-    def dna(self):
+    def dna(self) -> List[int]:
         return self._dna
 
     @dna.setter
-    def dna(self, value):
+    def dna(self, value: List[int]) -> None:
         self._validate_dna(value)
         self._dna = value
 
     @property
-    def _n_hidden(self):
+    def _n_hidden(self) -> int:
         return self._n_columns * self._n_rows
 
     @property
-    def _n_regions(self):
+    def _n_regions(self) -> int:
         return self._n_inputs + self._n_hidden + self._n_outputs
 
     @property
-    def _n_genes(self):
+    def _n_genes(self) -> int:
         return self._n_regions * self._length_per_region
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         s = self.__class__.__name__ + "("
         for region_idx, input_region in self.iter_input_regions():
             s += str(region_idx) + ": " + str(input_region) + " | "
@@ -103,16 +122,18 @@ class Genome:
         s += ")"
         return s
 
-    def _create_input_region(self):
+    def _create_input_region(self) -> List[int]:
 
         region = []
         region.append(self._id_input_node)
-        # empty input genes (None) since input nodes do not receive
+        # non-coding input genes since input nodes do not receive
         # inputs themselves
-        region += [None] * self._primitives.max_arity
+        region += [self._id_unused_gene] * self._primitives.max_arity
         return region
 
-    def _create_random_hidden_region(self, rng, permissable_inputs):
+    def _create_random_hidden_region(
+        self, rng: np.random.RandomState, permissable_inputs: List[int]
+    ) -> List[int]:
 
         region = []
         node_id = self._primitives.sample(rng)
@@ -121,18 +142,19 @@ class Genome:
 
         return region
 
-    def _create_random_output_region(self, rng, permissable_inputs):
+    def _create_random_output_region(
+        self, rng: np.random.RandomState, permissable_inputs: List[int]
+    ) -> List[int]:
 
         region = []
         region.append(self._id_output_node)
         region.append(rng.choice(permissable_inputs))
-        # output nodes have only on input, other genes are hence left
-        # empty
-        region += [None] * (self._primitives.max_arity - 1)
+        # output nodes have only one input, other genes are hence non-coding
+        region += [self._id_unused_gene] * (self._primitives.max_arity - 1)
 
         return region
 
-    def randomize(self, rng):
+    def randomize(self, rng: np.random.RandomState) -> None:
         """Randomize the genome.
 
         Parameters
@@ -144,7 +166,7 @@ class Genome:
         ----------
         None
         """
-        dna = []
+        dna: List[int] = []
 
         # add input nodes
         for i in range(self._n_inputs):
@@ -167,7 +189,7 @@ class Genome:
         self._validate_dna(dna)
         self._dna = dna
 
-    def _permissable_inputs(self, region_idx):
+    def _permissable_inputs(self, region_idx: int) -> List[int]:
 
         assert not self._is_input_region(region_idx)
 
@@ -190,10 +212,10 @@ class Genome:
 
         return permissable_inputs
 
-    def _permissable_inputs_for_output_region(self):
+    def _permissable_inputs_for_output_region(self) -> List[int]:
         return self._permissable_inputs(self._n_inputs + self._n_rows * self._n_columns)
 
-    def _validate_dna(self, dna):
+    def _validate_dna(self, dna: List[int]) -> None:
 
         if len(dna) != self._n_genes:
             raise ValueError("dna length mismatch")
@@ -205,7 +227,7 @@ class Genome:
                     "function genes for input nodes need to be identical to input node identifiers"
                 )
 
-            if input_region[1:] != ([None] * self._primitives.max_arity):
+            if input_region[1:] != ([self._id_unused_gene] * self._primitives.max_arity):
                 raise ValueError("input genes for input nodes need to be empty")
 
         for region_idx, hidden_region in self.iter_hidden_regions(dna):
@@ -230,10 +252,10 @@ class Genome:
             if output_region[1] not in self._permissable_inputs_for_output_region():
                 raise ValueError("input gene for output nodes has invalid value")
 
-            if output_region[2:] != [None] * (self._primitives.max_arity - 1):
+            if output_region[2:] != [self._id_unused_gene] * (self._primitives.max_arity - 1):
                 raise ValueError("inactive input genes for output nodes need to be empty")
 
-    def _hidden_column_idx(self, region_idx):
+    def _hidden_column_idx(self, region_idx: int) -> int:
         assert self._n_inputs <= region_idx
         assert region_idx < self._n_inputs + self._n_rows * self._n_columns
         hidden_column_idx = (region_idx - self._n_inputs) // self._n_rows
@@ -241,7 +263,9 @@ class Genome:
         assert hidden_column_idx < self._n_columns
         return hidden_column_idx
 
-    def iter_input_regions(self, dna=None):
+    def iter_input_regions(
+        self, dna: Optional[List[int]] = None
+    ) -> Generator[Tuple[int, list], None, None]:
         if dna is None:
             dna = self.dna
         for i in range(self._n_inputs):
@@ -251,7 +275,9 @@ class Genome:
             ]
             yield region_idx, region
 
-    def iter_hidden_regions(self, dna=None):
+    def iter_hidden_regions(
+        self, dna: Optional[List[int]] = None
+    ) -> Generator[Tuple[int, List[int]], None, None]:
         if dna is None:
             dna = self.dna
         for i in range(self._n_hidden):
@@ -261,7 +287,9 @@ class Genome:
             ]
             yield region_idx, region
 
-    def iter_output_regions(self, dna=None):
+    def iter_output_regions(
+        self, dna: Optional[List[int]] = None
+    ) -> Generator[Tuple[int, List[int]], None, None]:
         if dna is None:
             dna = self.dna
         for i in range(self._n_outputs):
@@ -271,30 +299,30 @@ class Genome:
             ]
             yield region_idx, region
 
-    def _is_gene_in_input_region(self, gene_idx):
+    def _is_gene_in_input_region(self, gene_idx: int) -> bool:
         return gene_idx < (self._n_inputs * self._length_per_region)
 
-    def _is_gene_in_hidden_region(self, gene_idx):
+    def _is_gene_in_hidden_region(self, gene_idx: int) -> bool:
         return ((self._n_inputs * self._length_per_region) <= gene_idx) & (
             gene_idx < ((self._n_inputs + self._n_hidden) * self._length_per_region)
         )
 
-    def _is_gene_in_output_region(self, gene_idx):
+    def _is_gene_in_output_region(self, gene_idx: int) -> bool:
         return ((self._n_inputs + self._n_hidden) * self._length_per_region) <= gene_idx
 
-    def _is_input_region(self, region_idx):
+    def _is_input_region(self, region_idx: int) -> bool:
         return region_idx < self._n_inputs
 
-    def _is_hidden_region(self, region_idx):
+    def _is_hidden_region(self, region_idx: int) -> bool:
         return (self._n_inputs <= region_idx) & (region_idx < self._n_inputs + self._n_hidden)
 
-    def _is_output_region(self, region_idx):
+    def _is_output_region(self, region_idx: int) -> bool:
         return self._n_inputs + self._n_hidden <= region_idx
 
-    def _is_function_gene(self, gene_idx):
+    def _is_function_gene(self, gene_idx: int) -> bool:
         return (gene_idx % self._length_per_region) == 0
 
-    def _is_active_input_gene(self, gene_idx):
+    def _is_active_input_gene(self, gene_idx: int) -> bool:
         input_index = gene_idx % self._length_per_region
         assert input_index > 0
         region_idx = gene_idx // self._length_per_region
@@ -308,7 +336,7 @@ class Genome:
         else:
             assert False  # should never be reached
 
-    def mutate(self, n_mutations, active_regions, rng):
+    def mutate(self, n_mutations: int, active_regions: List[int], rng: np.random.RandomState):
         """Mutate the genome.
 
         Parameters
@@ -319,7 +347,7 @@ class Genome:
             Regions in the genome that are currently used in the
             computational graph. Used to check whether mutations are
             silent or require reevaluation of fitness.
-        rng : numpy.RandomState
+        rng : numpy.random.RandomState
             Random number generator instance to use for crossover.
 
         Returns
@@ -366,7 +394,10 @@ class Genome:
         else:
             return False
 
-    def _mutate_hidden_region(self, gene_idx, active_regions, rng):
+    def _mutate_hidden_region(
+        self, gene_idx: int, active_regions: List[int], rng: np.random.RandomState
+    ) -> bool:
+
         assert self._is_gene_in_hidden_region(gene_idx)
 
         region_idx = gene_idx // self._length_per_region
@@ -384,10 +415,10 @@ class Genome:
             return silent_mutation
 
     @property
-    def primitives(self):
+    def primitives(self) -> Primitives:
         return self._primitives
 
-    def clone(self):
+    def clone(self) -> "Genome":
         """Clone the genome.
 
         Returns
@@ -400,7 +431,7 @@ class Genome:
             self._n_columns,
             self._n_rows,
             self._levels_back,
-            self._primitives,
+            list(self._primitives),
         )
         new.dna = self._dna.copy()
         return new

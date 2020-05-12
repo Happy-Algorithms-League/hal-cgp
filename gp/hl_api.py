@@ -1,18 +1,22 @@
 import numpy as np
+from typing import Optional, Callable
+
+from .population import Population
+from .individual import Individual
+from .ea import MuPlusLambda
 
 
 def evolve(
-    pop,
-    objective,
-    ea,
-    max_generations,
-    min_fitness,
-    print_progress=False,
-    *,
-    callback=None,
-    label=None,
-    n_processes=1,
-):
+    pop: Population,
+    objective: Callable[[Individual], Individual],
+    ea: MuPlusLambda,
+    max_generations: int,
+    min_fitness: float,
+    print_progress: Optional[bool] = False,
+    callback: Optional[Callable[[Population], None]] = None,
+    label: Optional[str] = None,
+    n_processes: int = 1,
+) -> None:
     """
     Evolves a population and returns the history of fitness of parents.
 
@@ -45,8 +49,7 @@ def evolve(
 
     Returns
     -------
-    dict
-        History of the evolution.
+    None
     """
 
     ea.initialize_fitness_parents(pop, objective, label=label)

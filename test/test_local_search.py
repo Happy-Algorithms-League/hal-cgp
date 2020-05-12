@@ -1,6 +1,7 @@
 import pytest
 
 import gp
+from gp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
 
 
 def test_gradient_based_step_towards_maximum():
@@ -9,7 +10,7 @@ def test_gradient_based_step_towards_maximum():
     primitives = [gp.Parameter]
     genome = gp.Genome(1, 1, 1, 1, 1, primitives)
     # f(x) = c
-    genome.dna = [-1, None, 0, 0, -2, 1]
+    genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
     ind = gp.individual.Individual(None, genome)
 
     def objective(f):
