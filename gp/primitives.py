@@ -48,18 +48,18 @@ class Primitives:
     def __iter__(self) -> Iterator[Type[Node]]:
         return iter(self._primitives)
 
-    def sample(self, rng: np.random.RandomState) -> int:
-        """Sample a random primitive.
+    def sample_allele(self, rng: np.random.RandomState) -> int:
+        """Sample a random primitive index.
 
         Parameters
         ----------
         rng : numpy.RandomState
-            Random number generator instance to use for crossover.
+            Random number generator instance.
 
         Returns
         -------
         int
-            Index of the sample primitive
+            Index of the sampled primitive.
         """
         return rng.randint(len(self._primitives))
 

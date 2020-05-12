@@ -136,7 +136,7 @@ class Genome:
     ) -> List[int]:
 
         region = []
-        node_id = self._primitives.sample(rng)
+        node_id = self._primitives.sample_allele(rng)
         region.append(node_id)
         region += list(rng.choice(permissable_inputs, self._primitives.max_arity))
 
@@ -404,7 +404,7 @@ class Genome:
         silent_mutation = region_idx not in active_regions
 
         if self._is_function_gene(gene_idx):
-            self._dna[gene_idx] = self._primitives.sample(rng)
+            self._dna[gene_idx] = self._primitives.sample_allele(rng)
             return silent_mutation
 
         else:
