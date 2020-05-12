@@ -8,7 +8,7 @@ from gp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
 def test_check_dna_consistency():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.Add]
+    primitives = (gp.Add,)
     genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
@@ -173,7 +173,7 @@ def test_check_dna_consistency():
 def test_permissable_inputs():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 4, "n_rows": 3, "levels_back": 2}
 
-    primitives = [gp.Add]
+    primitives = (gp.Add,)
     genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
@@ -210,7 +210,7 @@ def test_permissable_inputs():
 def test_region_iterators():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.Add]
+    primitives = (gp.Add,)
     genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
@@ -247,7 +247,7 @@ def test_region_iterators():
 def test_check_levels_back_consistency():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 4, "n_rows": 3, "levels_back": None}
 
-    primitives = [gp.Add]
+    primitives = (gp.Add,)
 
     params["levels_back"] = 0
     with pytest.raises(ValueError):
@@ -283,7 +283,7 @@ def test_check_levels_back_consistency():
 
 
 def test_catch_invalid_allele_in_inactive_region():
-    primitives = [gp.ConstantFloat]
+    primitives = (gp.ConstantFloat,)
     genome = gp.Genome(1, 1, 1, 1, 1, primitives)
 
     # should raise error: ConstantFloat node has no inputs, but silent
@@ -295,38 +295,13 @@ def test_catch_invalid_allele_in_inactive_region():
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
 
 
-def test_individuals_have_different_genomes(rng_seed):
-
-    population_params = {
-        "n_parents": 5,
-        "n_offspring": 5,
-        "generations": 50000,
-        "n_breeding": 5,
-        "tournament_size": 2,
-        "mutation_rate": 0.05,
-    }
-
-    genome_params = {
-        "n_inputs": 2,
-        "n_outputs": 1,
-        "n_columns": 6,
-        "n_rows": 6,
-        "levels_back": 2,
-        "primitives": [gp.Add, gp.Sub, gp.Mul, gp.Div, gp.ConstantFloat],
-    }
-
+def test_individuals_have_different_genomes(population_params, genome_params, ea_params):
     def objective(ind):
         ind.fitness = ind.idx
         return ind
 
-    pop = gp.Population(
-        population_params["n_parents"], population_params["mutation_rate"], rng_seed, genome_params
-    )
-    ea = gp.ea.MuPlusLambda(
-        population_params["n_offspring"],
-        population_params["n_breeding"],
-        population_params["tournament_size"],
-    )
+    pop = gp.Population(**population_params, genome_params=genome_params)
+    ea = gp.ea.MuPlusLambda(**ea_params)
 
     pop._generate_random_parent_population()
 
@@ -344,7 +319,7 @@ def test_individuals_have_different_genomes(rng_seed):
 
 
 def test_is_gene_in_input_region(rng_seed):
-    genome = gp.Genome(2, 1, 2, 1, None, [gp.Add])
+    genome = gp.Genome(2, 1, 2, 1, None, (gp.Add,))
     rng = np.random.RandomState(rng_seed)
     genome.randomize(rng)
 
@@ -353,7 +328,7 @@ def test_is_gene_in_input_region(rng_seed):
 
 
 def test_is_gene_in_hidden_region(rng_seed):
-    genome = gp.Genome(2, 1, 2, 1, None, [gp.Add])
+    genome = gp.Genome(2, 1, 2, 1, None, (gp.Add,))
     rng = np.random.RandomState(rng_seed)
     genome.randomize(rng)
 
@@ -364,7 +339,7 @@ def test_is_gene_in_hidden_region(rng_seed):
 
 
 def test_is_gene_in_output_region(rng_seed):
-    genome = gp.Genome(2, 1, 2, 1, None, [gp.Add])
+    genome = gp.Genome(2, 1, 2, 1, None, (gp.Add,))
     rng = np.random.RandomState(rng_seed)
     genome.randomize(rng)
 
@@ -374,7 +349,7 @@ def test_is_gene_in_output_region(rng_seed):
 
 def test_mutate_hidden_region(rng_seed):
     rng = np.random.RandomState(rng_seed)
-    genome = gp.Genome(1, 1, 3, 1, None, [gp.Add, gp.ConstantFloat])
+    genome = gp.Genome(1, 1, 3, 1, None, (gp.Add, gp.ConstantFloat))
     dna = [
         ID_INPUT_NODE,
         ID_NON_CODING_GENE,
@@ -423,7 +398,7 @@ def test_mutate_hidden_region(rng_seed):
 
 def test_mutate_output_region(rng_seed):
     rng = np.random.RandomState(rng_seed)
-    genome = gp.Genome(1, 1, 2, 1, None, [gp.Add])
+    genome = gp.Genome(1, 1, 2, 1, None, (gp.Add,))
     genome.dna = [
         ID_INPUT_NODE,
         ID_NON_CODING_GENE,

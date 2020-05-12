@@ -7,7 +7,7 @@ from gp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
 def test_add():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.Add]
+    primitives = (gp.Add,)
     genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
@@ -41,7 +41,7 @@ def test_add():
 def test_sub():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.Sub]
+    primitives = (gp.Sub,)
     genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
@@ -75,7 +75,7 @@ def test_sub():
 def test_mul():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.Mul]
+    primitives = (gp.Mul,)
     genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
@@ -109,7 +109,7 @@ def test_mul():
 def test_div():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.Div]
+    primitives = (gp.Div,)
     genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
@@ -143,7 +143,7 @@ def test_div():
 def test_pow():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.Pow]
+    primitives = (gp.Pow,)
     genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
@@ -177,7 +177,7 @@ def test_pow():
 def test_constant_float():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = [gp.ConstantFloat]
+    primitives = (gp.ConstantFloat,)
     genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],

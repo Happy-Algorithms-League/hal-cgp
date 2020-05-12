@@ -1,55 +1,52 @@
+from dataclasses import dataclass, field
 import numpy as np
 
-from typing import Iterator, List, Tuple, Type
+from typing import Iterator, Tuple, Type
 
 from .node import Node
 
 
+@dataclass(frozen=True)
 class Primitives:
-    """Class collecting primitives of the Cartesian Genetic Programming framework.
+    """Convenience class to manage primitives, i.e., Node classes.
+
     """
 
-    _max_arity = 0
-    _primitives: dict = {}
+    _primitives: Tuple[Type[Node], ...]
+    _max_arity: int = field(init=False)
 
-    def __init__(self, primitives: List[Type[Node]]) -> None:
-        """Init function.
+    def __post_init__(self):
+        self._check_types()
+        self.__dict__[
+            "_max_arity"
+        ] = self._determine_max_arity()  # avoid using use __setattr_ since dataclass is frozen
 
-        Parameters
-        ----------
-        primitives : List[Type[Node]]
-            List of primitives.
-        """
-        for i in range(len(primitives)):
-            if not isinstance(primitives[i], type):
-                raise TypeError(f"expected class but received {type(primitives[i])}")
-            if not issubclass(primitives[i], Node):
-                raise TypeError(f"expected subclass of Node but received {primitives[i].__name__}")
+    def _check_types(self):
+        if not isinstance(self._primitives, tuple):
+            raise TypeError(f"expected tuple but received {type(self._primitives)}")
 
-        self._primitives = {}
-        for i in range(len(primitives)):
-            self._primitives[i] = primitives[i]
+        for i in range(len(self._primitives)):
+            if not isinstance(self._primitives[i], type):
+                raise TypeError(
+                    f"expected class but received instance of {type(self._primitives[i])}"
+                )
+            if not issubclass(self._primitives[i], Node):
+                raise TypeError(
+                    f"expected subclass of Node but received class {self._primitives[i].__name__}"
+                )
 
-        # hide primitives dict behind MappingProxyType to make sure it
-        # is not changed after construction
-        # unfortunately not supported by pickle, necessary for
-        # multiprocessing; another way to implement this?
-        # self._primitives = types.MappingProxyType(self._primitives)
-
-        self._determine_max_arity()
-
-    def __iter__(self) -> Iterator:
-        return iter([self[i] for i in range(len(self._primitives))])
-
-    def _determine_max_arity(self) -> None:
+    def _determine_max_arity(self) -> int:
 
         arity = 1  # minimal possible arity (output nodes need one input)
 
-        for idx, p in self._primitives.items():
+        for p in self._primitives:
             if arity < p._arity:
                 arity = p._arity
 
-        self._max_arity = arity
+        return arity
+
+    def __iter__(self) -> Iterator[Type[Node]]:
+        return iter(self._primitives)
 
     def sample(self, rng: np.random.RandomState) -> int:
         """Sample a random primitive.
@@ -64,18 +61,16 @@ class Primitives:
         int
             Index of the sample primitive
         """
-        return rng.choice(self.alleles)
+        return rng.randint(len(self._primitives))
 
     def __getitem__(self, key: int) -> Type[Node]:
+        if key < 0 or key >= len(self._primitives):
+            raise IndexError("primitive index out of bounds")
         return self._primitives[key]
 
     @property
     def max_arity(self) -> int:
         return self._max_arity
 
-    @property
-    def alleles(self) -> Tuple:
-        return tuple(self._primitives.keys())
-
-    def __len__(self):
-        return len(self._primitives)
+    def is_valid_allele(self, allele: int) -> bool:
+        return (allele >= 0) and (allele < len(self._primitives))

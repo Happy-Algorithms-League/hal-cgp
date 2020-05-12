@@ -110,7 +110,7 @@ def test_evolve_two_expressions(population_params, ea_params):
             "n_columns": 4,
             "n_rows": 2,
             "levels_back": 2,
-            "primitives": [gp.Add, gp.Mul],
+            "primitives": (gp.Add, gp.Mul),
         },
         {
             "n_inputs": 2,
@@ -118,7 +118,7 @@ def test_evolve_two_expressions(population_params, ea_params):
             "n_columns": 2,
             "n_rows": 2,
             "levels_back": 2,
-            "primitives": [gp.Sub, gp.Mul],
+            "primitives": (gp.Sub, gp.Mul),
         },
     ]
 

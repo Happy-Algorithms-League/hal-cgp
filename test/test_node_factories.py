@@ -9,7 +9,7 @@ def test_constant_float():
 
     val = 1.678
 
-    primitives = [gp.node_factories.ConstantFloatFactory(val)]
+    primitives = (gp.node_factories.ConstantFloatFactory(val),)
     genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
