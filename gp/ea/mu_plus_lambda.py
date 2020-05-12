@@ -1,5 +1,4 @@
 import concurrent.futures
-import functools
 import numpy as np
 
 
@@ -54,7 +53,7 @@ class MuPlusLambda:
         self.n_processes = n_processes
         self.local_search = local_search
 
-    def initialize_fitness_parents(self, pop, objective, *, label=None):
+    def initialize_fitness_parents(self, pop, objective):
         """Initialize the fitness of all parents in the given population.
 
         Parameters
@@ -65,15 +64,12 @@ class MuPlusLambda:
             An objective function used for the evolution. Needs to take an
             invidual (gp.Individual) as input parameter and return
             a modified individual (with updated fitness).
-        label : str, optional
-            Optional label to be passed to the objective function.
-
         """
         # TODO can we avoid this function? how should a population be
         # initialized?
-        pop._parents = self._compute_fitness(pop, objective, label=label)
+        pop._parents = self._compute_fitness(pop, objective)
 
-    def step(self, pop, objective, *, label=None):
+    def step(self, pop, objective):
         """Perform one step in the evolution.
 
         Parameters
@@ -84,8 +80,6 @@ class MuPlusLambda:
             An objective function used for the evolution. Needs to take an
             invidual (gp.Individual) as input parameter and return
             a modified individual (with updated fitness).
-        label : str, optional
-            Optional label to be passed to the objective function.
 
         Returns
         ----------
@@ -107,7 +101,7 @@ class MuPlusLambda:
 
         self.local_search(combined)
 
-        combined = self._compute_fitness(combined, objective, label=label)
+        combined = self._compute_fitness(combined, objective)
 
         combined = self._sort(combined)
 
@@ -134,19 +128,14 @@ class MuPlusLambda:
 
         return offsprings
 
-    def _compute_fitness(self, combined, objective, *, label=None):
-        if label is not None:
-            tmp_objective = functools.partial(objective, label=label)
-        else:
-            tmp_objective = objective
-
+    def _compute_fitness(self, combined, objective):
         # computes fitness on all individuals, objective functions
         # should return immediately if fitness is not None
         if self.n_processes == 1:
-            combined = list(map(tmp_objective, combined))
+            combined = list(map(objective, combined))
         else:
             with concurrent.futures.ProcessPoolExecutor(max_workers=self.n_processes) as executor:
-                combined = list(executor.map(tmp_objective, combined))
+                combined = list(executor.map(objective, combined))
 
         return combined
 

@@ -1,12 +1,13 @@
+import functools
 import numpy as np
+import pytest
 
 import gp
 
 
-def test_label(population_params, genome_params):
+def test_objective_with_label(population_params, genome_params):
     def objective_without_label(individual):
-        assert True
-        individual.fitness = -1
+        individual.fitness = -2
         return individual
 
     def objective_with_label(individual, label):
@@ -18,8 +19,13 @@ def test_label(population_params, genome_params):
 
     ea = gp.ea.MuPlusLambda(1, 2, 1)
     ea.initialize_fitness_parents(pop, objective_without_label)
+
     ea.step(pop, objective_without_label)
-    ea.step(pop, objective_with_label, label="test")
+    assert pop.champion.fitness == pytest.approx(-2.0)
+
+    obj = functools.partial(objective_with_label, label="test")
+    ea.step(pop, obj)
+    assert pop.champion.fitness == pytest.approx(-1.0)
 
 
 def test_fitness_contains_nan(population_params, genome_params):

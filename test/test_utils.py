@@ -11,9 +11,9 @@ def test_cache_decorator():
     sleep_time = 0.1
 
     @gp.utils.disk_cache(tempfile.mkstemp()[1])
-    def objective(label):
+    def objective(s):
         time.sleep(sleep_time)  # simulate long execution time
-        return label
+        return s
 
     # first call should take long due to sleep
     t0 = time.time()
