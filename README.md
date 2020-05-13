@@ -1,10 +1,10 @@
-python-gp
-=========
+HAL-CGP
+=======
 [![Python3.6](https://img.shields.io/badge/python-3.6-red.svg)](https://www.python.org/downloads/release/python-369/)
 [![Python3.7](https://img.shields.io/badge/python-3.7-red.svg)](https://www.python.org/)
 [![Python3.8](https://img.shields.io/badge/python-3.8-red.svg)](https://www.python.org/)
 [![GPL license](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-3.0.html)
-[![Build Status](https://api.travis-ci.org/Happy-Algorithms-League/python-gp.svg?branch=master)](https://travis-ci.org/Happy-Algorithms-League/python-gp)
+[![Build Status](https://api.travis-ci.org/Happy-Algorithms-League/hal-cgp.svg?branch=master)](https://travis-ci.org/Happy-Algorithms-League/hal-cgp)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
 Cartesian Genetic Programming (CGP) in Python.
@@ -46,7 +46,7 @@ genome_params = {
 	"n_columns": 10,
 	"n_rows": 2,
 	"levels_back": 5,
-	"primitives": [gp.Add, gp.Sub, gp.Mul, gp.Div, gp.ConstantFloat],
+	"primitives": [cgp.Add, cgp.Sub, cgp.Mul, cgp.Div, cgp.ConstantFloat],
 }
 
 ea_params = {"n_offsprings": 10, "n_breeding": 10, "tournament_size": 2, "n_processes": 2}
@@ -55,8 +55,8 @@ evolve_params = {"max_generations": 1000, "min_fitness": 0.0}
 ```
 3. Initialize a population and an evolutionary algorithm instance:
 ```python
-pop = gp.Population(**population_params, genome_params=genome_params)
-ea = gp.ea.MuPlusLambda(**ea_params)
+pop = cgp.Population(**population_params, genome_params=genome_params)
+ea = cgp.ea.MuPlusLambda(**ea_params)
 ```
 4. Define a callback function to record information about the progress of the evolution:
 ```python
@@ -67,7 +67,7 @@ def recording_callback(pop):
 ```
 5. Use the `evolve` function that ties everything together and executes the evolution:
 ```python
-gp.evolve(pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback)
+cgp.evolve(pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback)
 ```
 
 

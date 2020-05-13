@@ -5,16 +5,16 @@ import pytest
 import tempfile
 import time
 
-import gp
+import cgp
 
 
-@gp.utils.disk_cache(tempfile.mkstemp()[1])
+@cgp.utils.disk_cache(tempfile.mkstemp()[1])
 def _cache_decorator_objective_single_process(s, sleep_time):
     time.sleep(sleep_time)  # simulate long execution time
     return s
 
 
-@gp.utils.disk_cache(tempfile.mkstemp()[1])
+@cgp.utils.disk_cache(tempfile.mkstemp()[1])
 def _cache_decorator_objective_two_processes(s, sleep_time):
     time.sleep(sleep_time)  # simulate long execution time
     return s
@@ -62,7 +62,7 @@ def test_cache_decorator_consistency():
     cache_fn = tempfile.mkstemp()[1]
     x = 2
 
-    @gp.utils.disk_cache(cache_fn)
+    @cgp.utils.disk_cache(cache_fn)
     def objective_f(x):
         return x
 
@@ -73,13 +73,13 @@ def test_cache_decorator_consistency():
     # filename should raise an error
     with pytest.raises(RuntimeError):
 
-        @gp.utils.disk_cache(cache_fn)
+        @cgp.utils.disk_cache(cache_fn)
         def objective_g(x):
             return x ** 2
 
     # decorating a different function with identical output using the
     # same filename should NOT raise an error
-    @gp.utils.disk_cache(cache_fn)
+    @cgp.utils.disk_cache(cache_fn)
     def objective_h(x):
         return x
 
@@ -91,8 +91,8 @@ def objective_history_recording(individual):
 
 def test_history_recording(population_params, genome_params, ea_params):
 
-    pop = gp.Population(**population_params, genome_params=genome_params)
-    ea = gp.ea.MuPlusLambda(**ea_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params)
+    ea = cgp.ea.MuPlusLambda(**ea_params)
 
     evolve_params = {
         "max_generations": 2,
@@ -111,7 +111,7 @@ def test_history_recording(population_params, genome_params, ea_params):
         history["fitness_champion"][pop.generation] = pop.champion.fitness
         history["champion"].append(pop.champion)
 
-    gp.evolve(
+    cgp.evolve(
         pop, objective_history_recording, ea, **evolve_params, callback=recording_callback,
     )
 
@@ -123,14 +123,14 @@ def test_history_recording(population_params, genome_params, ea_params):
 def test_primitives_from_class_names():
 
     primitives_str = ["Add", "Sub", "Mul"]
-    primitives = gp.utils.primitives_from_class_names(primitives_str)
-    assert issubclass(primitives[0], gp.Add)
-    assert issubclass(primitives[1], gp.Sub)
-    assert issubclass(primitives[2], gp.Mul)
+    primitives = cgp.utils.primitives_from_class_names(primitives_str)
+    assert issubclass(primitives[0], cgp.Add)
+    assert issubclass(primitives[1], cgp.Sub)
+    assert issubclass(primitives[2], cgp.Mul)
 
     # make sure custom classes are registered as well
-    class MyCustomNodeClass(gp.node.Node):
+    class MyCustomNodeClass(cgp.node.Node):
         pass
 
-    primitives = gp.utils.primitives_from_class_names(["MyCustomNodeClass"])
+    primitives = cgp.utils.primitives_from_class_names(["MyCustomNodeClass"])
     assert issubclass(primitives[0], MyCustomNodeClass)

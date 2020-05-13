@@ -23,18 +23,18 @@ def read_extra_requirements():
 
 
 setup(
-    name="python-gp",
+    name="hal-cgp",
     version="0.1",
     author="Jakob Jordan, Maximilian Schmidt",
     author_email="jakobjordan@posteo.de",
-    description=("Cartesian Genetic Programming in Python."),
+    description=("Cartesian Genetic Programming in pure Python."),
     license="GPLv3",
     keywords="genetic programming",
-    url="https://github.com/jakobj/python-gp",
+    url="https://github.com/Happy-Algorithms-League/hal-cgp",
     python_requires=">=3.6, <4",
     install_requires=read_requirements(),
     extras_require=read_extra_requirements(),
-    packages=["gp", "gp.ea", "gp.local_search"],
+    packages=["cgp", "cgp.ea", "cgp.local_search"],
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     classifiers=[
@@ -45,6 +45,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
-        "Topic :: Utilities",
+        "Topic :: Scientific/Engineering",
+        "Typing :: Typed",
     ],
 )

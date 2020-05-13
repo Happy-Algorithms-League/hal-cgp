@@ -1,22 +1,23 @@
 import copy
-import gp
 import pytest
 import numpy as np
+
+import cgp
 
 
 def test_assert_mutation_rate(rng_seed, genome_params, mutation_rate):
     with pytest.raises(ValueError):
-        gp.Population(5, -0.1, rng_seed, genome_params)
+        cgp.Population(5, -0.1, rng_seed, genome_params)
 
     with pytest.raises(ValueError):
-        gp.Population(5, 1.1, rng_seed, genome_params)
+        cgp.Population(5, 1.1, rng_seed, genome_params)
 
     # assert that no error is thrown for a suitable mutation rate
-    gp.Population(5, mutation_rate, rng_seed, genome_params)
+    cgp.Population(5, mutation_rate, rng_seed, genome_params)
 
 
 def test_init_random_parent_population(population_params, genome_params):
-    pop = gp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params)
     assert len(pop.parents) == population_params["n_parents"]
 
 
@@ -57,7 +58,7 @@ def test_crossover_two_offspring(population_simple_fitness):
 
 def test_mutate(population_params, genome_params):
     population_params["mutation_rate"] = 0.999999
-    pop = gp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params)
 
     offspring = pop.parents
     offspring_original = copy.deepcopy(offspring)
@@ -68,7 +69,7 @@ def test_mutate(population_params, genome_params):
 
 
 def test_fitness_parents(population_params, genome_params):
-    pop = gp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params)
     fitness_values = np.random.rand(population_params["n_parents"])
     for fitness, parent in zip(fitness_values, pop.parents):
         parent.fitness = fitness
@@ -80,7 +81,7 @@ def test_pop_uses_own_rng(population_params, genome_params, rng_seed):
     """Test independence of Population on global numpy rng.
     """
 
-    pop = gp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params)
 
     np.random.seed(rng_seed)
 

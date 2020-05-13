@@ -1,5 +1,6 @@
-import gp
 from pytest import fixture
+
+import cgp
 
 
 @fixture
@@ -15,7 +16,7 @@ def genome_params():
         "n_columns": 3,
         "n_rows": 3,
         "levels_back": 2,
-        "primitives": (gp.Add, gp.Sub, gp.ConstantFloat),
+        "primitives": (cgp.Add, cgp.Sub, cgp.ConstantFloat),
     }
 
 
@@ -36,7 +37,7 @@ def mutation_rate():
 
 @fixture
 def population_simple_fitness(population_params, genome_params):
-    pop = gp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params)
 
     for i, parent in enumerate(pop.parents):
         parent.fitness = i

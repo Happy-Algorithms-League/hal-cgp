@@ -65,11 +65,11 @@ class MuPlusLambda:
 
         Parameters
         ----------
-        pop : gp.Population
+        pop : Population
             Population instance.
         objective : Callable[[gp.Individual], gp.Individual]
             An objective function used for the evolution. Needs to take an
-            invidual (gp.Individual) as input parameter and return
+            individual (Individual) as input parameter and return
             a modified individual (with updated fitness).
         """
         # TODO can we avoid this function? how should a population be
@@ -81,16 +81,16 @@ class MuPlusLambda:
 
         Parameters
         ----------
-        pop : gp.Population
+        pop : Population
             Population instance.
         objective : Callable[[gp.Individual], gp.Individual]
             An objective function used for the evolution. Needs to take an
-            invidual (gp.Individual) as input parameter and return
+            individual (Individual) as input parameter and return
             a modified individual (with updated fitness).
 
         Returns
         ----------
-        pop : gp.Population
+        Population
             Modified population with new parents.
         """
         offsprings = self._create_new_offspring_generation(pop)

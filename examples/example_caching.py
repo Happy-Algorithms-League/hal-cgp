@@ -1,7 +1,7 @@
 import numpy as np
 import time
 
-import gp
+import cgp
 
 """ Example demonstrating the use of the caching decorator.
 
@@ -16,7 +16,7 @@ def f_target(x):
     return x ** 2 + x + 1.0
 
 
-@gp.utils.disk_cache("example_caching_cache.pkl")
+@cgp.utils.disk_cache("example_caching_cache.pkl")
 def inner_objective(expr):
     """The caching decorator uses the function parameters to identify
     identical function calls. Here, as many different genotypes
@@ -62,15 +62,15 @@ def evolution():
             "n_columns": 10,
             "n_rows": 2,
             "levels_back": 2,
-            "primitives": [gp.Add, gp.Sub, gp.Mul, gp.ConstantFloat],
+            "primitives": [cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat],
         },
         "evolve_params": {"max_generations": 100, "min_fitness": -1e-12},
     }
 
-    pop = gp.Population(**params["population_params"], genome_params=params["genome_params"])
-    ea = gp.ea.MuPlusLambda(**params["ea_params"])
+    pop = cgp.Population(**params["population_params"], genome_params=params["genome_params"])
+    ea = cgp.ea.MuPlusLambda(**params["ea_params"])
 
-    gp.evolve(pop, objective, ea, **params["evolve_params"], print_progress=True)
+    cgp.evolve(pop, objective, ea, **params["evolve_params"], print_progress=True)
 
     return pop.champion
 

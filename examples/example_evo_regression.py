@@ -4,7 +4,7 @@ import numpy as np
 import scipy.constants
 import warnings
 
-import gp
+import cgp
 
 
 """Example demonstrating the use of Cartesian Genetic Programming for
@@ -24,14 +24,14 @@ def objective(individual, target_function, seed):
 
     Parameters
     ----------
-    individual : gp.Individual
+    individual : Individual
         Individual of the Cartesian Genetic Programming Framework.
     target_function : Callable
         Target function.
 
     Returns
     -------
-    gp.Individual
+    Individual
         Modified individual with updated fitness value.
     """
     if individual.fitness is not None:
@@ -87,7 +87,7 @@ def evolution(f_target):
         "n_columns": 10,
         "n_rows": 2,
         "levels_back": 5,
-        "primitives": [gp.Add, gp.Sub, gp.Mul, gp.Div, gp.ConstantFloat],
+        "primitives": [cgp.Add, cgp.Sub, cgp.Mul, cgp.Div, cgp.ConstantFloat],
     }
 
     ea_params = {"n_offsprings": 10, "n_breeding": 10, "tournament_size": 2, "n_processes": 2}
@@ -95,10 +95,10 @@ def evolution(f_target):
     evolve_params = {"max_generations": 1000, "min_fitness": 0.0}
 
     # create population that will be evolved
-    pop = gp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params)
 
     # create instance of evolutionary algorithm
-    ea = gp.ea.MuPlusLambda(**ea_params)
+    ea = cgp.ea.MuPlusLambda(**ea_params)
 
     # define callback for recording of fitness over generations
     history = {}
@@ -112,7 +112,7 @@ def evolution(f_target):
     obj = functools.partial(objective, target_function=f_target, seed=population_params["seed"])
 
     # Perform the evolution
-    gp.evolve(
+    cgp.evolve(
         pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback,
     )
     return history, pop.champion

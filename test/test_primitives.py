@@ -1,18 +1,18 @@
 import dataclasses
 import pytest
 
-import gp
-from gp.primitives import Primitives
+import cgp
+from cgp.primitives import Primitives
 
 
 def test_init_with_list_raises():
     with pytest.raises(TypeError):
-        Primitives([gp.Add])
+        Primitives([cgp.Add])
 
 
 def test_init_with_instance_raises():
     with pytest.raises(TypeError):
-        Primitives((gp.Add(0, []),))
+        Primitives((cgp.Add(0, []),))
 
 
 def test_init_with_wrong_class_raises():
@@ -21,19 +21,19 @@ def test_init_with_wrong_class_raises():
 
 
 def test_immutable_primitives():
-    primitives = Primitives((gp.Add, gp.Sub))
+    primitives = Primitives((cgp.Add, cgp.Sub))
     with pytest.raises(TypeError):
-        primitives[0] = gp.Add
+        primitives[0] = cgp.Add
 
     with pytest.raises(TypeError):
-        primitives._primitives[0] = gp.Add
+        primitives._primitives[0] = cgp.Add
 
     with pytest.raises(dataclasses.FrozenInstanceError):
-        primitives.primitives = (gp.Add,)
+        primitives.primitives = (cgp.Add,)
 
 
 def test_max_arity():
-    plain_primitives = (gp.Add, gp.Sub, gp.ConstantFloat)
+    plain_primitives = (cgp.Add, cgp.Sub, cgp.ConstantFloat)
     primitives = Primitives(plain_primitives)
 
     arity = 0
@@ -53,7 +53,7 @@ def test_check_for_correct_class():
 
 
 def test_function_indices_remain_fixed_in_list_conversion():
-    plain_primitives = (gp.Add, gp.Sub, gp.Mul, gp.Div)
+    plain_primitives = (cgp.Add, cgp.Sub, cgp.Mul, cgp.Div)
     primitives = Primitives(plain_primitives)
 
     for k in range(10):

@@ -23,7 +23,7 @@ class Individual:
         fitness : float
             Fitness of the individual.
         genome: Genome instance
-            Genome of the invididual.
+            Genome of the individual.
         """
         self.fitness = fitness
         self.genome = genome
@@ -40,7 +40,7 @@ class Individual:
 
         Returns
         -------
-        gp.Individual
+        Individual
         """
         new_individual = Individual(self.fitness, self.genome.clone())
 
@@ -55,14 +55,14 @@ class Individual:
 
         Parameters
         ----------
-        other_parent : gp.Individual
+        other_parent : Individual
             Other individual to perform crossover with.
         rng : numpy.RandomState
             Random number generator instance to use for crossover.
 
         Returns
         -------
-        gp.Individual
+        Individual
         """
         raise NotImplementedError("crossover currently not supported")
 
@@ -181,7 +181,7 @@ class Individual:
 class IndividualMultiGenome(Individual):
     """An individual with multiple genomes.
 
-    Derived from gp.Individual.
+    Derived from Individual.
     """
 
     def clone(self):

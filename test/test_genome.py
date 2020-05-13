@@ -1,15 +1,15 @@
 import numpy as np
 import pytest
 
-import gp
-from gp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
+import cgp
+from cgp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
 
 
 def test_check_dna_consistency():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = (gp.Add,)
-    genome = gp.Genome(
+    primitives = (cgp.Add,)
+    genome = cgp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -173,8 +173,8 @@ def test_check_dna_consistency():
 def test_permissible_inputs():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 4, "n_rows": 3, "levels_back": 2}
 
-    primitives = (gp.Add,)
-    genome = gp.Genome(
+    primitives = (cgp.Add,)
+    genome = cgp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -210,8 +210,8 @@ def test_permissible_inputs():
 def test_region_iterators():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = (gp.Add,)
-    genome = gp.Genome(
+    primitives = (cgp.Add,)
+    genome = cgp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -247,11 +247,11 @@ def test_region_iterators():
 def test_check_levels_back_consistency():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 4, "n_rows": 3, "levels_back": None}
 
-    primitives = (gp.Add,)
+    primitives = (cgp.Add,)
 
     params["levels_back"] = 0
     with pytest.raises(ValueError):
-        gp.Genome(
+        cgp.Genome(
             params["n_inputs"],
             params["n_outputs"],
             params["n_columns"],
@@ -262,7 +262,7 @@ def test_check_levels_back_consistency():
 
     params["levels_back"] = params["n_columns"] + 1
     with pytest.raises(ValueError):
-        gp.Genome(
+        cgp.Genome(
             params["n_inputs"],
             params["n_outputs"],
             params["n_columns"],
@@ -272,7 +272,7 @@ def test_check_levels_back_consistency():
         )
 
     params["levels_back"] = params["n_columns"] - 1
-    gp.Genome(
+    cgp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -283,8 +283,8 @@ def test_check_levels_back_consistency():
 
 
 def test_catch_invalid_allele_in_inactive_region():
-    primitives = (gp.ConstantFloat,)
-    genome = gp.Genome(1, 1, 1, 1, 1, primitives)
+    primitives = (cgp.ConstantFloat,)
+    genome = cgp.Genome(1, 1, 1, 1, 1, primitives)
 
     # should raise error: ConstantFloat node has no inputs, but silent
     # input gene should still specify valid input
@@ -300,8 +300,8 @@ def test_individuals_have_different_genomes(population_params, genome_params, ea
         ind.fitness = ind.idx
         return ind
 
-    pop = gp.Population(**population_params, genome_params=genome_params)
-    ea = gp.ea.MuPlusLambda(**ea_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params)
+    ea = cgp.ea.MuPlusLambda(**ea_params)
 
     pop._generate_random_parent_population()
 
@@ -319,7 +319,7 @@ def test_individuals_have_different_genomes(population_params, genome_params, ea
 
 
 def test_is_gene_in_input_region(rng_seed):
-    genome = gp.Genome(2, 1, 2, 1, None, (gp.Add,))
+    genome = cgp.Genome(2, 1, 2, 1, None, (cgp.Add,))
     rng = np.random.RandomState(rng_seed)
     genome.randomize(rng)
 
@@ -328,7 +328,7 @@ def test_is_gene_in_input_region(rng_seed):
 
 
 def test_is_gene_in_hidden_region(rng_seed):
-    genome = gp.Genome(2, 1, 2, 1, None, (gp.Add,))
+    genome = cgp.Genome(2, 1, 2, 1, None, (cgp.Add,))
     rng = np.random.RandomState(rng_seed)
     genome.randomize(rng)
 
@@ -339,7 +339,7 @@ def test_is_gene_in_hidden_region(rng_seed):
 
 
 def test_is_gene_in_output_region(rng_seed):
-    genome = gp.Genome(2, 1, 2, 1, None, (gp.Add,))
+    genome = cgp.Genome(2, 1, 2, 1, None, (cgp.Add,))
     rng = np.random.RandomState(rng_seed)
     genome.randomize(rng)
 
@@ -349,7 +349,7 @@ def test_is_gene_in_output_region(rng_seed):
 
 def test_mutate_hidden_region(rng_seed):
     rng = np.random.RandomState(rng_seed)
-    genome = gp.Genome(1, 1, 3, 1, None, (gp.Add, gp.ConstantFloat))
+    genome = cgp.Genome(1, 1, 3, 1, None, (cgp.Add, cgp.ConstantFloat))
     dna = [
         ID_INPUT_NODE,
         ID_NON_CODING_GENE,
@@ -368,7 +368,7 @@ def test_mutate_hidden_region(rng_seed):
         ID_NON_CODING_GENE,
     ]
     genome.dna = list(dna)
-    active_regions = gp.CartesianGraph(genome).determine_active_regions()
+    active_regions = cgp.CartesianGraph(genome).determine_active_regions()
 
     # mutating any gene in inactive region returns True
     genome.dna = list(dna)
@@ -398,7 +398,7 @@ def test_mutate_hidden_region(rng_seed):
 
 def test_mutate_output_region(rng_seed):
     rng = np.random.RandomState(rng_seed)
-    genome = gp.Genome(1, 1, 2, 1, None, (gp.Add,))
+    genome = cgp.Genome(1, 1, 2, 1, None, (cgp.Add,))
     genome.dna = [
         ID_INPUT_NODE,
         ID_NON_CODING_GENE,
