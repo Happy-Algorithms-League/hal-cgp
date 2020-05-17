@@ -170,7 +170,7 @@ def test_check_dna_consistency():
         ]
 
 
-def test_permissable_inputs():
+def test_permissible_inputs():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 4, "n_rows": 3, "levels_back": 2}
 
     primitives = [gp.Add]
@@ -187,7 +187,7 @@ def test_permissable_inputs():
     for input_idx in range(params["n_inputs"]):
         region_idx = input_idx
         with pytest.raises(AssertionError):
-            genome._permissable_inputs(region_idx)
+            genome._permissible_inputs(region_idx)
 
     expected_for_hidden = [
         [0, 1],
@@ -198,13 +198,13 @@ def test_permissable_inputs():
 
     for column_idx in range(params["n_columns"]):
         region_idx = params["n_inputs"] + params["n_rows"] * column_idx
-        assert expected_for_hidden[column_idx] == genome._permissable_inputs(region_idx)
+        assert expected_for_hidden[column_idx] == genome._permissible_inputs(region_idx)
 
     expected_for_output = list(range(params["n_inputs"] + params["n_rows"] * params["n_columns"]))
 
     for output_idx in range(params["n_outputs"]):
         region_idx = params["n_inputs"] + params["n_rows"] * params["n_columns"] + output_idx
-        assert expected_for_output == genome._permissable_inputs(region_idx)
+        assert expected_for_output == genome._permissible_inputs(region_idx)
 
 
 def test_region_iterators():

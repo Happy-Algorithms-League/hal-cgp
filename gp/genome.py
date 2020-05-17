@@ -132,23 +132,23 @@ class Genome:
         return region
 
     def _create_random_hidden_region(
-        self, rng: np.random.RandomState, permissable_inputs: List[int]
+        self, rng: np.random.RandomState, permissible_inputs: List[int]
     ) -> List[int]:
 
         region = []
         node_id = self._primitives.sample(rng)
         region.append(node_id)
-        region += list(rng.choice(permissable_inputs, self._primitives.max_arity))
+        region += list(rng.choice(permissible_inputs, self._primitives.max_arity))
 
         return region
 
     def _create_random_output_region(
-        self, rng: np.random.RandomState, permissable_inputs: List[int]
+        self, rng: np.random.RandomState, permissible_inputs: List[int]
     ) -> List[int]:
 
         region = []
         region.append(self._id_output_node)
-        region.append(rng.choice(permissable_inputs))
+        region.append(rng.choice(permissible_inputs))
         # output nodes have only one input, other genes are hence non-coding
         region += [self._id_unused_gene] * (self._primitives.max_arity - 1)
 
@@ -175,28 +175,28 @@ class Genome:
         # add hidden nodes
         for i in range(self._n_hidden):
 
-            if i % self._n_rows == 0:  # only compute permissable inputs once per column
-                permissable_inputs = self._permissable_inputs(i + self._n_inputs)
+            if i % self._n_rows == 0:  # only compute permissible inputs once per column
+                permissible_inputs = self._permissible_inputs(i + self._n_inputs)
 
-            dna += self._create_random_hidden_region(rng, permissable_inputs)
+            dna += self._create_random_hidden_region(rng, permissible_inputs)
 
         # add output nodes
-        permissable_inputs = self._permissable_inputs_for_output_region()  # identical for outputs
+        permissible_inputs = self._permissible_inputs_for_output_region()  # identical for outputs
         for i in range(self._n_outputs):
-            dna += self._create_random_output_region(rng, permissable_inputs)
+            dna += self._create_random_output_region(rng, permissible_inputs)
 
         # accept generated dna if it is valid
         self._validate_dna(dna)
         self._dna = dna
 
-    def _permissable_inputs(self, region_idx: int) -> List[int]:
+    def _permissible_inputs(self, region_idx: int) -> List[int]:
 
         assert not self._is_input_region(region_idx)
 
-        permissable_inputs = []
+        permissible_inputs = []
 
         # all nodes can be connected to input
-        permissable_inputs += [j for j in range(0, self._n_inputs)]
+        permissible_inputs += [j for j in range(0, self._n_inputs)]
 
         # add all nodes reachable according to levels back
         if self._is_hidden_region(region_idx):
@@ -208,12 +208,12 @@ class Genome:
             lower = self._n_inputs
             upper = self._n_inputs + self._n_rows * self._n_columns
 
-        permissable_inputs += [j for j in range(lower, upper)]
+        permissible_inputs += [j for j in range(lower, upper)]
 
-        return permissable_inputs
+        return permissible_inputs
 
-    def _permissable_inputs_for_output_region(self) -> List[int]:
-        return self._permissable_inputs(self._n_inputs + self._n_rows * self._n_columns)
+    def _permissible_inputs_for_output_region(self) -> List[int]:
+        return self._permissible_inputs(self._n_inputs + self._n_rows * self._n_columns)
 
     def _validate_dna(self, dna: List[int]) -> None:
 
@@ -237,8 +237,8 @@ class Genome:
 
             input_genes = hidden_region[1:]
 
-            permissable_inputs = set(self._permissable_inputs(region_idx))
-            if not set(input_genes).issubset(permissable_inputs):
+            permissible_inputs = set(self._permissible_inputs(region_idx))
+            if not set(input_genes).issubset(permissible_inputs):
                 raise ValueError("input genes for hidden nodes have invalid value")
 
         for region_idx, output_region in self.iter_output_regions(dna):
@@ -249,7 +249,7 @@ class Genome:
                     "identical to output node identifiers"
                 )
 
-            if output_region[1] not in self._permissable_inputs_for_output_region():
+            if output_region[1] not in self._permissible_inputs_for_output_region():
                 raise ValueError("input gene for output nodes has invalid value")
 
             if output_region[2:] != [self._id_unused_gene] * (self._primitives.max_arity - 1):
@@ -388,8 +388,8 @@ class Genome:
         assert self._is_gene_in_output_region(gene_idx)
 
         if not self._is_function_gene(gene_idx) and self._is_active_input_gene(gene_idx):
-            permissable_inputs = self._permissable_inputs_for_output_region()
-            self._dna[gene_idx] = rng.choice(permissable_inputs)
+            permissible_inputs = self._permissible_inputs_for_output_region()
+            self._dna[gene_idx] = rng.choice(permissible_inputs)
             return True
         else:
             return False
@@ -408,8 +408,8 @@ class Genome:
             return silent_mutation
 
         else:
-            permissable_inputs = self._permissable_inputs(region_idx)
-            self._dna[gene_idx] = rng.choice(permissable_inputs)
+            permissible_inputs = self._permissible_inputs(region_idx)
+            self._dna[gene_idx] = rng.choice(permissible_inputs)
 
             silent_mutation = silent_mutation or (not self._is_active_input_gene(gene_idx))
             return silent_mutation
