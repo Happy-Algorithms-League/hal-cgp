@@ -14,7 +14,6 @@ def evolve(
     min_fitness: float,
     print_progress: Optional[bool] = False,
     callback: Optional[Callable[[Population], None]] = None,
-    label: Optional[str] = None,
     n_processes: int = 1,
 ) -> None:
     """
@@ -40,8 +39,6 @@ def evolve(
     callback :  callable, optional
         Called after each iteration with the population instance.
         Defaults to None.
-    label : str, optional
-        Optional label to be passed to the objective function.
     n_processes : int, optional
         Number of parallel processes to be used. If greater than 1,
         parallel evaluation of the objective is supported. Currently
@@ -52,7 +49,7 @@ def evolve(
     None
     """
 
-    ea.initialize_fitness_parents(pop, objective, label=label)
+    ea.initialize_fitness_parents(pop, objective)
     if callback is not None:
         callback(pop)
 
@@ -61,7 +58,7 @@ def evolve(
     # Main loop: -1 offset since the last loop iteration will still increase generation by one
     while pop.generation < max_generations - 1:
 
-        pop = ea.step(pop, objective, label=label)
+        pop = ea.step(pop, objective)
 
         # progress printing, recording, checking exit condition etc.; needs to
         # be done /after/ new parent population was populated from combined
