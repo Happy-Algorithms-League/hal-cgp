@@ -1,6 +1,11 @@
 import concurrent.futures
 import numpy as np
 
+from typing import Callable, List
+
+from ..individual import Individual
+from ..population import Population
+
 
 class MuPlusLambda:
     """Generic (mu + lambda) evolution strategy based on Deb et al. (2002).
@@ -14,12 +19,12 @@ class MuPlusLambda:
 
     def __init__(
         self,
-        n_offsprings,
-        n_breeding,
-        tournament_size,
+        n_offsprings: int,
+        n_breeding: int,
+        tournament_size: int,
         *,
-        n_processes=1,
-        local_search=lambda combined: None
+        n_processes: int = 1,
+        local_search: Callable[[List[Individual]], None] = lambda combined: None
     ):
         """Init function
 
@@ -34,7 +39,7 @@ class MuPlusLambda:
         n_processes : int, optional
             Number of parallel processes to be used. If greater than 1,
             parallel evaluation of the objective is supported. Defaults to 1.
-        local_search : Callable, optional
+        local_search : Callable[[List[gp.Individua]], None], optional
             Called before each fitness evaluation with a joint list of
             offsprings and parents to optimize numeric leaf values of
             the graph. Defaults to identity function.
@@ -53,30 +58,32 @@ class MuPlusLambda:
         self.n_processes = n_processes
         self.local_search = local_search
 
-    def initialize_fitness_parents(self, pop, objective):
+    def initialize_fitness_parents(
+        self, pop: Population, objective: Callable[[Individual], Individual]
+    ) -> None:
         """Initialize the fitness of all parents in the given population.
 
         Parameters
         ----------
         pop : gp.Population
             Population instance.
-        objective : Callable
+        objective : Callable[[gp.Individual], gp.Individual]
             An objective function used for the evolution. Needs to take an
             invidual (gp.Individual) as input parameter and return
             a modified individual (with updated fitness).
         """
         # TODO can we avoid this function? how should a population be
         # initialized?
-        pop._parents = self._compute_fitness(pop, objective)
+        pop._parents = self._compute_fitness(pop.parents, objective)
 
-    def step(self, pop, objective):
+    def step(self, pop: Population, objective: Callable[[Individual], Individual]) -> Population:
         """Perform one step in the evolution.
 
         Parameters
         ----------
         pop : gp.Population
             Population instance.
-        objective : Callable
+        objective : Callable[[gp.Individual], gp.Individual]
             An objective function used for the evolution. Needs to take an
             invidual (gp.Individual) as input parameter and return
             a modified individual (with updated fitness).
@@ -109,10 +116,10 @@ class MuPlusLambda:
 
         return pop
 
-    def _create_new_offspring_generation(self, pop):
+    def _create_new_offspring_generation(self, pop: Population) -> List[Individual]:
         # fill breeding pool via tournament selection from parent
         # population
-        breeding_pool = []
+        breeding_pool: List[Individual] = []
         while len(breeding_pool) < self.n_breeding:
             tournament_pool = pop.rng.permutation(pop.parents)[: self.tournament_size]
             best_in_tournament = sorted(tournament_pool, key=lambda x: -x.fitness)[0]
@@ -128,7 +135,9 @@ class MuPlusLambda:
 
         return offsprings
 
-    def _compute_fitness(self, combined, objective):
+    def _compute_fitness(
+        self, combined: List[Individual], objective: Callable[[Individual], Individual],
+    ) -> List[Individual]:
         # computes fitness on all individuals, objective functions
         # should return immediately if fitness is not None
         if self.n_processes == 1:
@@ -139,7 +148,7 @@ class MuPlusLambda:
 
         return combined
 
-    def _sort(self, combined):
+    def _sort(self, combined: List[Individual]) -> List[Individual]:
         # create copy of population
         combined_copy = [ind.clone() for ind in combined]
 
@@ -157,10 +166,12 @@ class MuPlusLambda:
         # return sorted original list of individuals
         return [combined[idx] for idx in combined_sorted_indices]
 
-    def _create_new_parent_population(self, n_parents, combined):
+    def _create_new_parent_population(
+        self, n_parents: int, combined: List[Individual]
+    ) -> List[Individual]:
         # create new parent population by picking the `n_parents` individuals
         # with the highest fitness
-        parents = []
+        parents: List[Individual] = []
         for i in range(n_parents):
             # note: unclear whether clone() is needed here; using
             # clone() avoids accidentally sharing references across
