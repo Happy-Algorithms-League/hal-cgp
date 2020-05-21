@@ -1,3 +1,5 @@
+import concurrent.futures
+import functools
 import numpy as np
 import pytest
 import tempfile
@@ -6,74 +8,80 @@ import time
 import gp
 
 
-def test_cache_decorator():
+@gp.utils.disk_cache(tempfile.mkstemp()[1])
+def _cache_decorator_objective_single_process(s, sleep_time):
+    time.sleep(sleep_time)  # simulate long execution time
+    return s
 
-    sleep_time = 0.1
 
-    @gp.utils.disk_cache(tempfile.mkstemp()[1])
-    def objective(s):
-        time.sleep(sleep_time)  # simulate long execution time
-        return s
+@gp.utils.disk_cache(tempfile.mkstemp()[1])
+def _cache_decorator_objective_two_processes(s, sleep_time):
+    time.sleep(sleep_time)  # simulate long execution time
+    return s
+
+
+@pytest.mark.parametrize("n_processes", [1, 2])
+def test_cache_decorator(n_processes):
+    def evaluate_objective_on_list(x):
+        if n_processes == 1:
+            objective = functools.partial(
+                _cache_decorator_objective_single_process, sleep_time=sleep_time
+            )
+            return list(map(objective, x))
+        else:
+            objective = functools.partial(
+                _cache_decorator_objective_two_processes, sleep_time=sleep_time
+            )
+            with concurrent.futures.ProcessPoolExecutor(max_workers=n_processes) as executor:
+                return list(executor.map(objective, x))
+
+    sleep_time = 1.0
+    x = ["test0", "test1"]
+
+    # WARNING: below the number of processes is *not* taken into
+    # account in the timing; one would expect a two-fold speedup when
+    # called with n_processes = 2, however, TravisCI seems to limit
+    # the number of parallel processes; accounting for the number of
+    # processes will hence make this test fail in continous
+    # integration; the speedup of the second call with respect to the
+    # first can nevertheless be tested
 
     # first call should take long due to sleep
     t0 = time.time()
-    objective("test")
-    assert time.time() - t0 > sleep_time / 2.0
+    evaluate_objective_on_list(x)
+    assert (time.time() - t0) > (sleep_time / 2.0)
 
     # second call should be faster as result is retrieved from cache
     t0 = time.time()
-    objective("test")
-    assert time.time() - t0 < sleep_time / 2.0
+    evaluate_objective_on_list(x)
+    assert (time.time() - t0) < (sleep_time / 5.0)
 
 
 def test_cache_decorator_consistency():
 
     cache_fn = tempfile.mkstemp()[1]
+    x = 2
 
     @gp.utils.disk_cache(cache_fn)
     def objective_f(x):
         return x
 
-    @gp.utils.disk_cache(cache_fn)
-    def objective_g(x):
-        return x ** 2
+    # call objective_f once to initialize the cache
+    assert objective_f(x) == pytest.approx(x)
 
+    # decorating a different function with different output using same
+    # filename should raise an error
+    with pytest.raises(RuntimeError):
+
+        @gp.utils.disk_cache(cache_fn)
+        def objective_g(x):
+            return x ** 2
+
+    # decorating a different function with identical output using the
+    # same filename should NOT raise an error
     @gp.utils.disk_cache(cache_fn)
     def objective_h(x):
         return x
-
-    @gp.utils.disk_cache(cache_fn)
-    def objective_f_2d(x, y):
-        return x
-
-    @gp.utils.disk_cache(cache_fn)
-    def objective_f_with_kwargs(x, test=None):
-        return x
-
-    x = 2
-
-    assert objective_f(x) == pytest.approx(x)
-    assert objective_h(x) == pytest.approx(x)
-
-    # calling a different function decorated with same filename but
-    # different output should raise an error
-    with pytest.raises(RuntimeError):
-        objective_g(x)
-
-    # calling a different function decorated with same filename and
-    # same output should not raise an error
-    objective_h(x)
-
-    # calling a different function decorated with same filename and
-    # same output but different arguments should raise an error
-    with pytest.raises(RuntimeError):
-        objective_f_2d(x, x)
-
-    # calling a different function decorated with same filename and
-    # same output but different keyword arguments should raise an
-    # error
-    with pytest.raises(RuntimeError):
-        objective_f_with_kwargs(x, test=2)
 
 
 def objective_history_recording(individual):
