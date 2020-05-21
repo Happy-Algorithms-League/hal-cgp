@@ -20,15 +20,15 @@ def test_gradient_based_step_towards_maximum():
 
     # test increase parameter value if too small
     ind.parameter_names_to_values["<p1>"] = 0.9
-    gp.local_search.gradient_based([ind], objective, 0.05, 1)
+    gp.local_search.gradient_based(ind, objective, 0.05, 1)
     assert ind.parameter_names_to_values["<p1>"] == pytest.approx(0.91)
 
     # test decrease parameter value if too large
     ind.parameter_names_to_values["<p1>"] = 1.1
-    gp.local_search.gradient_based([ind], objective, 0.05, 1)
+    gp.local_search.gradient_based(ind, objective, 0.05, 1)
     assert ind.parameter_names_to_values["<p1>"] == pytest.approx(1.09)
 
     # test no change of parameter value if at optimum
     ind.parameter_names_to_values["<p1>"] = 1.0
-    gp.local_search.gradient_based([ind], objective, 0.05, 1)
+    gp.local_search.gradient_based(ind, objective, 0.05, 1)
     assert ind.parameter_names_to_values["<p1>"] == pytest.approx(1.0)

@@ -24,7 +24,7 @@ class MuPlusLambda:
         tournament_size: int,
         *,
         n_processes: int = 1,
-        local_search: Callable[[List[Individual]], None] = lambda combined: None
+        local_search: Callable[[Individual], None] = lambda combined: None
     ):
         """Init function
 
@@ -39,7 +39,7 @@ class MuPlusLambda:
         n_processes : int, optional
             Number of parallel processes to be used. If greater than 1,
             parallel evaluation of the objective is supported. Defaults to 1.
-        local_search : Callable[[List[gp.Individua]], None], optional
+        local_search : Callable[[Individua], None], optional
             Called before each fitness evaluation with a joint list of
             offsprings and parents to optimize numeric leaf values of
             the graph. Defaults to identity function.
@@ -106,7 +106,8 @@ class MuPlusLambda:
         # population instead of the other way around
         combined = offsprings + pop.parents
 
-        self.local_search(combined)
+        for ind in combined:
+            self.local_search(ind)
 
         combined = self._compute_fitness(combined, objective)
 

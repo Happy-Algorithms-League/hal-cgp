@@ -8,28 +8,28 @@ try:
 except ModuleNotFoundError:
     torch_available = False
 
-from typing import Callable, List, Optional
+from typing import Callable, Optional
 
 
 from ..individual import Individual  # noqa: F401
 
 
 def gradient_based(
-    individuals: List[Individual],
+    individual: Individual,
     objective: Callable[[torch.nn.Module], torch.Tensor],
     lr: float,
     gradient_steps: int,
     optimizer: Optional[Optimizer] = None,
     clip_value: Optional[float] = None,
 ) -> None:
-    """Perform a local search for numeric leaf values for the list of
-    individuals based on gradient information obtained via automatic
+    """Perform a local search for numeric leaf values for an individual
+    based on gradient information obtained via automatic
     differentiation.
 
     Parameters
     ----------
-    individuals : List
-        List of individuals for which to perform local search.
+    individual : Individual
+        Individual for which to perform local search.
     objective : Callable
         Objective function that is called with a differentiable graph
         and returns a differentiable loss.
@@ -55,23 +55,22 @@ def gradient_based(
     if clip_value is None:
         clip_value = 0.1 * 1.0 / lr
 
-    for ind in individuals:
-        f = ind.to_torch()
+    f = individual.to_torch()
 
-        if len(list(f.parameters())) > 0:
-            optimizer = optimizer_class(f.parameters(), lr=lr)
+    if len(list(f.parameters())) > 0:
+        optimizer = optimizer_class(f.parameters(), lr=lr)
 
-            for i in range(gradient_steps):
-                loss = objective(f)
-                if not torch.isfinite(loss):
-                    continue
+        for i in range(gradient_steps):
+            loss = objective(f)
+            if not torch.isfinite(loss):
+                continue
 
-                f.zero_grad()
-                loss.backward()
-                if clip_value is not np.inf:
-                    torch.nn.utils.clip_grad.clip_grad_value_(f.parameters(), clip_value)
-                optimizer.step()
+            f.zero_grad()
+            loss.backward()
+            if clip_value is not np.inf:
+                torch.nn.utils.clip_grad.clip_grad_value_(f.parameters(), clip_value)
+            optimizer.step()
 
-                assert all(torch.isfinite(t) for t in f.parameters())
+            assert all(torch.isfinite(t) for t in f.parameters())
 
-            ind.update_parameters_from_torch_class(f)
+        individual.update_parameters_from_torch_class(f)
