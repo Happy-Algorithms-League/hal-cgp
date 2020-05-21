@@ -17,7 +17,7 @@ try:
 except ModuleNotFoundError:
     torch_available = False
 
-from typing import Callable, Dict, List, Optional, Set
+from typing import Callable, DefaultDict, Dict, List, Optional, Set
 
 from .node import Node, InputNode, OutputNode, Parameter
 from .genome import Genome
@@ -36,14 +36,14 @@ class CartesianGraph:
         genome: Genome
             Genome defining graph connectivity and node operations.
         """
-        self._n_outputs: int
         self._n_inputs: int
+        self._n_outputs: int
         self._n_columns: int
         self._n_rows: int
         self._nodes: List
+        self._parameter_names_to_values: DefaultDict
 
         self.parse_genome(genome)
-        self._genome = genome
 
     def __repr__(self) -> str:
         return "CartesianGraph(" + str(self._nodes) + ")"
@@ -99,12 +99,15 @@ class CartesianGraph:
         if genome.dna is None:
             raise RuntimeError("dna not initialized")
 
-        self._genome = genome
-
         self._n_inputs = genome._n_inputs
         self._n_outputs = genome._n_outputs
         self._n_columns = genome._n_columns
         self._n_rows = genome._n_rows
+
+        # WARNING: creating a reference, not a copy here is essential;
+        # accessing missing elements in this DefaultDict during graph
+        # construction needs to construct keys with default values
+        self._parameter_names_to_values = genome.parameter_names_to_values
 
         self._nodes = []
 
@@ -222,23 +225,16 @@ class CartesianGraph:
             for node in active_nodes[hidden_column_idx]:
                 node.format_output_str(self)
 
-    def _fill_parameter_values(
-        self, func_str: str, parameter_names_to_values: Optional[Dict[str, float]] = None
-    ) -> str:
+    def _fill_parameter_values(self, func_str: str) -> str:
         g = re.findall("<p[0-9]+>", func_str)
         if len(g) != 0:
-            if parameter_names_to_values is None:
-                raise ValueError("parameter node found but no value dict provided")
-            elif parameter_names_to_values is not None:
-                for parameter_name in g:
-                    func_str = func_str.replace(
-                        parameter_name, str(parameter_names_to_values[parameter_name])
-                    )
+            for parameter_name in g:
+                func_str = func_str.replace(
+                    parameter_name, str(self._parameter_names_to_values[parameter_name])
+                )
         return func_str
 
-    def to_func(
-        self, parameter_names_to_values: Optional[Dict[str, float]] = None
-    ) -> Callable[[List[float]], List[float]]:
+    def to_func(self) -> Callable[[List[float]], List[float]]:
         """Compile the function(s) represented by the graph.
 
         Generates a definition of the function in Python code and
@@ -257,7 +253,7 @@ def _f(x):
         raise ValueError(f'input has length {{len(x)}}, expected {self._n_inputs}')
     return [{s}]
 """
-        func_str = self._fill_parameter_values(func_str, parameter_names_to_values)
+        func_str = self._fill_parameter_values(func_str)
         exec(func_str)
         return locals()["_f"]
 
@@ -271,9 +267,7 @@ def _f(x):
             for node in active_nodes[hidden_column_idx]:
                 node.format_output_str_numpy(self)
 
-    def to_numpy(
-        self, parameter_names_to_values: Optional[Dict[str, float]] = None
-    ) -> Callable[[np.ndarray], np.ndarray]:
+    def to_numpy(self) -> Callable[[np.ndarray], np.ndarray]:
         """Compile the function(s) represented by the graph to NumPy
         expression(s).
 
@@ -302,14 +296,12 @@ def _f(x):
 
     return np.stack([{s}], axis=1)
 """
-        func_str = self._fill_parameter_values(func_str, parameter_names_to_values)
+        func_str = self._fill_parameter_values(func_str)
         exec(func_str)
 
         return locals()["_f"]
 
-    def to_torch(
-        self, parameter_names_to_values: Optional[Dict[str, float]] = None
-    ) -> "torch.nn.Module":
+    def to_torch(self) -> "torch.nn.Module":
         """Compile the function(s) represented by the graph to a Torch class.
 
         Generates a definition of the Torch class in Python code and
@@ -359,18 +351,14 @@ class _C(torch.nn.Module):
         return torch.stack([{forward_str}], dim=1)
         """
         class_str += func_str
-        class_str = self._fill_parameter_values(class_str, parameter_names_to_values)
+        class_str = self._fill_parameter_values(class_str)
 
         exec(class_str)
         exec("_c = _C()")
 
         return locals()["_c"]
 
-    def to_sympy(
-        self,
-        simplify: Optional[bool] = True,
-        parameter_names_to_values: Optional[Dict[str, float]] = None,
-    ) -> List["sympy_expr.Expr"]:
+    def to_sympy(self, simplify: Optional[bool] = True,) -> List["sympy_expr.Expr"]:
         """Compile the function(s) represented by the graph to a SymPy expression.
 
         Generates one SymPy expression for each output node.
@@ -416,7 +404,7 @@ class _C(torch.nn.Module):
                     input_node.output_str, input_node.output_str.replace("[", "_").replace("]", "")
                 )
 
-            s = self._fill_parameter_values(s, parameter_names_to_values)
+            s = self._fill_parameter_values(s)
             # to get an expression that reflects the computational graph,
             # sympy should not automatically simplify the expression
             with sympy.evaluate(False):
