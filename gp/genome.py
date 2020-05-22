@@ -22,7 +22,7 @@ class Genome:
         n_columns: int,
         n_rows: int,
         levels_back: int,
-        primitives: List[Type[Node]],
+        primitives: Tuple[Type[Node], ...],
     ) -> None:
         """Init function.
 
@@ -39,8 +39,8 @@ class Genome:
         levels_back : int
             Number of previous columns that an entry in the genome can be
             connected with.
-        primitives : List[Type[Node]]
-           List of primitives that the genome can refer to.
+        primitives : Tuple[Type[Node], ...]
+           Tuple of primitives that the genome can refer to.
         """
         if n_inputs <= 0:
             raise ValueError("n_inputs must be strictly positive")
@@ -136,7 +136,7 @@ class Genome:
     ) -> List[int]:
 
         region = []
-        node_id = self._primitives.sample(rng)
+        node_id = self._primitives.sample_allele(rng)
         region.append(node_id)
         region += list(rng.choice(permissible_inputs, self._primitives.max_arity))
 
@@ -232,7 +232,7 @@ class Genome:
 
         for region_idx, hidden_region in self.iter_hidden_regions(dna):
 
-            if hidden_region[0] not in self._primitives.alleles:
+            if not self._primitives.is_valid_allele(hidden_region[0]):
                 raise ValueError("function gene for hidden node has invalid value")
 
             input_genes = hidden_region[1:]
@@ -404,7 +404,7 @@ class Genome:
         silent_mutation = region_idx not in active_regions
 
         if self._is_function_gene(gene_idx):
-            self._dna[gene_idx] = self._primitives.sample(rng)
+            self._dna[gene_idx] = self._primitives.sample_allele(rng)
             return silent_mutation
 
         else:
@@ -425,13 +425,14 @@ class Genome:
         -------
         gp.Genome
         """
+
         new = Genome(
             self._n_inputs,
             self._n_outputs,
             self._n_columns,
             self._n_rows,
             self._levels_back,
-            list(self._primitives),
+            tuple(self._primitives),
         )
         new.dna = self._dna.copy()
         return new

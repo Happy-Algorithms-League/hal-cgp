@@ -76,20 +76,9 @@ def test_fitness_parents(population_params, genome_params):
     assert np.all(pop.fitness_parents() == pytest.approx(fitness_values))
 
 
-def test_pop_uses_own_rng(rng_seed):
+def test_pop_uses_own_rng(population_params, genome_params, rng_seed):
     """Test independence of Population on global numpy rng.
     """
-
-    population_params = {"n_parents": 5, "mutation_rate": 0.05, "seed": rng_seed}
-
-    genome_params = {
-        "n_inputs": 2,
-        "n_outputs": 1,
-        "n_columns": 3,
-        "n_rows": 3,
-        "levels_back": 2,
-        "primitives": [gp.Add, gp.Sub, gp.Mul, gp.ConstantFloat],
-    }
 
     pop = gp.Population(**population_params, genome_params=genome_params)
 

@@ -15,7 +15,7 @@ def genome_params():
         "n_columns": 3,
         "n_rows": 3,
         "levels_back": 2,
-        "primitives": [gp.Add, gp.Sub, gp.ConstantFloat],
+        "primitives": (gp.Add, gp.Sub, gp.ConstantFloat),
     }
 
 

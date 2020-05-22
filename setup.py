@@ -18,6 +18,7 @@ def read_extra_requirements():
             extra_requirements[req] = [req]
             extra_requirements["all"].append(req)
 
+    extra_requirements[":python_version == '3.6'"] = ["dataclasses"]
     return extra_requirements
 
 

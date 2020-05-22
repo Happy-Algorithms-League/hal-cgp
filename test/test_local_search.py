@@ -7,7 +7,7 @@ from gp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
 def test_gradient_based_step_towards_maximum():
     torch = pytest.importorskip("torch")
 
-    primitives = [gp.Parameter]
+    primitives = (gp.Parameter,)
     genome = gp.Genome(1, 1, 1, 1, 1, primitives)
     # f(x) = c
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]

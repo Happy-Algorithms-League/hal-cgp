@@ -8,7 +8,7 @@ from gp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
 
 def test_direct_input_output():
     params = {"n_inputs": 1, "n_outputs": 1, "n_columns": 3, "n_rows": 3, "levels_back": 2}
-    primitives = [gp.Add, gp.Sub]
+    primitives = (gp.Add, gp.Sub)
     genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
@@ -29,7 +29,7 @@ def test_direct_input_output():
 
 
 def test_to_func_simple():
-    primitives = [gp.Add]
+    primitives = (gp.Add,)
     genome = gp.Genome(2, 1, 1, 1, 1, primitives)
 
     genome.dna = [
@@ -54,7 +54,7 @@ def test_to_func_simple():
 
     assert x[0] + x[1] == pytest.approx(y[0])
 
-    primitives = [gp.Sub]
+    primitives = (gp.Sub,)
     genome = gp.Genome(2, 1, 1, 1, 1, primitives)
 
     genome.dna = [
@@ -81,7 +81,7 @@ def test_to_func_simple():
 
 
 def test_compile_two_columns():
-    primitives = [gp.Add, gp.Sub]
+    primitives = (gp.Add, gp.Sub)
     genome = gp.Genome(2, 1, 2, 1, 1, primitives)
 
     genome.dna = [
@@ -111,7 +111,7 @@ def test_compile_two_columns():
 
 
 def test_compile_two_columns_two_rows():
-    primitives = [gp.Add, gp.Sub]
+    primitives = (gp.Add, gp.Sub)
     genome = gp.Genome(2, 2, 2, 2, 1, primitives)
 
     genome.dna = [
@@ -153,7 +153,7 @@ def test_compile_two_columns_two_rows():
 def test_compile_addsubmul():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 2, "n_rows": 2, "levels_back": 1}
 
-    primitives = [gp.Add, gp.Sub, gp.Mul]
+    primitives = (gp.Add, gp.Sub, gp.Mul)
     genome = gp.Genome(
         params["n_inputs"],
         params["n_outputs"],
@@ -195,7 +195,7 @@ def test_compile_addsubmul():
 
 
 def test_to_numpy():
-    primitives = [gp.Add, gp.Mul, gp.ConstantFloat]
+    primitives = (gp.Add, gp.Mul, gp.ConstantFloat)
     genome = gp.Genome(1, 1, 2, 2, 1, primitives)
     # f(x) = x ** 2 + 1.
     genome.dna = [
@@ -229,7 +229,7 @@ def test_to_numpy():
 
 
 batch_sizes = [1, 10]
-primitives = [gp.Mul, gp.ConstantFloat]
+primitives = (gp.Mul, gp.ConstantFloat)
 genomes = [gp.Genome(1, 1, 2, 2, 1, primitives) for i in range(2)]
 # Function: f(x) = 1*x
 genomes[0].dna = [
@@ -347,7 +347,7 @@ def test_compile_torch_output_shape(genome, batch_size):
 def test_to_sympy():
     sympy = pytest.importorskip("sympy")
 
-    primitives = [gp.Add, gp.ConstantFloat]
+    primitives = (gp.Add, gp.ConstantFloat)
     genome = gp.Genome(1, 1, 2, 2, 1, primitives)
 
     genome.dna = [
@@ -386,7 +386,7 @@ def test_to_sympy():
 def test_catch_invalid_sympy_expr():
     pytest.importorskip("sympy")
 
-    primitives = [gp.Sub, gp.Div]
+    primitives = (gp.Sub, gp.Div)
     genome = gp.Genome(1, 1, 2, 1, 1, primitives)
 
     # x[0] / (x[0] - x[0])
@@ -413,7 +413,7 @@ def test_catch_invalid_sympy_expr():
 def test_allow_powers_of_x_0():
     pytest.importorskip("sympy")
 
-    primitives = [gp.Sub, gp.Mul]
+    primitives = (gp.Sub, gp.Mul)
     genome = gp.Genome(1, 1, 2, 1, 1, primitives)
 
     # x[0] ** 2
@@ -438,7 +438,7 @@ def test_allow_powers_of_x_0():
 def test_input_dim_python(rng_seed):
     rng = np.random.RandomState(rng_seed)
 
-    genome = gp.Genome(2, 1, 1, 1, 1, [gp.ConstantFloat])
+    genome = gp.Genome(2, 1, 1, 1, 1, (gp.ConstantFloat,))
     genome.randomize(rng)
     f = gp.CartesianGraph(genome).to_func()
 
@@ -457,7 +457,7 @@ def test_input_dim_python(rng_seed):
 def test_input_dim_numpy(rng_seed):
     rng = np.random.RandomState(rng_seed)
 
-    genome = gp.Genome(2, 1, 1, 1, 1, [gp.ConstantFloat])
+    genome = gp.Genome(2, 1, 1, 1, 1, (gp.ConstantFloat,))
     genome.randomize(rng)
     f = gp.CartesianGraph(genome).to_numpy()
 
@@ -482,7 +482,7 @@ def test_input_dim_torch(rng_seed):
 
     rng = np.random.RandomState(rng_seed)
 
-    genome = gp.Genome(2, 1, 1, 1, 1, [gp.ConstantFloat])
+    genome = gp.Genome(2, 1, 1, 1, 1, (gp.ConstantFloat,))
     genome.randomize(rng)
     f = gp.CartesianGraph(genome).to_torch()
 
@@ -503,7 +503,7 @@ def test_input_dim_torch(rng_seed):
 
 
 def test_pretty_str():
-    primitives = [gp.Sub, gp.Mul]
+    primitives = (gp.Sub, gp.Mul)
     genome = gp.Genome(1, 1, 2, 1, 1, primitives)
 
     # x[0] ** 2
@@ -534,7 +534,7 @@ def test_pretty_str():
 
 
 def test_pretty_str_with_unequal_inputs_rows_outputs():
-    primitives = [gp.Add]
+    primitives = (gp.Add,)
 
     # less rows than inputs/outputs
     genome = gp.Genome(1, 1, 1, 2, 1, primitives)
