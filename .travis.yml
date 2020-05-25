@@ -25,6 +25,6 @@ script:
   - pytest --cov
   - black --check .
   - flake8 --config=.flake8 .
-  - mypy gp
+  - mypy cgp
 after_success:
   - coveralls

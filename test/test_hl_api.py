@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 import time
 
-import gp
+import cgp
 
 
 def _objective_test_population(individual, rng_seed):
@@ -37,9 +37,9 @@ def _test_population(population_params, genome_params, ea_params):
 
     np.random.seed(population_params["seed"])
 
-    pop = gp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params)
 
-    ea = gp.ea.MuPlusLambda(**ea_params)
+    ea = cgp.ea.MuPlusLambda(**ea_params)
 
     history = {}
     history["max_fitness_per_generation"] = []
@@ -48,7 +48,7 @@ def _test_population(population_params, genome_params, ea_params):
         history["max_fitness_per_generation"].append(pop.champion.fitness)
 
     obj = functools.partial(_objective_test_population, rng_seed=population_params["seed"])
-    gp.evolve(pop, obj, ea, **evolve_params, callback=recording_callback)
+    cgp.evolve(pop, obj, ea, **evolve_params, callback=recording_callback)
 
     assert pop.champion.fitness >= evolve_params["min_fitness"]
 
@@ -85,8 +85,8 @@ def test_evolve_two_expressions(population_params, ea_params):
         def f1(x):
             return (x[0] * x[1]) - x[1]
 
-        y0 = gp.CartesianGraph(individual.genome[0]).to_func()
-        y1 = gp.CartesianGraph(individual.genome[1]).to_func()
+        y0 = cgp.CartesianGraph(individual.genome[0]).to_func()
+        y1 = cgp.CartesianGraph(individual.genome[1]).to_func()
 
         loss = 0
         for _ in range(100):
@@ -110,7 +110,7 @@ def test_evolve_two_expressions(population_params, ea_params):
             "n_columns": 4,
             "n_rows": 2,
             "levels_back": 2,
-            "primitives": (gp.Add, gp.Mul),
+            "primitives": (cgp.Add, cgp.Mul),
         },
         {
             "n_inputs": 2,
@@ -118,7 +118,7 @@ def test_evolve_two_expressions(population_params, ea_params):
             "n_columns": 2,
             "n_rows": 2,
             "levels_back": 2,
-            "primitives": (gp.Sub, gp.Mul),
+            "primitives": (cgp.Sub, cgp.Mul),
         },
     ]
 
@@ -126,11 +126,11 @@ def test_evolve_two_expressions(population_params, ea_params):
 
     np.random.seed(population_params["seed"])
 
-    pop = gp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params)
 
-    ea = gp.ea.MuPlusLambda(**ea_params)
+    ea = cgp.ea.MuPlusLambda(**ea_params)
 
-    gp.evolve(pop, _objective, ea, **evolve_params)
+    cgp.evolve(pop, _objective, ea, **evolve_params)
 
     assert abs(pop.champion.fitness) == pytest.approx(0.0)
 
@@ -168,12 +168,12 @@ def test_speedup_parallel_evolve(population_params, genome_params, ea_params):
     # Serial execution
 
     for n_processes in [1, 2, 4]:
-        pop = gp.Population(**population_params, genome_params=genome_params)
+        pop = cgp.Population(**population_params, genome_params=genome_params)
 
-        ea = gp.ea.MuPlusLambda(**ea_params, n_processes=n_processes)
+        ea = cgp.ea.MuPlusLambda(**ea_params, n_processes=n_processes)
 
         t0 = time.time()
-        gp.evolve(pop, _objective_speedup_parallel_evolve, ea, **evolve_params)
+        cgp.evolve(pop, _objective_speedup_parallel_evolve, ea, **evolve_params)
         T = time.time() - t0
 
         if n_processes == 1:

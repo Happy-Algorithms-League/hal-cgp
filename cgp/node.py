@@ -11,7 +11,7 @@ def register(cls: Type["Node"]) -> None:
 
     Parameters
     ----------
-    cls : Type[gp.Node]
+    cls : Type[Node]
        Primitive to be registered.
 
     Returns

@@ -3,15 +3,15 @@ import pickle
 import pytest
 import torch
 
-import gp
-from gp.individual import Individual
-from gp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
+import cgp
+from cgp.individual import Individual
+from cgp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
 
 
 def test_pickle_individual():
 
-    primitives = (gp.Add,)
-    genome = gp.Genome(1, 1, 1, 1, 1, primitives)
+    primitives = (cgp.Add,)
+    genome = cgp.Genome(1, 1, 1, 1, 1, primitives)
     individual = Individual(None, genome)
 
     with open("individual.pkl", "wb") as f:
@@ -20,8 +20,8 @@ def test_pickle_individual():
 
 def test_individual_with_parameter_python():
 
-    primitives = (gp.Add, gp.Parameter)
-    genome = gp.Genome(1, 1, 2, 1, 2, primitives)
+    primitives = (cgp.Add, cgp.Parameter)
+    genome = cgp.Genome(1, 1, 2, 1, 2, primitives)
     # f(x) = x + c
     genome.dna = [
         ID_INPUT_NODE,
@@ -58,8 +58,8 @@ def test_individual_with_parameter_python():
 
 def test_individual_with_parameter_torch():
 
-    primitives = (gp.Add, gp.Parameter)
-    genome = gp.Genome(1, 1, 2, 1, 2, primitives)
+    primitives = (cgp.Add, cgp.Parameter)
+    genome = cgp.Genome(1, 1, 2, 1, 2, primitives)
     # f(x) = x + c
     genome.dna = [
         ID_INPUT_NODE,
@@ -98,8 +98,8 @@ def test_individual_with_parameter_torch():
 
 def test_individual_with_parameter_sympy():
 
-    primitives = (gp.Add, gp.Parameter)
-    genome = gp.Genome(1, 1, 2, 1, 2, primitives)
+    primitives = (cgp.Add, cgp.Parameter)
+    genome = cgp.Genome(1, 1, 2, 1, 2, primitives)
     # f(x) = x + c
     genome.dna = [
         ID_INPUT_NODE,
@@ -135,8 +135,8 @@ def test_individual_with_parameter_sympy():
 
 
 def test_to_and_from_torch_plus_backprop():
-    primitives = (gp.Mul, gp.Parameter)
-    genome = gp.Genome(1, 1, 2, 2, 1, primitives)
+    primitives = (cgp.Mul, cgp.Parameter)
+    genome = cgp.Genome(1, 1, 2, 2, 1, primitives)
     # f(x) = c * x
     genome.dna = [
         ID_INPUT_NODE,

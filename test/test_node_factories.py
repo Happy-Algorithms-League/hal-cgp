@@ -1,7 +1,7 @@
 import pytest
 
-import gp
-from gp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
+import cgp
+from cgp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
 
 
 def test_constant_float():
@@ -9,8 +9,8 @@ def test_constant_float():
 
     val = 1.678
 
-    primitives = (gp.node_factories.ConstantFloatFactory(val),)
-    genome = gp.Genome(
+    primitives = (cgp.node_factories.ConstantFloatFactory(val),)
+    genome = cgp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -28,7 +28,7 @@ def test_constant_float():
         ID_OUTPUT_NODE,
         2,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
 
     x = [None, None]
     y = graph(x)
@@ -37,8 +37,8 @@ def test_constant_float():
 
     # make sure different classes are created for multiple calls to the class
     # factory
-    prim_0 = gp.node_factories.ConstantFloatFactory(val)(0, [None])
-    prim_1 = gp.node_factories.ConstantFloatFactory(val)(0, [None])
+    prim_0 = cgp.node_factories.ConstantFloatFactory(val)(0, [None])
+    prim_1 = cgp.node_factories.ConstantFloatFactory(val)(0, [None])
 
     assert prim_0 is not prim_1
 

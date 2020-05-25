@@ -95,14 +95,14 @@ class Population:
 
         Parameters
         ----------
-        breeding_pool : List[gp.Individual]
+        breeding_pool : List[Individual]
             List of individuals from which the offspring are created.
         n_offsprings : int
             Number of offspring to be created.
 
         Returns
         ----------
-        List[gp.Individual]
+        List[Individual]
             List of offspring individuals.
         """
         # in principle crossover would rely on a procedure like the
@@ -130,12 +130,12 @@ class Population:
 
         Parameters
         ----------
-        offsprings : List[gp.Individual]
+        offsprings : List[Individual]
             List of offspring individuals to be mutated.
 
         Returns
         ----------
-        List[gp.Individual]
+        List[Individual]
             List of mutated offspring individuals.
         """
 

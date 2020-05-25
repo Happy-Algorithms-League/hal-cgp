@@ -1,14 +1,14 @@
 import pytest
 
-import gp
-from gp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
+import cgp
+from cgp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
 
 
 def test_add():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = (gp.Add,)
-    genome = gp.Genome(
+    primitives = (cgp.Add,)
+    genome = cgp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -30,7 +30,7 @@ def test_add():
         2,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
 
     x = [5.0, 1.5]
     y = graph(x)
@@ -41,8 +41,8 @@ def test_add():
 def test_sub():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = (gp.Sub,)
-    genome = gp.Genome(
+    primitives = (cgp.Sub,)
+    genome = cgp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -64,7 +64,7 @@ def test_sub():
         2,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
 
     x = [5.0, 1.5]
     y = graph(x)
@@ -75,8 +75,8 @@ def test_sub():
 def test_mul():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = (gp.Mul,)
-    genome = gp.Genome(
+    primitives = (cgp.Mul,)
+    genome = cgp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -98,7 +98,7 @@ def test_mul():
         2,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
 
     x = [5.0, 1.5]
     y = graph(x)
@@ -109,8 +109,8 @@ def test_mul():
 def test_div():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = (gp.Div,)
-    genome = gp.Genome(
+    primitives = (cgp.Div,)
+    genome = cgp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -132,7 +132,7 @@ def test_div():
         2,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
 
     x = [5.0, 1.5]
     y = graph(x)
@@ -143,8 +143,8 @@ def test_div():
 def test_pow():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = (gp.Pow,)
-    genome = gp.Genome(
+    primitives = (cgp.Pow,)
+    genome = cgp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -166,7 +166,7 @@ def test_pow():
         2,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
 
     x = [5.0, 1.5]
     y = graph(x)
@@ -177,8 +177,8 @@ def test_pow():
 def test_constant_float():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
 
-    primitives = (gp.ConstantFloat,)
-    genome = gp.Genome(
+    primitives = (cgp.ConstantFloat,)
+    genome = cgp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -196,7 +196,7 @@ def test_constant_float():
         ID_OUTPUT_NODE,
         2,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
 
     x = [None, None]
     y = graph(x)
@@ -214,11 +214,11 @@ def test_inputs_are_cut_to_match_arity():
     idx = 0
     inputs = [1, 2, 3, 4]
 
-    node = gp.ConstantFloat(idx, inputs)
+    node = cgp.ConstantFloat(idx, inputs)
     assert node.inputs == []
 
-    node = gp.node.OutputNode(idx, inputs)
+    node = cgp.node.OutputNode(idx, inputs)
     assert node.inputs == inputs[:1]
 
-    node = gp.Add(idx, inputs)
+    node = cgp.Add(idx, inputs)
     assert node.inputs == inputs[:2]

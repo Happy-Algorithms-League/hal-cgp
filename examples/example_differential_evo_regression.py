@@ -4,7 +4,7 @@ import numpy as np
 import scipy.constants
 import torch
 
-import gp
+import cgp
 
 
 """Example demonstrating the use of Cartesian Genetic Programming for
@@ -67,7 +67,7 @@ def evolution():
         "n_columns": 20,
         "n_rows": 1,
         "levels_back": None,
-        "primitives": [gp.Add, gp.Sub, gp.Mul, gp.Parameter],
+        "primitives": [cgp.Add, cgp.Sub, cgp.Mul, cgp.Parameter],
     }
 
     ea_params = {"n_offsprings": 4, "n_breeding": 4, "tournament_size": 1, "n_processes": 1}
@@ -78,19 +78,19 @@ def evolution():
     # average out for clipped values
     local_search_params = {"lr": 1e-3, "gradient_steps": 9}
 
-    pop = gp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params)
 
     # define the function for local search; parameters such as the
     # learning rate and number of gradient steps are fixed via the use
     # of `partial`; the local_search function should only receive a
     # population of individuals as input
     local_search = functools.partial(
-        gp.local_search.gradient_based,
+        cgp.local_search.gradient_based,
         objective=functools.partial(inner_objective, seed=population_params["seed"]),
         **local_search_params,
     )
 
-    ea = gp.ea.MuPlusLambda(**ea_params, local_search=local_search)
+    ea = cgp.ea.MuPlusLambda(**ea_params, local_search=local_search)
 
     history = {}
     history["champion"] = []
@@ -102,7 +102,7 @@ def evolution():
 
     obj = functools.partial(objective, seed=population_params["seed"])
 
-    gp.evolve(
+    cgp.evolve(
         pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback,
     )
 

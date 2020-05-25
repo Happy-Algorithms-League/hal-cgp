@@ -2,14 +2,14 @@ import itertools
 import numpy as np
 import pytest
 
-import gp
-from gp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
+import cgp
+from cgp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
 
 
 def test_direct_input_output():
     params = {"n_inputs": 1, "n_outputs": 1, "n_columns": 3, "n_rows": 3, "levels_back": 2}
-    primitives = (gp.Add, gp.Sub)
-    genome = gp.Genome(
+    primitives = (cgp.Add, cgp.Sub)
+    genome = cgp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -20,7 +20,7 @@ def test_direct_input_output():
     genome.randomize(np.random)
 
     genome[-2:] = [0, ID_NON_CODING_GENE]  # set inputs for output node to input node
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
 
     x = [2.14159]
     y = graph(x)
@@ -29,8 +29,8 @@ def test_direct_input_output():
 
 
 def test_to_func_simple():
-    primitives = (gp.Add,)
-    genome = gp.Genome(2, 1, 1, 1, 1, primitives)
+    primitives = (cgp.Add,)
+    genome = cgp.Genome(2, 1, 1, 1, 1, primitives)
 
     genome.dna = [
         ID_INPUT_NODE,
@@ -46,7 +46,7 @@ def test_to_func_simple():
         2,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
     f = graph.to_func()
 
     x = [5.0, 2.0]
@@ -54,8 +54,8 @@ def test_to_func_simple():
 
     assert x[0] + x[1] == pytest.approx(y[0])
 
-    primitives = (gp.Sub,)
-    genome = gp.Genome(2, 1, 1, 1, 1, primitives)
+    primitives = (cgp.Sub,)
+    genome = cgp.Genome(2, 1, 1, 1, 1, primitives)
 
     genome.dna = [
         ID_INPUT_NODE,
@@ -71,7 +71,7 @@ def test_to_func_simple():
         2,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
     f = graph.to_func()
 
     x = [5.0, 2.0]
@@ -81,8 +81,8 @@ def test_to_func_simple():
 
 
 def test_compile_two_columns():
-    primitives = (gp.Add, gp.Sub)
-    genome = gp.Genome(2, 1, 2, 1, 1, primitives)
+    primitives = (cgp.Add, cgp.Sub)
+    genome = cgp.Genome(2, 1, 2, 1, 1, primitives)
 
     genome.dna = [
         ID_INPUT_NODE,
@@ -101,7 +101,7 @@ def test_compile_two_columns():
         3,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
     f = graph.to_func()
 
     x = [5.0, 2.0]
@@ -111,8 +111,8 @@ def test_compile_two_columns():
 
 
 def test_compile_two_columns_two_rows():
-    primitives = (gp.Add, gp.Sub)
-    genome = gp.Genome(2, 2, 2, 2, 1, primitives)
+    primitives = (cgp.Add, cgp.Sub)
+    genome = cgp.Genome(2, 2, 2, 2, 1, primitives)
 
     genome.dna = [
         ID_INPUT_NODE,
@@ -140,7 +140,7 @@ def test_compile_two_columns_two_rows():
         5,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
     f = graph.to_func()
 
     x = [5.0, 2.0]
@@ -153,8 +153,8 @@ def test_compile_two_columns_two_rows():
 def test_compile_addsubmul():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 2, "n_rows": 2, "levels_back": 1}
 
-    primitives = (gp.Add, gp.Sub, gp.Mul)
-    genome = gp.Genome(
+    primitives = (cgp.Add, cgp.Sub, cgp.Mul)
+    genome = cgp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
@@ -185,7 +185,7 @@ def test_compile_addsubmul():
         4,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
     f = graph.to_func()
 
     x = [5.0, 2.0]
@@ -195,8 +195,8 @@ def test_compile_addsubmul():
 
 
 def test_to_numpy():
-    primitives = (gp.Add, gp.Mul, gp.ConstantFloat)
-    genome = gp.Genome(1, 1, 2, 2, 1, primitives)
+    primitives = (cgp.Add, cgp.Mul, cgp.ConstantFloat)
+    genome = cgp.Genome(1, 1, 2, 2, 1, primitives)
     # f(x) = x ** 2 + 1.
     genome.dna = [
         ID_INPUT_NODE,
@@ -218,7 +218,7 @@ def test_to_numpy():
         3,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
     f = graph.to_numpy()
 
     x = np.random.normal(size=(100, 1))
@@ -229,8 +229,8 @@ def test_to_numpy():
 
 
 batch_sizes = [1, 10]
-primitives = (gp.Mul, gp.ConstantFloat)
-genomes = [gp.Genome(1, 1, 2, 2, 1, primitives) for i in range(2)]
+primitives = (cgp.Mul, cgp.ConstantFloat)
+genomes = [cgp.Genome(1, 1, 2, 2, 1, primitives) for i in range(2)]
 # Function: f(x) = 1*x
 genomes[0].dna = [
     ID_INPUT_NODE,
@@ -274,7 +274,7 @@ genomes[1].dna = [
     ID_NON_CODING_GENE,
 ]
 
-genomes += [gp.Genome(1, 2, 2, 2, 1, primitives) for i in range(2)]
+genomes += [cgp.Genome(1, 2, 2, 2, 1, primitives) for i in range(2)]
 # Function: f(x) = (1*x, 1*1)
 genomes[2].dna = [
     ID_INPUT_NODE,
@@ -328,7 +328,7 @@ genomes[3].dna = [
 @pytest.mark.parametrize("genome, batch_size", itertools.product(genomes, batch_sizes))
 def test_compile_numpy_output_shape(genome, batch_size):
 
-    c = gp.CartesianGraph(genome).to_numpy()
+    c = cgp.CartesianGraph(genome).to_numpy()
     x = np.random.normal(size=(batch_size, 1))
     y = c(x)
     assert y.shape == (batch_size, genome._n_outputs)
@@ -338,7 +338,7 @@ def test_compile_numpy_output_shape(genome, batch_size):
 def test_compile_torch_output_shape(genome, batch_size):
     torch = pytest.importorskip("torch")
 
-    c = gp.CartesianGraph(genome).to_torch()
+    c = cgp.CartesianGraph(genome).to_torch()
     x = torch.Tensor(batch_size, 1).normal_()
     y = c(x)
     assert y.shape == (batch_size, genome._n_outputs)
@@ -347,8 +347,8 @@ def test_compile_torch_output_shape(genome, batch_size):
 def test_to_sympy():
     sympy = pytest.importorskip("sympy")
 
-    primitives = (gp.Add, gp.ConstantFloat)
-    genome = gp.Genome(1, 1, 2, 2, 1, primitives)
+    primitives = (cgp.Add, cgp.ConstantFloat)
+    genome = cgp.Genome(1, 1, 2, 2, 1, primitives)
 
     genome.dna = [
         ID_INPUT_NODE,
@@ -370,7 +370,7 @@ def test_to_sympy():
         3,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
 
     x_0_target, y_0_target = sympy.symbols("x_0_target y_0_target")
     y_0_target = x_0_target + 1.0
@@ -386,8 +386,8 @@ def test_to_sympy():
 def test_catch_invalid_sympy_expr():
     pytest.importorskip("sympy")
 
-    primitives = (gp.Sub, gp.Div)
-    genome = gp.Genome(1, 1, 2, 1, 1, primitives)
+    primitives = (cgp.Sub, cgp.Div)
+    genome = cgp.Genome(1, 1, 2, 1, 1, primitives)
 
     # x[0] / (x[0] - x[0])
     genome.dna = [
@@ -404,7 +404,7 @@ def test_catch_invalid_sympy_expr():
         2,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
 
     with pytest.raises(Exception):
         graph.to_sympy(simplify=True)
@@ -413,8 +413,8 @@ def test_catch_invalid_sympy_expr():
 def test_allow_powers_of_x_0():
     pytest.importorskip("sympy")
 
-    primitives = (gp.Sub, gp.Mul)
-    genome = gp.Genome(1, 1, 2, 1, 1, primitives)
+    primitives = (cgp.Sub, cgp.Mul)
+    genome = cgp.Genome(1, 1, 2, 1, 1, primitives)
 
     # x[0] ** 2
     genome.dna = [
@@ -431,16 +431,16 @@ def test_allow_powers_of_x_0():
         2,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
     graph.to_sympy(simplify=True)
 
 
 def test_input_dim_python(rng_seed):
     rng = np.random.RandomState(rng_seed)
 
-    genome = gp.Genome(2, 1, 1, 1, 1, (gp.ConstantFloat,))
+    genome = cgp.Genome(2, 1, 1, 1, 1, (cgp.ConstantFloat,))
     genome.randomize(rng)
-    f = gp.CartesianGraph(genome).to_func()
+    f = cgp.CartesianGraph(genome).to_func()
 
     # fail for too short input
     with pytest.raises(ValueError):
@@ -457,9 +457,9 @@ def test_input_dim_python(rng_seed):
 def test_input_dim_numpy(rng_seed):
     rng = np.random.RandomState(rng_seed)
 
-    genome = gp.Genome(2, 1, 1, 1, 1, (gp.ConstantFloat,))
+    genome = cgp.Genome(2, 1, 1, 1, 1, (cgp.ConstantFloat,))
     genome.randomize(rng)
-    f = gp.CartesianGraph(genome).to_numpy()
+    f = cgp.CartesianGraph(genome).to_numpy()
 
     # fail for missing batch dimension
     with pytest.raises(ValueError):
@@ -482,9 +482,9 @@ def test_input_dim_torch(rng_seed):
 
     rng = np.random.RandomState(rng_seed)
 
-    genome = gp.Genome(2, 1, 1, 1, 1, (gp.ConstantFloat,))
+    genome = cgp.Genome(2, 1, 1, 1, 1, (cgp.ConstantFloat,))
     genome.randomize(rng)
-    f = gp.CartesianGraph(genome).to_torch()
+    f = cgp.CartesianGraph(genome).to_torch()
 
     # fail for missing batch dimension
     with pytest.raises(ValueError):
@@ -503,8 +503,8 @@ def test_input_dim_torch(rng_seed):
 
 
 def test_pretty_str():
-    primitives = (gp.Sub, gp.Mul)
-    genome = gp.Genome(1, 1, 2, 1, 1, primitives)
+    primitives = (cgp.Sub, cgp.Mul)
+    genome = cgp.Genome(1, 1, 2, 1, 1, primitives)
 
     # x[0] ** 2
     genome.dna = [
@@ -521,7 +521,7 @@ def test_pretty_str():
         2,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
 
     pretty_str = graph.pretty_str()
 
@@ -534,10 +534,10 @@ def test_pretty_str():
 
 
 def test_pretty_str_with_unequal_inputs_rows_outputs():
-    primitives = (gp.Add,)
+    primitives = (cgp.Add,)
 
     # less rows than inputs/outputs
-    genome = gp.Genome(1, 1, 1, 2, 1, primitives)
+    genome = cgp.Genome(1, 1, 1, 2, 1, primitives)
     # f(x) = x[0] + x[0]
     genome.dna = [
         ID_INPUT_NODE,
@@ -553,7 +553,7 @@ def test_pretty_str_with_unequal_inputs_rows_outputs():
         1,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
 
     expected_pretty_str = """
 00 * InputNode          \t01 * Add (00,00)        \t03 * OutputNode (01)    \t
@@ -562,7 +562,7 @@ def test_pretty_str_with_unequal_inputs_rows_outputs():
     assert graph.pretty_str() == expected_pretty_str
 
     # more rows than inputs/outputs
-    genome = gp.Genome(3, 3, 1, 2, 1, primitives)
+    genome = cgp.Genome(3, 3, 1, 2, 1, primitives)
     # f(x) = [x[0] + x[1], x[0] + x[1], x[1] + x[2]]
     genome.dna = [
         ID_INPUT_NODE,
@@ -590,7 +590,7 @@ def test_pretty_str_with_unequal_inputs_rows_outputs():
         4,
         ID_NON_CODING_GENE,
     ]
-    graph = gp.CartesianGraph(genome)
+    graph = cgp.CartesianGraph(genome)
 
     expected_pretty_str = """
 00 * InputNode          \t03 * Add (00,01)        \t05 * OutputNode (03)    \t

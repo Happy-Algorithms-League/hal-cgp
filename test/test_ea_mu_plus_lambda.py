@@ -2,7 +2,7 @@ import functools
 import numpy as np
 import pytest
 
-import gp
+import cgp
 
 
 def test_objective_with_label(population_params, genome_params):
@@ -15,9 +15,9 @@ def test_objective_with_label(population_params, genome_params):
         individual.fitness = -1
         return individual
 
-    pop = gp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params)
 
-    ea = gp.ea.MuPlusLambda(1, 2, 1)
+    ea = cgp.ea.MuPlusLambda(1, 2, 1)
     ea.initialize_fitness_parents(pop, objective_without_label)
 
     ea.step(pop, objective_without_label)
@@ -36,8 +36,8 @@ def test_fitness_contains_nan(population_params, genome_params):
             individual.fitness = np.random.rand()
         return individual
 
-    pop = gp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params)
 
-    ea = gp.ea.MuPlusLambda(10, 10, 1)
+    ea = cgp.ea.MuPlusLambda(10, 10, 1)
     ea.initialize_fitness_parents(pop, objective)
     ea.step(pop, objective)

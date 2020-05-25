@@ -423,7 +423,7 @@ class Genome:
 
         Returns
         -------
-        gp.Genome
+        Genome
         """
 
         new = Genome(

@@ -21,11 +21,11 @@ def evolve(
 
     Parameters
     ----------
-    pop : gp.Population
+    pop : Population
         A population class that will be evolved.
     objective : Callable
         An objective function used for the evolution. Needs to take an
-        invidual (gp.Individual) as input parameter and return
+        individual (Individual) as input parameter and return
         a modified individual (with updated fitness).
     ea : EA algorithm instance
         The evolution algorithm. Needs to be a class instance with an
