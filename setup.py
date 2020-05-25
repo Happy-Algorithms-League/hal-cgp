@@ -13,8 +13,8 @@ def read_extra_requirements():
     extra_requirements = {}
     extra_requirements["all"] = []
     with open("./extra-requirements.txt") as f:
-        for l in f:
-            req = l.replace("\n", " ")
+        for dep in f:
+            req = dep.replace("\n", " ")
             extra_requirements[req] = [req]
             extra_requirements["all"].append(req)
 

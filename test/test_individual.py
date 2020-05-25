@@ -1,7 +1,6 @@
 import math
 import pickle
 import pytest
-import torch
 
 import cgp
 from cgp.individual import Individual
@@ -57,7 +56,7 @@ def test_individual_with_parameter_python():
 
 
 def test_individual_with_parameter_torch():
-
+    torch = pytest.importorskip("torch")
     primitives = (cgp.Add, cgp.Parameter)
     genome = cgp.Genome(1, 1, 2, 1, 2, primitives)
     # f(x) = x + c
@@ -97,7 +96,7 @@ def test_individual_with_parameter_torch():
 
 
 def test_individual_with_parameter_sympy():
-
+    sympy = pytest.importorskip("sympy")  # noqa
     primitives = (cgp.Add, cgp.Parameter)
     genome = cgp.Genome(1, 1, 2, 1, 2, primitives)
     # f(x) = x + c
@@ -135,6 +134,7 @@ def test_individual_with_parameter_sympy():
 
 
 def test_to_and_from_torch_plus_backprop():
+    torch = pytest.importorskip("torch")
     primitives = (cgp.Mul, cgp.Parameter)
     genome = cgp.Genome(1, 1, 2, 2, 1, primitives)
     # f(x) = c * x
