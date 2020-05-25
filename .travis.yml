@@ -29,9 +29,9 @@ install:
   - pip install mypy
   - pip install .$DEP
 script:
-  - pytest --cov
   - black --check .
   - flake8 --config=.flake8 .
   - mypy cgp
+  - cd test && pytest --cov=cgp
 after_success:
   - coveralls
