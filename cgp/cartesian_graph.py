@@ -309,7 +309,7 @@ def _f(x):
 
     def to_torch(
         self, parameter_names_to_values: Optional[Dict[str, float]] = None
-    ) -> torch.nn.Module:
+    ) -> "torch.nn.Module":
         """Compile the function(s) represented by the graph to a Torch class.
 
         Generates a definition of the Torch class in Python code and
@@ -335,7 +335,7 @@ def _f(x):
                     node.format_parameter_str()
                     all_parameter_str.append(node.parameter_str)
         forward_str = ", ".join(node.output_str for node in self.output_nodes)
-        class_str = f"""\
+        class_str = """\
 class _C(torch.nn.Module):
 
     def __init__(self):
@@ -370,7 +370,7 @@ class _C(torch.nn.Module):
         self,
         simplify: Optional[bool] = True,
         parameter_names_to_values: Optional[Dict[str, float]] = None,
-    ) -> List[sympy_expr.Expr]:
+    ) -> List["sympy_expr.Expr"]:
         """Compile the function(s) represented by the graph to a SymPy expression.
 
         Generates one SymPy expression for each output node.

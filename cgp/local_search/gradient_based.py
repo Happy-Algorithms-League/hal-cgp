@@ -2,7 +2,7 @@ import numpy as np
 
 try:
     import torch  # noqa: F401
-    from torch.optim.optimizer import Optimizer
+    from torch.optim.optimizer import Optimizer  # noqa: F401
 
     torch_available = True
 except ModuleNotFoundError:
@@ -16,10 +16,10 @@ from ..individual import Individual  # noqa: F401
 
 def gradient_based(
     individual: Individual,
-    objective: Callable[[torch.nn.Module], torch.Tensor],
+    objective: Callable[["torch.nn.Module"], "torch.Tensor"],
     lr: float,
     gradient_steps: int,
-    optimizer: Optional[Optimizer] = None,
+    optimizer: Optional["Optimizer"] = None,
     clip_value: Optional[float] = None,
 ) -> None:
     """Perform a local search for numeric leaf values for an individual

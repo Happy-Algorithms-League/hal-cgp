@@ -1,12 +1,20 @@
-sudo: false
 language: python
 python:
   - "3.6"
   - "3.7"
   - "3.8"
+env:
+  - DEP=[all]
+  - DEP=
 branches:
   only:
     - master
+jobs:
+  exclude:
+  - python: "3.6"
+    env: DEP=
+  - python: "3.7"
+    env: DEP=
 before_install:
   - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
@@ -16,15 +24,14 @@ before_install:
   - source activate myenv
   - pip install --upgrade pip
 install:
-  - pip install -r requirements.txt
   - pip install pytest pytest-cov coveralls
   - pip install flake8 black
-  - pip install .[all]
   - pip install mypy
+  - pip install .$DEP
 script:
-  - pytest --cov
   - black --check .
   - flake8 --config=.flake8 .
   - mypy cgp
+  - cd test && pytest --cov=cgp
 after_success:
   - coveralls
