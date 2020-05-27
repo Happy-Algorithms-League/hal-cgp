@@ -23,7 +23,7 @@ def _objective_test_population(individual, rng_seed):
     x = np.random.normal(size=(n_function_evaluations, 2))
     y = np.empty(n_function_evaluations)
     for i, x_i in enumerate(x):
-        y[i] = f_graph(x_i)[0]
+        y[i] = f_graph[0](x_i)[0]
 
     loss = np.mean((f_target(x) - y) ** 2)
     individual.fitness = -loss
@@ -31,13 +31,13 @@ def _objective_test_population(individual, rng_seed):
     return individual
 
 
-def _test_population(population_params, genome_params, ea_params):
+def _test_population(population_params, genome_params_list, ea_params):
 
     evolve_params = {"max_generations": 2000, "min_fitness": -1e-12}
 
     np.random.seed(population_params["seed"])
 
-    pop = cgp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params_list)
 
     ea = cgp.ea.MuPlusLambda(**ea_params)
 
@@ -55,7 +55,7 @@ def _test_population(population_params, genome_params, ea_params):
     return history["max_fitness_per_generation"]
 
 
-def test_parallel_population(population_params, genome_params, ea_params):
+def test_parallel_population(population_params, genome_params_list, ea_params):
     """Test consistent evolution independent of the number of processes.
     """
 
@@ -63,7 +63,7 @@ def test_parallel_population(population_params, genome_params, ea_params):
     for n_processes in [1, 2, 4]:
         ea_params["n_processes"] = n_processes
         fitness_per_n_processes.append(
-            _test_population(population_params, genome_params, ea_params)
+            _test_population(population_params, genome_params_list, ea_params)
         )
 
     assert fitness_per_n_processes[0] == pytest.approx(fitness_per_n_processes[1])
@@ -94,9 +94,8 @@ def test_evolve_two_expressions(population_params, ea_params):
             x0 = np.random.uniform(size=1)
             x1 = np.random.uniform(size=2)
 
-            loss += (f0(x0) - y0(x0)) ** 2
-            loss += (f1(x1) - y1(x1)) ** 2
-
+            loss += float((f0(x0) - y0(x0)) ** 2)
+            loss += float((f1(x1) - y1(x1)) ** 2)
         individual.fitness = -loss
 
         return individual
@@ -168,7 +167,7 @@ def test_speedup_parallel_evolve(population_params, genome_params, ea_params):
     # Serial execution
 
     for n_processes in [1, 2, 4]:
-        pop = cgp.Population(**population_params, genome_params=genome_params)
+        pop = cgp.Population(**population_params, genome_params=[genome_params])
 
         ea = cgp.ea.MuPlusLambda(**ea_params, n_processes=n_processes)
 

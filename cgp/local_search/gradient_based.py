@@ -8,7 +8,7 @@ try:
 except ModuleNotFoundError:
     torch_available = False
 
-from typing import Callable, Optional
+from typing import Callable, List, Optional
 
 
 from ..individual import Individual  # noqa: F401
@@ -16,7 +16,7 @@ from ..individual import Individual  # noqa: F401
 
 def gradient_based(
     individual: Individual,
-    objective: Callable[["torch.nn.Module"], "torch.Tensor"],
+    objective: Callable[[List["torch.nn.Module"]], "torch.Tensor"],
     lr: float,
     gradient_steps: int,
     optimizer: Optional["Optimizer"] = None,
@@ -57,20 +57,25 @@ def gradient_based(
 
     f = individual.to_torch()
 
-    if len(list(f.parameters())) > 0:
-        optimizer = optimizer_class(f.parameters(), lr=lr)
+    params = []
+    for torch_mod in f:
+        params += list(torch_mod.parameters())
+    if len(params) > 0:
+        optimizer = optimizer_class(params, lr=lr)  #
 
         for i in range(gradient_steps):
             loss = objective(f)
             if not torch.isfinite(loss):
                 continue
 
-            f.zero_grad()
+            for torch_mod in f:
+                torch_mod.zero_grad()
             loss.backward()
             if clip_value is not np.inf:
-                torch.nn.utils.clip_grad.clip_grad_value_(f.parameters(), clip_value)
+                for torch_mod in f:
+                    torch.nn.utils.clip_grad.clip_grad_value_(params, clip_value)
             optimizer.step()
 
-            assert all(torch.isfinite(t) for t in f.parameters())
+            assert all(torch.isfinite(t) for t in params)
 
         individual.update_parameters_from_torch_class(f)

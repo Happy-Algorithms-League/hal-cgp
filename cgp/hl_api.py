@@ -63,6 +63,7 @@ def evolve(
         # progress printing, recording, checking exit condition etc.; needs to
         # be done /after/ new parent population was populated from combined
         # population and /before/ new individuals are created as offsprings
+        assert isinstance(pop.champion.fitness, float)
         if pop.champion.fitness > max_fitness:
             max_fitness = pop.champion.fitness
 

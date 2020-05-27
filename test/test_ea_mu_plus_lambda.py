@@ -5,17 +5,17 @@ import pytest
 import cgp
 
 
-def test_objective_with_label(population_params, genome_params):
+def test_objective_with_label(population_params, genome_params_list):
     def objective_without_label(individual):
-        individual.fitness = -2
+        individual.fitness = -2.0
         return individual
 
     def objective_with_label(individual, label):
         assert label == "test"
-        individual.fitness = -1
+        individual.fitness = -1.0
         return individual
 
-    pop = cgp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params_list)
 
     ea = cgp.ea.MuPlusLambda(1, 2, 1)
     ea.initialize_fitness_parents(pop, objective_without_label)
@@ -28,7 +28,7 @@ def test_objective_with_label(population_params, genome_params):
     assert pop.champion.fitness == pytest.approx(-1.0)
 
 
-def test_fitness_contains_nan(population_params, genome_params):
+def test_fitness_contains_nan(population_params, genome_params_list):
     def objective(individual):
         if np.random.rand() < 0.5:
             individual.fitness = np.nan
@@ -36,7 +36,7 @@ def test_fitness_contains_nan(population_params, genome_params):
             individual.fitness = np.random.rand()
         return individual
 
-    pop = cgp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params_list)
 
     ea = cgp.ea.MuPlusLambda(10, 10, 1)
     ea.initialize_fitness_parents(pop, objective)

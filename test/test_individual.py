@@ -36,21 +36,21 @@ def test_individual_with_parameter_python():
         2,
         ID_NON_CODING_GENE,
     ]
-    individual = Individual(None, genome)
+    individual = Individual(None, [genome])
 
     c = 1.0
     x = [3.0]
 
     f = individual.to_func()
-    y = f(x)
+    y = f[0](x)
 
     assert y[0] == pytest.approx(x[0] + c)
 
     c = 2.0
-    individual.genome.parameter_names_to_values["<p1>"] = c
+    individual.genome[0].parameter_names_to_values["<p1>"] = c
 
     f = individual.to_func()
-    y = f(x)
+    y = f[0](x)
 
     assert y[0] == pytest.approx(x[0] + c)
 
@@ -74,22 +74,22 @@ def test_individual_with_parameter_torch():
         2,
         ID_NON_CODING_GENE,
     ]
-    individual = Individual(None, genome)
+    individual = Individual(None, [genome])
 
     c = 1.0
     x = torch.empty(2, 1).normal_()
 
     f = individual.to_torch()
-    y = f(x)
+    y = f[0](x)
 
     assert y[0, 0].item() == pytest.approx(x[0, 0].item() + c)
     assert y[1, 0].item() == pytest.approx(x[1, 0].item() + c)
 
     c = 2.0
-    individual.genome.parameter_names_to_values["<p1>"] = c
+    individual.genome[0].parameter_names_to_values["<p1>"] = c
 
     f = individual.to_torch()
-    y = f(x)
+    y = f[0](x)
 
     assert y[0, 0].item() == pytest.approx(x[0, 0].item() + c)
     assert y[1, 0].item() == pytest.approx(x[1, 0].item() + c)
@@ -114,21 +114,21 @@ def test_individual_with_parameter_sympy():
         2,
         ID_NON_CODING_GENE,
     ]
-    individual = Individual(None, genome)
+    individual = Individual(None, [genome])
 
     c = 1.0
     x = [3.0]
 
     f = individual.to_sympy()[0]
-    y = f.subs("x_0", x[0]).evalf()
+    y = f[0].subs("x_0", x[0]).evalf()
 
     assert y == pytest.approx(x[0] + c)
 
     c = 2.0
-    individual.genome.parameter_names_to_values["<p1>"] = c
+    individual.genome[0].parameter_names_to_values["<p1>"] = c
 
     f = individual.to_sympy()[0]
-    y = f.subs("x_0", x[0]).evalf()
+    y = f[0].subs("x_0", x[0]).evalf()
 
     assert y == pytest.approx(x[0] + c)
 
@@ -158,25 +158,25 @@ def test_to_and_from_torch_plus_backprop():
         3,
         ID_NON_CODING_GENE,
     ]
-    individual = Individual(None, genome)
+    individual = Individual(None, [genome])
 
     def f_target(x):
         return math.pi * x
 
     f = individual.to_torch()
 
-    optimizer = torch.optim.SGD(f.parameters(), lr=1e-1)
+    optimizer = torch.optim.SGD(f[0].parameters(), lr=1e-1)
     criterion = torch.nn.MSELoss()
 
     for i in range(200):
 
         x = torch.DoubleTensor(1, 1).normal_()
-        y = f(x)
+        y = f[0](x)
 
         y_target = f_target(x)
 
         loss = criterion(y, y_target)
-        f.zero_grad()
+        f[0].zero_grad()
         loss.backward()
 
         optimizer.step()
@@ -186,14 +186,14 @@ def test_to_and_from_torch_plus_backprop():
     # use old parameter values to compile function
     x = [3.0]
     f_func = individual.to_func()
-    y = f_func(x)
+    y = f_func[0](x)
     assert y[0] != pytest.approx(f_target(x[0]))
 
     # update parameter values from torch class and compile new
     # function with new parameter values
     individual.update_parameters_from_torch_class(f)
     f_func = individual.to_func()
-    y = f_func(x)
+    y = f_func[0](x)
     assert y[0] == pytest.approx(f_target(x[0]))
 
 
@@ -217,10 +217,10 @@ def test_update_parameters_from_torch_class_resets_fitness():
         ID_NON_CODING_GENE,
     ]
     fitness = 1.0
-    individual = Individual(fitness, genome)
+    individual = Individual(fitness, [genome])
 
     f = individual.to_torch()
-    f._p1.data[0] = math.pi
+    f[0]._p1.data[0] = math.pi
 
     assert individual.fitness is not None
     individual.update_parameters_from_torch_class(f)
@@ -228,7 +228,7 @@ def test_update_parameters_from_torch_class_resets_fitness():
 
     g = individual.to_func()
     x = 2.0
-    assert g([x])[0] == pytest.approx(math.pi * x)
+    assert g[0]([x])[0] == pytest.approx(math.pi * x)
 
 
 def test_update_parameters_from_torch_class_does_not_reset_fitness_for_unused_parameters():
@@ -251,7 +251,7 @@ def test_update_parameters_from_torch_class_does_not_reset_fitness_for_unused_pa
         ID_NON_CODING_GENE,
     ]
     fitness = 1.0
-    individual = Individual(fitness, genome)
+    individual = Individual(fitness, [genome])
 
     f = individual.to_torch()
 
@@ -261,4 +261,4 @@ def test_update_parameters_from_torch_class_does_not_reset_fitness_for_unused_pa
 
     g = individual.to_func()
     x = 2.0
-    assert g([x])[0] == pytest.approx(x ** 2)
+    assert g[0]([x])[0] == pytest.approx(x ** 2)

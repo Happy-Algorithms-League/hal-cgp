@@ -1,7 +1,7 @@
 import concurrent.futures
 import numpy as np
 
-from typing import Callable, List
+from typing import Callable, List, Tuple
 
 from ..individual import Individual
 from ..population import Population
@@ -24,7 +24,7 @@ class MuPlusLambda:
         tournament_size: int,
         *,
         n_processes: int = 1,
-        local_search: Callable[[Individual], None] = lambda combined: None
+        local_search: Callable[[Individual], None] = lambda combined: None,
     ):
         """Init function
 
@@ -137,7 +137,7 @@ class MuPlusLambda:
         return offsprings
 
     def _compute_fitness(
-        self, combined: List[Individual], objective: Callable[[Individual], Individual],
+        self, combined: List[Individual], objective: Callable[[Individual], Individual]
     ) -> List[Individual]:
         # computes fitness on all individuals, objective functions
         # should return immediately if fitness is not None
@@ -160,8 +160,15 @@ class MuPlusLambda:
                 ind.fitness = -np.inf
 
         # get list of indices that sorts combined_copy ("argsort")
+        def sort_func(zipped_ind: Tuple[int, Individual]) -> float:
+            id, ind = zipped_ind
+            if isinstance(ind.fitness, float):
+                return -ind.fitness
+            else:
+                raise ValueError(f"Individual fitness value is of wrong type {type(ind.fitness)}.")
+
         combined_sorted_indices = [
-            idx for (idx, _) in sorted(enumerate(combined_copy), key=lambda x: -x[1].fitness)
+            idx for (idx, _) in sorted(enumerate(combined_copy), key=sort_func)
         ]
 
         # return sorted original list of individuals

@@ -21,6 +21,11 @@ def genome_params():
 
 
 @fixture
+def genome_params_list(genome_params):
+    return [genome_params]
+
+
+@fixture
 def population_params(mutation_rate, rng_seed):
     return {"n_parents": 5, "mutation_rate": mutation_rate, "seed": rng_seed}
 
@@ -36,10 +41,10 @@ def mutation_rate():
 
 
 @fixture
-def population_simple_fitness(population_params, genome_params):
-    pop = cgp.Population(**population_params, genome_params=genome_params)
+def population_simple_fitness(population_params, genome_params_list):
+    pop = cgp.Population(**population_params, genome_params=genome_params_list)
 
     for i, parent in enumerate(pop.parents):
-        parent.fitness = i
+        parent.fitness = float(i)
 
     return pop

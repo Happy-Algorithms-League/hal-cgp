@@ -89,15 +89,12 @@ def objective_history_recording(individual):
     return individual
 
 
-def test_history_recording(population_params, genome_params, ea_params):
+def test_history_recording(population_params, genome_params_list, ea_params):
 
-    pop = cgp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params_list)
     ea = cgp.ea.MuPlusLambda(**ea_params)
 
-    evolve_params = {
-        "max_generations": 2,
-        "min_fitness": 1.0,
-    }
+    evolve_params = {"max_generations": 2, "min_fitness": 1.0}
 
     history = {}
     history["fitness"] = np.empty(
@@ -111,9 +108,7 @@ def test_history_recording(population_params, genome_params, ea_params):
         history["fitness_champion"][pop.generation] = pop.champion.fitness
         history["champion"].append(pop.champion)
 
-    cgp.evolve(
-        pop, objective_history_recording, ea, **evolve_params, callback=recording_callback,
-    )
+    cgp.evolve(pop, objective_history_recording, ea, **evolve_params, callback=recording_callback)
 
     assert np.all(history["fitness"] == pytest.approx(1.0))
     assert np.all(history["fitness_champion"] == pytest.approx(1.0))

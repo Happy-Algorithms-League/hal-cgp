@@ -1,8 +1,8 @@
 import numpy as np
 
-from typing import List
-
-from .individual import Individual, IndividualMultiGenome
+from typing import List, Union
+from .genome import Genome
+from .individual import Individual
 
 
 class Population:
@@ -11,7 +11,7 @@ class Population:
     """
 
     def __init__(
-        self, n_parents: int, mutation_rate: float, seed: int, genome_params: dict
+        self, n_parents: int, mutation_rate: float, seed: int, genome_params: List[dict]
     ) -> None:
         """Init function.
 
@@ -77,17 +77,11 @@ class Population:
     def _generate_random_individuals(self, n: int) -> List[Individual]:
         individuals = []
         for i in range(n):
-            if isinstance(self._genome_params, dict):
-                individual = Individual(fitness=None, genome=None)
-            elif isinstance(self._genome_params, list) and isinstance(
-                self._genome_params[0], dict
-            ):
-                individual = IndividualMultiGenome(fitness=None, genome=None)
-            else:
-                raise NotImplementedError()
-            individual.randomize_genome(self._genome_params, self.rng)
+            genome = [Genome(**gd) for gd in self._genome_params]
+            for gen in genome:
+                gen.randomize(self.rng)
+            individual = Individual(fitness=None, genome=genome)
             individuals.append(individual)
-
         return individuals
 
     def crossover(self, breeding_pool: List[Individual], n_offsprings: int) -> List[Individual]:
@@ -123,7 +117,14 @@ class Population:
         # Conference on Genetic and Evolutionary Computation-Volume 2,
         # pages 1135–1142. Morgan Kaufmann Publishers Inc.
         assert len(breeding_pool) >= n_offsprings
-        return sorted(breeding_pool, key=lambda x: -x.fitness)[:n_offsprings]
+
+        def sort_func(ind: Individual) -> float:
+            if isinstance(ind.fitness, float):
+                return -ind.fitness
+            else:
+                raise ValueError(f"Individual fitness value is of wrong type {type(ind.fitness)}.")
+
+        return sorted(breeding_pool, key=sort_func)[:n_offsprings]
 
     def mutate(self, offsprings: List[Individual]) -> List[Individual]:
         """Mutate a list of offspring invididuals.
@@ -143,7 +144,7 @@ class Population:
             off.mutate(self._mutation_rate, self.rng)
         return offsprings
 
-    def fitness_parents(self) -> List[float]:
+    def fitness_parents(self) -> List[Union[None, float]]:
         """Return fitness for all parents of the population.
 
         Returns
@@ -153,16 +154,16 @@ class Population:
         """
         return [ind.fitness for ind in self._parents]
 
-    def dna_parents(self) -> List[List[int]]:
+    def dna_parents(self) -> List[List[List[int]]]:
         """Return a list of the DNA of all parents.
 
         Returns
         ----------
-        List[List[int]]
+        List[List[List[int]]]
             List of dna of all parents.
         """
 
-        dnas = np.empty((self.n_parents, self._parents[0].genome._n_genes))
+        dnas = []
         for i in range(self.n_parents):
-            dnas[i] = self._parents[i].genome.dna
+            dnas.append([gen.dna for gen in self._parents[i].genome])
         return dnas
