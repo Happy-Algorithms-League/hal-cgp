@@ -2,13 +2,13 @@ import numpy as np
 from typing import Optional, Callable
 
 from .population import Population
-from .individual import Individual
+from .individual import IndividualBase
 from .ea import MuPlusLambda
 
 
 def evolve(
     pop: Population,
-    objective: Callable[[Individual], Individual],
+    objective: Callable[[IndividualBase], IndividualBase],
     ea: MuPlusLambda,
     max_generations: int,
     min_fitness: float,
@@ -63,6 +63,7 @@ def evolve(
         # progress printing, recording, checking exit condition etc.; needs to
         # be done /after/ new parent population was populated from combined
         # population and /before/ new individuals are created as offsprings
+        assert isinstance(pop.champion.fitness, float)
         if pop.champion.fitness > max_fitness:
             max_fitness = pop.champion.fitness
 
