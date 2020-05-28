@@ -1,6 +1,14 @@
+import collections
 import numpy as np
 
-from typing import Generator, List, Optional, Tuple, Type
+try:
+    import torch  # noqa: F401
+
+    torch_available = True
+except ModuleNotFoundError:
+    torch_available = False
+
+from typing import DefaultDict, Generator, List, Optional, Tuple, Type
 
 from .node import Node
 from .primitives import Primitives
@@ -9,6 +17,14 @@ from .primitives import Primitives
 ID_INPUT_NODE: int = -1
 ID_OUTPUT_NODE: int = -2
 ID_NON_CODING_GENE: int = -3
+
+
+def return_float_one() -> float:
+    """Constructor for default value of defaultdict. Needs to be global to
+    support pickling.
+
+    """
+    return 1.0
 
 
 class Genome:
@@ -77,6 +93,9 @@ class Genome:
         self._id_input_node: int = ID_INPUT_NODE
         self._id_output_node: int = ID_OUTPUT_NODE
         self._id_unused_gene: int = ID_NON_CODING_GENE
+
+        # dictionary to store values of Parameter nodes
+        self.parameter_names_to_values: DefaultDict = collections.defaultdict(return_float_one)
 
     def __getitem__(self, key: int) -> int:
         if self._dna is None:
@@ -435,4 +454,37 @@ class Genome:
             tuple(self._primitives),
         )
         new.dna = self._dna.copy()
+
+        # Lamarckian strategy: parameter values are passed on to
+        # offspring
+        new.parameter_names_to_values = self.parameter_names_to_values.copy()
+
         return new
+
+    def update_parameters_from_torch_class(self, torch_cls: "torch.nn.Module") -> bool:
+        """Update values stored in Parameter nodes of graph from parameters of
+        a given Torch instance.  Can be used to import new values from
+        a Torch class after they have been altered, e.g., by local
+        search.
+
+        Parameters
+        ----------
+        torch_cls : torch.nn.module
+            Instance of a torch class.
+
+        Returns
+        -------
+        bool
+            Whether any parameter was updated
+
+        """
+        any_parameter_updated = False
+
+        for name, value in torch_cls.named_parameters():
+            name = f"<{name[1:]}>"
+            if name in self.parameter_names_to_values:
+                self.parameter_names_to_values[name] = value.item()
+                assert not np.isnan(self.parameter_names_to_values[name])
+                any_parameter_updated = True
+
+        return any_parameter_updated
