@@ -24,7 +24,7 @@ class MuPlusLambda:
         tournament_size: int,
         *,
         n_processes: int = 1,
-        local_search: Callable[[Individual], None] = lambda combined: None,
+        local_search: Callable[[Individual], None] = lambda combined: None
     ):
         """Init function
 

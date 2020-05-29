@@ -28,12 +28,12 @@ def mutate_genome(genome: Genome, mutation_rate: float, rng: np.random.RandomSta
     mutation_rate : float
         Proportion of mutations determining the number of genes to be mutated, between 0 and 1.
     rng : numpy.RandomState
-        Random number generator instance to use for crossover.
+        Random number generator instance.
 
     Returns
     -------
-    only_silent_mutations : bool
-        Whether silent mutations happened.
+    bool
+        Whether all mutations were silent.
     """
     n_mutations = int(mutation_rate * len(genome.dna))
     assert n_mutations > 0

@@ -1,6 +1,7 @@
 import numpy as np
 
 from typing import List, Union
+
 from .genome import Genome
 from .individual import Individual
 

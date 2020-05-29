@@ -61,7 +61,7 @@ def gradient_based(
     for torch_mod in f:
         params += list(torch_mod.parameters())
     if len(params) > 0:
-        optimizer = optimizer_class(params, lr=lr)  #
+        optimizer = optimizer_class(params, lr=lr)
 
         for i in range(gradient_steps):
             loss = objective(f)
