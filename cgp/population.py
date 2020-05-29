@@ -3,7 +3,7 @@ import numpy as np
 from typing import List, Union
 
 from .genome import Genome
-from .individual import Individual
+from .individual import IndividualBase, IndividualSingleGenome, IndividualMultiGenome
 
 
 class Population:
@@ -12,7 +12,11 @@ class Population:
     """
 
     def __init__(
-        self, n_parents: int, mutation_rate: float, seed: int, genome_params: List[dict]
+        self,
+        n_parents: int,
+        mutation_rate: float,
+        seed: int,
+        genome_params: Union[dict, List[dict]],
     ) -> None:
         """Init function.
 
@@ -39,7 +43,7 @@ class Population:
 
         self._genome_params = genome_params
 
-        self._parents: List[Individual] = []  # list of parent individuals
+        self._parents: List[IndividualBase] = []  # list of parent individuals
 
         # keeps track of the number of generations, increases with
         # every new offspring generation
@@ -49,55 +53,63 @@ class Population:
         self._generate_random_parent_population()
 
     @property
-    def champion(self) -> Individual:
+    def champion(self) -> IndividualBase:
         """Return parent with the highest fitness.
         """
         return max(self._parents, key=lambda ind: ind.fitness)
 
     @property
-    def parents(self) -> List[Individual]:
+    def parents(self) -> List[IndividualBase]:
         return self._parents
 
     @parents.setter
-    def parents(self, new_parents: List[Individual]) -> None:
+    def parents(self, new_parents: List[IndividualBase]) -> None:
         self.generation += 1
         self._parents = new_parents
 
-    def __getitem__(self, idx: int) -> Individual:
+    def __getitem__(self, idx: int) -> IndividualBase:
         return self._parents[idx]
 
     def _generate_random_parent_population(self) -> None:
         self._parents = self._generate_random_individuals(self.n_parents)
         self._label_new_individuals(self._parents)
 
-    def _label_new_individuals(self, individuals: List[Individual]) -> None:
+    def _label_new_individuals(self, individuals: List[IndividualBase]) -> None:
         for ind in individuals:
             ind.idx = self._max_idx + 1
             self._max_idx += 1
 
-    def _generate_random_individuals(self, n: int) -> List[Individual]:
+    def _generate_random_individuals(self, n: int) -> List[IndividualBase]:
         individuals = []
         for i in range(n):
-            genome = [Genome(**gd) for gd in self._genome_params]
-            for gen in genome:
-                gen.randomize(self.rng)
-            individual = Individual(fitness=None, genome=genome)
+            if isinstance(self._genome_params, dict):
+                genome: Genome = Genome(**self._genome_params)
+                genome.randomize(self.rng)
+                individual = IndividualSingleGenome(fitness=None, genome=genome)
+
+            else:
+                genome: List[Genome] = [Genome(**gd) for gd in self._genome_params]
+                for gen in genome:
+                    gen.randomize(self.rng)
+                individual = IndividualMultiGenome(fitness=None, genome=genome)
             individuals.append(individual)
         return individuals
 
-    def crossover(self, breeding_pool: List[Individual], n_offsprings: int) -> List[Individual]:
+    def crossover(
+        self, breeding_pool: List[IndividualBase], n_offsprings: int
+    ) -> List[IndividualBase]:
         """Create an offspring population via crossover.
 
         Parameters
         ----------
-        breeding_pool : List[Individual]
+        breeding_pool : List[IndividualBase]
             List of individuals from which the offspring are created.
         n_offsprings : int
             Number of offspring to be created.
 
         Returns
         ----------
-        List[Individual]
+        List[IndividualBase]
             List of offspring individuals.
         """
         # in principle crossover would rely on a procedure like the
@@ -119,7 +131,7 @@ class Population:
         # pages 1135–1142. Morgan Kaufmann Publishers Inc.
         assert len(breeding_pool) >= n_offsprings
 
-        def sort_func(ind: Individual) -> float:
+        def sort_func(ind: IndividualBase) -> float:
             if isinstance(ind.fitness, float):
                 return -ind.fitness
             else:
@@ -127,17 +139,17 @@ class Population:
 
         return sorted(breeding_pool, key=sort_func)[:n_offsprings]
 
-    def mutate(self, offsprings: List[Individual]) -> List[Individual]:
+    def mutate(self, offsprings: List[IndividualBase]) -> List[IndividualBase]:
         """Mutate a list of offspring invididuals.
 
         Parameters
         ----------
-        offsprings : List[Individual]
+        offsprings : List[IndividualBase]
             List of offspring individuals to be mutated.
 
         Returns
         ----------
-        List[Individual]
+        List[IndividualBase]
             List of mutated offspring individuals.
         """
 
