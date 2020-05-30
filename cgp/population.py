@@ -80,19 +80,21 @@ class Population:
             self._max_idx += 1
 
     def _generate_random_individuals(self, n: int) -> List[IndividualBase]:
-        individuals = []
-        for i in range(n):
-            if isinstance(self._genome_params, dict):
+        if isinstance(self._genome_params, dict):
+            individuals: List[IndividualSingleGenome] = []
+            for i in range(n):
                 genome: Genome = Genome(**self._genome_params)
                 genome.randomize(self.rng)
                 individual = IndividualSingleGenome(fitness=None, genome=genome)
-
-            else:
-                genome: List[Genome] = [Genome(**gd) for gd in self._genome_params]
-                for gen in genome:
+                individuals.append(individual)
+        else:
+            individuals: List[IndividualMultiGenome] = []
+            for i in range(n):
+                genomes: List[Genome] = [Genome(**gd) for gd in self._genome_params]
+                for gen in genomes:
                     gen.randomize(self.rng)
-                individual = IndividualMultiGenome(fitness=None, genome=genome)
-            individuals.append(individual)
+                individual = IndividualMultiGenome(fitness=None, genome=genomes)
+                individuals.append(individual)
         return individuals
 
     def crossover(
@@ -167,7 +169,7 @@ class Population:
         """
         return [ind.fitness for ind in self._parents]
 
-    def dna_parents(self) -> List[List[List[int]]]:
+    def dna_parents(self) -> Union[List[List[int]], List[List[List[int]]]]:
         """Return a list of the DNA of all parents.
 
         Returns
@@ -178,5 +180,8 @@ class Population:
 
         dnas = []
         for i in range(self.n_parents):
-            dnas.append([gen.dna for gen in self._parents[i].genome])
+            if isinstance(self._genome_params, dict):
+                dnas.append(self.parents[i].genome.dna)
+            else:
+                dnas.append([gen.dna for gen in self._parents[i].genome])
         return dnas

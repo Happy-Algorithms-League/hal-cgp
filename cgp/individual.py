@@ -1,5 +1,6 @@
+from abc import ABCMeta, abstractmethod
 import numpy as np
-from typing import Callable, List, Union
+from typing import Any, Callable, List, Union
 
 try:
     import sympy  # noqa: F401
@@ -45,7 +46,7 @@ def mutate_genome(genome: Genome, mutation_rate: float, rng: np.random.RandomSta
     return only_silent_mutations
 
 
-class IndividualBase:
+class IndividualBase(metaclass=ABCMeta):
     """Base class for all individuals.
     """
 
@@ -87,6 +88,7 @@ class IndividualBase:
         """
         raise NotImplementedError("crossover currently not supported")
 
+    @abstractmethod
     def mutate(self, mutation_rate: float, rng: np.random.RandomState) -> None:
         """Mutate the individual in place.
 
@@ -103,6 +105,7 @@ class IndividualBase:
         """
         pass
 
+    @abstractmethod
     def randomize_genome(self, rng: np.random.RandomState) -> None:
         """Randomize the individual's genome.
 
@@ -121,6 +124,7 @@ class IndividualBase:
         """
         pass
 
+    @abstractmethod
     def to_func(
         self
     ) -> Union[Callable[[List[float]], List[float]], List[Callable[[List[float]], List[float]]]]:
@@ -132,6 +136,7 @@ class IndividualBase:
         """
         pass
 
+    @abstractmethod
     def to_numpy(
         self
     ) -> Union[Callable[[np.ndarray], np.ndarray], List[Callable[[np.ndarray], np.ndarray]]]:
@@ -144,6 +149,7 @@ class IndividualBase:
         """
         pass
 
+    @abstractmethod
     def to_torch(self) -> Union["torch.nn.Module", List["torch.nn.Module"]]:
         """Return the expression represented by the individual as Torch class.
 
@@ -153,6 +159,7 @@ class IndividualBase:
         """
         pass
 
+    @abstractmethod
     def to_sympy(self, simplify: bool = True) -> Union["sympy_expr.Expr", List["sympy_expr.Expr"]]:
         """Return the expression represented by the individual as SymPy
         expression.
@@ -163,9 +170,8 @@ class IndividualBase:
         """
         pass
 
-    def update_parameters_from_torch_class(
-        self, torch_cls: Union["torch.nn.Module", List["torch.nn.Module"]]
-    ) -> None:
+    @abstractmethod
+    def update_parameters_from_torch_class(self, torch_cls: Any) -> None:
         """Update parameters of the individual from a torch class.
         """
         pass
@@ -239,10 +245,7 @@ class IndividualMultiGenome(IndividualBase):
             g.randomize(rng)
 
     def to_func(self) -> List[Callable[[List[float]], List[float]]]:
-        if len(self.genome) == 1:
-            return CartesianGraph(self.genome[0]).to_func()
-        else:
-            return [CartesianGraph(g).to_func() for g in self.genome]
+        return [CartesianGraph(g).to_func() for g in self.genome]
 
     def to_numpy(self) -> List[Callable[[np.ndarray], np.ndarray]]:
         return [CartesianGraph(g).to_numpy() for g in self.genome]
