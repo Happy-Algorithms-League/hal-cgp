@@ -8,15 +8,15 @@ try:
 except ModuleNotFoundError:
     torch_available = False
 
-from typing import Callable, List, Optional
+from typing import Callable, Iterable, List, Optional, Union
 
 
-from ..individual import Individual  # noqa: F401
+from ..individual import IndividualBase, IndividualSingleGenome, IndividualMultiGenome
 
 
 def gradient_based(
-    individual: Individual,
-    objective: Callable[[List["torch.nn.Module"]], "torch.Tensor"],
+    individual: IndividualBase,
+    objective: Callable[[Union["torch.nn.Module", List["torch.nn.Module"]]], "torch.Tensor"],
     lr: float,
     gradient_steps: int,
     optimizer: Optional["Optimizer"] = None,
@@ -57,9 +57,12 @@ def gradient_based(
 
     f = individual.to_torch()
 
+    if not isinstance(f, List):
+        f = [f]
     params = []
     for torch_mod in f:
         params += list(torch_mod.parameters())
+
     if len(params) > 0:
         optimizer = optimizer_class(params, lr=lr)
 

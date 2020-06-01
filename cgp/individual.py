@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 import numpy as np
-from typing import Any, Callable, List, Union
+from typing import Any, Callable, List, Union, TypeVar
 
 try:
     import sympy  # noqa: F401
@@ -50,7 +50,7 @@ class IndividualBase(metaclass=ABCMeta):
     """Base class for all individuals.
     """
 
-    def __init__(self, fitness: Union[float, None], genome: Union[Genome, List[Genome]]) -> None:
+    def __init__(self, fitness: Union[float, None], genome: Any) -> None:
         """Init function.
 
         fitness : float

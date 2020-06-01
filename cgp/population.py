@@ -80,21 +80,23 @@ class Population:
             self._max_idx += 1
 
     def _generate_random_individuals(self, n: int) -> List[IndividualBase]:
-        if isinstance(self._genome_params, dict):
-            individuals: List[IndividualSingleGenome] = []
-            for i in range(n):
+        individuals = []
+        for i in range(n):
+            if isinstance(self._genome_params, dict):
                 genome: Genome = Genome(**self._genome_params)
                 genome.randomize(self.rng)
-                individual = IndividualSingleGenome(fitness=None, genome=genome)
-                individuals.append(individual)
-        else:
-            individuals: List[IndividualMultiGenome] = []
-            for i in range(n):
+                individual_s = IndividualSingleGenome(
+                    fitness=None, genome=genome
+                )  # type: IndividualBase
+                individuals.append(individual_s)
+            else:
                 genomes: List[Genome] = [Genome(**gd) for gd in self._genome_params]
                 for gen in genomes:
                     gen.randomize(self.rng)
-                individual = IndividualMultiGenome(fitness=None, genome=genomes)
-                individuals.append(individual)
+                individual_m = IndividualMultiGenome(
+                    fitness=None, genome=genomes
+                )  # type: IndividualBase
+                individuals.append(individual_m)
         return individuals
 
     def crossover(
@@ -179,9 +181,9 @@ class Population:
         """
 
         dnas = []
-        for i in range(self.n_parents):
-            if isinstance(self._genome_params, dict):
-                dnas.append(self.parents[i].genome.dna)
-            else:
-                dnas.append([gen.dna for gen in self._parents[i].genome])
+        for parent in self.parents:
+            if isinstance(parent, IndividualSingleGenome):
+                dnas.append(parent.genome.dna)
+            elif isinstance(parent, IndividualMultiGenome):
+                dnas.append([gen.dna for gen in parent.genome])
         return dnas

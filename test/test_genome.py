@@ -300,7 +300,7 @@ def test_individuals_have_different_genomes(population_params, genome_params, ea
         ind.fitness = float(ind.idx)
         return ind
 
-    pop = cgp.Population(**population_params, genome_params=[genome_params])
+    pop = cgp.Population(**population_params, genome_params=genome_params)
     ea = cgp.ea.MuPlusLambda(**ea_params)
 
     pop._generate_random_parent_population()
@@ -310,12 +310,11 @@ def test_individuals_have_different_genomes(population_params, genome_params, ea
     ea.step(pop, objective)
 
     for i, parent_i in enumerate(pop._parents):
-
         for j, parent_j in enumerate(pop._parents):
             if i != j:
                 assert parent_i is not parent_j
                 assert parent_i.genome is not parent_j.genome
-                assert parent_i.genome[0].dna is not parent_j.genome[0].dna
+                assert parent_i.genome.dna is not parent_j.genome.dna
 
 
 def test_is_gene_in_input_region(rng_seed):
