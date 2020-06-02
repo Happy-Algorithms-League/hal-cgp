@@ -2,13 +2,13 @@ import numpy as np
 from typing import Optional, Callable
 
 from .population import Population
-from .individual import Individual
+from .individual import IndividualBase, IndividualSingleGenome, IndividualMultiGenome
 from .ea import MuPlusLambda
 
 
 def evolve(
     pop: Population,
-    objective: Callable[[Individual], Individual],
+    objective: Callable[[IndividualBase], IndividualBase],
     ea: MuPlusLambda,
     max_generations: int,
     min_fitness: float,

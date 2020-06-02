@@ -1,5 +1,6 @@
+from abc import ABCMeta, abstractmethod
 import numpy as np
-from typing import Callable, List, Union
+from typing import Any, Callable, List, Union
 
 try:
     import sympy  # noqa: F401

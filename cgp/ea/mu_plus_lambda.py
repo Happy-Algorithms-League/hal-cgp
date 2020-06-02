@@ -3,7 +3,7 @@ import numpy as np
 
 from typing import Callable, List, Tuple
 
-from ..individual import Individual
+from ..individual import IndividualBase
 from ..population import Population
 
 
@@ -24,7 +24,7 @@ class MuPlusLambda:
         tournament_size: int,
         *,
         n_processes: int = 1,
-        local_search: Callable[[Individual], None] = lambda combined: None
+        local_search: Callable[[IndividualBase], None] = lambda combined: None,
     ):
         """Init function
 
@@ -59,7 +59,7 @@ class MuPlusLambda:
         self.local_search = local_search
 
     def initialize_fitness_parents(
-        self, pop: Population, objective: Callable[[Individual], Individual]
+        self, pop: Population, objective: Callable[[IndividualBase], IndividualBase]
     ) -> None:
         """Initialize the fitness of all parents in the given population.
 
@@ -67,25 +67,27 @@ class MuPlusLambda:
         ----------
         pop : Population
             Population instance.
-        objective : Callable[[gp.Individual], gp.Individual]
+        objective : Callable[[gp.IndividualBase], gp.IndividualBase]
             An objective function used for the evolution. Needs to take an
-            individual (Individual) as input parameter and return
+            individual (IndividualBase) as input parameter and return
             a modified individual (with updated fitness).
         """
         # TODO can we avoid this function? how should a population be
         # initialized?
         pop._parents = self._compute_fitness(pop.parents, objective)
 
-    def step(self, pop: Population, objective: Callable[[Individual], Individual]) -> Population:
+    def step(
+        self, pop: Population, objective: Callable[[IndividualBase], IndividualBase]
+    ) -> Population:
         """Perform one step in the evolution.
 
         Parameters
         ----------
         pop : Population
             Population instance.
-        objective : Callable[[gp.Individual], gp.Individual]
+        objective : Callable[[gp.IndividualBase], gp.IndividualBase]
             An objective function used for the evolution. Needs to take an
-            individual (Individual) as input parameter and return
+            individual (IndividualBase) as input parameter and return
             a modified individual (with updated fitness).
 
         Returns
@@ -108,7 +110,6 @@ class MuPlusLambda:
 
         for ind in combined:
             self.local_search(ind)
-
         combined = self._compute_fitness(combined, objective)
 
         combined = self._sort(combined)
@@ -117,10 +118,10 @@ class MuPlusLambda:
 
         return pop
 
-    def _create_new_offspring_generation(self, pop: Population) -> List[Individual]:
+    def _create_new_offspring_generation(self, pop: Population) -> List[IndividualBase]:
         # fill breeding pool via tournament selection from parent
         # population
-        breeding_pool: List[Individual] = []
+        breeding_pool: List[IndividualBase] = []
         while len(breeding_pool) < self.n_breeding:
             tournament_pool = pop.rng.permutation(pop.parents)[: self.tournament_size]
             best_in_tournament = sorted(tournament_pool, key=lambda x: -x.fitness)[0]
@@ -137,8 +138,8 @@ class MuPlusLambda:
         return offsprings
 
     def _compute_fitness(
-        self, combined: List[Individual], objective: Callable[[Individual], Individual]
-    ) -> List[Individual]:
+        self, combined: List[IndividualBase], objective: Callable[[IndividualBase], IndividualBase]
+    ) -> List[IndividualBase]:
         # computes fitness on all individuals, objective functions
         # should return immediately if fitness is not None
         if self.n_processes == 1:
@@ -149,7 +150,7 @@ class MuPlusLambda:
 
         return combined
 
-    def _sort(self, combined: List[Individual]) -> List[Individual]:
+    def _sort(self, combined: List[IndividualBase]) -> List[IndividualBase]:
         # create copy of population
         combined_copy = [ind.clone() for ind in combined]
 
@@ -160,12 +161,14 @@ class MuPlusLambda:
                 ind.fitness = -np.inf
 
         # get list of indices that sorts combined_copy ("argsort")
-        def sort_func(zipped_ind: Tuple[int, Individual]) -> float:
+        def sort_func(zipped_ind: Tuple[int, IndividualBase]) -> float:
             id, ind = zipped_ind
             if isinstance(ind.fitness, float):
                 return -ind.fitness
             else:
-                raise ValueError(f"Individual fitness value is of wrong type {type(ind.fitness)}.")
+                raise ValueError(
+                    f"IndividualBase fitness value is of wrong type {type(ind.fitness)}."
+                )
 
         combined_sorted_indices = [
             idx for (idx, _) in sorted(enumerate(combined_copy), key=sort_func)
@@ -175,11 +178,11 @@ class MuPlusLambda:
         return [combined[idx] for idx in combined_sorted_indices]
 
     def _create_new_parent_population(
-        self, n_parents: int, combined: List[Individual]
-    ) -> List[Individual]:
+        self, n_parents: int, combined: List[IndividualBase]
+    ) -> List[IndividualBase]:
         # create new parent population by picking the `n_parents` individuals
         # with the highest fitness
-        parents: List[Individual] = []
+        parents: List[IndividualBase] = []
         for i in range(n_parents):
             # note: unclear whether clone() is needed here; using
             # clone() avoids accidentally sharing references across

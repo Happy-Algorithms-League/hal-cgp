@@ -85,14 +85,18 @@ class Population:
             if isinstance(self._genome_params, dict):
                 genome: Genome = Genome(**self._genome_params)
                 genome.randomize(self.rng)
-                individual = IndividualSingleGenome(fitness=None, genome=genome)
-
+                individual_s = IndividualSingleGenome(
+                    fitness=None, genome=genome
+                )  # type: IndividualBase
+                individuals.append(individual_s)
             else:
-                genome: List[Genome] = [Genome(**gd) for gd in self._genome_params]
-                for gen in genome:
+                genomes: List[Genome] = [Genome(**gd) for gd in self._genome_params]
+                for gen in genomes:
                     gen.randomize(self.rng)
-                individual = IndividualMultiGenome(fitness=None, genome=genome)
-            individuals.append(individual)
+                individual_m = IndividualMultiGenome(
+                    fitness=None, genome=genomes
+                )  # type: IndividualBase
+                individuals.append(individual_m)
         return individuals
 
     def crossover(
@@ -152,7 +156,6 @@ class Population:
         List[IndividualBase]
             List of mutated offspring individuals.
         """
-
         for off in offsprings:
             off.mutate(self._mutation_rate, self.rng)
         return offsprings
@@ -167,7 +170,7 @@ class Population:
         """
         return [ind.fitness for ind in self._parents]
 
-    def dna_parents(self) -> List[List[List[int]]]:
+    def dna_parents(self) -> Union[List[List[int]], List[List[List[int]]]]:
         """Return a list of the DNA of all parents.
 
         Returns
@@ -176,7 +179,13 @@ class Population:
             List of dna of all parents.
         """
 
-        dnas = []
-        for i in range(self.n_parents):
-            dnas.append([gen.dna for gen in self._parents[i].genome])
+        if isinstance(self._genome_params, dict):
+            dnas: List[List[int]] = []
+        elif isinstance(self._genome_params, List[dict]):
+            dnas: List[List[List[int]]] = []
+        for parent in self.parents:
+            if isinstance(parent, IndividualSingleGenome):
+                dnas.append(parent.genome.dna)
+            elif isinstance(parent, IndividualSingleGenome):
+                dnas.append([gen.dna for gen in parent.genome])
         return dnas

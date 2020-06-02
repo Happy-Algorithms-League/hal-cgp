@@ -8,15 +8,15 @@ try:
 except ModuleNotFoundError:
     torch_available = False
 
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Union
 
 
-from ..individual import Individual  # noqa: F401
+from ..individual import IndividualBase
 
 
 def gradient_based(
-    individual: Individual,
-    objective: Callable[[List["torch.nn.Module"]], "torch.Tensor"],
+    individual: IndividualBase,
+    objective: Callable[[Union["torch.nn.Module", List["torch.nn.Module"]]], "torch.Tensor"],
     lr: float,
     gradient_steps: int,
     optimizer: Optional["Optimizer"] = None,
@@ -57,9 +57,13 @@ def gradient_based(
 
     f = individual.to_torch()
 
-    params = []
-    for torch_mod in f:
-        params += list(torch_mod.parameters())
+    if isinstance(f, List):
+        params = []
+        for torch_mod in f:
+            params += list(torch_mod.parameters())
+    else:
+        params = list(f.parameters())
+
     if len(params) > 0:
         optimizer = optimizer_class(params, lr=lr)
 
@@ -68,12 +72,16 @@ def gradient_based(
             if not torch.isfinite(loss):
                 continue
 
-            for torch_mod in f:
-                torch_mod.zero_grad()
+            if isinstance(f, list):
+                for torch_mod in f:
+                    torch_mod.zero_grad()
+            else:
+                f.zero_grad()
+
             loss.backward()
             if clip_value is not np.inf:
-                for torch_mod in f:
-                    torch.nn.utils.clip_grad.clip_grad_value_(params, clip_value)
+                torch.nn.utils.clip_grad.clip_grad_value_(params, clip_value)
+
             optimizer.step()
 
             assert all(torch.isfinite(t) for t in params)
