@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 import numpy as np
-from typing import Any, Callable, List, Union, TypeVar
+from typing import Any, Callable, List, Union
 
 try:
     import sympy  # noqa: F401
@@ -61,7 +61,11 @@ class IndividualBase(metaclass=ABCMeta):
         self.idx: int
 
     def __repr__(self):
-        return f"Individual(idx={self.idx}, fitness={self.fitness}, genome={self.genome}))"
+        try:
+            repr = f"Individual(idx={self.idx}, fitness={self.fitness}, genome={self.genome}))"
+        except AttributeError:
+            repr = f"Individual(idx=, fitness={self.fitness}, genome={self.genome}))"
+        return repr
 
     def clone(self) -> "IndividualBase":
         """Clone the individual.

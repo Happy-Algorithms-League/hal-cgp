@@ -3,7 +3,7 @@ import numpy as np
 
 from typing import Callable, List, Tuple
 
-from ..individual import IndividualBase, IndividualSingleGenome, IndividualMultiGenome
+from ..individual import IndividualBase
 from ..population import Population
 
 
@@ -110,7 +110,6 @@ class MuPlusLambda:
 
         for ind in combined:
             self.local_search(ind)
-
         combined = self._compute_fitness(combined, objective)
 
         combined = self._sort(combined)

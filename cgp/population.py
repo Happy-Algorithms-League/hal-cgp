@@ -156,7 +156,6 @@ class Population:
         List[IndividualBase]
             List of mutated offspring individuals.
         """
-
         for off in offsprings:
             off.mutate(self._mutation_rate, self.rng)
         return offsprings
@@ -180,10 +179,13 @@ class Population:
             List of dna of all parents.
         """
 
-        dnas = []
+        if isinstance(self._genome_params, dict):
+            dnas: List[List[int]] = []
+        elif isinstance(self._genome_params, List[dict]):
+            dnas: List[List[List[int]]] = []
         for parent in self.parents:
             if isinstance(parent, IndividualSingleGenome):
                 dnas.append(parent.genome.dna)
-            elif isinstance(parent, IndividualMultiGenome):
+            elif isinstance(parent, IndividualSingleGenome):
                 dnas.append([gen.dna for gen in parent.genome])
         return dnas
