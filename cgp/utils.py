@@ -116,4 +116,4 @@ def primitives_from_class_names(primitives_str):
     for s in primitives_str:
         primitives.append(primitives_dict[s])
 
-    return primitives
+    return tuple(primitives)

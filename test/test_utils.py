@@ -134,3 +134,12 @@ def test_primitives_from_class_names():
 
     primitives = cgp.utils.primitives_from_class_names(["MyCustomNodeClass"])
     assert issubclass(primitives[0], MyCustomNodeClass)
+
+
+def test_primitives_from_class_names_for_genome(genome_params):
+    primitives_str = ("Add", "Sub", "Mul")
+    primitives = cgp.utils.primitives_from_class_names(primitives_str)
+
+    genome_params["primitives"] = primitives
+
+    cgp.Genome(**genome_params)
