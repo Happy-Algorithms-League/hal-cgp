@@ -6,12 +6,17 @@ HAL-CGP
 [![GPL license](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-3.0.html)
 [![Build Status](https://api.travis-ci.org/Happy-Algorithms-League/hal-cgp.svg?branch=master)](https://travis-ci.org/Happy-Algorithms-League/hal-cgp)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Coverage Status](https://coveralls.io/repos/github/Happy-Algorithms-League/python-gp/badge.svg?branch=master)](https://coveralls.io/github/Happy-Algorithms-League/python-gp?branch=master)
 
-Cartesian Genetic Programming (CGP) in Python.
+Cartesian genetic programming (CGP) in pure Python.
 
-This library implements Cartesian Genetic Programming (e.g, Miller and Thomson, 2000; Miller, 2011) for symbolic regression in pure Python, targeting applications with expensive fitness evaluations. It provides Python data structures to represent and evolve two-dimensional directed graphs (genotype) that are translated into computational graphs (phenotype) implementing mathematical expressions. The computational graphs can be compiled as a Python functions, SymPy expressions (Meurer et al., 2017) or PyTorch modules (Paszke et al., 2017). The library currently implements an evolutionary algorithm, specifically (mu + lambda) evolution strategies adapted from Deb et al. (2002), to evolve a population of symbolic expressions in order to optimize an objective function.
+This library implements Cartesian genetic programming (e.g, Miller and Thomson, 2000; Miller, 2011) for symbolic regression in pure Python, targeting applications with expensive fitness evaluations. It provides Python data structures to represent and evolve two-dimensional directed graphs (genotype) that are translated into computational graphs (phenotype) implementing mathematical expressions. The computational graphs can be compiled as a Python functions, SymPy expressions (Meurer et al., 2017) or PyTorch modules (Paszke et al., 2017). The library currently implements an evolutionary algorithm, specifically (mu + lambda) evolution strategies adapted from Deb et al. (2002), to evolve a population of symbolic expressions in order to optimize an objective function.
 
 <div style="text-align:center"><img src="cgp-sketch.png" alt="CGP Sketch" width="600"/></div>
+
+<sub>Figure from Jordan, Schmidt, Senn & Petrovici, "Evolving to learn: discovering interpretable plasticity rules for spiking networks", [ arxiv:2005.14149](https://arxiv.org/abs/2005.14149).</sub>
+
 
 A simple example of CGP applied to a symbolic regression problem can be found in `examples/example_evo_regression.py`.
 
@@ -74,9 +79,9 @@ cgp.evolve(pop, obj, ea, **evolve_params, print_progress=True, callback=recordin
 References
 ==========
 
-Miller, J. and Thomson, P. (2000). Cartesian Genetic Programming. In Proc. European Conference on Genetic Programming, volume 1802, pages 121-132. Springer.
+Miller, J. and Thomson, P. (2000). Cartesian genetic programming. In Proc. European Conference on Genetic Programming, volume 1802, pages 121-132. Springer.
 
-Miller, J. F. (2011). Cartesian Genetic Programming. In Cartesian Genetic Programming, pages 17-34. Springer.
+Miller, J. F. (2011). Cartesian genetic programming. In Cartesian genetic programming, pages 17-34. Springer.
 
 Meurer, A., Smith, C. P., Paprocki, M., Certik, O., Kirpichev, S. B., Rocklin, M., ... & Rathnayake, T. (2017). SymPy: Symbolic Computing in Python. PeerJ Computer Science, 3, e103.
 
