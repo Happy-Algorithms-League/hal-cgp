@@ -77,11 +77,11 @@ def test_fitness_parents(population_params, genome_params_list):
     assert np.all(pop.fitness_parents() == pytest.approx(fitness_values))
 
 
-def test_pop_uses_own_rng(population_params, genome_params_list, rng_seed):
+def test_pop_uses_own_rng(population_params, genome_params, rng_seed):
     """Test independence of Population on global numpy rng.
     """
 
-    pop = cgp.Population(**population_params, genome_params=genome_params_list)
+    pop = cgp.Population(**population_params, genome_params=genome_params)
 
     np.random.seed(rng_seed)
 
@@ -96,4 +96,4 @@ def test_pop_uses_own_rng(population_params, genome_params_list, rng_seed):
     # since Population does not depend on global rng seed, we
     # expect different individuals in the two populations
     for p_0, p_1 in zip(parents_0, parents_1):
-        assert all([g0.dna != g1.dna for g0, g1 in zip(p_0.genome, p_1.genome)])
+        assert p_0.genome.dna != p_1.genome.dna

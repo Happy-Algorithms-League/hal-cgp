@@ -84,8 +84,8 @@ def test_evolve_two_expressions(population_params, ea_params):
         def f1(x):
             return (x[0] * x[1]) - x[1]
 
-        y0 = cgp.CartesianGraph(individual.genome[0]).to_func()
-        y1 = cgp.CartesianGraph(individual.genome[1]).to_func()
+        y0 = cgp.CartesianGraph(individual.genomes[0]).to_func()
+        y1 = cgp.CartesianGraph(individual.genomes[1]).to_func()
 
         loss = 0
         for _ in range(100):

@@ -34,6 +34,30 @@ class IndividualBase:
         self.fitness : Union[float, None] = fitness
         self.idx: int
 
+    def clone(self):
+        raise NotImplementedError()
+
+    def mutate(self, mutation_rate, rng):
+        raise NotImplementedError()
+
+    def randomize_genome(self, rng):
+        raise NotImplementedError()
+
+    def to_func(self):
+        raise NotImplementedError()
+
+    def to_numpy(self):
+        raise NotImplementedError()
+
+    def to_torch(self):
+        raise NotImplementedError()
+
+    def to_sympy(self, simplify):
+        raise NotImplementedError()
+
+    def update_parameters_from_torch_class(self, torch_cls):
+        raise NotImplementedError()
+
     @staticmethod
     def _mutate_genome(genome: Genome, mutation_rate: float, rng: np.random.RandomState) -> bool:
         """Mutate a given genome.

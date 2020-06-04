@@ -94,7 +94,7 @@ class Population:
                 for gen in genomes:
                     gen.randomize(self.rng)
                 individual_m = IndividualMultiGenome(
-                    fitness=None, genome=genomes
+                    fitness=None, genomes=genomes
                 )  # type: IndividualBase
                 individuals.append(individual_m)
         return individuals
@@ -169,23 +169,3 @@ class Population:
             List of fitness values for all parents.
         """
         return [ind.fitness for ind in self._parents]
-
-    def dna_parents(self) -> Union[List[List[int]], List[List[List[int]]]]:
-        """Return a list of the DNA of all parents.
-
-        Returns
-        ----------
-        List[List[List[int]]]
-            List of dna of all parents.
-        """
-
-        if isinstance(self._genome_params, dict):
-            dnas: List[List[int]] = []
-        elif isinstance(self._genome_params, List[dict]):
-            dnas: List[List[List[int]]] = []
-        for parent in self.parents:
-            if isinstance(parent, IndividualSingleGenome):
-                dnas.append(parent.genome.dna)
-            elif isinstance(parent, IndividualSingleGenome):
-                dnas.append([gen.dna for gen in parent.genome])
-        return dnas
