@@ -295,9 +295,9 @@ def test_catch_invalid_allele_in_inactive_region():
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
 
 
-def test_individuals_have_different_genomes(population_params, genome_params, ea_params):
+def test_individuals_have_different_genome(population_params, genome_params, ea_params):
     def objective(ind):
-        ind.fitness = ind.idx
+        ind.fitness = float(ind.idx)
         return ind
 
     pop = cgp.Population(**population_params, genome_params=genome_params)
@@ -310,7 +310,6 @@ def test_individuals_have_different_genomes(population_params, genome_params, ea
     ea.step(pop, objective)
 
     for i, parent_i in enumerate(pop._parents):
-
         for j, parent_j in enumerate(pop._parents):
             if i != j:
                 assert parent_i is not parent_j

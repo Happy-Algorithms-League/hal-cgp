@@ -7,12 +7,12 @@ import cgp
 
 def test_objective_with_label(population_params, genome_params):
     def objective_without_label(individual):
-        individual.fitness = -2
+        individual.fitness = -2.0
         return individual
 
     def objective_with_label(individual, label):
         assert label == "test"
-        individual.fitness = -1
+        individual.fitness = -1.0
         return individual
 
     pop = cgp.Population(**population_params, genome_params=genome_params)

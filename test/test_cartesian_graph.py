@@ -230,9 +230,9 @@ def test_to_numpy():
 
 batch_sizes = [1, 10]
 primitives = (cgp.Mul, cgp.ConstantFloat)
-genomes = [cgp.Genome(1, 1, 2, 2, 1, primitives) for i in range(2)]
+genome = [cgp.Genome(1, 1, 2, 2, 1, primitives) for i in range(2)]
 # Function: f(x) = 1*x
-genomes[0].dna = [
+genome[0].dna = [
     ID_INPUT_NODE,
     ID_NON_CODING_GENE,
     ID_NON_CODING_GENE,
@@ -253,7 +253,7 @@ genomes[0].dna = [
     ID_NON_CODING_GENE,
 ]
 # Function: f(x) = 1
-genomes[1].dna = [
+genome[1].dna = [
     ID_INPUT_NODE,
     ID_NON_CODING_GENE,
     ID_NON_CODING_GENE,
@@ -274,9 +274,9 @@ genomes[1].dna = [
     ID_NON_CODING_GENE,
 ]
 
-genomes += [cgp.Genome(1, 2, 2, 2, 1, primitives) for i in range(2)]
+genome += [cgp.Genome(1, 2, 2, 2, 1, primitives) for i in range(2)]
 # Function: f(x) = (1*x, 1*1)
-genomes[2].dna = [
+genome[2].dna = [
     ID_INPUT_NODE,
     ID_NON_CODING_GENE,
     ID_NON_CODING_GENE,
@@ -300,7 +300,7 @@ genomes[2].dna = [
     ID_NON_CODING_GENE,
 ]
 # Function: f(x) = (1, x*x)
-genomes[3].dna = [
+genome[3].dna = [
     ID_INPUT_NODE,
     ID_NON_CODING_GENE,
     ID_NON_CODING_GENE,
@@ -325,7 +325,7 @@ genomes[3].dna = [
 ]
 
 
-@pytest.mark.parametrize("genome, batch_size", itertools.product(genomes, batch_sizes))
+@pytest.mark.parametrize("genome, batch_size", itertools.product(genome, batch_sizes))
 def test_compile_numpy_output_shape(genome, batch_size):
 
     c = cgp.CartesianGraph(genome).to_numpy()
@@ -334,7 +334,7 @@ def test_compile_numpy_output_shape(genome, batch_size):
     assert y.shape == (batch_size, genome._n_outputs)
 
 
-@pytest.mark.parametrize("genome, batch_size", itertools.product(genomes, batch_sizes))
+@pytest.mark.parametrize("genome, batch_size", itertools.product(genome, batch_sizes))
 def test_compile_torch_output_shape(genome, batch_size):
     torch = pytest.importorskip("torch")
 

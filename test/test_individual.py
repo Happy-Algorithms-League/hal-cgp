@@ -3,7 +3,7 @@ import pickle
 import pytest
 
 import cgp
-from cgp.individual import Individual
+from cgp.individual import IndividualSingleGenome
 from cgp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
 
 
@@ -11,7 +11,7 @@ def test_pickle_individual():
 
     primitives = (cgp.Add,)
     genome = cgp.Genome(1, 1, 1, 1, 1, primitives)
-    individual = Individual(None, genome)
+    individual = IndividualSingleGenome(None, genome)
 
     with open("individual.pkl", "wb") as f:
         pickle.dump(individual, f)
@@ -36,7 +36,7 @@ def test_individual_with_parameter_python():
         2,
         ID_NON_CODING_GENE,
     ]
-    individual = Individual(None, genome)
+    individual = IndividualSingleGenome(None, genome)
 
     c = 1.0
     x = [3.0]
@@ -74,7 +74,7 @@ def test_individual_with_parameter_torch():
         2,
         ID_NON_CODING_GENE,
     ]
-    individual = Individual(None, genome)
+    individual = IndividualSingleGenome(None, genome)
 
     c = 1.0
     x = torch.empty(2, 1).normal_()
@@ -114,7 +114,7 @@ def test_individual_with_parameter_sympy():
         2,
         ID_NON_CODING_GENE,
     ]
-    individual = Individual(None, genome)
+    individual = IndividualSingleGenome(None, genome)
 
     c = 1.0
     x = [3.0]
@@ -158,7 +158,7 @@ def test_to_and_from_torch_plus_backprop():
         3,
         ID_NON_CODING_GENE,
     ]
-    individual = Individual(None, genome)
+    individual = IndividualSingleGenome(None, genome)
 
     def f_target(x):
         return math.pi * x
@@ -217,7 +217,7 @@ def test_update_parameters_from_torch_class_resets_fitness():
         ID_NON_CODING_GENE,
     ]
     fitness = 1.0
-    individual = Individual(fitness, genome)
+    individual = IndividualSingleGenome(fitness, genome)
 
     f = individual.to_torch()
     f._p1.data[0] = math.pi
@@ -251,7 +251,7 @@ def test_update_parameters_from_torch_class_does_not_reset_fitness_for_unused_pa
         ID_NON_CODING_GENE,
     ]
     fitness = 1.0
-    individual = Individual(fitness, genome)
+    individual = IndividualSingleGenome(fitness, genome)
 
     f = individual.to_torch()
 

@@ -11,7 +11,7 @@ def test_gradient_based_step_towards_maximum():
     genome = cgp.Genome(1, 1, 1, 1, 1, primitives)
     # f(x) = c
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
-    ind = cgp.individual.Individual(None, genome)
+    ind = cgp.individual.IndividualSingleGenome(None, genome)
 
     def objective(f):
         x_dummy = torch.zeros((1, 1), dtype=torch.double)  # not used

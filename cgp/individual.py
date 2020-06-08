@@ -1,53 +1,80 @@
+import numpy as np
+from typing import Callable, List, Union
+
+try:
+    import sympy  # noqa: F401
+    from sympy.core import expr as sympy_expr  # noqa: F401
+
+    sympy_available = True
+except ModuleNotFoundError:
+    sympy_available = False
+
+try:
+    import torch  # noqa: F401
+
+    torch_available = True
+except ModuleNotFoundError:
+    torch_available = False
+
 from .genome import Genome
 from .cartesian_graph import CartesianGraph
 
 
-class Individual:
-    """An individual representing a particular computational graph.
+class IndividualBase:
+    """Base class for all individuals.
     """
 
-    def __init__(self, fitness, genome):
+    def __init__(self, fitness: Union[float, None]) -> None:
         """Init function.
 
         fitness : float
             Fitness of the individual.
-        genome: Genome instance
-            Genome of the individual.
         """
-        self.fitness = fitness
-        self.genome = genome
-        self.idx = None  # an identifier to keep track of all unique genomes
-
-    def __repr__(self):
-        return f"Individual(idx={self.idx}, fitness={self.fitness}, genome={self.genome}))"
+        self.fitness: Union[float, None] = fitness
+        self.idx: int
 
     def clone(self):
-        """Clone the individual.
+        raise NotImplementedError()
 
-        Returns
-        -------
-        Individual
-        """
-        return Individual(self.fitness, self.genome.clone())
+    def mutate(self, mutation_rate, rng):
+        raise NotImplementedError()
 
-    def crossover(self, other_parent, rng):
-        """Create a new individual by cross over with another individual.
+    def randomize_genome(self, rng):
+        raise NotImplementedError()
+
+    def to_func(self):
+        raise NotImplementedError()
+
+    def to_numpy(self):
+        raise NotImplementedError()
+
+    def to_torch(self):
+        raise NotImplementedError()
+
+    def to_sympy(self, simplify):
+        raise NotImplementedError()
+
+    def update_parameters_from_torch_class(self, torch_cls):
+        raise NotImplementedError()
+
+    @staticmethod
+    def _mutate_genome(genome: Genome, mutation_rate: float, rng: np.random.RandomState) -> bool:
+        """Mutate a given genome.
 
         Parameters
         ----------
-        other_parent : Individual
-            Other individual to perform crossover with.
+        genome : Genome
+            Genome to be mutated.
+        mutation_rate : float
+            Proportion of genes to be mutated, between 0 and 1.
         rng : numpy.RandomState
-            Random number generator instance to use for crossover.
+            Random number generator instance.
 
         Returns
         -------
-        Individual
+        bool
+            Whether all mutations were silent.
         """
-        raise NotImplementedError("crossover currently not supported")
-
-    def _mutate(self, genome, mutation_rate, rng):
-
         n_mutations = int(mutation_rate * len(genome.dna))
         assert n_mutations > 0
 
@@ -55,34 +82,16 @@ class Individual:
         active_regions = graph.determine_active_regions()
         only_silent_mutations = genome.mutate(n_mutations, active_regions, rng)
 
-        if not only_silent_mutations:
-            self.fitness = None
+        return only_silent_mutations
 
-    def mutate(self, mutation_rate, rng):
-        """Mutate the individual in place.
-
-        Parameters
-        ----------
-        mutation_rate : float
-            Proportion of mutations determining the number of genes to be mutated, between 0 and 1.
-        rng : numpy.RandomState
-            Random number generator instance to use for crossover.
-
-        Returns
-        -------
-        None
-        """
-        self._mutate(self.genome, mutation_rate, rng)
-
-    def randomize_genome(self, genome_params, rng):
+    @staticmethod
+    def _randomize_genome(genome: Genome, rng: np.random.RandomState) -> None:
         """Randomize the individual's genome.
 
         Parameters
         ----------
-        genome_params : dict
-            Parameter dictionary for the new randomized genome.
-            Needs to contain: n_inputs, n_outputs, n_columns, n_rows,
-            levels_back, primitives.
+        genome : Genome
+            Genome to be randomized.
         rng : numpy.RandomState
             Random number generator instance to use for crossover.
 
@@ -90,89 +99,121 @@ class Individual:
         -------
         None
         """
-        self.genome = Genome(**genome_params)
-        self.genome.randomize(rng)
+        genome.randomize(rng)
 
-    def to_func(self):
-        """Return the expression represented by the individual as Callable.
+    @staticmethod
+    def _to_func(genome: Genome) -> Callable[[List[float]], List[float]]:
+        return CartesianGraph(genome).to_func()
 
-        Returns
-        ----------
-        Callable
+    @staticmethod
+    def _to_numpy(genome: Genome) -> Callable[[np.ndarray], np.ndarray]:
+        return CartesianGraph(genome).to_numpy()
+
+    @staticmethod
+    def _to_torch(genome: Genome) -> "torch.nn.Module":
+        return CartesianGraph(genome).to_torch()
+
+    @staticmethod
+    def _to_sympy(genome: Genome, simplify) -> "sympy_expr.Expr":
+        return CartesianGraph(genome).to_sympy(simplify)
+
+    @staticmethod
+    def _update_parameters_from_torch_class(genome: Genome, torch_cls: "torch.nn.Module") -> bool:
+        return genome.update_parameters_from_torch_class(torch_cls)
+
+
+class IndividualSingleGenome(IndividualBase):
+    """An individual representing a particular computational graph.
+    """
+
+    def __init__(self, fitness: Union[float, None], genome: Genome) -> None:
+        """Init function.
+
+        fitness : float
+            Fitness of the individual.
+        genome: Genome
+            Genome of the individual.
         """
-        return CartesianGraph(self.genome).to_func()
+        super().__init__(fitness)
+        self.genome: Genome = genome
 
-    def to_numpy(self):
-        """Return the expression represented by the individual as
-        NumPy-compatible Callable.
+    def __repr__(self):
+        return f"Individual(idx={self.idx}, fitness={self.fitness}, genome={self.genome}))"
 
-        Returns
-        -------
-        Callable
-        """
-        return CartesianGraph(self.genome).to_numpy()
+    def clone(self) -> "IndividualSingleGenome":
+        return IndividualSingleGenome(self.fitness, self.genome.clone())
 
-    def to_torch(self):
-        """Return the expression represented by the individual as Torch class.
+    def mutate(self, mutation_rate: float, rng: np.random.RandomState) -> None:
+        only_silent_mutations = self._mutate_genome(self.genome, mutation_rate, rng)
+        if not only_silent_mutations:
+            self.fitness = None
 
-        Returns
-        -------
-        torch.nn.Module
-        """
-        return CartesianGraph(self.genome).to_torch()
+    def randomize_genome(self, rng: np.random.RandomState) -> None:
+        self._randomize_genome(self.genome, rng)
 
-    def to_sympy(self, simplify=True):
-        """Return the expression represented by the individual as SymPy
-        expression.
+    def to_func(self) -> Callable[[List[float]], List[float]]:
+        return self._to_func(self.genome)
 
-        Returns
-        -------
-        SymPy expression
-        """
-        return CartesianGraph(self.genome).to_sympy(simplify)
+    def to_numpy(self) -> Callable[[np.ndarray], np.ndarray]:
+        return self._to_numpy(self.genome)
 
-    def update_parameters_from_torch_class(self, torch_cls):
-        any_parameter_updated = self.genome.update_parameters_from_torch_class(torch_cls)
+    def to_torch(self) -> "torch.nn.Module":
+        return self._to_torch(self.genome)
 
+    def to_sympy(self, simplify: bool = True) -> "sympy_expr.Expr":
+        return self._to_sympy(self.genome, simplify)
+
+    def update_parameters_from_torch_class(self, torch_cls: "torch.nn.Module") -> None:
+        any_parameter_updated = self._update_parameters_from_torch_class(self.genome, torch_cls)
         if any_parameter_updated:
             self.fitness = None
 
 
-class IndividualMultiGenome(Individual):
-    """An individual with multiple genomes.
-
-    Derived from Individual.
+class IndividualMultiGenome(IndividualBase):
+    """An individual with multiple genomes each representing a particular computational graph.
     """
 
-    def clone(self):
+    def __init__(self, fitness: Union[float, None], genome: List[Genome]) -> None:
+        """Init function.
+
+        fitness : float
+            Fitness of the individual.
+        genome: List[Genome]
+            List of genomes of the individual.
+        """
+        super().__init__(fitness)
+        self.genome: List[Genome] = genome
+
+    def clone(self) -> "IndividualMultiGenome":
         return IndividualMultiGenome(self.fitness, [g.clone() for g in self.genome])
 
-    def mutate(self, mutation_rate, rng):
+    def mutate(self, mutation_rate: float, rng: np.random.RandomState) -> None:
         for g in self.genome:
-            self._mutate(g, mutation_rate, rng)
+            only_silent_mutations = self._mutate_genome(g, mutation_rate, rng)
+            if not only_silent_mutations:
+                self.fitness = None
 
-    def randomize_genome(self, genome_params, rng):
-        self.genome = []
-        for g_params in genome_params:
-            self.genome.append(Genome(**g_params))
-            self.genome[-1].randomize(rng)
+    def randomize_genome(self, rng: np.random.RandomState) -> None:
+        for g in self.genome:
+            self._randomize_genome(g, rng)
 
-    def to_func(self):
-        """Return list of Callables from the individual's genomes.
+    def to_func(self) -> List[Callable[[List[float]], List[float]]]:
+        return [self._to_func(g) for g in self.genome]
 
-        Returns
-        ----------
-        List[Callable]
-        """
+    def to_numpy(self) -> List[Callable[[np.ndarray], np.ndarray]]:
+        return [self._to_numpy(g) for g in self.genome]
 
-        return [CartesianGraph(g).to_func() for g in self.genome]
+    def to_torch(self) -> List["torch.nn.Module"]:
+        return [self._to_torch(g) for g in self.genome]
 
-    def to_sympy(self, simplify=True):
-        """Return list of str expressions defining the functions represented by the invidual's genomes.
+    def to_sympy(self, simplify: bool = True) -> List["sympy_expr.Expr"]:
+        return [self._to_sympy(g, simplify) for g in self.genome]
 
-        Returns
-        ----------
-        str
-        """
+    def update_parameters_from_torch_class(self, torch_cls: List["torch.nn.Module"]) -> None:
+        any_parameter_updated = any(
+            self._update_parameters_from_torch_class(g, tcls)
+            for g, tcls in zip(self.genome, torch_cls)
+        )
 
-        return [CartesianGraph(g).to_sympy(simplify) for g in self.genome]
+        if any_parameter_updated:
+            self.fitness = None
