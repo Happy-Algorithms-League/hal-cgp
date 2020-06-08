@@ -1,3 +1,4 @@
+from .__version__ import __version__
 from .genome import Genome
 from .cartesian_graph import CartesianGraph
 from .node import (

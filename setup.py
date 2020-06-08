@@ -1,5 +1,13 @@
 # encoding: utf8
+import re
 from setuptools import setup
+
+
+def read_version():
+    with open("./cgp/__version__.py") as f:
+        line = f.read()
+        match = re.findall(r"[0-9]+\.[0-9]+\.[0-9]+", line)
+        return match[0]
 
 
 def read_requirements():
@@ -24,7 +32,7 @@ def read_extra_requirements():
 
 setup(
     name="hal-cgp",
-    version="0.1",
+    version=read_version(),
     author="Jakob Jordan, Maximilian Schmidt",
     author_email="jakobjordan@posteo.de",
     description=("Cartesian Genetic Programming in pure Python."),
