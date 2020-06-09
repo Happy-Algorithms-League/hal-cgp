@@ -67,7 +67,7 @@ def evolution():
         "n_columns": 20,
         "n_rows": 1,
         "levels_back": None,
-        "primitives": [cgp.Add, cgp.Sub, cgp.Mul, cgp.Parameter],
+        "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Parameter),
     }
 
     ea_params = {"n_offsprings": 4, "n_breeding": 4, "tournament_size": 1, "n_processes": 1}

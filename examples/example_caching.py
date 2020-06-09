@@ -49,7 +49,7 @@ def objective(individual):
 
 def evolution():
     params = {
-        "population_params": {"n_parents": 10, "mutation_rate": 0.5, "seed": 8188211},
+        "population_params": {"n_parents": 10, "mutation_rate": 0.05, "seed": 8188211},
         "ea_params": {
             "n_offsprings": 10,
             "n_breeding": 10,
@@ -62,7 +62,7 @@ def evolution():
             "n_columns": 10,
             "n_rows": 2,
             "levels_back": 2,
-            "primitives": [cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat],
+            "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat),
         },
         "evolve_params": {"max_generations": 100, "min_fitness": -1e-12},
     }
