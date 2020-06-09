@@ -211,9 +211,10 @@ class IndividualMultiGenome(IndividualBase):
 
     def update_parameters_from_torch_class(self, torch_cls: List["torch.nn.Module"]) -> None:
         any_parameter_updated = any(
-            self._update_parameters_from_torch_class(g, tcls)
-            for g, tcls in zip(self.genome, torch_cls)
+            [
+                self._update_parameters_from_torch_class(g, tcls)
+                for g, tcls in zip(self.genome, torch_cls)
+            ]
         )
-
         if any_parameter_updated:
             self.fitness = None
