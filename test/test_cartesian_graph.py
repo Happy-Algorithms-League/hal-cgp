@@ -383,7 +383,7 @@ def test_to_sympy():
         )
 
 
-def test_catch_invalid_sympy_expr():
+def test_allow_sympy_expr_with_infinities():
     pytest.importorskip("sympy")
 
     primitives = (cgp.Sub, cgp.Div)
@@ -406,8 +406,9 @@ def test_catch_invalid_sympy_expr():
     ]
     graph = cgp.CartesianGraph(genome)
 
-    with pytest.raises(Exception):
-        graph.to_sympy(simplify=True)
+    expr = graph.to_sympy(simplify=True)[0]
+    # complex infinity should appear in expression
+    assert "zoo" in str(expr)
 
 
 def test_allow_powers_of_x_0():

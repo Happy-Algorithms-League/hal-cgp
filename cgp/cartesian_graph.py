@@ -4,7 +4,7 @@ import re
 
 try:
     import sympy
-    from sympy.core import expr as sympy_expr
+    from sympy.core import expr as sympy_expr  # noqa: F401
 
     sympy_available = True
 except ModuleNotFoundError:
@@ -377,20 +377,6 @@ class _C(torch.nn.Module):
         if not sympy_available:
             raise ModuleNotFoundError("No module named 'sympy' (extra requirement)")
 
-        def _validate_sympy_expr(expr: sympy_expr.Expr) -> sympy_expr.Expr:
-            """Helper function that raises an exception upon encountering a SymPy
-            expression that can not be evaluated.
-
-            """
-
-            class InvalidSympyExpression(Exception):
-                pass
-
-            if "zoo" in str(expr) or "nan" in str(expr):
-                raise InvalidSympyExpression(str(expr))
-
-            return expr
-
         self._format_output_str_of_all_nodes()
 
         sympy_exprs = []
@@ -414,5 +400,5 @@ class _C(torch.nn.Module):
             return sympy_exprs
         else:  # simplify expression if desired
             for i, expr in enumerate(sympy_exprs):
-                sympy_exprs[i] = _validate_sympy_expr(expr.simplify())
+                sympy_exprs[i] = expr.simplify()
             return sympy_exprs
