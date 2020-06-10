@@ -34,7 +34,6 @@ setup(
     name="hal-cgp",
     version=read_version(),
     author="Jakob Jordan, Maximilian Schmidt",
-    author_email="jakobjordan@posteo.de",
     description=("Cartesian Genetic Programming in pure Python."),
     license="GPLv3",
     keywords="genetic programming",
