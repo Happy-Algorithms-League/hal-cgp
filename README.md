@@ -13,7 +13,7 @@ Cartesian genetic programming (CGP) in pure Python.
 
 This library implements Cartesian genetic programming (e.g, Miller and Thomson, 2000; Miller, 2011) for symbolic regression in pure Python, targeting applications with expensive fitness evaluations. It provides Python data structures to represent and evolve two-dimensional directed graphs (genotype) that are translated into computational graphs (phenotype) implementing mathematical expressions. The computational graphs can be compiled as a Python functions, SymPy expressions (Meurer et al., 2017) or PyTorch modules (Paszke et al., 2017). The library currently implements an evolutionary algorithm, specifically (mu + lambda) evolution strategies adapted from Deb et al. (2002), to evolve a population of symbolic expressions in order to optimize an objective function.
 
-<div style="text-align:center"><img src="cgp-sketch.png" alt="CGP Sketch" width="600"/></div>
+<div style="text-align:center"><img src="https://raw.githubusercontent.com/Happy-Algorithms-League/hal-cgp/master/cgp-sketch.png" alt="CGP Sketch" width="600"/></div>
 
 <sub>Figure from Jordan, Schmidt, Senn & Petrovici, "Evolving to learn: discovering interpretable plasticity rules for spiking networks", [ arxiv:2005.14149](https://arxiv.org/abs/2005.14149).</sub>
 
@@ -51,7 +51,7 @@ genome_params = {
 	"n_columns": 10,
 	"n_rows": 2,
 	"levels_back": 5,
-	"primitives": [cgp.Add, cgp.Sub, cgp.Mul, cgp.Div, cgp.ConstantFloat],
+	"primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Div, cgp.ConstantFloat),
 }
 
 ea_params = {"n_offsprings": 10, "n_breeding": 10, "tournament_size": 2, "n_processes": 2}
