@@ -51,7 +51,7 @@ genome_params = {
 	"n_columns": 10,
 	"n_rows": 2,
 	"levels_back": 5,
-	"primitives": [cgp.Add, cgp.Sub, cgp.Mul, cgp.Div, cgp.ConstantFloat],
+	"primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Div, cgp.ConstantFloat),
 }
 
 ea_params = {"n_offsprings": 10, "n_breeding": 10, "tournament_size": 2, "n_processes": 2}
