@@ -34,7 +34,6 @@ setup(
     name="hal-cgp",
     version=read_version(),
     author="Jakob Jordan, Maximilian Schmidt",
-    author_email="jakobjordan@posteo.de",
     description=("Cartesian Genetic Programming in pure Python."),
     license="GPLv3",
     keywords="genetic programming",
@@ -43,7 +42,7 @@ setup(
     install_requires=read_requirements(),
     extras_require=read_extra_requirements(),
     packages=["cgp", "cgp.ea", "cgp.local_search"],
-    long_description=open("README.md").read(),
+    long_description=open("long_description.md").read(),
     long_description_content_type="text/markdown",
     classifiers=[
         "Development Status :: 4 - Beta",
