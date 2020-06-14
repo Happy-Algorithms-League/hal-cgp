@@ -3,6 +3,10 @@ import re
 from setuptools import setup
 
 
+def _cut_version_number_from_requirement(req):
+    return req.split()[0]
+
+
 def read_version():
     with open("./cgp/__version__.py") as f:
         line = f.read()
@@ -11,8 +15,11 @@ def read_version():
 
 
 def read_requirements():
+    requirements = []
     with open("./requirements.txt") as f:
-        requirements = f.read()
+        for req in f:
+            req = req.replace("\n", " ")
+            requirements.append(req)
     return requirements
 
 
@@ -21,9 +28,9 @@ def read_extra_requirements():
     extra_requirements = {}
     extra_requirements["all"] = []
     with open("./extra-requirements.txt") as f:
-        for dep in f:
-            req = dep.replace("\n", " ")
-            extra_requirements[req] = [req]
+        for req in f:
+            req = req.replace("\n", " ")
+            extra_requirements[_cut_version_number_from_requirement(req)] = [req]
             extra_requirements["all"].append(req)
 
     extra_requirements[":python_version == '3.6'"] = ["dataclasses"]
