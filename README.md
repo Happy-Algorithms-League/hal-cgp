@@ -1,5 +1,6 @@
 HAL-CGP
 =======
+[![PyPI version](https://badge.fury.io/py/hal-cgp.svg)](https://badge.fury.io/py/hal-cgp)
 [![Python3.6](https://img.shields.io/badge/python-3.6-red.svg)](https://www.python.org/downloads/release/python-369/)
 [![Python3.7](https://img.shields.io/badge/python-3.7-red.svg)](https://www.python.org/)
 [![Python3.8](https://img.shields.io/badge/python-3.8-red.svg)](https://www.python.org/)
@@ -8,6 +9,8 @@ HAL-CGP
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Coverage Status](https://coveralls.io/repos/github/Happy-Algorithms-League/python-gp/badge.svg?branch=master)](https://coveralls.io/github/Happy-Algorithms-League/python-gp?branch=master)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3889163.svg)](https://doi.org/10.5281/zenodo.3889163)
+
 
 Cartesian genetic programming (CGP) in pure Python.
 
@@ -27,6 +30,26 @@ This library supports the use of constants as operator nodes in order to represe
 While the `ConstantFloat` node and derived nodes have a fixed output value, the output value of `Parameter` nodes are stored per individual and hence can be modified during evolution via local search.
 The library provides a local search function that performs stochastic gradient descent on the values of `Parameter` nodes (cf. Topchy & Punch, 2001; Izzo et al., 2017).
 See `examples/example_differential_evo_regression.py` for an example evolving an expression containing mathematical constants.
+
+Installation
+============
+
+You can install the latest relase via pip:
+```shell script
+pip install hal-cgp
+```
+
+This library depends on some optional packages defined in `extra_requirements.txt`. These are necessary, for example, to compile an individual to a SymPy expression or a PyTorch class. You can install all extra requirements via:
+```shell script
+pip install hal-cgp[all]
+```
+
+The adventurous can install the most recent development version directly from our master branch (don't use this in production unless there are good reasons!):
+```shell script
+git clone git@github.com:Happy-Algorithms-League/hal-cgp.git
+cd hal-cgp
+pip install .[all]
+```
 
 
 Basic usage
@@ -92,3 +115,10 @@ Deb, K., Pratap, A., Agarwal, S., & Meyarivan, T. A. M. T. (2002). A Fast and El
 Topchy, A., & Punch, W. F. (2001). Faster Genetic Programming based on Local Gradient Search of Numeric Leaf Values. In Proceedings of the Genetic and Evolutionary Computation Conference (GECCO-2001) (Vol. 155162). Morgan Kaufmann San Francisco, CA, USA.
 
 Izzo, D., Biscani, F., & Mereta, A. (2017). Differentiable Genetic Programming. In European Conference on Genetic Programming (pp. 35-51). Springer, Cham.
+
+Citation
+========
+
+If you use HAL-CGP in your work, please cite it as:
+
+Schmidt, Maximilian & Jordan, Jakob (2020) hal-cgp: Cartesian genetic programming in pure Python. [10.5281/zenodo.3889163](https://doi.org/10.5281/zenodo.3889163)
