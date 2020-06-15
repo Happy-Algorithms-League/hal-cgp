@@ -8,7 +8,7 @@ HAL-CGP
 [![Build Status](https://api.travis-ci.org/Happy-Algorithms-League/hal-cgp.svg?branch=master)](https://travis-ci.org/Happy-Algorithms-League/hal-cgp)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Coverage Status](https://coveralls.io/repos/github/Happy-Algorithms-League/python-gp/badge.svg?branch=master)](https://coveralls.io/github/Happy-Algorithms-League/python-gp?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/Happy-Algorithms-League/hal-cgp/badge.svg?branch=master)](https://coveralls.io/github/Happy-Algorithms-League/hal-cgp?branch=master)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3889163.svg)](https://doi.org/10.5281/zenodo.3889163)
 
 
