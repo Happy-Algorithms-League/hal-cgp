@@ -17,10 +17,12 @@ try:
 except ModuleNotFoundError:
     torch_available = False
 
-from typing import Callable, DefaultDict, Dict, List, Optional, Set
+from typing import Callable, DefaultDict, Dict, List, Optional, Set, TYPE_CHECKING
 
 from .node import Node, InputNode, OutputNode, Parameter
-from .genome import Genome
+
+if TYPE_CHECKING:
+    from .genome import Genome
 
 
 class CartesianGraph:
@@ -28,7 +30,7 @@ class CartesianGraph:
     Genome.
     """
 
-    def __init__(self, genome: Genome) -> None:
+    def __init__(self, genome: "Genome") -> None:
         """Init function.
 
         Parameters
@@ -95,7 +97,7 @@ class CartesianGraph:
 
         return s
 
-    def parse_genome(self, genome: Genome) -> None:
+    def parse_genome(self, genome: "Genome") -> None:
         if genome.dna is None:
             raise RuntimeError("dna not initialized")
 
