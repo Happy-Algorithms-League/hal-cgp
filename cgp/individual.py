@@ -59,46 +59,10 @@ class IndividualBase:
 
     @staticmethod
     def _mutate_genome(genome: Genome, mutation_rate: float, rng: np.random.RandomState) -> bool:
-        """Mutate a given genome.
-
-        Parameters
-        ----------
-        genome : Genome
-            Genome to be mutated.
-        mutation_rate : float
-            Proportion of genes to be mutated, between 0 and 1.
-        rng : numpy.RandomState
-            Random number generator instance.
-
-        Returns
-        -------
-        bool
-            Whether all mutations were silent.
-        """
-        n_mutations = int(mutation_rate * len(genome.dna))
-        assert n_mutations > 0
-
-        graph = CartesianGraph(genome)
-        active_regions = graph.determine_active_regions()
-        only_silent_mutations = genome.mutate(n_mutations, active_regions, rng)
-
-        return only_silent_mutations
+        return genome.mutate(mutation_rate, rng)
 
     @staticmethod
     def _randomize_genome(genome: Genome, rng: np.random.RandomState) -> None:
-        """Randomize the individual's genome.
-
-        Parameters
-        ----------
-        genome : Genome
-            Genome to be randomized.
-        rng : numpy.RandomState
-            Random number generator instance to use for crossover.
-
-        Returns
-        -------
-        None
-        """
         genome.randomize(rng)
 
     @staticmethod

@@ -10,6 +10,7 @@ except ModuleNotFoundError:
 
 from typing import DefaultDict, Generator, List, Optional, Tuple, Type
 
+from .cartesian_graph import CartesianGraph
 from .node import Node
 from .primitives import Primitives
 
@@ -355,25 +356,26 @@ class Genome:
         else:
             assert False  # should never be reached
 
-    def mutate(self, n_mutations: int, active_regions: List[int], rng: np.random.RandomState):
+    def mutate(self, mutation_rate: float, rng: np.random.RandomState):
         """Mutate the genome.
 
         Parameters
         ----------
-        n_mutations : int
-            Number of entries in the genome to be mutated.
-        active_regions: List[int]
-            Regions in the genome that are currently used in the
-            computational graph. Used to check whether mutations are
-            silent or require reevaluation of fitness.
+        mutation_rate : float
+            Proportion of genes to be mutated, between 0 and 1.
         rng : numpy.random.RandomState
             Random number generator instance to use for crossover.
 
         Returns
         ----------
-        True if only inactive regions of the genome were mutated, False otherwise.
+        bool
+            True if only inactive regions of the genome were mutated, False otherwise.
         """
-        assert isinstance(n_mutations, int) and 0 < n_mutations
+        n_mutations = int(mutation_rate * len(self.dna))
+        assert n_mutations > 0
+
+        graph = CartesianGraph(self)
+        active_regions = graph.determine_active_regions()
 
         successful_mutations = 0
         only_silent_mutations = True
