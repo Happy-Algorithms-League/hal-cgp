@@ -99,19 +99,18 @@ class Genome:
         self.parameter_names_to_values: DefaultDict = collections.defaultdict(return_float_one)
 
     def __getitem__(self, key: int) -> int:
-        if self._dna is None:
+        if self.dna is None:
             raise RuntimeError("dna not initialized")
-        return self._dna[key]
+        return self.dna[key]
 
     def __setitem__(self, key: int, value: int) -> None:
         dna = list(self._dna)
         dna[key] = value
-        self._validate_dna(dna)
-        self._dna = dna
+        self.dna = dna
 
     @property
     def dna(self) -> List[int]:
-        return self._dna
+        return list(self._dna)  # create copy to avoid inplace modification
 
     @dna.setter
     def dna(self, value: List[int]) -> None:
@@ -206,8 +205,7 @@ class Genome:
             dna += self._create_random_output_region(rng, permissible_inputs)
 
         # accept generated dna if it is valid
-        self._validate_dna(dna)
-        self._dna = dna
+        self.dna = dna
 
     def _permissible_inputs(self, region_idx: int) -> List[int]:
 
@@ -349,7 +347,7 @@ class Genome:
         if self._is_input_region(region_idx):
             return False
         elif self._is_hidden_region(region_idx):
-            node_arity = self._primitives[self._dna[region_idx * self._length_per_region]]._arity
+            node_arity = self._primitives[self.dna[region_idx * self._length_per_region]]._arity
             return input_index <= node_arity
         elif self._is_output_region(region_idx):
             return input_index == 1
@@ -377,6 +375,8 @@ class Genome:
         graph = CartesianGraph(self)
         active_regions = graph.determine_active_regions()
 
+        dna = list(self._dna)
+
         successful_mutations = 0
         only_silent_mutations = True
         while successful_mutations < n_mutations:
@@ -388,35 +388,34 @@ class Genome:
                 continue  # nothing to do here
 
             elif self._is_output_region(region_idx):
-                success = self._mutate_output_region(gene_idx, rng)
+                success = self._mutate_output_region(dna, gene_idx, rng)
                 if success:
                     silent = False
                     only_silent_mutations = only_silent_mutations and silent
                     successful_mutations += 1
 
             elif self._is_hidden_region(region_idx):
-                silent = self._mutate_hidden_region(gene_idx, active_regions, rng)
+                silent = self._mutate_hidden_region(dna, gene_idx, active_regions, rng)
                 only_silent_mutations = only_silent_mutations and silent
 
             else:
                 assert False  # should never be reached
 
-        self._validate_dna(self._dna)
-
+        self.dna = dna
         return only_silent_mutations
 
-    def _mutate_output_region(self, gene_idx, rng):
+    def _mutate_output_region(self, dna: List[int], gene_idx: int, rng: np.random.RandomState):
         assert self._is_gene_in_output_region(gene_idx)
 
         if not self._is_function_gene(gene_idx) and self._is_active_input_gene(gene_idx):
             permissible_inputs = self._permissible_inputs_for_output_region()
-            self._dna[gene_idx] = rng.choice(permissible_inputs)
+            dna[gene_idx] = rng.choice(permissible_inputs)
             return True
         else:
             return False
 
     def _mutate_hidden_region(
-        self, gene_idx: int, active_regions: List[int], rng: np.random.RandomState
+            self, dna: List[int], gene_idx: int, active_regions: List[int], rng: np.random.RandomState
     ) -> bool:
 
         assert self._is_gene_in_hidden_region(gene_idx)
@@ -425,12 +424,12 @@ class Genome:
         silent_mutation = region_idx not in active_regions
 
         if self._is_function_gene(gene_idx):
-            self._dna[gene_idx] = self._primitives.sample_allele(rng)
+            dna[gene_idx] = self._primitives.sample_allele(rng)
             return silent_mutation
 
         else:
             permissible_inputs = self._permissible_inputs(region_idx)
-            self._dna[gene_idx] = rng.choice(permissible_inputs)
+            dna[gene_idx] = rng.choice(permissible_inputs)
 
             silent_mutation = silent_mutation or (not self._is_active_input_gene(gene_idx))
             return silent_mutation
@@ -455,7 +454,7 @@ class Genome:
             self._levels_back,
             tuple(self._primitives),
         )
-        new.dna = self._dna.copy()
+        new.dna = self.dna.copy()
 
         # Lamarckian strategy: parameter values are passed on to
         # offspring

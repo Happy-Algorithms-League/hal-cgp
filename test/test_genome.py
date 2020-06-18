@@ -370,35 +370,26 @@ def test_mutate_hidden_region(rng_seed):
     active_regions = cgp.CartesianGraph(genome).determine_active_regions()
 
     # mutating any gene in inactive region returns True
-    genome.dna = list(dna)
-    assert genome._mutate_hidden_region(3, active_regions, rng) is True
-    genome.dna = list(dna)
-    assert genome._mutate_hidden_region(4, active_regions, rng) is True
-    genome.dna = list(dna)
-    assert genome._mutate_hidden_region(5, active_regions, rng) is True
+    assert genome._mutate_hidden_region(list(dna), 3, active_regions, rng) is True
+    assert genome._mutate_hidden_region(list(dna), 4, active_regions, rng) is True
+    assert genome._mutate_hidden_region(list(dna), 5, active_regions, rng) is True
 
     # mutating function gene in active region returns False
-    genome.dna = list(dna)
-    assert genome._mutate_hidden_region(6, active_regions, rng) is False
+    assert genome._mutate_hidden_region(list(dna), 6, active_regions, rng) is False
     # mutating inactive genes in active region returns True
-    genome.dna = list(dna)
-    assert genome._mutate_hidden_region(7, active_regions, rng) is True
-    genome.dna = list(dna)
-    assert genome._mutate_hidden_region(8, active_regions, rng) is True
+    assert genome._mutate_hidden_region(list(dna), 7, active_regions, rng) is True
+    assert genome._mutate_hidden_region(list(dna), 8, active_regions, rng) is True
 
     # mutating any gene in active region without silent genes returns False
-    genome.dna = list(dna)
-    assert genome._mutate_hidden_region(9, active_regions, rng) is False
-    genome.dna = list(dna)
-    assert genome._mutate_hidden_region(10, active_regions, rng) is False
-    genome.dna = list(dna)
-    assert genome._mutate_hidden_region(11, active_regions, rng) is False
+    assert genome._mutate_hidden_region(list(dna), 9, active_regions, rng) is False
+    assert genome._mutate_hidden_region(list(dna), 10, active_regions, rng) is False
+    assert genome._mutate_hidden_region(list(dna), 11, active_regions, rng) is False
 
 
 def test_mutate_output_region(rng_seed):
     rng = np.random.RandomState(rng_seed)
     genome = cgp.Genome(1, 1, 2, 1, None, (cgp.Add,))
-    genome.dna = [
+    dna = [
         ID_INPUT_NODE,
         ID_NON_CODING_GENE,
         ID_NON_CODING_GENE,
@@ -413,6 +404,6 @@ def test_mutate_output_region(rng_seed):
         ID_NON_CODING_GENE,
     ]
 
-    assert genome._mutate_output_region(9, rng) is False
-    assert genome._mutate_output_region(10, rng) is True
-    assert genome._mutate_output_region(11, rng) is False
+    assert genome._mutate_output_region(list(dna), 9, rng) is False
+    assert genome._mutate_output_region(list(dna), 10, rng) is True
+    assert genome._mutate_output_region(list(dna), 11, rng) is False
