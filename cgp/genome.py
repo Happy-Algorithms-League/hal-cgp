@@ -1,4 +1,3 @@
-import collections
 import numpy as np
 
 try:
@@ -8,24 +7,16 @@ try:
 except ModuleNotFoundError:
     torch_available = False
 
-from typing import DefaultDict, Generator, List, Optional, Tuple, Type
+from typing import Dict, Generator, List, Optional, Tuple, Type
 
 from .cartesian_graph import CartesianGraph
-from .node import Node
+from .node import Node, Parameter
 from .primitives import Primitives
 
 
 ID_INPUT_NODE: int = -1
 ID_OUTPUT_NODE: int = -2
 ID_NON_CODING_GENE: int = -3
-
-
-def return_float_one() -> float:
-    """Constructor for default value of defaultdict. Needs to be global to
-    support pickling.
-
-    """
-    return 1.0
 
 
 class Genome:
@@ -96,7 +87,7 @@ class Genome:
         self._id_unused_gene: int = ID_NON_CODING_GENE
 
         # dictionary to store values of Parameter nodes
-        self.parameter_names_to_values: DefaultDict = collections.defaultdict(return_float_one)
+        self._parameter_names_to_values: Dict[str, float] = {}
 
     def __getitem__(self, key: int) -> int:
         if self.dna is None:
@@ -110,12 +101,13 @@ class Genome:
 
     @property
     def dna(self) -> List[int]:
-        return list(self._dna)  # create copy to avoid inplace modification
+        return list(self._dna)  # return copy to avoid inplace modification
 
     @dna.setter
     def dna(self, value: List[int]) -> None:
         self._validate_dna(value)
         self._dna = value
+        self._initialize_unkown_parameters()
 
     @property
     def _n_hidden(self) -> int:
@@ -415,7 +407,7 @@ class Genome:
             return False
 
     def _mutate_hidden_region(
-            self, dna: List[int], gene_idx: int, active_regions: List[int], rng: np.random.RandomState
+        self, dna: List[int], gene_idx: int, active_regions: List[int], rng: np.random.RandomState
     ) -> bool:
 
         assert self._is_gene_in_hidden_region(gene_idx)
@@ -458,7 +450,7 @@ class Genome:
 
         # Lamarckian strategy: parameter values are passed on to
         # offspring
-        new.parameter_names_to_values = self.parameter_names_to_values.copy()
+        new._parameter_names_to_values = self._parameter_names_to_values.copy()
 
         return new
 
@@ -483,9 +475,20 @@ class Genome:
 
         for name, value in torch_cls.named_parameters():
             name = f"<{name[1:]}>"
-            if name in self.parameter_names_to_values:
-                self.parameter_names_to_values[name] = value.item()
-                assert not np.isnan(self.parameter_names_to_values[name])
+            if name in self._parameter_names_to_values:
+                self._parameter_names_to_values[name] = value.item()
+                assert not np.isnan(self._parameter_names_to_values[name])
                 any_parameter_updated = True
 
         return any_parameter_updated
+
+    def _initialize_unkown_parameters(self) -> None:
+        for region_idx, region in self.iter_hidden_regions():
+            node_id = region[0]
+            node_type = self._primitives[node_id]
+            parameter_name = f"<p{region_idx}>"
+            if (
+                issubclass(node_type, Parameter)
+                and parameter_name not in self._parameter_names_to_values
+            ):
+                self._parameter_names_to_values[parameter_name] = node_type.initial_value()
