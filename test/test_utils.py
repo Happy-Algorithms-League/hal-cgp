@@ -46,15 +46,20 @@ def test_cache_decorator(n_processes):
     # integration; the speedup of the second call with respect to the
     # first can nevertheless be tested
 
-    # first call should take long due to sleep
+    # first call should take long due to sleep; at least 90% of the
+    # sleep time; to account for possible timing measurement
+    # inaccuracies we do not choose 100%
     t0 = time.time()
     evaluate_objective_on_list(x)
-    assert (time.time() - t0) > (sleep_time / 2.0)
+    assert (time.time() - t0) > (0.9 * sleep_time)
 
-    # second call should be faster as result is retrieved from cache
+    # second call should be faster as result is retrieved from cache;
+    # at most 40% of the sleep time; to account for possible timing
+    # measurement inaccuracies and process spin up/down time in
+    # TravisCI we should not choose less
     t0 = time.time()
     evaluate_objective_on_list(x)
-    assert (time.time() - t0) < (sleep_time / 5.0)
+    assert (time.time() - t0) < (0.4 * sleep_time)
 
 
 def test_cache_decorator_consistency():
