@@ -33,5 +33,10 @@ script:
   - flake8 --config=.flake8 .
   - mypy cgp
   - pytest --cov=cgp
+  - if [ "$DEP" = "[all]" -a $TRAVIS_PYTHON_VERSION = 3.8 ]; then
+       python examples/example_evo_regression.py || exit 1 ;
+       python examples/example_differential_evo_regression.py || exit 1;
+       python examples/example_caching.py || exit 1;
+    fi
 after_success:
   - coveralls
