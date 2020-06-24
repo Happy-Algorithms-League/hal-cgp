@@ -141,7 +141,8 @@ if __name__ == "__main__":
 
         f_graph = champion.to_func()
         x_0_range = np.linspace(-5.0, 5.0, 20)
-        x_1_range = np.ones_like(x_0_range) * 2.0  # fix x_1 such than 1d plot makes sense
+        x_1_range = np.ones_like(x_0_range) * 2.0
+        # fix x_1 such than 1d plot makes sense
         y = [f_graph([x_0, x_1_range[0]]) for x_0 in x_0_range]
         y_target = target_function(np.hstack([x_0_range.reshape(-1, 1), x_1_range.reshape(-1, 1)]))
 

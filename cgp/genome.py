@@ -361,6 +361,10 @@ class Genome:
         bool
             True if only inactive regions of the genome were mutated, False otherwise.
         """
+
+        def count_dna_differences(dna0: List[int], dna1: List[int]) -> int:
+            return len([1 for gene0, gene1 in zip(dna0, dna1) if gene0 != gene1])
+
         n_mutations = int(mutation_rate * len(self.dna))
         assert n_mutations > 0
 
@@ -369,9 +373,8 @@ class Genome:
 
         dna = list(self._dna)
 
-        successful_mutations = 0
         only_silent_mutations = True
-        while successful_mutations < n_mutations:
+        while count_dna_differences(self.dna, dna) < n_mutations:
 
             gene_idx = rng.randint(0, self._n_genes)
             region_idx = gene_idx // self._length_per_region
@@ -380,31 +383,30 @@ class Genome:
                 continue  # nothing to do here
 
             elif self._is_output_region(region_idx):
-                success = self._mutate_output_region(dna, gene_idx, rng)
-                if success:
-                    silent = False
-                    only_silent_mutations = only_silent_mutations and silent
-                    successful_mutations += 1
+                silent = self._mutate_output_region(dna, gene_idx, rng)
 
             elif self._is_hidden_region(region_idx):
                 silent = self._mutate_hidden_region(dna, gene_idx, active_regions, rng)
-                only_silent_mutations = only_silent_mutations and silent
 
             else:
                 assert False  # should never be reached
 
+            only_silent_mutations = only_silent_mutations and silent
+
         self.dna = dna
         return only_silent_mutations
 
-    def _mutate_output_region(self, dna: List[int], gene_idx: int, rng: np.random.RandomState):
+    def _mutate_output_region(
+        self, dna: List[int], gene_idx: int, rng: np.random.RandomState
+    ) -> bool:
         assert self._is_gene_in_output_region(gene_idx)
 
         if not self._is_function_gene(gene_idx) and self._is_active_input_gene(gene_idx):
             permissible_inputs = self._permissible_inputs_for_output_region()
             dna[gene_idx] = rng.choice(permissible_inputs)
-            return True
-        else:
             return False
+        else:
+            return True
 
     def _mutate_hidden_region(
         self, dna: List[int], gene_idx: int, active_regions: List[int], rng: np.random.RandomState

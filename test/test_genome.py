@@ -404,6 +404,31 @@ def test_mutate_output_region(rng_seed):
         ID_NON_CODING_GENE,
     ]
 
-    assert genome._mutate_output_region(list(dna), 9, rng) is False
-    assert genome._mutate_output_region(list(dna), 10, rng) is True
-    assert genome._mutate_output_region(list(dna), 11, rng) is False
+    assert genome._mutate_output_region(list(dna), 9, rng) is True
+    assert genome._mutate_output_region(list(dna), 10, rng) is False
+    assert genome._mutate_output_region(list(dna), 11, rng) is True
+
+
+@pytest.mark.parametrize("mutation_rate", [0.02, 0.05, 0.2])
+def test_correct_number_of_mutations(mutation_rate, rng_seed):
+
+    n_inputs = 2
+    n_outputs = 1
+    n_columns = 10
+    n_rows = 2
+    levels_back = 5
+    primitives = (cgp.Add, cgp.Sub, cgp.Mul, cgp.Div, cgp.ConstantFloat)
+
+    rng = np.random.RandomState(rng_seed)
+    genome = cgp.Genome(n_inputs, n_outputs, n_columns, n_rows, levels_back, primitives)
+    genome.randomize(rng)
+
+    n_mutations = 0
+    genome_new = genome.clone()
+    genome_new.mutate(mutation_rate, rng)
+    for (gene_0, gene_1) in zip(genome.dna, genome_new.dna):
+        if gene_0 != gene_1:
+            n_mutations += 1
+
+    n_mutations_expected = int(mutation_rate * len(genome.dna))
+    assert n_mutations == n_mutations_expected
