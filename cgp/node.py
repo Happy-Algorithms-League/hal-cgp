@@ -285,6 +285,10 @@ class Parameter(Node):
             f"self._p{self._idx} = torch.nn.Parameter(torch.DoubleTensor([<p{self._idx}>]))\n"
         )
 
+    @staticmethod
+    def initial_value() -> float:
+        return 1.0
+
 
 class InputNode(Node):
     """Node representing a generic input node.

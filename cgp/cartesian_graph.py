@@ -1,4 +1,5 @@
 import collections
+import copy
 import numpy as np  # noqa: F401
 import re
 
@@ -17,7 +18,7 @@ try:
 except ModuleNotFoundError:
     torch_available = False
 
-from typing import Callable, DefaultDict, Dict, List, Optional, Set, TYPE_CHECKING
+from typing import Callable, Dict, List, Optional, Set, TYPE_CHECKING
 
 from .node import Node, InputNode, OutputNode, Parameter
 
@@ -43,7 +44,7 @@ class CartesianGraph:
         self._n_columns: int
         self._n_rows: int
         self._nodes: List
-        self._parameter_names_to_values: DefaultDict
+        self._parameter_names_to_values: Dict[str, float]
 
         self.parse_genome(genome)
 
@@ -105,11 +106,7 @@ class CartesianGraph:
         self._n_outputs = genome._n_outputs
         self._n_columns = genome._n_columns
         self._n_rows = genome._n_rows
-
-        # WARNING: creating a reference, not a copy here is essential;
-        # accessing missing elements in this DefaultDict during graph
-        # construction needs to construct keys with default values
-        self._parameter_names_to_values = genome.parameter_names_to_values
+        self._parameter_names_to_values = copy.deepcopy(genome._parameter_names_to_values)
 
         self._nodes = []
 

@@ -1,4 +1,3 @@
-import collections
 import numpy as np
 
 try:
@@ -8,24 +7,16 @@ try:
 except ModuleNotFoundError:
     torch_available = False
 
-from typing import DefaultDict, Generator, List, Optional, Tuple, Type
+from typing import Dict, Generator, List, Optional, Tuple, Type
 
 from .cartesian_graph import CartesianGraph
-from .node import Node
+from .node import Node, Parameter
 from .primitives import Primitives
 
 
 ID_INPUT_NODE: int = -1
 ID_OUTPUT_NODE: int = -2
 ID_NON_CODING_GENE: int = -3
-
-
-def return_float_one() -> float:
-    """Constructor for default value of defaultdict. Needs to be global to
-    support pickling.
-
-    """
-    return 1.0
 
 
 class Genome:
@@ -96,27 +87,27 @@ class Genome:
         self._id_unused_gene: int = ID_NON_CODING_GENE
 
         # dictionary to store values of Parameter nodes
-        self.parameter_names_to_values: DefaultDict = collections.defaultdict(return_float_one)
+        self._parameter_names_to_values: Dict[str, float] = {}
 
     def __getitem__(self, key: int) -> int:
-        if self._dna is None:
+        if self.dna is None:
             raise RuntimeError("dna not initialized")
-        return self._dna[key]
+        return self.dna[key]
 
     def __setitem__(self, key: int, value: int) -> None:
         dna = list(self._dna)
         dna[key] = value
-        self._validate_dna(dna)
-        self._dna = dna
+        self.dna = dna
 
     @property
     def dna(self) -> List[int]:
-        return self._dna
+        return list(self._dna)  # return copy to avoid inplace modification
 
     @dna.setter
     def dna(self, value: List[int]) -> None:
         self._validate_dna(value)
         self._dna = value
+        self._initialize_unkown_parameters()
 
     @property
     def _n_hidden(self) -> int:
@@ -206,8 +197,7 @@ class Genome:
             dna += self._create_random_output_region(rng, permissible_inputs)
 
         # accept generated dna if it is valid
-        self._validate_dna(dna)
-        self._dna = dna
+        self.dna = dna
 
     def _permissible_inputs(self, region_idx: int) -> List[int]:
 
@@ -349,7 +339,7 @@ class Genome:
         if self._is_input_region(region_idx):
             return False
         elif self._is_hidden_region(region_idx):
-            node_arity = self._primitives[self._dna[region_idx * self._length_per_region]]._arity
+            node_arity = self._primitives[self.dna[region_idx * self._length_per_region]]._arity
             return input_index <= node_arity
         elif self._is_output_region(region_idx):
             return input_index == 1
@@ -377,6 +367,8 @@ class Genome:
         graph = CartesianGraph(self)
         active_regions = graph.determine_active_regions()
 
+        dna = list(self._dna)
+
         successful_mutations = 0
         only_silent_mutations = True
         while successful_mutations < n_mutations:
@@ -388,35 +380,34 @@ class Genome:
                 continue  # nothing to do here
 
             elif self._is_output_region(region_idx):
-                success = self._mutate_output_region(gene_idx, rng)
+                success = self._mutate_output_region(dna, gene_idx, rng)
                 if success:
                     silent = False
                     only_silent_mutations = only_silent_mutations and silent
                     successful_mutations += 1
 
             elif self._is_hidden_region(region_idx):
-                silent = self._mutate_hidden_region(gene_idx, active_regions, rng)
+                silent = self._mutate_hidden_region(dna, gene_idx, active_regions, rng)
                 only_silent_mutations = only_silent_mutations and silent
 
             else:
                 assert False  # should never be reached
 
-        self._validate_dna(self._dna)
-
+        self.dna = dna
         return only_silent_mutations
 
-    def _mutate_output_region(self, gene_idx, rng):
+    def _mutate_output_region(self, dna: List[int], gene_idx: int, rng: np.random.RandomState):
         assert self._is_gene_in_output_region(gene_idx)
 
         if not self._is_function_gene(gene_idx) and self._is_active_input_gene(gene_idx):
             permissible_inputs = self._permissible_inputs_for_output_region()
-            self._dna[gene_idx] = rng.choice(permissible_inputs)
+            dna[gene_idx] = rng.choice(permissible_inputs)
             return True
         else:
             return False
 
     def _mutate_hidden_region(
-        self, gene_idx: int, active_regions: List[int], rng: np.random.RandomState
+        self, dna: List[int], gene_idx: int, active_regions: List[int], rng: np.random.RandomState
     ) -> bool:
 
         assert self._is_gene_in_hidden_region(gene_idx)
@@ -425,12 +416,12 @@ class Genome:
         silent_mutation = region_idx not in active_regions
 
         if self._is_function_gene(gene_idx):
-            self._dna[gene_idx] = self._primitives.sample_allele(rng)
+            dna[gene_idx] = self._primitives.sample_allele(rng)
             return silent_mutation
 
         else:
             permissible_inputs = self._permissible_inputs(region_idx)
-            self._dna[gene_idx] = rng.choice(permissible_inputs)
+            dna[gene_idx] = rng.choice(permissible_inputs)
 
             silent_mutation = silent_mutation or (not self._is_active_input_gene(gene_idx))
             return silent_mutation
@@ -455,11 +446,11 @@ class Genome:
             self._levels_back,
             tuple(self._primitives),
         )
-        new.dna = self._dna.copy()
+        new.dna = self.dna.copy()
 
         # Lamarckian strategy: parameter values are passed on to
         # offspring
-        new.parameter_names_to_values = self.parameter_names_to_values.copy()
+        new._parameter_names_to_values = self._parameter_names_to_values.copy()
 
         return new
 
@@ -484,9 +475,20 @@ class Genome:
 
         for name, value in torch_cls.named_parameters():
             name = f"<{name[1:]}>"
-            if name in self.parameter_names_to_values:
-                self.parameter_names_to_values[name] = value.item()
-                assert not np.isnan(self.parameter_names_to_values[name])
+            if name in self._parameter_names_to_values:
+                self._parameter_names_to_values[name] = value.item()
+                assert not np.isnan(self._parameter_names_to_values[name])
                 any_parameter_updated = True
 
         return any_parameter_updated
+
+    def _initialize_unkown_parameters(self) -> None:
+        for region_idx, region in self.iter_hidden_regions():
+            node_id = region[0]
+            node_type = self._primitives[node_id]
+            parameter_name = f"<p{region_idx}>"
+            if (
+                issubclass(node_type, Parameter)
+                and parameter_name not in self._parameter_names_to_values
+            ):
+                self._parameter_names_to_values[parameter_name] = node_type.initial_value()

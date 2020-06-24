@@ -19,19 +19,19 @@ def test_gradient_based_step_towards_maximum():
         return torch.nn.MSELoss()(f(x_dummy), target_value)
 
     # test increase parameter value if too small
-    ind.genome.parameter_names_to_values["<p1>"] = 0.9
+    ind.genome._parameter_names_to_values["<p1>"] = 0.9
     cgp.local_search.gradient_based(ind, objective, 0.05, 1)
-    assert ind.genome.parameter_names_to_values["<p1>"] == pytest.approx(0.91)
+    assert ind.genome._parameter_names_to_values["<p1>"] == pytest.approx(0.91)
 
     # test decrease parameter value if too large
-    ind.genome.parameter_names_to_values["<p1>"] = 1.1
+    ind.genome._parameter_names_to_values["<p1>"] = 1.1
     cgp.local_search.gradient_based(ind, objective, 0.05, 1)
-    assert ind.genome.parameter_names_to_values["<p1>"] == pytest.approx(1.09)
+    assert ind.genome._parameter_names_to_values["<p1>"] == pytest.approx(1.09)
 
     # test no change of parameter value if at optimum
-    ind.genome.parameter_names_to_values["<p1>"] = 1.0
+    ind.genome._parameter_names_to_values["<p1>"] = 1.0
     cgp.local_search.gradient_based(ind, objective, 0.05, 1)
-    assert ind.genome.parameter_names_to_values["<p1>"] == pytest.approx(1.0)
+    assert ind.genome._parameter_names_to_values["<p1>"] == pytest.approx(1.0)
 
 
 def test_gradient_based_step_towards_maximum_multi_genome():
@@ -53,22 +53,22 @@ def test_gradient_based_step_towards_maximum_multi_genome():
         return loss
 
     # test increase parameter value if too small
-    ind.genome[0].parameter_names_to_values["<p1>"] = 0.9
-    ind.genome[1].parameter_names_to_values["<p1>"] = 0.9
+    ind.genome[0]._parameter_names_to_values["<p1>"] = 0.9
+    ind.genome[1]._parameter_names_to_values["<p1>"] = 0.9
     cgp.local_search.gradient_based(ind, objective, 0.05, 1)
-    assert ind.genome[0].parameter_names_to_values["<p1>"] == pytest.approx(0.91)
-    assert ind.genome[1].parameter_names_to_values["<p1>"] == pytest.approx(0.92)
+    assert ind.genome[0]._parameter_names_to_values["<p1>"] == pytest.approx(0.91)
+    assert ind.genome[1]._parameter_names_to_values["<p1>"] == pytest.approx(0.92)
 
     # test decrease parameter value if too large
-    ind.genome[0].parameter_names_to_values["<p1>"] = 1.1
-    ind.genome[1].parameter_names_to_values["<p1>"] = 1.1
+    ind.genome[0]._parameter_names_to_values["<p1>"] = 1.1
+    ind.genome[1]._parameter_names_to_values["<p1>"] = 1.1
     cgp.local_search.gradient_based(ind, objective, 0.05, 1)
-    assert ind.genome[0].parameter_names_to_values["<p1>"] == pytest.approx(1.09)
-    assert ind.genome[1].parameter_names_to_values["<p1>"] == pytest.approx(1.08)
+    assert ind.genome[0]._parameter_names_to_values["<p1>"] == pytest.approx(1.09)
+    assert ind.genome[1]._parameter_names_to_values["<p1>"] == pytest.approx(1.08)
 
     # test no change of parameter value if at optimum
-    ind.genome[0].parameter_names_to_values["<p1>"] = 1.0
-    ind.genome[1].parameter_names_to_values["<p1>"] = 1.0
+    ind.genome[0]._parameter_names_to_values["<p1>"] = 1.0
+    ind.genome[1]._parameter_names_to_values["<p1>"] = 1.0
     cgp.local_search.gradient_based(ind, objective, 0.05, 1)
-    assert ind.genome[0].parameter_names_to_values["<p1>"] == pytest.approx(1.0)
-    assert ind.genome[1].parameter_names_to_values["<p1>"] == pytest.approx(1.0)
+    assert ind.genome[0]._parameter_names_to_values["<p1>"] == pytest.approx(1.0)
+    assert ind.genome[1]._parameter_names_to_values["<p1>"] == pytest.approx(1.0)

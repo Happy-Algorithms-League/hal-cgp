@@ -47,7 +47,7 @@ def test_individual_with_parameter_python():
     assert y[0] == pytest.approx(x[0] + c)
 
     c = 2.0
-    individual.genome.parameter_names_to_values["<p1>"] = c
+    individual.genome._parameter_names_to_values["<p1>"] = c
 
     f = individual.to_func()
     y = f(x)
@@ -86,7 +86,7 @@ def test_individual_with_parameter_torch():
     assert y[1, 0].item() == pytest.approx(x[1, 0].item() + c)
 
     c = 2.0
-    individual.genome.parameter_names_to_values["<p1>"] = c
+    individual.genome._parameter_names_to_values["<p1>"] = c
 
     f = individual.to_torch()
     y = f(x)
@@ -125,7 +125,7 @@ def test_individual_with_parameter_sympy():
     assert y == pytest.approx(x[0] + c)
 
     c = 2.0
-    individual.genome.parameter_names_to_values["<p1>"] = c
+    individual.genome._parameter_names_to_values["<p1>"] = c
 
     f = individual.to_sympy()[0]
     y = f.subs("x_0", x[0]).evalf()

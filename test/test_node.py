@@ -1,7 +1,27 @@
+import numpy as np
 import pytest
 
 import cgp
 from cgp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
+
+
+def test_inputs_are_cut_to_match_arity():
+    """Test that even if a list of inputs longer than the node arity is
+    provided, Node.inputs only returns the initial <arity> inputs,
+    ignoring the inactive genes.
+
+    """
+    idx = 0
+    inputs = [1, 2, 3, 4]
+
+    node = cgp.ConstantFloat(idx, inputs)
+    assert node.inputs == []
+
+    node = cgp.node.OutputNode(idx, inputs)
+    assert node.inputs == inputs[:1]
+
+    node = cgp.Add(idx, inputs)
+    assert node.inputs == inputs[:2]
 
 
 def test_add():
@@ -205,20 +225,95 @@ def test_constant_float():
     assert 1.0 == pytest.approx(y[0])
 
 
-def test_inputs_are_cut_to_match_arity():
-    """Test that even if a list of inputs longer than the node arity is
-    provided, Node.inputs only returns the initial <arity> inputs,
-    ignoring the inactive genes.
+def test_parameter():
+    genome_params = {
+        "n_inputs": 1,
+        "n_outputs": 1,
+        "n_columns": 1,
+        "n_rows": 1,
+        "levels_back": None,
+    }
+    primitives = (cgp.Parameter,)
+    genome = cgp.Genome(**genome_params, primitives=primitives)
+    # f(x) = c
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        ID_OUTPUT_NODE,
+        1,
+    ]
+    f = cgp.CartesianGraph(genome).to_func()
+    y = f([0.0])[0]
 
-    """
-    idx = 0
-    inputs = [1, 2, 3, 4]
+    assert y == pytest.approx(1.0)
 
-    node = cgp.ConstantFloat(idx, inputs)
-    assert node.inputs == []
 
-    node = cgp.node.OutputNode(idx, inputs)
-    assert node.inputs == inputs[:1]
+def test_parameter_w_custom_initial_value():
+    initial_value = 3.1415
 
-    node = cgp.Add(idx, inputs)
-    assert node.inputs == inputs[:2]
+    class CustomParameter(cgp.Parameter):
+        @staticmethod
+        def initial_value():
+            return initial_value
+
+    genome_params = {
+        "n_inputs": 1,
+        "n_outputs": 1,
+        "n_columns": 1,
+        "n_rows": 1,
+        "levels_back": None,
+    }
+    primitives = (CustomParameter,)
+    genome = cgp.Genome(**genome_params, primitives=primitives)
+    # f(x) = c
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        ID_OUTPUT_NODE,
+        1,
+    ]
+    f = cgp.CartesianGraph(genome).to_func()
+    y = f([0.0])[0]
+
+    assert y == pytest.approx(initial_value)
+
+
+def test_parameter_w_random_initial_value(rng_seed):
+    np.random.seed(rng_seed)
+
+    min_val = 0.5
+    max_val = 1.5
+
+    class CustomParameter(cgp.Parameter):
+        @staticmethod
+        def initial_value():
+            return np.random.uniform(min_val, max_val)
+
+    genome_params = {
+        "n_inputs": 1,
+        "n_outputs": 1,
+        "n_columns": 1,
+        "n_rows": 1,
+        "levels_back": None,
+    }
+    primitives = (CustomParameter,)
+    genome = cgp.Genome(**genome_params, primitives=primitives)
+    # f(x) = c
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        ID_OUTPUT_NODE,
+        1,
+    ]
+    f = cgp.CartesianGraph(genome).to_func()
+    y = f([0.0])[0]
+
+    assert min_val <= y
+    assert y <= max_val
+    assert y != pytest.approx(1.0)
