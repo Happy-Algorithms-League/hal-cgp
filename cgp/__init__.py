@@ -3,12 +3,15 @@ from .genome import Genome
 from .cartesian_graph import CartesianGraph
 from .node import (
     Add,
+    ParametrizedAdd,
     ConstantFloat,
     Div,
     Mul,
+    ParametrizedMul,
     Parameter,
     Pow,
     Sub,
+    ParametrizedSub,
 )
 from .population import Population
 

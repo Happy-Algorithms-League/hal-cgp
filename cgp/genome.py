@@ -10,7 +10,7 @@ except ModuleNotFoundError:
 from typing import Dict, Generator, List, Optional, Tuple, Type
 
 from .cartesian_graph import CartesianGraph
-from .node import Node, Parameter
+from .node import Node, ParametrizedNode
 from .primitives import Primitives
 
 
@@ -486,9 +486,11 @@ class Genome:
         for region_idx, region in self.iter_hidden_regions():
             node_id = region[0]
             node_type = self._primitives[node_id]
-            parameter_name = f"<p{region_idx}>"
-            if (
-                issubclass(node_type, Parameter)
-                and parameter_name not in self._parameter_names_to_values
-            ):
-                self._parameter_names_to_values[parameter_name] = node_type.initial_value()
+            if node_type.is_parametrized:
+                assert issubclass(node_type, ParametrizedNode)
+                for prefix in node_type.prefixes:
+                    parameter_name = f"<{prefix}{region_idx}>"
+                    if parameter_name not in self._parameter_names_to_values:
+                        self._parameter_names_to_values[parameter_name] = node_type.initial_value(
+                            prefix
+                        )

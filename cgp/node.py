@@ -1,4 +1,4 @@
-from typing import List, Type, TYPE_CHECKING
+from typing import List, Tuple, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .cartesian_graph import CartesianGraph
@@ -30,9 +30,9 @@ class Node:
     _arity: int
     _active: bool = False
     _inputs: List[int]
+    is_parametrized: bool = False
     _output: float
     _output_str: str
-    _parameter_str: str
     _idx: int
 
     def __init__(self, idx: int, inputs: List[int]) -> None:
@@ -149,16 +149,27 @@ class Node:
         """
         self.format_output_str(graph)
 
-    def format_parameter_str(self) -> None:
-        raise NotImplementedError
-
     @property
     def output_str(self) -> str:
         return self._output_str
 
+
+class ParametrizedNode(Node):
+
+    is_parametrized: bool = True
+    _parameter_str: Tuple[str, ...]
+    prefixes: Tuple[str, ...]
+
     @property
-    def parameter_str(self) -> str:
+    def parameter_str(self) -> Tuple[str, ...]:
         return self._parameter_str
+
+    def format_parameter_str(self) -> None:
+        raise NotImplementedError
+
+    @staticmethod
+    def initial_value(prefix: str) -> float:
+        raise NotImplementedError()
 
 
 class Add(Node):
@@ -179,6 +190,40 @@ class Add(Node):
         )
 
 
+class ParametrizedAdd(ParametrizedNode):
+    """Node representing addition with scale and shift parameters.
+    """
+
+    _arity = 2
+    prefixes = ("w", "b")
+
+    def __init__(self, idx, inputs) -> None:
+        super().__init__(idx, inputs)
+
+    def format_output_str(self, graph: "CartesianGraph") -> None:
+        self._output_str = f"(<w{self._idx}> * ({graph[self._inputs[0]].output_str} \
+        + {graph[self._inputs[1]].output_str}) + <b{self._idx}>)"
+
+    def format_output_str_torch(self, graph: "CartesianGraph") -> None:
+        self._output_str = f"(self._w{self._idx} * ({graph[self._inputs[0]].output_str} \
+        + {graph[self._inputs[1]].output_str}) + self._b{self._idx})"
+
+    def format_parameter_str(self) -> None:
+        self._parameter_str = (
+            f"self._w{self._idx} = torch.nn.Parameter(torch.DoubleTensor([<w{self._idx}>]))\n",
+            f"self._b{self._idx} = torch.nn.Parameter(torch.DoubleTensor([<b{self._idx}>]))\n",
+        )
+
+    @staticmethod
+    def initial_value(prefix: str) -> float:
+        if prefix == "w":
+            return 1.0
+        elif prefix == "b":
+            return 0.0
+        else:
+            raise KeyError()
+
+
 class Sub(Node):
     """Node representing subtraction.
     """
@@ -197,6 +242,40 @@ class Sub(Node):
         )
 
 
+class ParametrizedSub(ParametrizedNode):
+    """Node representing addition with scale and shift parameters.
+    """
+
+    _arity = 2
+    prefixes = ("w", "b")
+
+    def __init__(self, idx, inputs) -> None:
+        super().__init__(idx, inputs)
+
+    def format_output_str(self, graph: "CartesianGraph") -> None:
+        self._output_str = f"(<w{self._idx}> * ({graph[self._inputs[0]].output_str} \
+        - {graph[self._inputs[1]].output_str}) + <b{self._idx}>)"
+
+    def format_output_str_torch(self, graph: "CartesianGraph") -> None:
+        self._output_str = f"(self._w{self._idx} * ({graph[self._inputs[0]].output_str} \
+        - {graph[self._inputs[1]].output_str}) + self._b{self._idx})"
+
+    def format_parameter_str(self) -> None:
+        self._parameter_str = (
+            f"self._w{self._idx} = torch.nn.Parameter(torch.DoubleTensor([<w{self._idx}>]))\n",
+            f"self._b{self._idx} = torch.nn.Parameter(torch.DoubleTensor([<b{self._idx}>]))\n",
+        )
+
+    @staticmethod
+    def initial_value(prefix: str) -> float:
+        if prefix == "w":
+            return 1.0
+        elif prefix == "b":
+            return 0.0
+        else:
+            raise KeyError()
+
+
 class Mul(Node):
     """Node representing multiplication.
     """
@@ -213,6 +292,40 @@ class Mul(Node):
         self._output_str = (
             f"({graph[self._inputs[0]].output_str} * {graph[self._inputs[1]].output_str})"
         )
+
+
+class ParametrizedMul(ParametrizedNode):
+    """Node representing addition with scale and shift parameters.
+    """
+
+    _arity = 2
+    prefixes = ("w", "b")
+
+    def __init__(self, idx, inputs) -> None:
+        super().__init__(idx, inputs)
+
+    def format_output_str(self, graph: "CartesianGraph") -> None:
+        self._output_str = f"(<w{self._idx}> * ({graph[self._inputs[0]].output_str} \
+        * {graph[self._inputs[1]].output_str}) + <b{self._idx}>)"
+
+    def format_output_str_torch(self, graph: "CartesianGraph") -> None:
+        self._output_str = f"(self._w{self._idx} * ({graph[self._inputs[0]].output_str} \
+        * {graph[self._inputs[1]].output_str}) + self._b{self._idx})"
+
+    def format_parameter_str(self) -> None:
+        self._parameter_str = (
+            f"self._w{self._idx} = torch.nn.Parameter(torch.DoubleTensor([<w{self._idx}>]))\n",
+            f"self._b{self._idx} = torch.nn.Parameter(torch.DoubleTensor([<b{self._idx}>]))\n",
+        )
+
+    @staticmethod
+    def initial_value(prefix: str) -> float:
+        if prefix == "w":
+            return 1.0
+        elif prefix == "b":
+            return 0.0
+        else:
+            raise KeyError()
 
 
 class Div(Node):
@@ -258,12 +371,13 @@ class ConstantFloat(Node):
         self._output_str = f"torch.ones(1).expand(x.shape[0]) * {self._output}"
 
 
-class Parameter(Node):
+class Parameter(ParametrizedNode):
     """Node representing a scalar variable. Its value is stored in the
     individual holding the corresponding genome.
     """
 
     _arity = 0
+    prefixes = ("p",)
 
     def __init__(self, idx: int, inputs: List[int]) -> None:
         super().__init__(idx, inputs)
@@ -282,11 +396,11 @@ class Parameter(Node):
 
     def format_parameter_str(self) -> None:
         self._parameter_str = (
-            f"self._p{self._idx} = torch.nn.Parameter(torch.DoubleTensor([<p{self._idx}>]))\n"
+            f"self._p{self._idx} = torch.nn.Parameter(torch.DoubleTensor([<p{self._idx}>]))\n",
         )
 
     @staticmethod
-    def initial_value() -> float:
+    def initial_value(_: str) -> float:
         return 1.0
 
 

@@ -20,7 +20,7 @@ except ModuleNotFoundError:
 
 from typing import Callable, Dict, List, Optional, Set, TYPE_CHECKING
 
-from .node import Node, InputNode, OutputNode, Parameter
+from .node import Node, ParametrizedNode, InputNode, OutputNode
 
 if TYPE_CHECKING:
     from .genome import Genome
@@ -224,8 +224,18 @@ class CartesianGraph:
             for node in active_nodes[hidden_column_idx]:
                 node.format_output_str(self)
 
+    def _find_all_parameter_prefixes(self) -> Set[str]:
+        prefixes = set()
+        for parameter_name in self._parameter_names_to_values:
+            g = re.findall("<([a-z+])[0-9]+>", parameter_name)
+            if len(g) > 0:
+                assert len(g) == 1
+                prefixes.add(g[0])
+        return prefixes
+
     def _fill_parameter_values(self, func_str: str) -> str:
-        g = re.findall("<p[0-9]+>", func_str)
+        prefixes = self._find_all_parameter_prefixes()
+        g = re.findall(f"<[{'|'.join(prefixes)}][0-9]+>", func_str)
         if len(g) != 0:
             for parameter_name in g:
                 func_str = func_str.replace(
@@ -322,7 +332,8 @@ def _f(x):
         for hidden_column_idx in sorted(active_nodes_by_hidden_column_idx):
             for node in active_nodes_by_hidden_column_idx[hidden_column_idx]:
                 node.format_output_str_torch(self)
-                if isinstance(node, Parameter):
+                if node.is_parametrized:
+                    assert isinstance(node, ParametrizedNode)
                     node.format_parameter_str()
                     all_parameter_str.append(node.parameter_str)
         forward_str = ", ".join(node.output_str for node in self.output_nodes)
@@ -333,8 +344,9 @@ class _C(torch.nn.Module):
         super().__init__()
 
 """
-        for s in all_parameter_str:
-            class_str += "        " + s
+        for parameter_str in all_parameter_str:
+            for s in parameter_str:
+                class_str += "        " + s
 
         func_str = f"""\
 

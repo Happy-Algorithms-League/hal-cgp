@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import pytest
 
@@ -255,7 +256,7 @@ def test_parameter_w_custom_initial_value():
 
     class CustomParameter(cgp.Parameter):
         @staticmethod
-        def initial_value():
+        def initial_value(_):
             return initial_value
 
     genome_params = {
@@ -290,7 +291,7 @@ def test_parameter_w_random_initial_value(rng_seed):
 
     class CustomParameter(cgp.Parameter):
         @staticmethod
-        def initial_value():
+        def initial_value(_):
             return np.random.uniform(min_val, max_val)
 
     genome_params = {
@@ -317,3 +318,59 @@ def test_parameter_w_random_initial_value(rng_seed):
     assert min_val <= y
     assert y <= max_val
     assert y != pytest.approx(1.0)
+
+
+def test_parametrized_add():
+    torch = pytest.importorskip("torch")
+
+    primitives = (cgp.ParametrizedAdd,)
+    genome = cgp.Genome(2, 1, 1, 1, 1, primitives)
+    # f(x) = w * (x[0] + x[1]) + b
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
+
+    w = math.pi
+    b = math.e
+
+    assert genome._parameter_names_to_values["<w2>"] == pytest.approx(1.0)
+    assert genome._parameter_names_to_values["<b2>"] == pytest.approx(0.0)
+
+    genome._parameter_names_to_values["<w2>"] = w
+    genome._parameter_names_to_values["<b2>"] = b
+
+    graph = cgp.CartesianGraph(genome)
+
+    x = [1.5, 2.5]
+    y_target = w * (x[0] + x[1]) + b
+
+    # func
+    f = graph.to_func()
+    assert f(x)[0] == pytest.approx(y_target)
+
+    # numpy
+    f = graph.to_numpy()
+    assert f(np.array(x).reshape(1, -1))[0, 0] == pytest.approx(y_target)
+
+    # TODO the two tests below should be in seperate function such
+    # that they can be skipped if the respective module is not
+    # available
+
+    # sympy
+    f = graph.to_sympy()[0]
+    assert f.subs({"x_0": x[0], "x_1": x[1]}).evalf() == pytest.approx(y_target)
+
+    # torch
+    f = graph.to_torch()
+    assert f(torch.Tensor(x).reshape(1, -1))[0, 0] == pytest.approx(y_target)
