@@ -70,7 +70,13 @@ def evolution():
         "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Parameter),
     }
 
-    ea_params = {"n_offsprings": 4, "n_breeding": 4, "tournament_size": 1, "n_processes": 1}
+    ea_params = {
+        "n_offsprings": 4,
+        "n_breeding": 4,
+        "tournament_size": 1,
+        "n_processes": 1,
+        "k_local_search": 2,
+    }
 
     evolve_params = {"max_generations": 2000, "min_fitness": 0.0}
 
