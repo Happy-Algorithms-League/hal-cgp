@@ -44,6 +44,11 @@ This library depends on some optional packages defined in `extra_requirements.tx
 pip install hal-cgp[all]
 ```
 
+You can also install individual extra requirements by specifying the package name (without version number) in square brackets, e.g., to install the `torch` dependency:
+```shell script
+pip install hal-cgp[torch]
+```
+
 The adventurous can install the most recent development version directly from our master branch (don't use this in production unless there are good reasons!):
 ```shell script
 git clone git@github.com:Happy-Algorithms-League/hal-cgp.git
