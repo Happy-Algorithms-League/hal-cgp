@@ -40,7 +40,7 @@ def read_extra_requirements():
 setup(
     name="hal-cgp",
     version=read_version(),
-    author="Jakob Jordan, Maximilian Schmidt",
+    maintainer="Jakob Jordan, Maximilian Schmidt",
     description=("Cartesian Genetic Programming in pure Python."),
     license="GPLv3",
     keywords="genetic programming",
