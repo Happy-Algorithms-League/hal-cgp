@@ -57,7 +57,7 @@ def test_crossover_two_offspring(population_simple_fitness):
 
 
 def test_mutate(population_params, genome_params):
-    population_params["mutation_rate"] = 0.999999
+    population_params["mutation_rate"] = 0.5
     pop = cgp.Population(**population_params, genome_params=genome_params)
 
     offspring = pop.parents
