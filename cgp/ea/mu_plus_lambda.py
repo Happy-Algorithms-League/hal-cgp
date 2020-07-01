@@ -1,7 +1,7 @@
 import concurrent.futures
 import numpy as np
 
-from typing import Callable, List, Tuple, Union
+from typing import Callable, List, Union
 
 from ..individual import IndividualBase
 from ..population import Population
@@ -168,19 +168,15 @@ class MuPlusLambda:
         return combined
 
     def _sort(self, combined: List[IndividualBase]) -> List[IndividualBase]:
-        # create copy of population
-        combined_copy = [ind.clone() for ind in combined]
+        def sort_func(ind: IndividualBase) -> float:
+            """Return fitness of an individual, return -infinity for an individual
+            with fitness equal nan, or raise error if the fitness is
+            not a float.
 
-        # replace all nan by -inf to make sure they end up at the end
-        # after sorting
-        for ind in combined_copy:
-            if np.isnan(ind.fitness):
-                ind.fitness = -np.inf
-
-        def sort_func(zipped_ind: Tuple[int, IndividualBase]) -> float:
-            """Return fitness of an individual or raise error if it is None.
             """
-            _, ind = zipped_ind
+            if np.isnan(ind.fitness):
+                return -np.inf
+
             if isinstance(ind.fitness, float):
                 return ind.fitness
             else:
@@ -188,13 +184,7 @@ class MuPlusLambda:
                     f"IndividualBase fitness value is of wrong type {type(ind.fitness)}."
                 )
 
-        # get list of indices that sorts combined_copy ("argsort") in descending order
-        combined_sorted_indices = [
-            idx for (idx, _) in sorted(enumerate(combined_copy), key=sort_func, reverse=True)
-        ]
-
-        # return original list of individuals sorted in descending order
-        return [combined[idx] for idx in combined_sorted_indices]
+        return sorted(combined, key=sort_func, reverse=True)
 
     def _create_new_parent_population(
         self, n_parents: int, combined: List[IndividualBase]

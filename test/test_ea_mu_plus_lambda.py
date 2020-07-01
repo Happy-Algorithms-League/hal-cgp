@@ -28,9 +28,9 @@ def test_objective_with_label(population_params, genome_params):
     assert pop.champion.fitness == pytest.approx(-1.0)
 
 
-def test_fitness_contains_nan(population_params, genome_params):
+def test_fitness_contains_and_maintains_nan(population_params, genome_params):
     def objective(individual):
-        if np.random.rand() < 0.5:
+        if np.random.rand() < 0.95:
             individual.fitness = np.nan
         else:
             individual.fitness = np.random.rand()
@@ -41,6 +41,8 @@ def test_fitness_contains_nan(population_params, genome_params):
     ea = cgp.ea.MuPlusLambda(10, 10, 1)
     ea.initialize_fitness_parents(pop, objective)
     ea.step(pop, objective)
+
+    assert np.nan in [ind.fitness for ind in pop]
 
 
 def test_offspring_individuals_are_assigned_correct_indices(population_params, genome_params):
