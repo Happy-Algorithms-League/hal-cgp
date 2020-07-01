@@ -182,19 +182,8 @@ class MuPlusLambda:
     def _create_new_parent_population(
         self, n_parents: int, combined: List[IndividualBase]
     ) -> List[IndividualBase]:
-        # create new parent population by picking the `n_parents` individuals
-        # with the highest fitness
-        parents: List[IndividualBase] = []
-        for i in range(n_parents):
-            # note: unclear whether clone() is needed here; using
-            # clone() avoids accidentally sharing references across
-            # individuals, but might incur a performance penalty
-            new_individual = combined[i].clone()
+        """Create the new parent population by picking the first `n_parents`
+        individuals from the combined population.
 
-            # since this individual is genetically identical to its
-            # parent, the identifier is the same
-            new_individual.idx = combined[i].idx
-
-            parents.append(new_individual)
-
-        return parents
+        """
+        return combined[:n_parents]
