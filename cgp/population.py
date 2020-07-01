@@ -48,7 +48,7 @@ class Population:
         # keeps track of the number of generations, increases with
         # every new offspring generation
         self.generation = 0
-        self._max_idx = -1  # keeps track of maximal idx in population used to label individuals
+        self._max_idx = 0  # keeps track of maximal idx in population used to label individuals
 
         self._generate_random_parent_population()
 
@@ -71,37 +71,39 @@ class Population:
         return self._parents[idx]
 
     def _generate_random_parent_population(self) -> None:
-        self._parents = self._generate_random_individuals(self.n_parents)
-        self._label_new_individuals(self._parents)
+        parents: List[IndividualBase] = []
+        for _ in range(self.n_parents):
+            parents.append(self.generate_random_individual())
+        self._parents = parents
 
-    def _label_new_individuals(self, individuals: List[IndividualBase]) -> None:
-        for ind in individuals:
-            ind.idx = self._max_idx + 1
-            self._max_idx += 1
+    def get_idx_for_new_individual(self) -> int:
+        idx = self._max_idx
+        self._max_idx += 1
+        return idx
 
-    def _generate_random_individuals(self, n: int) -> List[IndividualBase]:
-        individuals = []
-        for i in range(n):
-            if isinstance(self._genome_params, dict):
-                genome: Genome = Genome(**self._genome_params)
-                genome.randomize(self.rng)
-                individual_s = IndividualSingleGenome(
-                    fitness=None, genome=genome
-                )  # type: IndividualBase # indicates to mypy that
-                # individual_s is instance of a child class of
-                # IndividualBase
-                individuals.append(individual_s)
-            else:
-                genomes: List[Genome] = [Genome(**gd) for gd in self._genome_params]
-                for g in genomes:
-                    g.randomize(self.rng)
-                individual_m = IndividualMultiGenome(
-                    fitness=None, genome=genomes
-                )  # type: IndividualBase # indicates to mypy that
-                # individual_m is an instance of a child class of
-                # IndividualBase
-                individuals.append(individual_m)
-        return individuals
+    def generate_random_individual(self) -> IndividualBase:
+        if isinstance(self._genome_params, dict):
+            genome: Genome = Genome(**self._genome_params)
+            genome.randomize(self.rng)
+            individual_s = IndividualSingleGenome(
+                fitness=None, genome=genome
+            )  # type: IndividualBase # indicates to mypy that
+            # individual_s is instance of a child class of
+            # IndividualBase
+            ind = individual_s
+        else:
+            genomes: List[Genome] = [Genome(**gd) for gd in self._genome_params]
+            for g in genomes:
+                g.randomize(self.rng)
+            individual_m = IndividualMultiGenome(
+                fitness=None, genome=genomes
+            )  # type: IndividualBase # indicates to mypy that
+            # individual_m is an instance of a child class of
+            # IndividualBase
+            ind = individual_m
+
+        ind.idx = self.get_idx_for_new_individual()
+        return ind
 
     def crossover(
         self, breeding_pool: List[IndividualBase], n_offsprings: int

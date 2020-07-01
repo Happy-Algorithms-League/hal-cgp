@@ -97,3 +97,11 @@ def test_pop_uses_own_rng(population_params, genome_params, rng_seed):
     # expect different individuals in the two populations
     for p_0, p_1 in zip(parents_0, parents_1):
         assert p_0.genome.dna != p_1.genome.dna
+
+
+def test_parent_individuals_are_assigned_correct_indices(population_params, genome_params):
+
+    pop = cgp.Population(**population_params, genome_params=genome_params)
+
+    for idx, ind in enumerate(pop.parents):
+        assert ind.idx == idx

@@ -41,3 +41,19 @@ def test_fitness_contains_nan(population_params, genome_params):
     ea = cgp.ea.MuPlusLambda(10, 10, 1)
     ea.initialize_fitness_parents(pop, objective)
     ea.step(pop, objective)
+
+
+def test_offspring_individuals_are_assigned_correct_indices(population_params, genome_params):
+    def objective(ind):
+        ind.fitness = 0.0
+        return ind
+
+    pop = cgp.Population(**population_params, genome_params=genome_params)
+
+    ea = cgp.ea.MuPlusLambda(10, 10, 1)
+    ea.initialize_fitness_parents(pop, objective)
+
+    offsprings = ea._create_new_offspring_generation(pop)
+
+    for idx, ind in enumerate(offsprings):
+        assert ind.idx == len(pop.parents) + idx

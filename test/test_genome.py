@@ -297,7 +297,7 @@ def test_catch_invalid_allele_in_inactive_region():
 
 def test_individuals_have_different_genome(population_params, genome_params, ea_params):
     def objective(ind):
-        ind.fitness = float(ind.idx)
+        ind.fitness = 1.0
         return ind
 
     pop = cgp.Population(**population_params, genome_params=genome_params)

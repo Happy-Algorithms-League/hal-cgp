@@ -131,9 +131,9 @@ class MuPlusLambda:
         # resulting individuals
         offsprings = pop.crossover(breeding_pool, self.n_offsprings)
         offsprings = pop.mutate(offsprings)
-        # TODO this call to pop to label individual is quite ugly, find a
-        # better way to track ids of individuals; maybe in the EA?
-        pop._label_new_individuals(offsprings)
+
+        for ind in offsprings:
+            ind.idx = pop.get_idx_for_new_individual()
 
         return offsprings
 
