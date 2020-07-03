@@ -48,3 +48,8 @@ def population_simple_fitness(population_params, genome_params):
         parent.fitness = float(i)
 
     return pop
+
+
+@fixture
+def local_search_params():
+    return {"lr": 1e-3, "gradient_steps": 9}

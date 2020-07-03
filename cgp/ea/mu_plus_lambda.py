@@ -1,7 +1,7 @@
 import concurrent.futures
 import numpy as np
 
-from typing import Callable, List, Tuple
+from typing import Callable, List, Tuple, Union
 
 from ..individual import IndividualBase
 from ..population import Population
@@ -25,6 +25,7 @@ class MuPlusLambda:
         *,
         n_processes: int = 1,
         local_search: Callable[[IndividualBase], None] = lambda combined: None,
+        k_local_search: Union[int, None] = None,
     ):
         """Init function
 
@@ -43,7 +44,9 @@ class MuPlusLambda:
             Called before each fitness evaluation with a joint list of
             offsprings and parents to optimize numeric leaf values of
             the graph. Defaults to identity function.
-
+        k_local_search : int
+            Number of individuals in the whole population (parents +
+            offsprings) to apply local search to.
         """
         self.n_offsprings = n_offsprings
 
@@ -57,6 +60,7 @@ class MuPlusLambda:
         self.tournament_size = tournament_size
         self.n_processes = n_processes
         self.local_search = local_search
+        self.k_local_search = k_local_search
 
     def initialize_fitness_parents(
         self, pop: Population, objective: Callable[[IndividualBase], IndividualBase]
@@ -108,10 +112,23 @@ class MuPlusLambda:
         # population instead of the other way around
         combined = offsprings + pop.parents
 
-        for ind in combined:
-            self.local_search(ind)
+        # we follow a two-step process for selection of new parents:
+        # we first determine the fitness for all individuals, then, if
+        # applicable, we apply local search to the k_local_search
+        # fittest individuals; after this we need to recompute the
+        # fitness for all individuals for which parameters changed
+        # during local search; finally we sort again by fitness, now
+        # taking into account the effect of local search for
+        # subsequent selection
         combined = self._compute_fitness(combined, objective)
+        combined = self._sort(combined)
 
+        n_total = self.n_offsprings + pop.n_parents
+        k_local_search = n_total if self.k_local_search is None else self.k_local_search
+        for idx in range(k_local_search):
+            self.local_search(combined[idx])
+
+        combined = self._compute_fitness(combined, objective)
         combined = self._sort(combined)
 
         pop.parents = self._create_new_parent_population(pop.n_parents, combined)
