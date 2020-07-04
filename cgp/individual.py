@@ -32,6 +32,7 @@ class IndividualBase:
         """
         self.fitness: Union[float, None] = fitness
         self.idx: int
+        self.parent_idx: int
 
     def clone(self):
         raise NotImplementedError()
@@ -105,7 +106,9 @@ class IndividualSingleGenome(IndividualBase):
         return f"Individual(idx={self.idx}, fitness={self.fitness}, genome={self.genome}))"
 
     def clone(self) -> "IndividualSingleGenome":
-        return IndividualSingleGenome(self.fitness, self.genome.clone())
+        ind = IndividualSingleGenome(self.fitness, self.genome.clone())
+        ind.parent_idx = self.idx
+        return ind
 
     def mutate(self, mutation_rate: float, rng: np.random.RandomState) -> None:
         only_silent_mutations = self._mutate_genome(self.genome, mutation_rate, rng)
@@ -149,7 +152,9 @@ class IndividualMultiGenome(IndividualBase):
         self.genome: List[Genome] = genome
 
     def clone(self) -> "IndividualMultiGenome":
-        return IndividualMultiGenome(self.fitness, [g.clone() for g in self.genome])
+        ind = IndividualMultiGenome(self.fitness, [g.clone() for g in self.genome])
+        ind.parent_idx = self.idx
+        return ind
 
     def mutate(self, mutation_rate: float, rng: np.random.RandomState) -> None:
         for g in self.genome:

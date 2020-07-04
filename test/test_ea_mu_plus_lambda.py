@@ -61,6 +61,25 @@ def test_offspring_individuals_are_assigned_correct_indices(population_params, g
         assert ind.idx == len(pop.parents) + idx
 
 
+def test_offspring_individuals_are_assigned_correct_parent_indices(
+    population_params, genome_params
+):
+    def objective(ind):
+        ind.fitness = 0.0
+        return ind
+
+    population_params["n_parents"] = 1
+    pop = cgp.Population(**population_params, genome_params=genome_params)
+
+    ea = cgp.ea.MuPlusLambda(10, 10, 1)
+    ea.initialize_fitness_parents(pop, objective)
+
+    offsprings = ea._create_new_offspring_generation(pop)
+
+    for ind in offsprings:
+        assert ind.parent_idx == 0
+
+
 def test_local_search_is_only_applied_to_best_k_individuals(
     population_params, local_search_params
 ):
