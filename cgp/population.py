@@ -25,8 +25,7 @@ class Population:
         n_parents : int
             Number of parent individuals.
         mutation_rate : float
-            Rate of mutations determining the number of genes to be
-            mutated for offspring creation, between 0 and 1.
+            Probability of a gene to be mutated, between 0 (excluded) and 1 (included).
         seed : int
             Seed for internal random number generator.
         genome_params : dict
@@ -34,8 +33,8 @@ class Population:
         """
         self.n_parents = n_parents  # number of individuals in parent population
 
-        if not (0.0 < mutation_rate and mutation_rate < 1.0):
-            raise ValueError("mutation rate needs to be in (0, 1)")
+        if not (0.0 < mutation_rate and mutation_rate <= 1.0):
+            raise ValueError("mutation rate needs to be in (0, 1]")
         self._mutation_rate = mutation_rate  # probability of mutation per gene
 
         self.seed = seed

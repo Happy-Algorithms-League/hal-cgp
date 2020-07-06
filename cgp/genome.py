@@ -107,7 +107,7 @@ class Genome:
     def dna(self, value: List[int]) -> None:
         self._validate_dna(value)
         self._dna = value
-        self._initialize_unkown_parameters()
+        self._initialize_unknown_parameters()
 
     @property
     def _n_hidden(self) -> int:
@@ -332,6 +332,9 @@ class Genome:
     def _is_function_gene(self, gene_idx: int) -> bool:
         return (gene_idx % self._length_per_region) == 0
 
+    def _is_hidden_input_gene(self, gene_idx: int, region_idx: int) -> bool:
+        return self._is_hidden_region(region_idx) & ((gene_idx % self._length_per_region) != 0)
+
     def _is_active_input_gene(self, gene_idx: int) -> bool:
         input_index = gene_idx % self._length_per_region
         assert input_index > 0
@@ -346,15 +349,37 @@ class Genome:
         else:
             assert False  # should never be reached
 
+    def _select_gene_indices_for_mutation(
+        self, mutation_rate: float, rng: np.random.RandomState
+    ) -> List[int]:
+        """Selects the gene indices for mutations
+
+        Parameters
+        ----------
+        mutation_rate : float
+            Probability of a gene to be mutated, between 0 (excluded) and 1 (included).
+        rng : numpy.random.RandomState
+            Random number generator instance to use for selecting the indices.
+
+        Returns
+        ----------
+        selected_gene_indices: np.ndarray
+            indices of the genes selected for mutation.
+        """
+
+        selected_gene_indices = np.nonzero(rng.rand(len(self.dna)) < mutation_rate)[0]
+        return selected_gene_indices
+
     def mutate(self, mutation_rate: float, rng: np.random.RandomState):
         """Mutate the genome.
 
         Parameters
         ----------
         mutation_rate : float
-            Proportion of genes to be mutated, between 0 and 1.
+            Probability of a gene to be mutated, between 0 (excluded) and 1 (included).
         rng : numpy.random.RandomState
             Random number generator instance to use for mutating.
+
 
         Returns
         ----------
@@ -362,71 +387,75 @@ class Genome:
             True if only inactive regions of the genome were mutated, False otherwise.
         """
 
-        def count_dna_differences(dna0: List[int], dna1: List[int]) -> int:
-            return len([1 for gene0, gene1 in zip(dna0, dna1) if gene0 != gene1])
-
-        n_mutations = int(mutation_rate * len(self.dna))
-        assert n_mutations > 0
-
         graph = CartesianGraph(self)
         active_regions = graph.determine_active_regions()
-
         dna = list(self._dna)
-
         only_silent_mutations = True
-        while count_dna_differences(self.dna, dna) < n_mutations:
 
-            gene_idx = rng.randint(0, self._n_genes)
+        selected_gene_indices = self._select_gene_indices_for_mutation(mutation_rate, rng)
+
+        for (gene_idx, allele) in zip(selected_gene_indices, np.array(dna)[selected_gene_indices]):
+
             region_idx = gene_idx // self._length_per_region
 
-            if self._is_input_region(region_idx):
-                continue  # nothing to do here
+            permissible_values = self._determine_alternative_permissible_values(
+                gene_idx, allele, region_idx
+            )
+            if len(permissible_values) > 0:
 
-            elif self._is_output_region(region_idx):
-                silent = self._mutate_output_region(dna, gene_idx, rng)
+                dna[gene_idx] = rng.choice(permissible_values)
+                silent = region_idx not in active_regions
 
-            elif self._is_hidden_region(region_idx):
-                silent = self._mutate_hidden_region(dna, gene_idx, active_regions, rng)
-
-            else:
-                assert False  # should never be reached
-
-            only_silent_mutations = only_silent_mutations and silent
+                only_silent_mutations = only_silent_mutations and silent
 
         self.dna = dna
         return only_silent_mutations
 
-    def _mutate_output_region(
-        self, dna: List[int], gene_idx: int, rng: np.random.RandomState
-    ) -> bool:
-        assert self._is_gene_in_output_region(gene_idx)
+    def _determine_alternative_permissible_values(
+        self, gene_idx: int, allele: int, region_idx: int
+    ) -> List[int]:
 
-        if not self._is_function_gene(gene_idx) and self._is_active_input_gene(gene_idx):
-            permissible_inputs = self._permissible_inputs_for_output_region()
-            dna[gene_idx] = rng.choice(permissible_inputs)
-            return False
+        if self._is_input_region(region_idx):
+            return []  # genes in input regions have no alternative permissible values
+
+        elif self._is_hidden_region(region_idx):
+            return self._determine_alternative_permissible_values_hidden_gene(
+                gene_idx, allele, region_idx
+            )
+
+        elif self._is_output_region(region_idx):
+            return self._determine_alternative_permissible_values_output_gene(gene_idx, allele)
+
         else:
-            return True
+            assert False  # should never be reached
 
-    def _mutate_hidden_region(
-        self, dna: List[int], gene_idx: int, active_regions: List[int], rng: np.random.RandomState
-    ) -> bool:
-
-        assert self._is_gene_in_hidden_region(gene_idx)
-
-        region_idx = gene_idx // self._length_per_region
-        silent_mutation = region_idx not in active_regions
-
+    def _determine_alternative_permissible_values_hidden_gene(
+        self, gene_idx: int, allele: int, region_idx: int
+    ) -> List[int]:
         if self._is_function_gene(gene_idx):
-            dna[gene_idx] = self._primitives.sample_allele(rng)
-            return silent_mutation
+            permissible_values = list(np.arange(len(self._primitives._primitives)))
+
+        elif self._is_hidden_input_gene(gene_idx, region_idx):
+            permissible_values = self._permissible_inputs(region_idx)
 
         else:
-            permissible_inputs = self._permissible_inputs(region_idx)
-            dna[gene_idx] = rng.choice(permissible_inputs)
+            assert False
+        permissible_values.remove(allele)
+        return permissible_values
 
-            silent_mutation = silent_mutation or (not self._is_active_input_gene(gene_idx))
-            return silent_mutation
+    def _determine_alternative_permissible_values_output_gene(
+        self, gene_idx: int, allele: int
+    ) -> List[int]:
+        input_index = (
+            gene_idx % self._length_per_region
+        )  # assumes that the second gene in all output regions is the index of the input
+        if input_index == 1:
+            permissible_values = self._permissible_inputs_for_output_region()
+            permissible_values.remove(allele)
+        else:
+            permissible_values = []
+
+        return permissible_values
 
     @property
     def primitives(self) -> Primitives:
@@ -484,7 +513,7 @@ class Genome:
 
         return any_parameter_updated
 
-    def _initialize_unkown_parameters(self) -> None:
+    def _initialize_unknown_parameters(self) -> None:
         for region_idx, region in self.iter_hidden_regions():
             node_id = region[0]
             node_type = self._primitives[node_id]
