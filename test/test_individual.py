@@ -1,139 +1,165 @@
 import math
+import numpy as np
 import pickle
+from collections import namedtuple
+
 import pytest
 
 import cgp
-from cgp.individual import IndividualSingleGenome
+from cgp import IndividualSingleGenome, IndividualMultiGenome
 from cgp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
 
 
-def test_pickle_individual():
+TestParams = namedtuple("TestParams", ["genome_params", "primitives", "dna", "target_function"])
+params_list = [
+    TestParams(
+        genome_params={
+            "n_inputs": 1,
+            "n_outputs": 1,
+            "n_columns": 2,
+            "n_rows": 1,
+            "levels_back": 2,
+        },
+        primitives=(cgp.Add, cgp.Parameter),
+        dna=[
+            ID_INPUT_NODE,
+            ID_NON_CODING_GENE,
+            ID_NON_CODING_GENE,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            ID_OUTPUT_NODE,
+            2,
+            ID_NON_CODING_GENE,
+        ],
+        target_function=lambda x, c: x + c,
+    )
+]
+GraphInputValues = namedtuple("GraphInputValues", ["x", "c"])
+
+graph_input_values_list = [GraphInputValues(x=[3.0, 5.0], c=1.0), GraphInputValues(x=[3.0], c=2.0)]
+
+
+def _create_genome(genome_params, primitives, dna):
+    genome = cgp.Genome(**genome_params, primitives=primitives)
+    genome.dna = dna
+    return genome
+
+
+def _create_individual(genome, fitness=None, individual_type="SingleGenome"):
+    if individual_type == "SingleGenome":
+        return IndividualSingleGenome(fitness, genome)
+    elif individual_type == "MultiGenome":
+        return IndividualMultiGenome(fitness, [genome])
+    else:
+        raise NotImplementedError("Unknown individual type.")
+
+
+def _unpack_evaluation(value, individual_type="SingleGenome"):
+    if individual_type == "SingleGenome":
+        return value
+    elif individual_type == "MultiGenome":
+        return value[0]
+    else:
+        raise NotImplementedError("Unknown individual type.")
+
+
+def _unpack_genome(individual, individual_type="SingleGenome"):
+    if individual_type == "SingleGenome":
+        return individual.genome
+    elif individual_type == "MultiGenome":
+        return individual.genome[0]
+    else:
+        raise NotImplementedError("Unknown individual type.")
+
+
+@pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
+def test_pickle_individual(individual_type):
 
     primitives = (cgp.Add,)
     genome = cgp.Genome(1, 1, 1, 1, 1, primitives)
-    individual = IndividualSingleGenome(None, genome)
+    individual = _create_individual(genome, individual_type=individual_type)
 
     with open("individual.pkl", "wb") as f:
         pickle.dump(individual, f)
 
 
-def test_individual_with_parameter_python():
+@pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
+@pytest.mark.parametrize("params", params_list)
+@pytest.mark.parametrize("graph_input_values", graph_input_values_list)
+def test_individual_with_parameter_python(individual_type, params, graph_input_values):
+    genome_params, primitives, dna, target_function = params
+    genome = _create_genome(genome_params, primitives, dna)
+    individual = _create_individual(genome, individual_type=individual_type)
 
-    primitives = (cgp.Add, cgp.Parameter)
-    genome = cgp.Genome(1, 1, 2, 1, 2, primitives)
-    # f(x) = x + c
-    genome.dna = [
-        ID_INPUT_NODE,
-        ID_NON_CODING_GENE,
-        ID_NON_CODING_GENE,
-        1,
-        0,
-        0,
-        0,
-        0,
-        1,
-        ID_OUTPUT_NODE,
-        2,
-        ID_NON_CODING_GENE,
-    ]
-    individual = IndividualSingleGenome(None, genome)
+    x, c = graph_input_values.x, graph_input_values.c
+    _unpack_genome(individual, individual_type)._parameter_names_to_values["<p1>"] = c
+    f = _unpack_evaluation(individual.to_func(), individual_type)
 
-    c = 1.0
-    x = [3.0]
-
-    f = individual.to_func()
-    y = f(x)
-
-    assert y[0] == pytest.approx(x[0] + c)
-
-    c = 2.0
-    individual.genome._parameter_names_to_values["<p1>"] = c
-
-    f = individual.to_func()
-    y = f(x)
-
-    assert y[0] == pytest.approx(x[0] + c)
+    for xi in x:
+        y = f([xi])
+        assert y[0] == pytest.approx(target_function(xi, c))
 
 
-def test_individual_with_parameter_torch():
+@pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
+@pytest.mark.parametrize("params", params_list)
+@pytest.mark.parametrize("graph_input_values", graph_input_values_list)
+def test_individual_with_parameter_torch(individual_type, params, graph_input_values):
     torch = pytest.importorskip("torch")
-    primitives = (cgp.Add, cgp.Parameter)
-    genome = cgp.Genome(1, 1, 2, 1, 2, primitives)
-    # f(x) = x + c
-    genome.dna = [
-        ID_INPUT_NODE,
-        ID_NON_CODING_GENE,
-        ID_NON_CODING_GENE,
-        1,
-        0,
-        0,
-        0,
-        0,
-        1,
-        ID_OUTPUT_NODE,
-        2,
-        ID_NON_CODING_GENE,
-    ]
-    individual = IndividualSingleGenome(None, genome)
+    genome_params, primitives, dna, target_function = params
+    genome = _create_genome(genome_params, primitives, dna)
+    individual = _create_individual(genome, individual_type=individual_type)
 
-    c = 1.0
-    x = torch.empty(2, 1).normal_()
-
-    f = individual.to_torch()
+    x, c = torch.tensor(graph_input_values.x).unsqueeze(1), graph_input_values.c
+    _unpack_genome(individual, individual_type)._parameter_names_to_values["<p1>"] = c
+    f = _unpack_evaluation(individual.to_torch(), individual_type)
     y = f(x)
 
-    assert y[0, 0].item() == pytest.approx(x[0, 0].item() + c)
-    assert y[1, 0].item() == pytest.approx(x[1, 0].item() + c)
+    for i in range(x.shape[0]):
+        assert y[i, 0].item() == pytest.approx(target_function(x[i, 0].item(), c))
 
-    c = 2.0
-    individual.genome._parameter_names_to_values["<p1>"] = c
 
-    f = individual.to_torch()
+@pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
+@pytest.mark.parametrize("params", params_list)
+@pytest.mark.parametrize("graph_input_values", graph_input_values_list)
+def test_individual_with_parameter_sympy(individual_type, params, graph_input_values):
+    pytest.importorskip("sympy")
+    genome_params, primitives, dna, target_function = params
+    genome = _create_genome(genome_params, primitives, dna)
+    individual = _create_individual(genome, individual_type=individual_type)
+
+    x, c = graph_input_values.x, graph_input_values.c
+    _unpack_genome(individual, individual_type)._parameter_names_to_values["<p1>"] = c
+    f = _unpack_evaluation(individual.to_sympy(), individual_type)[0]
+
+    for xi in x:
+        y = f.subs("x_0", xi).evalf()
+        assert y == pytest.approx(target_function(xi, c))
+
+
+@pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
+@pytest.mark.parametrize("params", params_list)
+@pytest.mark.parametrize("graph_input_values", graph_input_values_list)
+def test_individual_with_parameter_numpy(individual_type, params, graph_input_values):
+    genome_params, primitives, dna, target_function = params
+    genome = _create_genome(genome_params, primitives, dna)
+    individual = _create_individual(genome, individual_type=individual_type)
+
+    x, c = np.array(graph_input_values.x)[:, np.newaxis], graph_input_values.c
+
+    _unpack_genome(individual, individual_type)._parameter_names_to_values["<p1>"] = c
+    f = _unpack_evaluation(individual.to_numpy(), individual_type)
+
     y = f(x)
-
-    assert y[0, 0].item() == pytest.approx(x[0, 0].item() + c)
-    assert y[1, 0].item() == pytest.approx(x[1, 0].item() + c)
-
-
-def test_individual_with_parameter_sympy():
-    sympy = pytest.importorskip("sympy")  # noqa
-    primitives = (cgp.Add, cgp.Parameter)
-    genome = cgp.Genome(1, 1, 2, 1, 2, primitives)
-    # f(x) = x + c
-    genome.dna = [
-        ID_INPUT_NODE,
-        ID_NON_CODING_GENE,
-        ID_NON_CODING_GENE,
-        1,
-        0,
-        0,
-        0,
-        0,
-        1,
-        ID_OUTPUT_NODE,
-        2,
-        ID_NON_CODING_GENE,
-    ]
-    individual = IndividualSingleGenome(None, genome)
-
-    c = 1.0
-    x = [3.0]
-
-    f = individual.to_sympy()[0]
-    y = f.subs("x_0", x[0]).evalf()
-
-    assert y == pytest.approx(x[0] + c)
-
-    c = 2.0
-    individual.genome._parameter_names_to_values["<p1>"] = c
-
-    f = individual.to_sympy()[0]
-    y = f.subs("x_0", x[0]).evalf()
-
-    assert y == pytest.approx(x[0] + c)
+    for i in range(x.shape[0]):
+        assert y[i, 0].item() == pytest.approx(target_function(x[i, 0].item(), c))
 
 
-def test_to_and_from_torch_plus_backprop():
+@pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
+def test_to_and_from_torch_plus_backprop(individual_type):
     torch = pytest.importorskip("torch")
     primitives = (cgp.Mul, cgp.Parameter)
     genome = cgp.Genome(1, 1, 2, 2, 1, primitives)
@@ -158,25 +184,26 @@ def test_to_and_from_torch_plus_backprop():
         3,
         ID_NON_CODING_GENE,
     ]
-    individual = IndividualSingleGenome(None, genome)
+    individual = _create_individual(genome, individual_type=individual_type)
 
     def f_target(x):
         return math.pi * x
 
     f = individual.to_torch()
+    f_opt = f if individual_type == "SingleGenome" else f[0]
+    optimizer = torch.optim.SGD(f_opt.parameters(), lr=1e-1)
 
-    optimizer = torch.optim.SGD(f.parameters(), lr=1e-1)
     criterion = torch.nn.MSELoss()
 
     for i in range(200):
 
         x = torch.DoubleTensor(1, 1).normal_()
-        y = f(x)
+        y = f_opt(x)
 
         y_target = f_target(x)
 
         loss = criterion(y, y_target)
-        f.zero_grad()
+        f_opt.zero_grad()
         loss.backward()
 
         optimizer.step()
@@ -185,19 +212,20 @@ def test_to_and_from_torch_plus_backprop():
 
     # use old parameter values to compile function
     x = [3.0]
-    f_func = individual.to_func()
+    f_func = _unpack_evaluation(individual.to_func(), individual_type)
     y = f_func(x)
     assert y[0] != pytest.approx(f_target(x[0]))
 
     # update parameter values from torch class and compile new
     # function with new parameter values
     individual.update_parameters_from_torch_class(f)
-    f_func = individual.to_func()
+    f_func = _unpack_evaluation(individual.to_func(), individual_type)
     y = f_func(x)
     assert y[0] == pytest.approx(f_target(x[0]))
 
 
-def test_update_parameters_from_torch_class_resets_fitness():
+@pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
+def test_update_parameters_from_torch_class_resets_fitness(individual_type):
     pytest.importorskip("torch")
     primitives = (cgp.Mul, cgp.Parameter)
     genome = cgp.Genome(1, 1, 2, 1, 1, primitives)
@@ -217,21 +245,25 @@ def test_update_parameters_from_torch_class_resets_fitness():
         ID_NON_CODING_GENE,
     ]
     fitness = 1.0
-    individual = IndividualSingleGenome(fitness, genome)
+    individual = _create_individual(genome, fitness=fitness, individual_type=individual_type)
 
     f = individual.to_torch()
-    f._p1.data[0] = math.pi
+    f_opt = _unpack_evaluation(f, individual_type=individual_type)
+    f_opt._p1.data[0] = math.pi
 
     assert individual.fitness is not None
     individual.update_parameters_from_torch_class(f)
     assert individual.fitness is None
 
-    g = individual.to_func()
+    g = _unpack_evaluation(individual.to_func(), individual_type)
     x = 2.0
     assert g([x])[0] == pytest.approx(math.pi * x)
 
 
-def test_update_parameters_from_torch_class_does_not_reset_fitness_for_unused_parameters():
+@pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
+def test_update_parameters_from_torch_class_does_not_reset_fitness_for_unused_parameters(
+    individual_type,
+):
     pytest.importorskip("torch")
     primitives = (cgp.Mul, cgp.Parameter)
     genome = cgp.Genome(1, 1, 2, 1, 1, primitives)
@@ -251,7 +283,7 @@ def test_update_parameters_from_torch_class_does_not_reset_fitness_for_unused_pa
         ID_NON_CODING_GENE,
     ]
     fitness = 1.0
-    individual = IndividualSingleGenome(fitness, genome)
+    individual = _create_individual(genome, fitness=fitness, individual_type=individual_type)
 
     f = individual.to_torch()
 
@@ -259,6 +291,6 @@ def test_update_parameters_from_torch_class_does_not_reset_fitness_for_unused_pa
     individual.update_parameters_from_torch_class(f)
     assert individual.fitness is not None
 
-    g = individual.to_func()
+    g = _unpack_evaluation(individual.to_func(), individual_type)
     x = 2.0
     assert g([x])[0] == pytest.approx(x ** 2)
