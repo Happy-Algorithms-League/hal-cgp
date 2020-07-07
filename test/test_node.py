@@ -65,7 +65,7 @@ def _test_to_numpy(genome, x, y_target):
 def _test_to_torch(genome, x, y_target):
     torch = pytest.importorskip("torch")
     graph = cgp.CartesianGraph(genome)
-    assert graph.to_numpy()(torch.Tensor(x).reshape(1, -1)) == pytest.approx(y_target)
+    assert graph.to_torch()(torch.Tensor(x).reshape(1, -1)) == pytest.approx(y_target)
 
 
 def _test_to_sympy(genome, x, y_target):
