@@ -1,5 +1,6 @@
 import collections
 import copy
+import math  # noqa: F401
 import numpy as np  # noqa: F401
 import re
 
@@ -20,7 +21,8 @@ except ModuleNotFoundError:
 
 from typing import Callable, Dict, List, Optional, Set, TYPE_CHECKING
 
-from .node import Node, InputNode, OutputNode, Parameter
+from .node import Node, OperatorNode
+from .node_input_output import InputNode, OutputNode
 
 if TYPE_CHECKING:
     from .genome import Genome
@@ -225,7 +227,7 @@ class CartesianGraph:
                 node.format_output_str(self)
 
     def _fill_parameter_values(self, func_str: str) -> str:
-        g = re.findall("<p[0-9]+>", func_str)
+        g = re.findall("<[a-z]+[0-9]+>", func_str)
         if len(g) != 0:
             for parameter_name in g:
                 func_str = func_str.replace(
@@ -322,9 +324,11 @@ def _f(x):
         for hidden_column_idx in sorted(active_nodes_by_hidden_column_idx):
             for node in active_nodes_by_hidden_column_idx[hidden_column_idx]:
                 node.format_output_str_torch(self)
-                if isinstance(node, Parameter):
-                    node.format_parameter_str()
-                    all_parameter_str.append(node.parameter_str)
+                if isinstance(node, OperatorNode):
+                    if len(node._parameter_names) > 0:
+                        node.format_parameter_str()
+                        all_parameter_str.append(node.parameter_str)
+
         forward_str = ", ".join(node.output_str for node in self.output_nodes)
         class_str = """\
 class _C(torch.nn.Module):
@@ -357,6 +361,16 @@ class _C(torch.nn.Module):
 
         return locals()["_c"]
 
+    def _format_output_str_sympy_of_all_nodes(self):
+
+        for i, node in enumerate(self.input_nodes):
+            node.format_output_str_sympy(self)
+
+        active_nodes = self._determine_active_nodes()
+        for hidden_column_idx in sorted(active_nodes):
+            for node in active_nodes[hidden_column_idx]:
+                node.format_output_str_sympy(self)
+
     def to_sympy(self, simplify: Optional[bool] = True,) -> List["sympy_expr.Expr"]:
         """Compile the function(s) represented by the graph to a SymPy expression.
 
@@ -376,7 +390,7 @@ class _C(torch.nn.Module):
         if not sympy_available:
             raise ModuleNotFoundError("No module named 'sympy' (extra requirement)")
 
-        self._format_output_str_of_all_nodes()
+        self._format_output_str_sympy_of_all_nodes()
 
         sympy_exprs = []
         for output_node in self.output_nodes:
