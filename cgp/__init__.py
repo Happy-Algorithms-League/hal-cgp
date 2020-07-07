@@ -8,7 +8,6 @@ from .hl_api import evolve
 
 from . import utils
 from . import ea
-from . import node_factories as node_factories
 from . import local_search
 
 from .individual import IndividualSingleGenome, IndividualMultiGenome
