@@ -1,8 +1,15 @@
-black ~= 19.10b0
-flake8 ~= 3.7.9
+# extra requirements
 matplotlib ~= 3.2.1
-pytest ~= 5.4.1
 scipy ~= 1.4.1
 sympy ~= 1.5.1
 torch ~= 1.5.0
+# dev requirements
+pytest ~= 5.4.1
 mypy ~= 0.770
+black ~= 19.10b0
+flake8 ~= 3.7.9
+# doc requirements
+sphinx ~=3.1.2
+recommonmark~=0.6.0
+msmb_theme~=1.2.0
+sphinx-rtd-theme~=0.5.0
