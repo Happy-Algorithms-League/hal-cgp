@@ -4,8 +4,17 @@
    contain the root `toctree` directive.
 
 .. include:: ../README.rst
-   :end-before: long-description-end
-	     
+   :end-before: image-start
+
+.. image:: ../cgp-sketch.png
+   :width: 600
+   :alt: CGP Sketch
+	 
+Figure from Jordan, Schmidt, Senn & Petrovici, "Evolving to learn: discovering interpretable plasticity rules for spiking networks", arxiv:2005.14149_.
+
+.. _arxiv:2005.14149: https://arxiv.org/abs/2005.14149
+
+
 .. toctree::
    :maxdepth: 2
 
