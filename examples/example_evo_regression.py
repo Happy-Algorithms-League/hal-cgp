@@ -1,3 +1,12 @@
+"""
+Example for evolutionary regression
+===================================
+
+Example demonstrating the use of Cartesian genetic programming for
+two regression tasks.
+"""
+
+
 import functools
 import matplotlib.pyplot as plt
 import numpy as np
@@ -6,9 +15,10 @@ import warnings
 
 import cgp
 
-
-"""Example demonstrating the use of Cartesian Genetic Programming for
-two regression tasks."""
+# %%
+# We first define target functions. For illustration purposes, we
+# define two functions which present different levels of difficulty
+# for the search.
 
 
 def f_target_easy(x):
@@ -17,6 +27,13 @@ def f_target_easy(x):
 
 def f_target_hard(x):
     return 1.0 + 1.0 / (x[:, 0] + x[:, 1])
+
+
+# %%
+# Then we define the objective function for the evolution. It uses the
+# mean-squared error between the expression represented by a given
+# individual and the target function evaluated on a set of random
+# points.
 
 
 def objective(individual, target_function, seed):
@@ -62,6 +79,19 @@ def objective(individual, target_function, seed):
     individual.fitness = -loss
 
     return individual
+
+
+# %%
+# Next, we define the main loop of the evolution. To easily execute it
+# for different target functions, we wrap it into a function here. It
+# comprises:
+#
+# - defining the parameters for the population, the genome of individuals,
+#   and the evolutionary algorithm.
+# - creating a Population instance and instantiating the evolutionary algorithm.
+# - defining a recording callback closure for bookkeeping of the progression of the evolution.
+#
+# Finally, we call the `evolve` method to perform the evolutionary search.
 
 
 def evolution(f_target):
@@ -112,10 +142,14 @@ def evolution(f_target):
     obj = functools.partial(objective, target_function=f_target, seed=population_params["seed"])
 
     # Perform the evolution
-    cgp.evolve(
-        pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback,
-    )
+    cgp.evolve(pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback)
     return history, pop.champion
+
+
+# %%
+# We execute the evolution for the two different target functions
+# ('easy' and 'hard').  After finishing the evolution, we plot the
+# result and log the final evolved expression.
 
 
 if __name__ == "__main__":
