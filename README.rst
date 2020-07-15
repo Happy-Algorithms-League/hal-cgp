@@ -26,13 +26,17 @@ Cartesian genetic programming (CGP) in pure Python.
 
 This library implements Cartesian genetic programming (e.g, Miller and Thomson, 2000; Miller, 2011) for symbolic regression in pure Python, targeting applications with expensive fitness evaluations. It provides Python data structures to represent and evolve two-dimensional directed graphs (genotype) that are translated into computational graphs (phenotype) implementing mathematical expressions. The computational graphs can be compiled as a Python functions, SymPy expressions (Meurer et al., 2017) or PyTorch modules (Paszke et al., 2017). The library currently implements an evolutionary algorithm, specifically (mu + lambda) evolution strategies adapted from Deb et al. (2002), to evolve a population of symbolic expressions in order to optimize an objective function.
 
-.. image:: ../cgp-sketch.png
+.. image-start
+   
+.. image:: ./cgp-sketch.png
    :width: 600
    :alt: CGP Sketch
 	 
 Figure from Jordan, Schmidt, Senn & Petrovici, "Evolving to learn: discovering interpretable plasticity rules for spiking networks", arxiv:2005.14149_.
 
 .. _arxiv:2005.14149: https://arxiv.org/abs/2005.14149
+
+.. image-end
 
 .. long-description-end
 
@@ -160,3 +164,5 @@ Citation
 If you use HAL-CGP in your work, please cite it as:
 
 Schmidt, Maximilian & Jordan, Jakob (2020) hal-cgp: Cartesian genetic programming in pure Python. [10.5281/zenodo.3889163](https://doi.org/10.5281/zenodo.3889163)
+
+.. citation-end
