@@ -1,6 +1,7 @@
 # encoding: utf8
 import re
 from setuptools import setup
+from collections import defaultdict
 
 
 def _cut_version_number_from_requirement(req):
@@ -24,17 +25,34 @@ def read_requirements():
 
 
 def read_extra_requirements():
-
-    extra_requirements = {}
-    extra_requirements["all"] = []
+    extra_requirements = defaultdict(lambda: [])
+    collect_key = None
+    collect_keys = []
     with open("./extra-requirements.txt") as f:
         for req in f:
             req = req.replace("\n", " ")
-            extra_requirements[_cut_version_number_from_requirement(req)] = [req]
-            extra_requirements["all"].append(req)
-
+            if req.startswith("#"):  # new block in requirements file
+                collect_key = req.split(" ")[1]
+                collect_keys.append(collect_key)
+                continue
+            # We only list extra dependencies required for using the
+            # library as individual options, not dev or doc
+            # dependencies
+            if collect_key == "extra":
+                extra_requirements[_cut_version_number_from_requirement(req)] = [req]
+            extra_requirements[collect_key].append(req)
+    # Collect all requirements into the 'all' key
+    for key in collect_keys:
+        extra_requirements["all"] += extra_requirements[key]
     extra_requirements[":python_version == '3.6'"] = ["dataclasses"]
     return extra_requirements
+
+
+def read_long_description():
+    with open("README.rst", "r") as f:
+        descr = f.read()
+    ind = descr.find(".. long-description-end")
+    return descr[:ind]
 
 
 setup(
@@ -49,8 +67,8 @@ setup(
     install_requires=read_requirements(),
     extras_require=read_extra_requirements(),
     packages=["cgp", "cgp.ea", "cgp.local_search"],
-    long_description=open("long_description.md").read(),
-    long_description_content_type="text/markdown",
+    long_description=read_long_description(),
+    long_description_content_type="text/x-rst",
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
