@@ -167,7 +167,7 @@
 <h1>Evolutionary Algorithms<a class="headerlink" href="#evolutionary-algorithms" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="cgp.ea.MuPlusLambda">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.ea.</code><code class="sig-name descname">MuPlusLambda</code><span class="sig-paren">(</span><em class="sig-param">n_offsprings: int</em>, <em class="sig-param">n_breeding: int</em>, <em class="sig-param">tournament_size: int</em>, <em class="sig-param">*</em>, <em class="sig-param">n_processes: int = 1</em>, <em class="sig-param">local_search: Callable[cgp.individual.IndividualBase</em>, <em class="sig-param">None] = &lt;function MuPlusLambda.&lt;lambda&gt;&gt;</em>, <em class="sig-param">k_local_search: Optional[int] = None</em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.ea.MuPlusLambda" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.ea.</code><code class="sig-name descname">MuPlusLambda</code><span class="sig-paren">(</span><em class="sig-param">n_offsprings: int, n_breeding: int, tournament_size: int, *, n_processes: int = 1, local_search: Callable[[cgp.individual.IndividualBase], None] = &lt;function MuPlusLambda.&lt;lambda&gt;&gt;, k_local_search: Optional[int] = None</em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.ea.MuPlusLambda" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic (mu + lambda) evolution strategy based on Deb et al. (2002).</p>
 <p>Currently only uses a single objective.</p>
 <p>Deb, K., Pratap, A., Agarwal, S., &amp; Meyarivan, T. A. M. T. (2002).
@@ -175,7 +175,7 @@ A fast and elitist multiobjective genetic algorithm: NSGA-II. IEEE
 transactions on evolutionary computation, 6(2), 182-197.</p>
 <dl class="py method">
 <dt id="cgp.ea.MuPlusLambda.initialize_fitness_parents">
-<code class="sig-name descname">initialize_fitness_parents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pop</span><span class="p">:</span> <span class="n">cgp.population.Population</span></em>, <em class="sig-param"><span class="n">objective</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span>cgp.individual.IndividualBase<span class="p">, </span>cgp.individual.IndividualBase<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.ea.MuPlusLambda.initialize_fitness_parents" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">initialize_fitness_parents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pop</span><span class="p">:</span> <span class="n">cgp.population.Population</span></em>, <em class="sig-param"><span class="n">objective</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">[</span>cgp.individual.IndividualBase<span class="p">]</span><span class="p">, </span>cgp.individual.IndividualBase<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.ea.MuPlusLambda.initialize_fitness_parents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the fitness of all parents in the given population.</p>
 <dl class="simple">
 <dt>pop<span class="classifier">Population</span></dt><dd><p>Population instance.</p>
@@ -189,7 +189,7 @@ a modified individual (with updated fitness).</p>
 
 <dl class="py method">
 <dt id="cgp.ea.MuPlusLambda.step">
-<code class="sig-name descname">step</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pop</span><span class="p">:</span> <span class="n">cgp.population.Population</span></em>, <em class="sig-param"><span class="n">objective</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span>cgp.individual.IndividualBase<span class="p">, </span>cgp.individual.IndividualBase<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; cgp.population.Population<a class="headerlink" href="#cgp.ea.MuPlusLambda.step" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">step</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pop</span><span class="p">:</span> <span class="n">cgp.population.Population</span></em>, <em class="sig-param"><span class="n">objective</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">[</span>cgp.individual.IndividualBase<span class="p">]</span><span class="p">, </span>cgp.individual.IndividualBase<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; cgp.population.Population<a class="headerlink" href="#cgp.ea.MuPlusLambda.step" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform one step in the evolution.</p>
 <dl class="simple">
 <dt>pop<span class="classifier">Population</span></dt><dd><p>Population instance.</p>
