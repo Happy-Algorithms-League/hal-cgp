@@ -1,0 +1,262 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Local search &mdash; hal-cgp 0.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/msmb.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/js/versions.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="References" href="../references.html" />
+    <link rel="prev" title="Evolutionary Algorithms" href="ea.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> hal-cgp
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api_reference.html">API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="hl_api.html">High-level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cgp.html">CGP Population structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes.html">Functional nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ea.html">Evolutionary Algorithms</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Local search</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../citation.html">Citation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">hal-cgp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="api_reference.html">API reference</a> &raquo;</li>
+        
+      <li>Local search</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api_reference/local_search.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="local-search">
+<h1>Local search<a class="headerlink" href="#local-search" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="cgp.local_search.gradient_based">
+<code class="sig-prename descclassname">cgp.local_search.</code><code class="sig-name descname">gradient_based</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">individual</span><span class="p">:</span> <span class="n">cgp.individual.IndividualBase</span></em>, <em class="sig-param"><span class="n">objective</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span>Union<span class="p">[</span>torch.nn.Module<span class="p">, </span>List<span class="p">[</span>torch.nn.Module<span class="p">]</span><span class="p">]</span><span class="p">, </span>torch.Tensor<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">lr</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">gradient_steps</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">optimizer</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Optimizer<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">clip_value</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.local_search.gradient_based" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a local search for numeric leaf values for an individual
+based on gradient information obtained via automatic
+differentiation.</p>
+<dl class="simple">
+<dt>individual<span class="classifier">Individual</span></dt><dd><p>Individual for which to perform local search.</p>
+</dd>
+<dt>objective<span class="classifier">Callable</span></dt><dd><p>Objective function that is called with a differentiable graph
+and returns a differentiable loss.</p>
+</dd>
+<dt>lr<span class="classifier">float</span></dt><dd><p>Learning rate for optimizer.</p>
+</dd>
+<dt>gradient_steps<span class="classifier">int</span></dt><dd><p>Number of gradient steps per individual.</p>
+</dd>
+<dt>optimizer<span class="classifier">torch.optim.Optimizer, optional</span></dt><dd><p>Optimizer to use for parameter updates. Defaults to
+torch.optim.SGD.</p>
+</dd>
+<dt>clip_value<span class="classifier">float, optional</span></dt><dd><p>Clipping value for gradients. Clipping is skipped when set to
+np.inf. Defaults to 10% of the inverse of the learning rate so
+that the maximal update step is 0.1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../references.html" class="btn btn-neutral float-right" title="References" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ea.html" class="btn btn-neutral float-left" title="Evolutionary Algorithms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Happy Algorithms League
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <script>
+    var versions_json_url = ''
+</script>
+
+<div class="rst-versions" data-toggle="rst-versions" role="note"
+     aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"></span>
+        0.1.1
+      <span class="fa fa-caret-down"></span>
+    </span>
+
+    <div class="rst-other-versions">
+        <dl id="versionselector">
+            <dt>Other Versions</dt>
+        </dl>
+
+    </div>
+</div>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
