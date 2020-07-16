@@ -17,7 +17,7 @@ def test_inputs_are_cut_to_match_arity():
     node = cgp.ConstantFloat(idx, inputs)
     assert node.inputs == []
 
-    node = cgp.node.OutputNode(idx, inputs)
+    node = cgp.node_input_output.OutputNode(idx, inputs)
     assert node.inputs == inputs[:1]
 
     node = cgp.Add(idx, inputs)
@@ -306,9 +306,7 @@ def test_parameter_w_custom_initial_value():
     initial_value = 3.1415
 
     class CustomParameter(cgp.Parameter):
-        @staticmethod
-        def initial_value():
-            return initial_value
+        _initial_values = {"<p>": lambda: initial_value}
 
     genome_params = {
         "n_inputs": 1,
@@ -335,6 +333,43 @@ def test_parameter_w_custom_initial_value():
     _test_graph_call_and_to_x_compilations(genome, x, y_target, test_graph_call=False)
 
 
+def test_parameter_two_nodes():
+    genome_params = {
+        "n_inputs": 1,
+        "n_outputs": 1,
+        "n_columns": 3,
+        "n_rows": 1,
+        "levels_back": None,
+    }
+    primitives = (cgp.Parameter, cgp.Add)
+    genome = cgp.Genome(**genome_params, primitives=primitives)
+    # f(x) = c1 + c2
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        2,
+        ID_OUTPUT_NODE,
+        3,
+        ID_NON_CODING_GENE,
+    ]
+
+    x = [1.0]
+    # by default the output value of the Parameter node is 1.0,
+    # hence the sum of two Parameter nodes is 2.0
+    y_target = [2.0]
+
+    _test_graph_call_and_to_x_compilations(genome, x, y_target, test_graph_call=False)
+
+
 def test_parameter_w_random_initial_value(rng_seed):
     np.random.seed(rng_seed)
 
@@ -342,9 +377,7 @@ def test_parameter_w_random_initial_value(rng_seed):
     max_val = 1.5
 
     class CustomParameter(cgp.Parameter):
-        @staticmethod
-        def initial_value():
-            return np.random.uniform(min_val, max_val)
+        _initial_values = {"<p>": lambda: np.random.uniform(min_val, max_val)}
 
     genome_params = {
         "n_inputs": 1,
@@ -370,3 +403,40 @@ def test_parameter_w_random_initial_value(rng_seed):
     assert min_val <= y
     assert y <= max_val
     assert y != pytest.approx(1.0)
+
+
+def test_raise_broken_def_output():
+    with pytest.raises(SyntaxError):
+
+        class CustomAdd(cgp.OperatorNode):
+            _arity = 2
+            _def_output = "x_0 +/ x_1"
+
+
+def test_raise_broken_def_numpy_output():
+    with pytest.raises(ValueError):
+
+        class CustomAdd(cgp.OperatorNode):
+            _arity = 2
+            _def_output = "x_0 + x_1"
+            _def_numpy_output = "np.add(x_0 + x_1)"
+
+
+def test_raise_broken_def_torch_output():
+    pytest.importorskip("torch")
+    with pytest.raises(TypeError):
+
+        class CustomAdd(cgp.OperatorNode):
+            _arity = 2
+            _def_output = "x_0 + x_1"
+            _def_torch_output = "torch.add(x_0 + x_1)"
+
+
+def test_raise_broken_def_sympy_output():
+    sympy = pytest.importorskip("sympy")
+    with pytest.raises(sympy.SympifyError):
+
+        class CustomAdd(cgp.OperatorNode):
+            _arity = 2
+            _def_output = "x_0 + x_1"
+            _def_sympy_output = "x_0 +/ x_1"

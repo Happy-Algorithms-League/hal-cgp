@@ -1,4 +1,9 @@
-from typing import List, Type, TYPE_CHECKING
+import math  # noqa: F401
+import re
+
+from typing import Callable, Dict, List, Tuple, Type, TYPE_CHECKING
+
+from . import node_validation
 
 if TYPE_CHECKING:
     from .cartesian_graph import CartesianGraph
@@ -24,7 +29,7 @@ def register(cls: Type["Node"]) -> None:
 
 
 class Node:
-    """Base class for primitive functions used in Cartesian computational graphs.
+    """Base class for input/output and hidden nodes.
     """
 
     _arity: int
@@ -32,7 +37,6 @@ class Node:
     _inputs: List[int]
     _output: float
     _output_str: str
-    _parameter_str: str
     _idx: int
 
     def __init__(self, idx: int, inputs: List[int]) -> None:
@@ -123,6 +127,10 @@ class Node:
     def output(self) -> float:
         return self._output
 
+    @property
+    def output_str(self) -> str:
+        return self._output_str
+
     def activate(self) -> None:
         """Set node to active.
         """
@@ -135,212 +143,141 @@ class Node:
 
     def format_output_str_numpy(self, graph):
         """Format output string for NumPy representation.
-
-        If format_output_str_numpy implementation is not provided, use
-        standard output_str.
         """
-        self.format_output_str(graph)
+        raise NotImplementedError()
 
     def format_output_str_torch(self, graph):
-        """Format output string for torch representation.
-
-        If format_output_str_torch implementation is not provided, use
-        standard output_str.
+        """Format output string for PyTorch representation.
         """
-        self.format_output_str(graph)
+        raise NotImplementedError()
 
-    def format_parameter_str(self) -> None:
-        raise NotImplementedError
+    def format_output_str_sympy(self, graph):
+        """Format output string for SymPy representation.
+        """
+        raise NotImplementedError()
 
-    @property
-    def output_str(self) -> str:
-        return self._output_str
+
+class OperatorNode(Node):
+    """Base class of hidden nodes.
+
+    Subclasses provide the atomic operations of the computational graph.
+    """
+
+    _input_names: Tuple[str, ...]
+    _parameter_names: Tuple[str, ...]
+    _initial_values: Dict[str, Callable[[], float]]
+
+    _def_output: str
+    _def_numpy_output: str
+    _def_torch_output: str
+    _def_sympy_output: str
+
+    _parameter_str: str
+
+    def __init_subclass__(cls: Type["OperatorNode"]) -> None:
+        super().__init_subclass__()
+        OperatorNode._extract_input_names_from_def_output(cls)
+        OperatorNode._extract_parameter_names_from_def_output(cls)
+
+        node_validation.check_to_func(cls)
+        node_validation.check_to_numpy(cls)
+        node_validation.check_to_torch(cls)
+        node_validation.check_to_sympy(cls)
+
+    @classmethod
+    def _extract_input_names_from_def_output(self, cls: Type["OperatorNode"]) -> None:
+        g = re.findall("x_[0-9]+", cls._def_output)
+
+        if not len(g) == cls._arity:
+            raise RuntimeError(f'wrong number of inputs defined in OperatorNode "{cls.__name__}"')
+
+        cls._input_names = tuple(g)
+
+    @classmethod
+    def _extract_parameter_names_from_def_output(self, cls: Type["OperatorNode"]) -> None:
+        g = re.findall("<[a-z]+>", cls._def_output)
+        cls._parameter_names = tuple(g)
+
+    @staticmethod
+    def _extract_index_from_input_name(input_name: str) -> int:
+        return int(input_name.split("_")[1])
+
+    @classmethod
+    def initial_value(cls, parameter_name: str) -> float:
+        parameter_prefix: str = re.findall("([a-z]+)[0-9]+", parameter_name)[0]
+        return cls._initial_values["<" + parameter_prefix + ">"]()
 
     @property
     def parameter_str(self) -> str:
         return self._parameter_str
 
-
-class Add(Node):
-    """Node representing addition.
-    """
-
-    _arity = 2
-
-    def __init__(self, idx: int, inputs: List[int]) -> None:
-        super().__init__(idx, inputs)
-
     def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
-        self._output = graph[self._inputs[0]].output + graph[self._inputs[1]].output
+        output_str = str(self._def_output)
+
+        if len(self._parameter_names) > 0:
+            raise RuntimeError("can not call a node that uses parameters")
+
+        for input_name in self._input_names:
+            idx = self._extract_index_from_input_name(input_name)
+            output_str = output_str.replace(input_name, f"{graph[self._inputs[idx]].output}")
+
+        exec_str = f"self._output = {output_str}"
+        exec(exec_str)
+
+    def _replace_input_names(self, output_str: str, graph: "CartesianGraph") -> str:
+        for input_name in self._input_names:
+            idx = self._extract_index_from_input_name(input_name)
+            output_str = output_str.replace(input_name, graph[self._inputs[idx]].output_str)
+        return output_str
+
+    def _replace_parameter_names(self, output_str: str, graph: "CartesianGraph") -> str:
+        for parameter_name in self._parameter_names:
+            parameter_name_with_idx = parameter_name[1:-1] + str(self._idx)
+            output_str = output_str.replace(parameter_name, "<" + parameter_name_with_idx + ">")
+        return output_str
+
+    def _format_output_str(self, output_str: str, graph: "CartesianGraph") -> str:
+        output_str = str(output_str)
+        output_str = self._replace_input_names(output_str, graph)
+        output_str = self._replace_parameter_names(output_str, graph)
+        return "(" + output_str + ")"
 
     def format_output_str(self, graph: "CartesianGraph") -> None:
-        self._output_str = (
-            f"({graph[self._inputs[0]].output_str} + {graph[self._inputs[1]].output_str})"
-        )
-
-
-class Sub(Node):
-    """Node representing subtraction.
-    """
-
-    _arity = 2
-
-    def __init__(self, idx: int, inputs: List[int]) -> None:
-        super().__init__(idx, inputs)
-
-    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
-        self._output = graph[self._inputs[0]].output - graph[self._inputs[1]].output
-
-    def format_output_str(self, graph: "CartesianGraph") -> None:
-        self._output_str = (
-            f"({graph[self._inputs[0]].output_str} - {graph[self._inputs[1]].output_str})"
-        )
-
-
-class Mul(Node):
-    """Node representing multiplication.
-    """
-
-    _arity = 2
-
-    def __init__(self, idx: int, inputs: List[int]) -> None:
-        super().__init__(idx, inputs)
-
-    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
-        self._output = graph[self._inputs[0]].output * graph[self._inputs[1]].output
-
-    def format_output_str(self, graph: "CartesianGraph") -> None:
-        self._output_str = (
-            f"({graph[self._inputs[0]].output_str} * {graph[self._inputs[1]].output_str})"
-        )
-
-
-class Div(Node):
-    """Node representing division.
-    """
-
-    _arity = 2
-
-    def __init__(self, idx: int, inputs: List[int]) -> None:
-        super().__init__(idx, inputs)
-
-    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
-
-        self._output = graph[self._inputs[0]].output / graph[self._inputs[1]].output
-
-    def format_output_str(self, graph: "CartesianGraph") -> None:
-        self._output_str = (
-            f"({graph[self._inputs[0]].output_str} / {graph[self._inputs[1]].output_str})"
-        )
-
-
-class ConstantFloat(Node):
-    """Node representing a constant float number.
-    """
-
-    _arity = 0
-
-    def __init__(self, idx: int, inputs: List[int]) -> None:
-        super().__init__(idx, inputs)
-
-        self._output = 1.0
-
-    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
-        pass
-
-    def format_output_str(self, graph: "CartesianGraph") -> None:
-        self._output_str = f"{self._output}"
+        self._output_str = self._format_output_str(self._def_output, graph)
 
     def format_output_str_numpy(self, graph: "CartesianGraph") -> None:
-        self._output_str = f"np.ones(x.shape[0]) * {self._output}"
+        if not hasattr(self, "_def_numpy_output"):
+            self.format_output_str(graph)
+        else:
+            self._output_str = self._format_output_str(self._def_numpy_output, graph)
 
     def format_output_str_torch(self, graph: "CartesianGraph") -> None:
-        self._output_str = f"torch.ones(1).expand(x.shape[0]) * {self._output}"
+        if not hasattr(self, "_def_torch_output"):
+            self.format_output_str(graph)
+        else:
+            output_str = self._format_output_str(self._def_torch_output, graph)
+            self._output_str = self._replace_parameter_names_in_output_str_with_members(output_str)
 
+    def _replace_parameter_names_in_output_str_with_members(self, output_str: str) -> str:
+        g = re.findall("<([a-z]+[0-9]+)>", output_str)
+        for parameter_name_with_idx in g:
+            output_str = output_str.replace(
+                "<" + parameter_name_with_idx + ">", "self._" + parameter_name_with_idx
+            )
+        return output_str
 
-class Parameter(Node):
-    """Node representing a scalar variable. Its value is stored in the
-    individual holding the corresponding genome.
-    """
-
-    _arity = 0
-
-    def __init__(self, idx: int, inputs: List[int]) -> None:
-        super().__init__(idx, inputs)
-
-    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
-        pass
-
-    def format_output_str(self, graph: "CartesianGraph") -> None:
-        self._output_str = f"<p{self._idx}>"
-
-    def format_output_str_numpy(self, graph: "CartesianGraph") -> None:
-        self._output_str = f"np.ones(x.shape[0]) * <p{self._idx}>"
-
-    def format_output_str_torch(self, graph: "CartesianGraph") -> None:
-        self._output_str = f"self._p{self._idx}.expand(x.shape[0])"
+    def format_output_str_sympy(self, graph: "CartesianGraph") -> None:
+        if not hasattr(self, "_def_sympy_output"):
+            self.format_output_str(graph)
+        else:
+            self._output_str = self._format_output_str(self._def_sympy_output, graph)
 
     def format_parameter_str(self) -> None:
-        self._parameter_str = (
-            f"self._p{self._idx} = torch.nn.Parameter(torch.DoubleTensor([<p{self._idx}>]))\n"
-        )
-
-    @staticmethod
-    def initial_value() -> float:
-        return 1.0
-
-
-class InputNode(Node):
-    """Node representing a generic input node.
-    """
-
-    _arity = 0
-
-    def __init__(self, idx: int, inputs: List[int]) -> None:
-        super().__init__(idx, inputs)
-
-    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
-        assert False
-
-    def format_output_str(self, graph: "CartesianGraph") -> None:
-        self._output_str = f"x[{self._idx}]"
-
-    def format_output_str_numpy(self, graph: "CartesianGraph") -> None:
-        self._output_str = f"x[:, {self._idx}]"
-
-    def format_output_str_torch(self, graph: "CartesianGraph") -> None:
-        self._output_str = f"x[:, {self._idx}]"
-
-
-class OutputNode(Node):
-    """Node representing a generic output node.
-    """
-
-    _arity = 1
-
-    def __init__(self, idx: int, inputs: List[int]) -> None:
-        super().__init__(idx, inputs)
-
-    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
-        self._output = graph[self._inputs[0]].output
-
-    def format_output_str(self, graph: "CartesianGraph") -> None:
-        self._output_str = f"{graph[self._inputs[0]].output_str}"
-
-
-class Pow(Node):
-    """Node representing the power operation.
-    """
-
-    _arity = 2
-
-    def __init__(self, idx: int, inputs: List[int]) -> None:
-        super().__init__(idx, inputs)
-
-    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
-        self._output = graph[self._inputs[0]].output ** graph[self._inputs[1]].output
-
-    def format_output_str(self, graph: "CartesianGraph") -> None:
-        self._output_str = (
-            f"({graph[self._inputs[0]].output_str} ** {graph[self._inputs[1]].output_str})"
-        )
+        parameter_str_list = []
+        for parameter_name in self._parameter_names:
+            parameter_name_with_idx = parameter_name[1:-1] + str(self._idx)
+            parameter_str_list.append(
+                f"self._{parameter_name_with_idx} = torch.nn.Parameter("
+                + f"torch.DoubleTensor([<{parameter_name_with_idx}>]))\n"
+            )
+        self._parameter_str = "\n".join(parameter_str_list)
