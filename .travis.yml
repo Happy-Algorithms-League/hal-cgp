@@ -40,6 +40,7 @@ script:
        python examples/example_evo_regression.py || exit 1 ;
        python examples/example_differential_evo_regression.py || exit 1;
        python examples/example_caching.py || exit 1;
+       python examples/example_parametrized_nodes.py || exit 1;
     fi
 after_success:
   - coveralls
