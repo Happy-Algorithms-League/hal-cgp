@@ -172,7 +172,7 @@ class OperatorNode(Node):
     _def_torch_output: str
     _def_sympy_output: str
 
-    _parameter_str: str
+    _parameter_str: List[str]
 
     def __init_subclass__(cls: Type["OperatorNode"]) -> None:
         super().__init_subclass__()
@@ -208,7 +208,7 @@ class OperatorNode(Node):
         return cls._initial_values["<" + parameter_prefix + ">"]()
 
     @property
-    def parameter_str(self) -> str:
+    def parameter_str(self) -> List[str]:
         return self._parameter_str
 
     def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
@@ -253,10 +253,10 @@ class OperatorNode(Node):
 
     def format_output_str_torch(self, graph: "CartesianGraph") -> None:
         if not hasattr(self, "_def_torch_output"):
-            self.format_output_str(graph)
+            output_str = self._format_output_str(self._def_output, graph)
         else:
             output_str = self._format_output_str(self._def_torch_output, graph)
-            self._output_str = self._replace_parameter_names_in_output_str_with_members(output_str)
+        self._output_str = self._replace_parameter_names_in_output_str_with_members(output_str)
 
     def _replace_parameter_names_in_output_str_with_members(self, output_str: str) -> str:
         g = re.findall("<([a-z]+[0-9]+)>", output_str)
@@ -273,11 +273,11 @@ class OperatorNode(Node):
             self._output_str = self._format_output_str(self._def_sympy_output, graph)
 
     def format_parameter_str(self) -> None:
-        parameter_str_list = []
+        parameter_str = []
         for parameter_name in self._parameter_names:
             parameter_name_with_idx = parameter_name[1:-1] + str(self._idx)
-            parameter_str_list.append(
+            parameter_str.append(
                 f"self._{parameter_name_with_idx} = torch.nn.Parameter("
-                + f"torch.DoubleTensor([<{parameter_name_with_idx}>]))\n"
+                + f"torch.DoubleTensor([<{parameter_name_with_idx}>]))"
             )
-        self._parameter_str = "\n".join(parameter_str_list)
+        self._parameter_str = parameter_str

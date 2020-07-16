@@ -320,7 +320,7 @@ def _f(x):
             node.format_output_str_torch(self)
 
         active_nodes_by_hidden_column_idx = self._determine_active_nodes()
-        all_parameter_str = []
+        all_parameter_str: List[List[str]] = []
         for hidden_column_idx in sorted(active_nodes_by_hidden_column_idx):
             for node in active_nodes_by_hidden_column_idx[hidden_column_idx]:
                 node.format_output_str_torch(self)
@@ -337,8 +337,9 @@ class _C(torch.nn.Module):
         super().__init__()
 
 """
-        for s in all_parameter_str:
-            class_str += "        " + s
+        for parameter_str in all_parameter_str:
+            for s in parameter_str:
+                class_str += "        " + s + "\n"
 
         func_str = f"""\
 
