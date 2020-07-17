@@ -21,6 +21,8 @@
 	   :target: https://github.com/psf/black
 .. image:: https://coveralls.io/repos/github/Happy-Algorithms-League/python-gp/badge.svg?branch=master
 	   :target: https://coveralls.io/github/Happy-Algorithms-League/python-gp?branch=master
+.. image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
+	   :target: https://happy-algorithms-league.github.io/hal-cgp/
 
 Cartesian genetic programming (CGP) in pure Python.
 
@@ -35,8 +37,6 @@ Figure from Jordan, Schmidt, Senn & Petrovici, "Evolving to learn: discovering i
 .. _arxiv:2005.14149: https://arxiv.org/abs/2005.14149
 
 .. long-description-end
-
-A simple example of CGP applied to a symbolic regression problem can be found in `examples/example_evo_regression.py`.
 
 .. installation-start
 ============
@@ -72,10 +72,13 @@ The adventurous can install the most recent development version directly from ou
 
 .. installation-end
 
-.. basic-usage-start
 ===========
 Basic usage
 ===========
+
+For detailed documentation, please refer to `https://happy-algorithms-league.github.io/hal-cgp/ <https://happy-algorithms-league.github.io/hal-cgp/>`_. Here we only provide a preview.
+
+.. basic-usage-start
 
 Follow these steps to solve a basic regression problem:
 
