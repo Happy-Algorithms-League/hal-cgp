@@ -5,16 +5,16 @@ python:
   - "3.8"
 env:
   - DEP=[all]
-  - DEP=
+  - DEP=[dev]
 branches:
   only:
     - master
 jobs:
   exclude:
   - python: "3.6"
-    env: DEP=
+    env: DEP=[dev]
   - python: "3.7"
-    env: DEP=
+    env: DEP=[dev]
 before_install:
   - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
@@ -24,16 +24,16 @@ before_install:
   - source activate myenv
   - pip install --upgrade pip
 install:
-  - pip install pytest pytest-cov coveralls
-  - pip install flake8 black
-  - pip install mypy
   - pip install -e .$DEP
+  - pip install pytest-cov coveralls
 script:
   - black --check .
   - flake8 --config=.flake8 .
   - mypy cgp
   - if [ "$DEP" = "[all]" ]; then
-       cd docs && make html && cd ../ || exit 1;
+       make -C docs/ html || exit 1;
+       touch docs/_build/html/.nojekyll
+       
     fi
   - pytest --cov=cgp
   - if [ "$DEP" = "[all]" -a $TRAVIS_PYTHON_VERSION = 3.8 ]; then
@@ -43,3 +43,14 @@ script:
     fi
 after_success:
   - coveralls
+deploy:
+  provider: pages:git
+  skip_cleanup: true
+  verbose: true
+  token: $GITHUB_TOKEN
+  edge: true
+  local_dir: ./docs/_build/html/
+  keep_history: true
+  on:
+    python: 3.8
+    condition: $DEP = "[all]"
