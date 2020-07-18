@@ -24,7 +24,10 @@
 
 Cartesian genetic programming (CGP) in pure Python.
 
-This library implements Cartesian genetic programming (e.g, Miller and Thomson, 2000; Miller, 2011) for symbolic regression in pure Python, targeting applications with expensive fitness evaluations. It provides Python data structures to represent and evolve two-dimensional directed graphs (genotype) that are translated into computational graphs (phenotype) implementing mathematical expressions. The computational graphs can be compiled as a Python functions, SymPy expressions (Meurer et al., 2017) or PyTorch modules (Paszke et al., 2017). The library currently implements an evolutionary algorithm, specifically (mu + lambda) evolution strategies adapted from Deb et al. (2002), to evolve a population of symbolic expressions in order to optimize an objective function.
+hal-cgp is an extensible pure Python library implementing Cartesian genetic programming to represent, mutate and evaluate populations of individuals encoding symbolic expressions targeting applications with computationally expensive fitness evaluations. It supports the translation from a CGP genotype, a two-dimensional Cartesian graph, into the corresponding phenotype, a computational graph implementing a particular mathematical expression. These computational graphs can be
+exported as pure Python functions, NumPy-compatible functions (Walt et al., 2011), SymPy expressions (Meurer et al., 2017) or PyTorch modules (Paszke et al., 2019).
+
+The library implements a mu + lambda evolution strategy (Beyer and Schwefel, 2002) to evolve a population of individuals to optimize an objective function.
 
 .. image-start
    
@@ -92,7 +95,6 @@ Follow these steps to solve a basic regression problem:
           individual.fitness = ...
 	  return individual
 
-
 2. Define parameters for the population, the genome, the evolutionary algorithm and the evolve function.
    
    .. code-block:: python
@@ -108,9 +110,9 @@ Follow these steps to solve a basic regression problem:
 	   "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Div, cgp.ConstantFloat),
 	   }
 
-   ea_params = {"n_offsprings": 10, "n_breeding": 10, "tournament_size": 2, "n_processes": 2}
+      ea_params = {"n_offsprings": 10, "n_breeding": 10, "tournament_size": 2, "n_processes": 2}
 
-   evolve_params = {"max_generations": 1000, "min_fitness": 0.0}
+      evolve_params = {"max_generations": 1000, "min_fitness": 0.0}
 
 3. Initialize a population and an evolutionary algorithm instance:
 
@@ -133,6 +135,7 @@ Follow these steps to solve a basic regression problem:
    .. code-block:: python
 		
       cgp.evolve(pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback)
+
 .. basic-usage-end
 
 .. references-start
@@ -140,19 +143,19 @@ Follow these steps to solve a basic regression problem:
 References
 ==========
 
+Beyer, H.-G. and Schwefel, H.-P. (2002). Evolution strategies–a comprehensive introduction. Natural computing, 1(1):3–52.
+
+Meurer, A., Smith, C. P., Paprocki, M., Certik, O., Kirpichev, S. B., Rocklin, M., ... & Rathnayake, T. (2017). SymPy: Symbolic Computing in Python. PeerJ Computer Science, 3, e103.
+
 Miller, J. and Thomson, P. (2000). Cartesian genetic programming. In Proc. European Conference on Genetic Programming, volume 1802, pages 121-132. Springer.
 
 Miller, J. F. (2011). Cartesian genetic programming. In Cartesian genetic programming, pages 17-34. Springer.
 
-Meurer, A., Smith, C. P., Paprocki, M., Certik, O., Kirpichev, S. B., Rocklin, M., ... & Rathnayake, T. (2017). SymPy: Symbolic Computing in Python. PeerJ Computer Science, 3, e103.
-
 Paszke, A., Gross, S., Chintala, S., Chanan, G., Yang, E., DeVito, Z., ... & Lerer, A. (2017). Automatic Differentiation in PyTorch.
-
-Deb, K., Pratap, A., Agarwal, S., & Meyarivan, T. A. M. T. (2002). A Fast and Elitist Multiobjective Genetic Algorithm: NSGA-II. IEEE Transactions on Evolutionary Computation, 6(2), 182-197.
 
 Topchy, A., & Punch, W. F. (2001). Faster Genetic Programming based on Local Gradient Search of Numeric Leaf Values. In Proceedings of the Genetic and Evolutionary Computation Conference (GECCO-2001) (Vol. 155162). Morgan Kaufmann San Francisco, CA, USA.
 
-Izzo, D., Biscani, F., & Mereta, A. (2017). Differentiable Genetic Programming. In European Conference on Genetic Programming (pp. 35-51). Springer, Cham.
+Walt, S. v. d., Colbert, S. C., and Varoquaux, G. (2011). The numpy array: a structure for efficient numerical computation. Computing in Science & Engineering, 13(2):22–30.
 
 .. references-end
    
