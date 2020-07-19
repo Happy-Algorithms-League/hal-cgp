@@ -1,0 +1,7 @@
+===========
+Basic usage
+===========
+
+.. include:: ../README.rst
+   :start-after: basic-usage-start
+   :end-before: basic-usage-end
