@@ -1,9 +1,6 @@
-import numpy as np
-import time
-
-import cgp
-
-""" Example demonstrating the use of the caching decorator.
+"""
+Example demonstrating the use of the caching decorator.
+=======================================================
 
 Caches the results of fitness evaluations in a pickle file
 ('example_caching_cache.pkl'). To illustrate its practical use,
@@ -11,9 +8,25 @@ compare the runtime of this script when you first call it vs. the
 second time and when you comment out the decorator on
 `inner_objective`."""
 
+import numpy as np
+import time
+
+import cgp
+
+# %%
+# We define the target function for this example.
+
 
 def f_target(x):
     return x ** 2 + x + 1.0
+
+
+# %%
+# We then define the objective function for the evolutionary
+# algorithm: It consists of an inner objective which we wrap with the
+# caching decorator. This decorator specifies a pickle file that will be used for
+# caching results of fitness evaluations. The inner objective is then used by the objective
+# function to compute (or retrieve from cache) the fitness of the individual.
 
 
 @cgp.utils.disk_cache("example_caching_cache.pkl")
@@ -47,34 +60,37 @@ def objective(individual):
     return individual
 
 
-def evolution():
-    params = {
-        "population_params": {"n_parents": 10, "mutation_rate": 0.05, "seed": 8188211},
-        "ea_params": {
-            "n_offsprings": 10,
-            "n_breeding": 10,
-            "tournament_size": 1,
-            "n_processes": 1,
-        },
-        "genome_params": {
-            "n_inputs": 1,
-            "n_outputs": 1,
-            "n_columns": 10,
-            "n_rows": 2,
-            "levels_back": 2,
-            "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat),
-        },
-        "evolve_params": {"max_generations": 100, "min_fitness": -1e-12},
-    }
-
-    pop = cgp.Population(**params["population_params"], genome_params=params["genome_params"])
-    ea = cgp.ea.MuPlusLambda(**params["ea_params"])
-
-    cgp.evolve(pop, objective, ea, **params["evolve_params"], print_progress=True)
-
-    return pop.champion
+# %%
+# Next, we define the parameters for the population, the genome of
+# individuals, and the evolutionary algorithm.
 
 
-if __name__ == "__main__":
-    champion = evolution()
-    print(f"evolved function: {champion.to_sympy()}")
+params = {
+    "population_params": {"n_parents": 10, "mutation_rate": 0.05, "seed": 8188211},
+    "ea_params": {"n_offsprings": 10, "n_breeding": 10, "tournament_size": 1, "n_processes": 1},
+    "genome_params": {
+        "n_inputs": 1,
+        "n_outputs": 1,
+        "n_columns": 10,
+        "n_rows": 2,
+        "levels_back": 2,
+        "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat),
+    },
+    "evolve_params": {"max_generations": 100, "min_fitness": -1e-12},
+}
+
+# %%
+# We then create a Population instance and instantiate the evolutionary algorithm.
+
+
+pop = cgp.Population(**params["population_params"], genome_params=params["genome_params"])
+ea = cgp.ea.MuPlusLambda(**params["ea_params"])
+
+# %%
+# Finally, we call the `evolve` method to perform the evolutionary search.
+
+
+cgp.evolve(pop, objective, ea, **params["evolve_params"], print_progress=True)
+
+
+print(f"evolved function: {pop.champion.to_sympy()}")

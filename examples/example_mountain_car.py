@@ -1,3 +1,18 @@
+"""
+Example: Solving an OpenAI Gym environment with CGP.
+====================================================
+
+This examples demonstrates how to solve an OpenAI Gym environment
+(https://gym.openai.com/envs/) with Cartesian genetic programming. We
+choose the "MountainCarContinuous" environment due to its continuous
+observation and action spaces.
+
+Preparatory steps:
+Install the OpenAI Gym package: `pip install gym`
+
+"""
+
+
 import functools
 
 try:
@@ -13,19 +28,10 @@ import warnings
 
 import cgp
 
-"""
-Example: Solving an OpenAI Gym environment with CGP.
-====================================================
-
-This examples demonstrates how to solve an OpenAI Gym environment
-(https://gym.openai.com/envs/) with Cartesian genetic programming. We
-choose the MountainCarContinuous environment due to its continuous
-observation and action spaces.
-
-Preparatory steps:
-Install the OpenAI Gym package: `pip install gym`
-
-"""
+# %%
+# For more flexibility in the evolved expressions, we define two
+# constants that can be used in the expressions, with values 0.1 and
+# 10.
 
 
 class ConstantFloatZeroPointOne(cgp.ConstantFloat):
@@ -38,6 +44,15 @@ class ConstantFloatTen(cgp.ConstantFloat):
     def __init__(self, idx, inputs):
         super().__init__(idx, inputs)
         self._output = 10.0
+
+
+# %%
+# Then we define the objective function for the evolution.  The inner
+# objective accepts a Python callable as input. This callable
+# determines the action taken by the agent upon receiving observations
+# from the environment. The fitness of the given callable on the task
+# is then computed as the cumulative reward over a fixed number of
+# episodes.
 
 
 def inner_objective(f, seed, n_total_steps, *, render):
@@ -70,6 +85,13 @@ def inner_objective(f, seed, n_total_steps, *, render):
     return cum_reward_all_episodes
 
 
+# %%
+# The objective then takes an individual, evaluates the inner
+# objective, and updates the fitness of the individual. If the
+# expression of the individual leads to a division by zero, this error
+# is caught and the individual gets a fitness of -infinity assigned.
+
+
 def objective(ind, seed, n_total_steps):
 
     if ind.fitness is not None:
@@ -95,6 +117,16 @@ def objective(ind, seed, n_total_steps):
         ind.fitness = -np.inf
 
     return ind
+
+
+# %%
+# We then define the main loop for the evolution, which consists of:
+#
+# - parameters for the population, the genome of individuals, and the evolutionary algorithm.
+# - creating a Population instance and instantiating the evolutionary algorithm.
+# - defining a recording callback closure for bookkeeping of the progression of the evolution.
+#
+# Finally, we call the `evolve` method to perform the evolutionary search.
 
 
 def evolve(seed):
@@ -138,11 +170,13 @@ def evolve(seed):
 
     obj = functools.partial(objective, seed=seed, n_total_steps=objective_params["n_total_steps"])
 
-    cgp.evolve(
-        pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback,
-    )
+    cgp.evolve(pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback)
 
     return history
+
+
+# %%
+# For visualization, we define a function to plot the fitness over generations.
 
 
 def plot_fitness_over_generation_index(history):
@@ -155,12 +189,14 @@ def plot_fitness_over_generation_index(history):
     fig.savefig("example_mountain_car.png", dpi=300)
 
 
-def evaluate_best_expr(expr):
-    """Check whether the best expression fulfills the "solving criteria",
-    i.e., average reward of at least 90.0 over 100 consecutive trials.
-    (https://github.com/openai/gym/wiki/Leaderboard#mountaincarcontinuous-v0)
+# %%
+# We define a function that checks whether the best expression
+# fulfills the "solving criteria", i.e., average reward of at least
+# 90.0 over 100 consecutive
+# trials. (https://github.com/openai/gym/wiki/Leaderboard#mountaincarcontinuous-v0)
 
-    """
+
+def evaluate_best_expr(expr):
 
     np.random.seed(seed)
 
@@ -198,6 +234,11 @@ def evaluate_best_expr(expr):
     return cum_reward_all_episodes
 
 
+# %%
+# Furthermore, we define a function for visualizing the agent's behaviour for
+# each expression that increase over the currently best performing individual.
+
+
 def visualize_behaviour_for_evolutionary_jumps(seed, history, only_final_solution=True):
     n_total_steps = 999
 
@@ -220,6 +261,10 @@ def visualize_behaviour_for_evolutionary_jumps(seed, history, only_final_solutio
             inner_objective(f, seed, n_total_steps, render=True)
 
             max_fitness = fitness
+
+
+# %%
+# Finally, we execute the evolution and visualize the results.
 
 
 if __name__ == "__main__":
