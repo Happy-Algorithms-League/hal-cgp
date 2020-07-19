@@ -120,7 +120,7 @@ def evolution(f_target):
         "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Div, cgp.ConstantFloat),
     }
 
-    ea_params = {"n_offsprings": 10, "n_breeding": 10, "tournament_size": 2, "n_processes": 2}
+    ea_params = {"n_offsprings": 10, "tournament_size": 2, "n_processes": 2}
 
     evolve_params = {"max_generations": 1000, "min_fitness": 0.0}
 

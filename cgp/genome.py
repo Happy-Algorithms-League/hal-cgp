@@ -171,7 +171,7 @@ class Genome:
         Parameters
         ----------
         rng : numpy.RandomState
-            Random number generator instance to use for crossover.
+            Random number generator instance to use for randomizing.
 
         Returns
         ----------
@@ -354,7 +354,7 @@ class Genome:
         mutation_rate : float
             Proportion of genes to be mutated, between 0 and 1.
         rng : numpy.random.RandomState
-            Random number generator instance to use for crossover.
+            Random number generator instance to use for mutating.
 
         Returns
         ----------

@@ -5,7 +5,7 @@ import pytest
 import cgp
 
 
-def test_objective_with_label(population_params, genome_params):
+def test_objective_with_label(population_params, genome_params, ea_params):
     def objective_without_label(individual):
         individual.fitness = -2.0
         return individual
@@ -17,7 +17,7 @@ def test_objective_with_label(population_params, genome_params):
 
     pop = cgp.Population(**population_params, genome_params=genome_params)
 
-    ea = cgp.ea.MuPlusLambda(1, 2, 1)
+    ea = cgp.ea.MuPlusLambda(**ea_params)
     ea.initialize_fitness_parents(pop, objective_without_label)
 
     ea.step(pop, objective_without_label)
@@ -84,7 +84,7 @@ def test_offspring_individuals_are_assigned_correct_parent_indices(
 
 
 def test_local_search_is_only_applied_to_best_k_individuals(
-    population_params, local_search_params
+    population_params, local_search_params, ea_params,
 ):
 
     torch = pytest.importorskip("torch")
@@ -119,7 +119,7 @@ def test_local_search_is_only_applied_to_best_k_individuals(
         cgp.local_search.gradient_based, objective=inner_objective, **local_search_params
     )
 
-    ea = cgp.ea.MuPlusLambda(5, 5, 1, local_search=local_search, k_local_search=k_local_search)
+    ea = cgp.ea.MuPlusLambda(**ea_params, local_search=local_search, k_local_search=k_local_search)
     ea.initialize_fitness_parents(pop, objective)
     ea.step(pop, objective)
 
@@ -128,13 +128,6 @@ def test_local_search_is_only_applied_to_best_k_individuals(
 
     for idx in range(k_local_search, population_params["n_parents"]):
         assert pop[idx].genome._parameter_names_to_values["<p1>"] == pytest.approx(1.0)
-
-
-def test_raise_n_offsprings_less_than_n_breeding():
-    n_offsprings = 10
-    n_breeding = 5
-    with pytest.raises(ValueError):
-        cgp.ea.MuPlusLambda(n_offsprings, n_breeding, 1)
 
 
 def test_raise_fitness_has_wrong_type(population_params, genome_params, ea_params):

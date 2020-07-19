@@ -105,51 +105,6 @@ class Population:
         ind.idx = self.get_idx_for_new_individual()
         return ind
 
-    def crossover(
-        self, breeding_pool: List[IndividualBase], n_offsprings: int
-    ) -> List[IndividualBase]:
-        """Create an offspring population via crossover.
-
-        Parameters
-        ----------
-        breeding_pool : List[IndividualBase]
-            List of individuals from which the offspring are created.
-        n_offsprings : int
-            Number of offspring to be created.
-
-        Returns
-        ----------
-        List[IndividualBase]
-            List of offspring individuals.
-        """
-        # in principle crossover would rely on a procedure like the
-        # following:
-        # offsprings = []
-        # while len(offsprings) < n_offsprings:
-        #     first_parent, second_parent = self.rng.permutation(breeding_pool)[:2]
-        #     offsprings.append(first_parent.crossover(second_parent, self.rng))
-
-        # return offsprings
-        # however, as cross over tends to disrupt the search in in CGP
-        # (Miller, 1999) crossover is skipped, instead the best
-        # individuals from breeding pool are returned.
-        # reference:
-        # Miller, J. F. (1999). An empirical study of the efficiency
-        # of learning boolean functions using a cartesian genetic
-        # programming approach. In Proceedings of the 1st Annual
-        # Conference on Genetic and Evolutionary Computation-Volume 2,
-        # pages 1135–1142. Morgan Kaufmann Publishers Inc.
-        assert len(breeding_pool) >= n_offsprings
-
-        def sort_func(ind: IndividualBase) -> float:
-            if isinstance(ind.fitness, float):
-                return ind.fitness
-            else:
-                raise ValueError(f"Individual fitness value is of wrong type {type(ind.fitness)}.")
-
-        # Sort individuals in descending order
-        return sorted(breeding_pool, key=sort_func, reverse=True)[:n_offsprings]
-
     def mutate(self, offsprings: List[IndividualBase]) -> List[IndividualBase]:
         """Mutate a list of offspring invididuals.
 
