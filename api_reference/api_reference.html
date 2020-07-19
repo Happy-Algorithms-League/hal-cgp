@@ -13,6 +13,9 @@
   
   <link rel="stylesheet" href="../_static/css/msmb.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
 
   
   
@@ -38,7 +41,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="High-level API" href="hl_api.html" />
-    <link rel="prev" title="Examples" href="../examples.html" /> 
+    <link rel="prev" title="Example: Solving an OpenAI Gym environment with CGP." href="../auto_examples/example_mountain_car.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -85,11 +88,12 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_usage.html">Basic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="hl_api.html">High-level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cgp.html">CGP Population structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="nodes.html">Functional nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes.html">Nodes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ea.html">Evolutionary Algorithms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="local_search.html">Local search</a></li>
 </ul>
@@ -173,7 +177,12 @@
 <li class="toctree-l2"><a class="reference internal" href="cgp.html#genome">Genome</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="nodes.html">Functional nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nodes.html">Nodes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nodes.html#module-cgp.node">Abstract Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes.html#module-cgp.node_input_output">Input/Output Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes.html#module-cgp.node_impl">Operator Nodes</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="ea.html">Evolutionary Algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="local_search.html">Local search</a></li>
 </ul>
@@ -191,7 +200,7 @@
         <a href="hl_api.html" class="btn btn-neutral float-right" title="High-level API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../examples.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../auto_examples/example_mountain_car.html" class="btn btn-neutral float-left" title="Example: Solving an OpenAI Gym environment with CGP." accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

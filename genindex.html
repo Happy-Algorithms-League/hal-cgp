@@ -13,6 +13,9 @@
   
   <link rel="stylesheet" href="_static/css/msmb.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery-dataframe.css" type="text/css" />
 
   
   
@@ -83,7 +86,8 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_reference/api_reference.html">API reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
@@ -178,7 +182,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_reference/nodes.html#cgp.node.Add">Add (class in cgp.node)</a>
+      <li><a href="api_reference/nodes.html#cgp.node_impl.Add">Add (class in cgp.node_impl)</a>
 </li>
       <li><a href="api_reference/nodes.html#cgp.node.Node.arity">arity() (cgp.node.Node property)</a>
 </li>
@@ -204,13 +208,27 @@
         <li><a href="api_reference/nodes.html#module-cgp.node">module</a>
 </li>
       </ul></li>
+      <li>
+    cgp.node_impl
+
+      <ul>
+        <li><a href="api_reference/nodes.html#module-cgp.node_impl">module</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    cgp.node_input_output
+
+      <ul>
+        <li><a href="api_reference/nodes.html#module-cgp.node_input_output">module</a>
+</li>
+      </ul></li>
       <li><a href="api_reference/cgp.html#cgp.Population.champion">champion() (cgp.Population property)</a>
 </li>
       <li><a href="api_reference/cgp.html#cgp.Genome.clone">clone() (cgp.Genome method)</a>
 </li>
-      <li><a href="api_reference/nodes.html#cgp.node.ConstantFloat">ConstantFloat (class in cgp.node)</a>
+      <li><a href="api_reference/nodes.html#cgp.node_impl.ConstantFloat">ConstantFloat (class in cgp.node_impl)</a>
 </li>
       <li><a href="api_reference/cgp.html#cgp.Population.crossover">crossover() (cgp.Population method)</a>
 </li>
@@ -224,7 +242,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_reference/nodes.html#cgp.node.Div">Div (class in cgp.node)</a>
+      <li><a href="api_reference/nodes.html#cgp.node_impl.Div">Div (class in cgp.node_impl)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -242,56 +260,50 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference/cgp.html#cgp.Population.fitness_parents">fitness_parents() (cgp.Population method)</a>
 </li>
-      <li><a href="api_reference/nodes.html#cgp.node.Add.format_output_str">format_output_str() (cgp.node.Add method)</a>
+      <li><a href="api_reference/nodes.html#cgp.node.Node.format_output_str">format_output_str() (cgp.node.Node method)</a>
 
       <ul>
-        <li><a href="api_reference/nodes.html#cgp.node.ConstantFloat.format_output_str">(cgp.node.ConstantFloat method)</a>
+        <li><a href="api_reference/nodes.html#cgp.node.OperatorNode.format_output_str">(cgp.node.OperatorNode method)</a>
 </li>
-        <li><a href="api_reference/nodes.html#cgp.node.Div.format_output_str">(cgp.node.Div method)</a>
+        <li><a href="api_reference/nodes.html#cgp.node_input_output.InputNode.format_output_str">(cgp.node_input_output.InputNode method)</a>
 </li>
-        <li><a href="api_reference/nodes.html#cgp.node.InputNode.format_output_str">(cgp.node.InputNode method)</a>
+        <li><a href="api_reference/nodes.html#cgp.node_input_output.OutputNode.format_output_str">(cgp.node_input_output.OutputNode method)</a>
 </li>
-        <li><a href="api_reference/nodes.html#cgp.node.Mul.format_output_str">(cgp.node.Mul method)</a>
+      </ul></li>
+      <li><a href="api_reference/nodes.html#cgp.node.Node.format_output_str_numpy">format_output_str_numpy() (cgp.node.Node method)</a>
+
+      <ul>
+        <li><a href="api_reference/nodes.html#cgp.node.OperatorNode.format_output_str_numpy">(cgp.node.OperatorNode method)</a>
 </li>
-        <li><a href="api_reference/nodes.html#cgp.node.Node.format_output_str">(cgp.node.Node method)</a>
+        <li><a href="api_reference/nodes.html#cgp.node_input_output.InputNode.format_output_str_numpy">(cgp.node_input_output.InputNode method)</a>
 </li>
-        <li><a href="api_reference/nodes.html#cgp.node.OutputNode.format_output_str">(cgp.node.OutputNode method)</a>
-</li>
-        <li><a href="api_reference/nodes.html#cgp.node.Parameter.format_output_str">(cgp.node.Parameter method)</a>
-</li>
-        <li><a href="api_reference/nodes.html#cgp.node.Pow.format_output_str">(cgp.node.Pow method)</a>
-</li>
-        <li><a href="api_reference/nodes.html#cgp.node.Sub.format_output_str">(cgp.node.Sub method)</a>
+        <li><a href="api_reference/nodes.html#cgp.node_input_output.OutputNode.format_output_str_numpy">(cgp.node_input_output.OutputNode method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_reference/nodes.html#cgp.node.ConstantFloat.format_output_str_numpy">format_output_str_numpy() (cgp.node.ConstantFloat method)</a>
+      <li><a href="api_reference/nodes.html#cgp.node.Node.format_output_str_sympy">format_output_str_sympy() (cgp.node.Node method)</a>
 
       <ul>
-        <li><a href="api_reference/nodes.html#cgp.node.InputNode.format_output_str_numpy">(cgp.node.InputNode method)</a>
+        <li><a href="api_reference/nodes.html#cgp.node.OperatorNode.format_output_str_sympy">(cgp.node.OperatorNode method)</a>
 </li>
-        <li><a href="api_reference/nodes.html#cgp.node.Node.format_output_str_numpy">(cgp.node.Node method)</a>
+        <li><a href="api_reference/nodes.html#cgp.node_input_output.InputNode.format_output_str_sympy">(cgp.node_input_output.InputNode method)</a>
 </li>
-        <li><a href="api_reference/nodes.html#cgp.node.Parameter.format_output_str_numpy">(cgp.node.Parameter method)</a>
+        <li><a href="api_reference/nodes.html#cgp.node_input_output.OutputNode.format_output_str_sympy">(cgp.node_input_output.OutputNode method)</a>
 </li>
       </ul></li>
-      <li><a href="api_reference/nodes.html#cgp.node.ConstantFloat.format_output_str_torch">format_output_str_torch() (cgp.node.ConstantFloat method)</a>
+      <li><a href="api_reference/nodes.html#cgp.node.Node.format_output_str_torch">format_output_str_torch() (cgp.node.Node method)</a>
 
       <ul>
-        <li><a href="api_reference/nodes.html#cgp.node.InputNode.format_output_str_torch">(cgp.node.InputNode method)</a>
+        <li><a href="api_reference/nodes.html#cgp.node.OperatorNode.format_output_str_torch">(cgp.node.OperatorNode method)</a>
 </li>
-        <li><a href="api_reference/nodes.html#cgp.node.Node.format_output_str_torch">(cgp.node.Node method)</a>
+        <li><a href="api_reference/nodes.html#cgp.node_input_output.InputNode.format_output_str_torch">(cgp.node_input_output.InputNode method)</a>
 </li>
-        <li><a href="api_reference/nodes.html#cgp.node.Parameter.format_output_str_torch">(cgp.node.Parameter method)</a>
-</li>
-      </ul></li>
-      <li><a href="api_reference/nodes.html#cgp.node.Node.format_parameter_str">format_parameter_str() (cgp.node.Node method)</a>
-
-      <ul>
-        <li><a href="api_reference/nodes.html#cgp.node.Parameter.format_parameter_str">(cgp.node.Parameter method)</a>
+        <li><a href="api_reference/nodes.html#cgp.node_input_output.OutputNode.format_output_str_torch">(cgp.node_input_output.OutputNode method)</a>
 </li>
       </ul></li>
+      <li><a href="api_reference/nodes.html#cgp.node.OperatorNode.format_parameter_str">format_parameter_str() (cgp.node.OperatorNode method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -318,11 +330,11 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_reference/nodes.html#cgp.node.Parameter.initial_value">initial_value() (cgp.node.Parameter static method)</a>
+      <li><a href="api_reference/nodes.html#cgp.node.OperatorNode.initial_value">initial_value() (cgp.node.OperatorNode class method)</a>
 </li>
       <li><a href="api_reference/ea.html#cgp.ea.MuPlusLambda.initialize_fitness_parents">initialize_fitness_parents() (cgp.ea.MuPlusLambda method)</a>
 </li>
-      <li><a href="api_reference/nodes.html#cgp.node.InputNode">InputNode (class in cgp.node)</a>
+      <li><a href="api_reference/nodes.html#cgp.node_input_output.InputNode">InputNode (class in cgp.node_input_output)</a>
 </li>
       <li><a href="api_reference/nodes.html#cgp.node.Node.inputs">inputs() (cgp.node.Node property)</a>
 </li>
@@ -342,10 +354,14 @@
 </li>
         <li><a href="api_reference/nodes.html#module-cgp.node">cgp.node</a>
 </li>
+        <li><a href="api_reference/nodes.html#module-cgp.node_impl">cgp.node_impl</a>
+</li>
+        <li><a href="api_reference/nodes.html#module-cgp.node_input_output">cgp.node_input_output</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_reference/nodes.html#cgp.node.Mul">Mul (class in cgp.node)</a>
+      <li><a href="api_reference/nodes.html#cgp.node_impl.Mul">Mul (class in cgp.node_impl)</a>
 </li>
       <li><a href="api_reference/ea.html#cgp.ea.MuPlusLambda">MuPlusLambda (class in cgp.ea)</a>
 </li>
@@ -369,13 +385,15 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_reference/nodes.html#cgp.node.OperatorNode">OperatorNode (class in cgp.node)</a>
+</li>
       <li><a href="api_reference/nodes.html#cgp.node.Node.output">output() (cgp.node.Node property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference/nodes.html#cgp.node.Node.output_str">output_str() (cgp.node.Node property)</a>
 </li>
-      <li><a href="api_reference/nodes.html#cgp.node.OutputNode">OutputNode (class in cgp.node)</a>
+      <li><a href="api_reference/nodes.html#cgp.node_input_output.OutputNode">OutputNode (class in cgp.node_input_output)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -383,15 +401,15 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_reference/nodes.html#cgp.node.Parameter">Parameter (class in cgp.node)</a>
+      <li><a href="api_reference/nodes.html#cgp.node_impl.Parameter">Parameter (class in cgp.node_impl)</a>
 </li>
-      <li><a href="api_reference/nodes.html#cgp.node.Node.parameter_str">parameter_str() (cgp.node.Node property)</a>
+      <li><a href="api_reference/nodes.html#cgp.node.OperatorNode.parameter_str">parameter_str() (cgp.node.OperatorNode property)</a>
 </li>
       <li><a href="api_reference/cgp.html#cgp.Population">Population (class in cgp)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_reference/nodes.html#cgp.node.Pow">Pow (class in cgp.node)</a>
+      <li><a href="api_reference/nodes.html#cgp.node_impl.Pow">Pow (class in cgp.node_impl)</a>
 </li>
       <li><a href="api_reference/cgp.html#cgp.CartesianGraph.pretty_str">pretty_str() (cgp.CartesianGraph method)</a>
 
@@ -423,7 +441,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_reference/nodes.html#cgp.node.Sub">Sub (class in cgp.node)</a>
+      <li><a href="api_reference/nodes.html#cgp.node_impl.Sub">Sub (class in cgp.node_impl)</a>
 </li>
   </ul></td>
 </tr></table>
