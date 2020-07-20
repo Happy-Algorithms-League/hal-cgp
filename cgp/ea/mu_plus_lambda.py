@@ -20,7 +20,6 @@ class MuPlusLambda:
     def __init__(
         self,
         n_offsprings: int,
-        n_breeding: int,
         tournament_size: int,
         *,
         n_processes: int = 1,
@@ -33,8 +32,6 @@ class MuPlusLambda:
         ----------
         n_offsprings : int
             Number of offspring in each iteration.
-        n_breeding : int
-            Number of parents to use for breeding in each iteration.
         tournament_size : int
             Tournament size in each iteration.
         n_processes : int, optional
@@ -49,13 +46,6 @@ class MuPlusLambda:
             offsprings) to apply local search to.
         """
         self.n_offsprings = n_offsprings
-
-        if n_breeding < n_offsprings:
-            raise ValueError(
-                "size of breeding pool must be at least as large "
-                "as the desired number of offsprings"
-            )
-        self.n_breeding = n_breeding
 
         self.tournament_size = tournament_size
         self.n_processes = n_processes
@@ -136,17 +126,15 @@ class MuPlusLambda:
         return pop
 
     def _create_new_offspring_generation(self, pop: Population) -> List[IndividualBase]:
-        # fill breeding pool via tournament selection from parent
-        # population
-        breeding_pool: List[IndividualBase] = []
-        while len(breeding_pool) < self.n_breeding:
+        # use tournament selection to randomly select individuals from
+        # parent population
+        offsprings: List[IndividualBase] = []
+        while len(offsprings) < self.n_offsprings:
             tournament_pool = pop.rng.permutation(pop.parents)[: self.tournament_size]
             best_in_tournament = sorted(tournament_pool, key=lambda x: -x.fitness)[0]
-            breeding_pool.append(best_in_tournament.clone())
+            offsprings.append(best_in_tournament.clone())
 
-        # create offsprings by applying crossover to breeding pool and mutating
-        # resulting individuals
-        offsprings = pop.crossover(breeding_pool, self.n_offsprings)
+        # mutate individuals to create offsprings
         offsprings = pop.mutate(offsprings)
 
         for ind in offsprings:

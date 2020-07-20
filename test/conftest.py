@@ -32,7 +32,7 @@ def population_params(mutation_rate, rng_seed):
 
 @fixture
 def ea_params():
-    return {"n_offsprings": 5, "n_breeding": 5, "tournament_size": 2}
+    return {"n_offsprings": 5, "tournament_size": 2}
 
 
 @fixture
