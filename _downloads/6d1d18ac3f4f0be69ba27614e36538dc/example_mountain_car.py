@@ -152,7 +152,7 @@ def evolve(seed):
         ),
     }
 
-    ea_params = {"n_offsprings": 4, "n_breeding": 4, "tournament_size": 1, "n_processes": 4}
+    ea_params = {"n_offsprings": 4, "tournament_size": 1, "n_processes": 4}
 
     evolve_params = {"max_generations": 3000, "min_fitness": 200.0}
 

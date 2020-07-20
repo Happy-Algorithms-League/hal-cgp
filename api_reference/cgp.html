@@ -188,22 +188,6 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="cgp.Population.crossover">
-<code class="sig-name descname">crossover</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">breeding_pool</span><span class="p">:</span> <span class="n">List<span class="p">[</span>cgp.individual.IndividualBase<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">n_offsprings</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>cgp.individual.IndividualBase<span class="p">]</span><a class="headerlink" href="#cgp.Population.crossover" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create an offspring population via crossover.</p>
-<dl class="simple">
-<dt>breeding_pool<span class="classifier">List[IndividualBase]</span></dt><dd><p>List of individuals from which the offspring are created.</p>
-</dd>
-<dt>n_offsprings<span class="classifier">int</span></dt><dd><p>Number of offspring to be created.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>List[IndividualBase]</dt><dd><p>List of offspring individuals.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="cgp.Population.fitness_parents">
 <code class="sig-name descname">fitness_parents</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[Union[None, float]]<a class="headerlink" href="#cgp.Population.fitness_parents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return fitness for all parents of the population.</p>
@@ -351,7 +335,7 @@ executes it to create an instance of the class.</p>
 <dl class="simple">
 <dt>mutation_rate<span class="classifier">float</span></dt><dd><p>Proportion of genes to be mutated, between 0 and 1.</p>
 </dd>
-<dt>rng<span class="classifier">numpy.random.RandomState</span></dt><dd><p>Random number generator instance to use for crossover.</p>
+<dt>rng<span class="classifier">numpy.random.RandomState</span></dt><dd><p>Random number generator instance to use for mutating.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -365,7 +349,7 @@ executes it to create an instance of the class.</p>
 <code class="sig-name descname">randomize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rng</span><span class="p">:</span> <span class="n">numpy.random.mtrand.RandomState</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.Genome.randomize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Randomize the genome.</p>
 <dl class="simple">
-<dt>rng<span class="classifier">numpy.RandomState</span></dt><dd><p>Random number generator instance to use for crossover.</p>
+<dt>rng<span class="classifier">numpy.RandomState</span></dt><dd><p>Random number generator instance to use for randomizing.</p>
 </dd>
 </dl>
 <p>None</p>

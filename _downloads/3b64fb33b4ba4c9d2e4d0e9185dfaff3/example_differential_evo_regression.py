@@ -91,7 +91,6 @@ genome_params = {
 
 ea_params = {
     "n_offsprings": 4,
-    "n_breeding": 4,
     "tournament_size": 1,
     "n_processes": 1,
     "k_local_search": 2,
