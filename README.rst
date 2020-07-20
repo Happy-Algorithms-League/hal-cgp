@@ -169,6 +169,7 @@ Citation
 
 If you use HAL-CGP in your work, please cite it as:
 
-Schmidt, Maximilian & Jordan, Jakob (2020) hal-cgp: Cartesian genetic programming in pure Python. [10.5281/zenodo.3889163](https://doi.org/10.5281/zenodo.3889163)
+Schmidt, Maximilian & Jordan, Jakob (2020) hal-cgp: Cartesian genetic programming in pure Python. 
+`10.5281/zenodo.3889163 <https://doi.org/10.5281/zenodo.3889163>`_
 
 .. citation-end
