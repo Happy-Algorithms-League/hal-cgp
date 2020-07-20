@@ -476,76 +476,61 @@ def test_only_silent_mutations(genome_params, mutation_rate, rng_seed):
     assert not only_silent_mutations
 
 
-def test_permissible_values_hidden(rng_seed):
-    genome_params = {
-        "n_inputs": 2,
-        "n_outputs": 1,
-        "n_columns": 3,
-        "n_rows": 3,
-        "levels_back": 2,
-        "primitives": (cgp.Add, cgp.Sub, cgp.ConstantFloat),
-    }
+def test_permissible_values(genome_params):
+    n_inputs = 2
+    n_outputs = 1
+    n_columns = 3
+    n_rows = 3
+    levels_back = 2
+    primitives = (cgp.Add, cgp.Sub, cgp.ConstantFloat)
+    genome = cgp.Genome(n_inputs, n_outputs, n_columns, n_rows, levels_back, primitives)
 
-    genome = cgp.Genome(**genome_params)
+    permissible_function_gene_values = np.arange(len(genome._primitives._primitives))
+    permissible_inputs_first_internal_column = np.array([0, 1])
+    permissible_inputs_second_internal_column = np.array([0, 1, 2, 3, 4])
+    permissible_inputs_third_internal_column = np.array([0, 1, 2, 3, 4, 5, 6, 7])
+    permissible_inputs_output_gene = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
-    # test function gene
-    gene_idx = 6  # function gene of first hidden region
-    allele = 0  #
-    region_idx = None  # can be any number, since not touched for function gene
-    permissible_func_gene_values = genome._determine_alternative_permissible_values_hidden_gene(
-        gene_idx, allele, region_idx
-    )
-    assert permissible_func_gene_values == [
-        1,
-        2,
-    ]  # function idx 1,2 (cgp.Sub, cgp.ConstantFloat)
+    permissible_values_expected = [
+        np.array(ID_INPUT_NODE),
+        np.array(ID_NON_CODING_GENE),
+        np.array(ID_NON_CODING_GENE),
+        np.array(ID_INPUT_NODE),
+        np.array(ID_NON_CODING_GENE),
+        np.array(ID_NON_CODING_GENE),
+        permissible_function_gene_values,
+        permissible_inputs_first_internal_column,
+        permissible_inputs_first_internal_column,
+        permissible_function_gene_values,
+        permissible_inputs_first_internal_column,
+        permissible_inputs_first_internal_column,
+        permissible_function_gene_values,
+        permissible_inputs_first_internal_column,
+        permissible_inputs_first_internal_column,
+        permissible_function_gene_values,
+        permissible_inputs_second_internal_column,
+        permissible_inputs_second_internal_column,
+        permissible_function_gene_values,
+        permissible_inputs_second_internal_column,
+        permissible_inputs_second_internal_column,
+        permissible_function_gene_values,
+        permissible_inputs_second_internal_column,
+        permissible_inputs_second_internal_column,
+        permissible_function_gene_values,
+        permissible_inputs_third_internal_column,
+        permissible_inputs_third_internal_column,
+        permissible_function_gene_values,
+        permissible_inputs_third_internal_column,
+        permissible_inputs_third_internal_column,
+        permissible_function_gene_values,
+        permissible_inputs_third_internal_column,
+        permissible_inputs_third_internal_column,
+        np.array(ID_OUTPUT_NODE),
+        permissible_inputs_output_gene,
+        np.array(ID_NON_CODING_GENE),
+    ]
 
-    # test input gene
-    gene_idx = 16  # first input gene in second column of hidden region
-    allele = 0
-    region_idx = gene_idx // (
-        genome.primitives.max_arity + 1
-    )  # function gene + input gene addresses
-    permissible_input_gene_values = genome._determine_alternative_permissible_values_hidden_gene(
-        gene_idx, allele, region_idx
-    )
-
-    assert permissible_input_gene_values == [
-        1,
-        2,
-        3,
-        4,
-    ]  # gene indices of input, 1st hidden layer
-
-
-def test_permissible_values_output(rng_seed):
-    genome_params = {
-        "n_inputs": 2,
-        "n_outputs": 1,
-        "n_columns": 3,
-        "n_rows": 3,
-        "levels_back": 2,
-        "primitives": (cgp.Add, cgp.Sub, cgp.ConstantFloat),
-    }
-    genome = cgp.Genome(**genome_params)
-
-    gene_idx_function = 33
-    gene_idx_input0 = 34
-    gene_idx_input1 = 35
-
-    allele = 5  # set current value for input0 -> should be excluded from permissible values
-
-    permissible_values = genome._determine_alternative_permissible_values_output_gene(
-        gene_idx_function, allele
-    )
-    assert permissible_values == []
-
-    permissible_values = genome._determine_alternative_permissible_values_output_gene(
-        gene_idx_input0, allele
-    )
-    assert permissible_values == [0, 1, 2, 3, 4, 6, 7, 8, 9, 10]
-
-    permissible_values = genome._determine_alternative_permissible_values_output_gene(
-        gene_idx_input1, allele
-    )
-    assert permissible_values == []
+    for (pv_per_gene_expected, pv_per_gene) in zip(
+        permissible_values_expected, genome._permissible_values
+    ):
+        assert np.all(pv_per_gene_expected == pv_per_gene)
