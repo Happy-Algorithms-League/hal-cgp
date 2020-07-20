@@ -13,7 +13,7 @@
 	   :target: https://www.python.org/
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
 	   :target: https://www.gnu.org/licenses/old-licenses/gpl-3.0.html
-.. image:: https://api.travis-ci.org/Happy-Algorithms-League/hal-cgp.svg?branch=master)
+.. image:: https://travis-ci.org/Happy-Algorithms-League/hal-cgp.svg?branch=master
 	   :target: https://travis-ci.org/Happy-Algorithms-League/hal-cgp
 .. image:: http://www.mypy-lang.org/static/mypy_badge.svg
 	   :target: http://mypy-lang.org/
