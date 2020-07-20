@@ -7,7 +7,7 @@ try:
 except ModuleNotFoundError:
     torch_available = False
 
-from typing import Dict, Generator, List, Optional, Tuple, Type
+from typing import Dict, Generator, List, Optional, Tuple, Type, Union
 
 from .cartesian_graph import CartesianGraph
 from .node import Node, OperatorNode
@@ -29,7 +29,7 @@ class Genome:
         n_outputs: int,
         n_columns: int,
         n_rows: int,
-        levels_back: int,
+        levels_back: Union[int, None],
         primitives: Tuple[Type[Node], ...],
     ) -> None:
         """Init function.
@@ -44,11 +44,12 @@ class Genome:
             Number of columns in the representation of the genome.
         n_rows : int
             Number of rows in the representation of the genome.
-        levels_back : int
-            Number of previous columns that an entry in the genome can be
-            connected with.
+        levels_back : Union[int, None]
+            Maximal column distance of inputs to an internal node. If
+            set to `None`, no restrictions are used.
         primitives : Tuple[Type[Node], ...]
            Tuple of primitives that the genome can refer to.
+
         """
         if n_inputs <= 0:
             raise ValueError("n_inputs must be strictly positive")
