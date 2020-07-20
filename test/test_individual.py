@@ -294,3 +294,17 @@ def test_update_parameters_from_torch_class_does_not_reset_fitness_for_unused_pa
     g = _unpack_evaluation(individual.to_func(), individual_type)
     x = 2.0
     assert g([x])[0] == pytest.approx(x ** 2)
+
+
+@pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
+def test_individual_randomize_genome(individual_type, rng_seed):
+    rng = np.random.RandomState(rng_seed)
+    primitives = (cgp.Add, cgp.Mul)
+    genome = cgp.Genome(1, 1, 2, 1, 1, primitives)
+    genome.randomize(rng)
+
+    dna_old = list(genome.dna)
+    individual = _create_individual(genome, individual_type=individual_type)
+
+    individual.randomize_genome(rng)
+    assert dna_old != _unpack_genome(individual, individual_type)

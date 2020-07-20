@@ -84,7 +84,6 @@ class Population:
     def generate_random_individual(self) -> IndividualBase:
         if isinstance(self._genome_params, dict):
             genome: Genome = Genome(**self._genome_params)
-            genome.randomize(self.rng)
             individual_s = IndividualSingleGenome(
                 fitness=None, genome=genome
             )  # type: IndividualBase # indicates to mypy that
@@ -93,15 +92,13 @@ class Population:
             ind = individual_s
         else:
             genomes: List[Genome] = [Genome(**gd) for gd in self._genome_params]
-            for g in genomes:
-                g.randomize(self.rng)
             individual_m = IndividualMultiGenome(
                 fitness=None, genome=genomes
             )  # type: IndividualBase # indicates to mypy that
             # individual_m is an instance of a child class of
             # IndividualBase
             ind = individual_m
-
+        ind.randomize_genome(self.rng)
         ind.idx = self.get_idx_for_new_individual()
         return ind
 
