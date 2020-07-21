@@ -333,7 +333,7 @@ executes it to create an instance of the class.</p>
 <code class="sig-name descname">mutate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mutation_rate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">rng</span><span class="p">:</span> <span class="n">numpy.random.mtrand.RandomState</span></em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.Genome.mutate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mutate the genome.</p>
 <dl class="simple">
-<dt>mutation_rate<span class="classifier">float</span></dt><dd><p>Proportion of genes to be mutated, between 0 and 1.</p>
+<dt>mutation_rate<span class="classifier">float</span></dt><dd><p>Probability of a gene to be mutated, between 0 (excluded) and 1 (included).</p>
 </dd>
 <dt>rng<span class="classifier">numpy.random.RandomState</span></dt><dd><p>Random number generator instance to use for mutating.</p>
 </dd>
