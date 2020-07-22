@@ -178,12 +178,12 @@
 <span id="abstract-nodes"></span><h2>Abstract Nodes<a class="headerlink" href="#module-cgp.node" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="cgp.node.Node">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node.</code><code class="sig-name descname">Node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.node.Node" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node.</code><code class="sig-name descname">Node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L31-L157"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.Node" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class for input/output and hidden nodes.</p>
 <dl class="py method">
 <dt id="cgp.node.Node.activate">
-<code class="sig-name descname">activate</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node.Node.activate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">activate</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L134-L137"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.Node.activate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set node to active.</p>
 </dd></dl>
 
@@ -194,25 +194,25 @@
 
 <dl class="py method">
 <dt id="cgp.node.Node.format_output_str">
-<code class="sig-name descname">format_output_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node.Node.format_output_str" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L139-L142"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.Node.format_output_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string of the node.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.node.Node.format_output_str_numpy">
-<code class="sig-name descname">format_output_str_numpy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span></em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.node.Node.format_output_str_numpy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str_numpy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L144-L147"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.Node.format_output_str_numpy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string for NumPy representation.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.node.Node.format_output_str_sympy">
-<code class="sig-name descname">format_output_str_sympy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span></em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.node.Node.format_output_str_sympy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str_sympy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L154-L157"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.Node.format_output_str_sympy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string for SymPy representation.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.node.Node.format_output_str_torch">
-<code class="sig-name descname">format_output_str_torch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span></em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.node.Node.format_output_str_torch" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str_torch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L149-L152"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.Node.format_output_str_torch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string for PyTorch representation.</p>
 </dd></dl>
 
@@ -243,49 +243,49 @@
 
 <dl class="py method">
 <dt id="cgp.node.Node.pretty_str">
-<code class="sig-name descname">pretty_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#cgp.node.Node.pretty_str" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">pretty_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; str<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L86-L124"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.Node.pretty_str" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="cgp.node.OperatorNode">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node.</code><code class="sig-name descname">OperatorNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.node.OperatorNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node.</code><code class="sig-name descname">OperatorNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L160-L283"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.OperatorNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.Node" title="cgp.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.Node</span></code></a></p>
 <p>Base class of hidden nodes.</p>
 <p>Subclasses provide the atomic operations of the computational graph.</p>
 <dl class="py method">
 <dt id="cgp.node.OperatorNode.format_output_str">
-<code class="sig-name descname">format_output_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node.OperatorNode.format_output_str" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L245-L246"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.OperatorNode.format_output_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string of the node.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.node.OperatorNode.format_output_str_numpy">
-<code class="sig-name descname">format_output_str_numpy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node.OperatorNode.format_output_str_numpy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str_numpy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L248-L252"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.OperatorNode.format_output_str_numpy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string for NumPy representation.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.node.OperatorNode.format_output_str_sympy">
-<code class="sig-name descname">format_output_str_sympy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node.OperatorNode.format_output_str_sympy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str_sympy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L269-L273"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.OperatorNode.format_output_str_sympy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string for SymPy representation.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.node.OperatorNode.format_output_str_torch">
-<code class="sig-name descname">format_output_str_torch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node.OperatorNode.format_output_str_torch" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str_torch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L254-L259"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.OperatorNode.format_output_str_torch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string for PyTorch representation.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.node.OperatorNode.format_parameter_str">
-<code class="sig-name descname">format_parameter_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node.OperatorNode.format_parameter_str" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_parameter_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L275-L283"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.OperatorNode.format_parameter_str" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="cgp.node.OperatorNode.initial_value">
-<em class="property">classmethod </em><code class="sig-name descname">initial_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parameter_name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#cgp.node.OperatorNode.initial_value" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">initial_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parameter_name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L205-L208"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.OperatorNode.initial_value" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -297,7 +297,7 @@
 
 <dl class="py function">
 <dt id="cgp.node.register">
-<code class="sig-prename descclassname">cgp.node.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cls</span><span class="p">:</span> <span class="n">Type<span class="p">[</span>Node<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node.register" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">cgp.node.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cls</span><span class="p">:</span> <span class="n">Type<span class="p">[</span>Node<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L14-L28"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register a primitive in the global dictionary of primitives</p>
 <dl class="simple">
 <dt>cls<span class="classifier">Type[Node]</span></dt><dd><p>Primitive to be registered.</p>
@@ -311,30 +311,30 @@
 <span id="input-output-nodes"></span><h2>Input/Output Nodes<a class="headerlink" href="#module-cgp.node_input_output" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="cgp.node_input_output.InputNode">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_input_output.</code><code class="sig-name descname">InputNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.node_input_output.InputNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_input_output.</code><code class="sig-name descname">InputNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_input_output.py#L9-L31"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_input_output.InputNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.Node" title="cgp.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.Node</span></code></a></p>
 <p>An input node of the computational graph.</p>
 <dl class="py method">
 <dt id="cgp.node_input_output.InputNode.format_output_str">
-<code class="sig-name descname">format_output_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node_input_output.InputNode.format_output_str" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_input_output.py#L21-L22"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_input_output.InputNode.format_output_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string of the node.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.node_input_output.InputNode.format_output_str_numpy">
-<code class="sig-name descname">format_output_str_numpy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node_input_output.InputNode.format_output_str_numpy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str_numpy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_input_output.py#L24-L25"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_input_output.InputNode.format_output_str_numpy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string for NumPy representation.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.node_input_output.InputNode.format_output_str_sympy">
-<code class="sig-name descname">format_output_str_sympy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node_input_output.InputNode.format_output_str_sympy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str_sympy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_input_output.py#L30-L31"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_input_output.InputNode.format_output_str_sympy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string for SymPy representation.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.node_input_output.InputNode.format_output_str_torch">
-<code class="sig-name descname">format_output_str_torch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node_input_output.InputNode.format_output_str_torch" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str_torch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_input_output.py#L27-L28"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_input_output.InputNode.format_output_str_torch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string for PyTorch representation.</p>
 </dd></dl>
 
@@ -342,30 +342,30 @@
 
 <dl class="py class">
 <dt id="cgp.node_input_output.OutputNode">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_input_output.</code><code class="sig-name descname">OutputNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.node_input_output.OutputNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_input_output.</code><code class="sig-name descname">OutputNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_input_output.py#L34-L56"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_input_output.OutputNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.Node" title="cgp.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.Node</span></code></a></p>
 <p>An output node of the computational graph.</p>
 <dl class="py method">
 <dt id="cgp.node_input_output.OutputNode.format_output_str">
-<code class="sig-name descname">format_output_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node_input_output.OutputNode.format_output_str" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_input_output.py#L46-L47"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_input_output.OutputNode.format_output_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string of the node.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.node_input_output.OutputNode.format_output_str_numpy">
-<code class="sig-name descname">format_output_str_numpy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node_input_output.OutputNode.format_output_str_numpy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str_numpy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_input_output.py#L49-L50"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_input_output.OutputNode.format_output_str_numpy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string for NumPy representation.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.node_input_output.OutputNode.format_output_str_sympy">
-<code class="sig-name descname">format_output_str_sympy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node_input_output.OutputNode.format_output_str_sympy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str_sympy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_input_output.py#L55-L56"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_input_output.OutputNode.format_output_str_sympy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string for SymPy representation.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.node_input_output.OutputNode.format_output_str_torch">
-<code class="sig-name descname">format_output_str_torch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cgp.node_input_output.OutputNode.format_output_str_torch" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_output_str_torch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">CartesianGraph</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_input_output.py#L52-L53"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_input_output.OutputNode.format_output_str_torch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format output string for PyTorch representation.</p>
 </dd></dl>
 
@@ -376,35 +376,35 @@
 <span id="operator-nodes"></span><h2>Operator Nodes<a class="headerlink" href="#module-cgp.node_impl" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="cgp.node_impl.Add">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.node_impl.Add" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L13-L17"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.OperatorNode</span></code></a></p>
 <p>A node that adds its two inputs.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="cgp.node_impl.ConstantFloat">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">ConstantFloat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.node_impl.ConstantFloat" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">ConstantFloat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L4-L10"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.ConstantFloat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.OperatorNode</span></code></a></p>
 <p>A node with a constant output.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="cgp.node_impl.Div">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Div</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.node_impl.Div" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Div</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L34-L38"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Div" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.OperatorNode</span></code></a></p>
 <p>A node that devides its first by its second input.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="cgp.node_impl.Mul">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Mul</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.node_impl.Mul" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Mul</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L27-L31"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Mul" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.OperatorNode</span></code></a></p>
 <p>A node that multiplies its two inputs.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="cgp.node_impl.Parameter">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Parameter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.node_impl.Parameter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Parameter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L49-L61"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Parameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.OperatorNode</span></code></a></p>
 <p>A node that provides a parametrized constant output.</p>
 <p>The value of the parameter can be adapted via local search and is
@@ -413,14 +413,14 @@ passed on from parents to their offspring.</p>
 
 <dl class="py class">
 <dt id="cgp.node_impl.Pow">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Pow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.node_impl.Pow" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Pow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L41-L46"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Pow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.OperatorNode</span></code></a></p>
 <p>A node that raises its first to the power of its second input.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="cgp.node_impl.Sub">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Sub</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cgp.node_impl.Sub" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Sub</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L20-L24"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Sub" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.OperatorNode</span></code></a></p>
 <p>A node that substracts its second from its first input.</p>
 </dd></dl>
