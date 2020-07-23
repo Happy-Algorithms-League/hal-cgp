@@ -24,6 +24,7 @@ except ImportError:
 
 import matplotlib.pyplot as plt
 import numpy as np
+import sympy
 import warnings
 
 import cgp
@@ -35,15 +36,11 @@ import cgp
 
 
 class ConstantFloatZeroPointOne(cgp.ConstantFloat):
-    def __init__(self, idx, inputs):
-        super().__init__(idx, inputs)
-        self._output = 0.1
+    _def_output = "0.1"
 
 
 class ConstantFloatTen(cgp.ConstantFloat):
-    def __init__(self, idx, inputs):
-        super().__init__(idx, inputs)
-        self._output = 10.0
+    _def_output = "10.0"
 
 
 # %%
@@ -55,30 +52,30 @@ class ConstantFloatTen(cgp.ConstantFloat):
 # episodes.
 
 
-def inner_objective(f, seed, n_total_steps, *, render):
-
-    np.random.seed(seed)
+def inner_objective(f, seed, n_runs_per_individual, n_total_steps, *, render):
 
     env = gym.make("MountainCarContinuous-v0")
 
-    observation = env.reset()
     env.seed(seed)
 
     cum_reward_all_episodes = []
-    cum_reward_this_episode = 0
-    for _ in range(n_total_steps):
+    for _ in range(n_runs_per_individual):
+        observation = env.reset()
 
-        if render:
-            env.render()
+        cum_reward_this_episode = 0
+        for _ in range(n_total_steps):
 
-        continuous_action = f(observation)
-        observation, reward, done, _ = env.step(continuous_action)
-        cum_reward_this_episode += reward
+            if render:
+                env.render()
 
-        if done:
-            cum_reward_all_episodes.append(cum_reward_this_episode)
-            cum_reward_this_episode = 0
-            observation = env.reset()
+            continuous_action = f(observation)
+            observation, reward, done, _ = env.step(continuous_action)
+            cum_reward_this_episode += reward
+
+            if done:
+                cum_reward_all_episodes.append(cum_reward_this_episode)
+                cum_reward_this_episode = 0
+                observation = env.reset()
 
     env.close()
 
@@ -92,7 +89,7 @@ def inner_objective(f, seed, n_total_steps, *, render):
 # is caught and the individual gets a fitness of -infinity assigned.
 
 
-def objective(ind, seed, n_total_steps):
+def objective(ind, seed, n_runs_per_individual, n_total_steps):
 
     if ind.fitness is not None:
         return ind
@@ -106,12 +103,14 @@ def objective(ind, seed, n_total_steps):
             warnings.filterwarnings(
                 "ignore", message="invalid value encountered in double_scalars"
             )
-            cum_reward_all_episodes = inner_objective(f, seed, n_total_steps, render=False)
+            cum_reward_all_episodes = inner_objective(
+                f, seed, n_runs_per_individual, n_total_steps, render=False
+            )
 
         # more episodes are better, more reward is better
         n_episodes = float(len(cum_reward_all_episodes))
         mean_cum_reward = np.mean(cum_reward_all_episodes)
-        ind.fitness = n_episodes + 1.0 * mean_cum_reward
+        ind.fitness = n_episodes / n_runs_per_individual + mean_cum_reward
 
     except ZeroDivisionError:
         ind.fitness = -np.inf
@@ -131,7 +130,7 @@ def objective(ind, seed, n_total_steps):
 
 def evolve(seed):
 
-    objective_params = {"n_total_steps": 2000}
+    objective_params = {"n_runs_per_individual": 3, "n_total_steps": 2000}
 
     population_params = {"n_parents": 1, "mutation_rate": 0.04, "seed": seed}
 
@@ -154,7 +153,7 @@ def evolve(seed):
 
     ea_params = {"n_offsprings": 4, "tournament_size": 1, "n_processes": 4}
 
-    evolve_params = {"max_generations": 3000, "min_fitness": 200.0}
+    evolve_params = {"max_generations": 1500, "min_fitness": 100.0}
 
     pop = cgp.Population(**population_params, genome_params=genome_params)
 
@@ -168,11 +167,16 @@ def evolve(seed):
         history["expr_champion"].append(pop.champion.to_sympy())
         history["fitness_champion"].append(pop.champion.fitness)
 
-    obj = functools.partial(objective, seed=seed, n_total_steps=objective_params["n_total_steps"])
+    obj = functools.partial(
+        objective,
+        seed=seed,
+        n_runs_per_individual=objective_params["n_runs_per_individual"],
+        n_total_steps=objective_params["n_total_steps"],
+    )
 
     cgp.evolve(pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback)
 
-    return history
+    return history, pop.champion
 
 
 # %%
@@ -196,18 +200,14 @@ def plot_fitness_over_generation_index(history):
 # trials. (https://github.com/openai/gym/wiki/Leaderboard#mountaincarcontinuous-v0)
 
 
-def evaluate_best_expr(expr):
-
-    np.random.seed(seed)
+def evaluate_champion(ind):
 
     env = gym.make("MountainCarContinuous-v0")
 
-    observation = env.reset()
     env.seed(seed)
+    observation = env.reset()
 
-    def f(x):
-        res = [float(expr.subs({"x_0": x[0], "x_1": x[1]}).evalf())]
-        return res
+    f = ind.to_func()
 
     cum_reward_all_episodes = []
     cum_reward_this_episode = 0
@@ -240,6 +240,7 @@ def evaluate_best_expr(expr):
 
 
 def visualize_behaviour_for_evolutionary_jumps(seed, history, only_final_solution=True):
+    n_runs_per_individual = 1
     n_total_steps = 999
 
     max_fitness = -np.inf
@@ -250,15 +251,17 @@ def visualize_behaviour_for_evolutionary_jumps(seed, history, only_final_solutio
 
         if fitness > max_fitness:
             expr = history["expr_champion"][i][0]
-            expr_str = str(expr).replace("x_0", "x").replace("x_1", "dx/dt x")
+            expr_str = str(expr).replace("x_0", "x").replace("x_1", "dx/dt")
 
             print(f'visualizing behaviour for expression "{expr_str}" (fitness: {fitness:.05f})')
 
-            def f(x):
-                res = [float(expr.subs({"x_0": x[0], "x_1": x[1]}).evalf())]
-                return res
+            x_0, x_1 = sympy.symbols("x_0, x_1")
+            f_lambdify = sympy.lambdify([x_0, x_1], expr)
 
-            inner_objective(f, seed, n_total_steps, render=True)
+            def f(x):
+                return [f_lambdify(x[0], x[1])]
+
+            inner_objective(f, seed, n_runs_per_individual, n_total_steps, render=True)
 
             max_fitness = fitness
 
@@ -272,14 +275,14 @@ if __name__ == "__main__":
     seed = 818821
 
     print("starting evolution")
-    history = evolve(seed)
+    history, champion = evolve(seed)
     print("evolution ended")
 
     max_fitness = history["fitness_champion"][-1]
     best_expr = history["expr_champion"][-1][0]
-    best_expr_str = str(best_expr).replace("x_0", "x").replace("x_1", "dx/dt x")
+    best_expr_str = str(best_expr).replace("x_0", "x").replace("x_1", "dx/dt")
     print(f'solution with highest fitness: "{best_expr_str}" (fitness: {max_fitness:.05f})')
 
     plot_fitness_over_generation_index(history)
-    evaluate_best_expr(best_expr)
+    evaluate_champion(champion)
     visualize_behaviour_for_evolutionary_jumps(seed, history)
