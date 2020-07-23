@@ -268,6 +268,8 @@ def visualize_behaviour_for_evolutionary_jumps(seed, history, only_final_solutio
 
 # %%
 # Finally, we execute the evolution and visualize the results.
+# To animate the behavior of the car for the found expression, uncomment
+# the last line of the example.
 
 
 if __name__ == "__main__":
@@ -285,4 +287,4 @@ if __name__ == "__main__":
 
     plot_fitness_over_generation_index(history)
     evaluate_champion(champion)
-    visualize_behaviour_for_evolutionary_jumps(seed, history)
+    # visualize_behaviour_for_evolutionary_jumps(seed, history)

@@ -67,8 +67,11 @@ html_static_path = ["_static"]
 # -- Options for Sphinx Gallery ---------------------------------------------
 
 sphinx_gallery_conf = {
+    "filename_pattern": "/*.py",
     "examples_dirs": "../examples",  # path to your example scripts
     "gallery_dirs": "auto_examples",  # path to where to save gallery generated output
+    "matplotlib_animations": True,
+    "image_scrapers": ("matplotlib",),
 }
 
 
