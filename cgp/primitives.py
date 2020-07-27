@@ -15,13 +15,13 @@ class Primitives:
     _primitives: Tuple[Type[Node], ...]
     _max_arity: int = field(init=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self._check_types()
         self.__dict__[
             "_max_arity"
         ] = self._determine_max_arity()  # avoid using use __setattr_ since dataclass is frozen
 
-    def _check_types(self):
+    def _check_types(self) -> None:
         if not isinstance(self._primitives, tuple):
             raise TypeError(f"expected tuple but received {type(self._primitives)}")
 
