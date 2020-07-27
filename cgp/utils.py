@@ -6,6 +6,7 @@ from typing import Any, Callable, Dict, List, Tuple, Type, Union
 
 import numpy as np
 
+from .individual import IndividualMultiGenome, IndividualSingleGenome
 from .node import Node, primitives_dict
 
 
@@ -29,7 +30,46 @@ def __check_cache_consistency(fn: str, func: Callable[..., float]) -> None:
 
 
 def __compute_key_from_args(*args: Any, **kwargs: Any) -> str:
+    """Compute a key from the arguments passed to the decorated
+    function.
+
+    """
+
     s: str = str(args) + str(kwargs)
+    return hashlib.sha1(s.encode("utf-8")).hexdigest()
+
+
+def __compute_key_from_evaluation(
+    seed: int, min_value: float, max_value: float, batch_size: int, *args: Any
+) -> str:
+    """Compute a key for the function encoded in an individual by
+    evaluating it's NumPy expression on random input samples and
+    hashing the output values.
+
+    """
+
+    if not (
+        isinstance(args[0], IndividualSingleGenome) or isinstance(args[0], IndividualMultiGenome)
+    ):
+        raise ValueError("first argument of decorated function must be an Individual instance")
+
+    rng = np.random.RandomState(seed=seed)
+    ind = args[0]
+    if isinstance(ind, IndividualSingleGenome):
+        f_single = ind.to_numpy()
+        x = rng.uniform(min_value, max_value, (batch_size, ind.genome._n_inputs))
+        y = f_single(x)
+        s = np.array_str(y, precision=15)
+    elif isinstance(ind, IndividualMultiGenome):
+        f_multi = ind.to_numpy()
+        s = ""
+        for i in range(len(ind.genome)):
+            x = rng.uniform(min_value, max_value, (batch_size, ind.genome[i]._n_inputs))
+            y = f_multi[i](x)
+            s += np.array_str(y, precision=15)
+    else:
+        assert False  # should never be reached
+
     return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
 
@@ -58,16 +98,33 @@ def __store_new_cache_entry(
         pickle.dump({key: result}, f)
 
 
-def disk_cache(fn: str) -> Callable[[Callable[..., float]], Callable[..., float]]:
+def disk_cache(
+    fn: str,
+    *,
+    use_fec: bool = False,
+    fec_seed: int = 0,
+    fec_min_value: float = -100.0,
+    fec_max_value: float = 100.0,
+    fec_batch_size: int = 10
+) -> Callable[[Callable[..., float]], Callable[..., float]]:
     """Cache function return values on disk.
 
-    Decorator that caches a functions return values on disk. Next time the
+    Decorator that caches a function's return values on disk. Next time the
     decorated function is called with the same arguments it returns the stored
     values from disk instead of executing the function.
 
     Consistency of the cache is checked upon decorating the function
     by making sure the it returns the same value as the first
     argument/keyword argument combination found in the cache.
+
+    If `use_fec` is `False` (default) the arguments of the decorated
+    function are used to compute a hash. If `use_fec` is `True` the
+    decorator uses functional equivalance checking [Real et al.,
+    2020]: It generates a NumPy-compatible expression from the
+    function's first argument (*must* be an `IndividualSingleGenome`
+    or `IndividualMultiGenome` instance) and evaluates it on randomly
+    generated values. The output values are then used to compute a
+    hash.
 
     WARNING: this implementation is neither optimized for speed nor storage
     space and does not limit the size of the cache file.
@@ -81,10 +138,31 @@ def disk_cache(fn: str) -> Callable[[Callable[..., float]], Callable[..., float]
     consistency check will be applied on each decoration thus doubling
     the runtime.
 
+    References
+    ----------
+    Real, E., Liang, C., So, D. R., & Le, Q. V. (2020). AutoML-Zero:
+    Evolving machine learning algorithms from scratch. arXiv preprint
+    arXiv:2003.03384.
+
     Parameters
     ----------
-    fn : Callable
-        Function to be cached.
+    fn : str
+        Name of the cache file.
+    use_fec : bool
+        Whether to use functional equivalance checking.
+    fec_seed : int
+        Seed value for fec.
+    fec_min_value : float
+        Minimal value for fec input samples.
+    fec_max_value : float
+        Maximal value for fec input samples.
+    fec_batch_size : int
+        Number of fec input samples.
+
+    Returns
+    -------
+    Callable
+        The decorated function.
 
     """
 
@@ -94,7 +172,13 @@ def disk_cache(fn: str) -> Callable[[Callable[..., float]], Callable[..., float]
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Union[float, None]:
 
-            key: str = __compute_key_from_args(*args, **kwargs)
+            key: str
+            if use_fec:
+                key = __compute_key_from_evaluation(
+                    fec_seed, fec_min_value, fec_max_value, fec_batch_size, *args
+                )
+            else:
+                key = __compute_key_from_args(*args, **kwargs)
 
             result_value_cached: Union[float, None] = __find_result_in_cache_file(fn, key)
             if result_value_cached is not None:

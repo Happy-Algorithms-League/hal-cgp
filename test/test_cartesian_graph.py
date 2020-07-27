@@ -351,19 +351,20 @@ def test_to_sympy():
     primitives = (cgp.Add, cgp.ConstantFloat)
     genome = cgp.Genome(1, 1, 2, 2, 1, primitives)
 
+    # f = x_0 + x_0 + 1.0
     genome.dna = [
         ID_INPUT_NODE,
         ID_NON_CODING_GENE,
         ID_NON_CODING_GENE,
-        1,
-        0,
-        0,
-        1,
-        0,
         0,
         0,
         0,
         1,
+        0,
+        0,
+        0,
+        1,
+        2,
         0,
         0,
         1,
@@ -373,15 +374,16 @@ def test_to_sympy():
     ]
     graph = cgp.CartesianGraph(genome)
 
-    x_0_target, y_0_target = sympy.symbols("x_0_target y_0_target")
-    y_0_target = x_0_target + 1.0
+    y_0_target = sympy.sympify("x_0 + x_0 + 1.0", evaluate=False)
+    y_0 = graph.to_sympy(simplify=False)[0]
+    assert y_0_target == y_0
 
+    y_0_target = sympy.sympify("2 * x_0 + 1.0", evaluate=True)
     y_0 = graph.to_sympy()[0]
+    assert y_0_target == y_0
 
     for x in np.random.normal(size=100):
-        assert pytest.approx(
-            y_0_target.subs("x_0_target", x).evalf() == y_0.subs("x_0", x).evalf()
-        )
+        assert y_0_target.subs("x_0", x).evalf() == pytest.approx(y_0.subs("x_0", x).evalf())
 
 
 def test_allow_sympy_expr_with_infinities():

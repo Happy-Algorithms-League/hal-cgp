@@ -408,8 +408,7 @@ class _C(torch.nn.Module):
             s = self._fill_parameter_values(s)
             # to get an expression that reflects the computational graph,
             # sympy should not automatically simplify the expression
-            with sympy.evaluate(False):
-                sympy_exprs.append(sympy.sympify(s))
+            sympy_exprs.append(sympy.sympify(s, evaluate=False))
 
         if not simplify:
             return sympy_exprs
