@@ -1,12 +1,14 @@
 """
-Example demonstrating the use of the caching decorator.
-=======================================================
+Example demonstrating the use of the caching decorator with functional equivalance checking
+===========================================================================================
 
 Caches the results of fitness evaluations in a pickle file
-('example_caching_cache.pkl'). To illustrate its practical use,
+(``example_fec_caching_cache.pkl``). To illustrate its practical use,
 compare the runtime of this script when you first call it vs. the
 second time and when you comment out the decorator on
-`inner_objective`."""
+`inner_objective`.
+
+"""
 
 import time
 
@@ -25,27 +27,37 @@ def f_target(x):
 # %%
 # We then define the objective function for the evolutionary
 # algorithm: It consists of an inner objective which we wrap with the
-# caching decorator. This decorator specifies a pickle file that will be used for
-# caching results of fitness evaluations. The inner objective is then used by the objective
-# function to compute (or retrieve from cache) the fitness of the individual.
+# caching decorator. This decorator specifies a pickle file that will
+# be used for caching results of fitness evaluations. In addition the
+# decorator accepts keyword arguments that specifiy the statistic of
+# the samples used for evaluation. The inner objective is then used by
+# the objective function to compute (or retrieve from cache) the
+# fitness of the individual.
 
 
-@cgp.utils.disk_cache("example_caching_cache.pkl")
-def inner_objective(expr):
-    """The caching decorator uses the function parameters to identify
-    identical function calls. Here, as many different genotypes
-    produce the same simplified SymPy expression we can use such
-    expressions as an argument to the decorated function to avoid
-    reevaluating functionally identical individuals.
-    Note that caching only makes sense for deterministic objective
-    functions, as it assumes that identical expressions will always
-    return the same fitness values.
+@cgp.utils.disk_cache(
+    "example_fec_caching_cache.pkl",
+    use_fec=True,
+    fec_seed=12345,
+    fec_min_value=-10.0,
+    fec_max_value=10.0,
+    fec_batch_size=5,
+)
+def inner_objective(ind):
+    """The caching decorator uses the return values generated from
+    providing random inputs to ind.to_numpy() to identify functionally
+    indentical individuals and avoid reevaluating them. Note that
+    caching only makes sense for deterministic objective functions, as
+    it assumes that identical phenotypes will always return the same
+    fitness values.
 
     """
+    f = ind.to_func()
+
     loss = []
-    for x0 in np.linspace(-2.0, 2.0, 100):
-        y = float(expr[0].subs({"x_0": x0}).evalf())
-        loss.append((f_target(x0) - y) ** 2)
+    for x_0 in np.linspace(-2.0, 2.0, 100):
+        y = f([x_0])
+        loss.append((f_target(x_0) - y) ** 2)
 
     time.sleep(0.25)  # emulate long fitness evaluation
 
@@ -56,7 +68,7 @@ def objective(individual):
     if individual.fitness is not None:
         return individual
 
-    individual.fitness = -inner_objective(individual.to_sympy())
+    individual.fitness = -inner_objective(individual)
 
     return individual
 
