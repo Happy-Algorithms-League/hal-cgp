@@ -80,7 +80,7 @@ def gradient_based(
 
             loss.backward()
             if clip_value is not np.inf:
-                torch.nn.utils.clip_grad.clip_grad_value_(params, clip_value)
+                torch.nn.utils.clip_grad.clip_grad_norm_(params, clip_value)
 
             optimizer.step()
 
