@@ -90,6 +90,9 @@ class Genome:
         # dictionary to store values of Parameter nodes
         self._parameter_names_to_values: Dict[str, float] = {}
 
+        # list of permissible values for every gene
+        self._permissible_values: List[np.ndarray] = self.determine_permissible_values()
+
     def __getitem__(self, key: int) -> int:
         if self.dna is None:
             raise RuntimeError("dna not initialized")
@@ -133,6 +136,70 @@ class Genome:
         s = s[:-3]
         s += ")"
         return s
+
+    def determine_permissible_values_per_gene(self, gene_idx: int) -> np.ndarray:
+        region_idx = gene_idx // self._length_per_region
+
+        if self._is_input_region(region_idx):
+            return self._determine_permissible_values_input_region(gene_idx)
+
+        elif self._is_hidden_region(region_idx):
+            return self._determine_permissible_values_hidden_region(gene_idx, region_idx)
+
+        elif self._is_output_region(region_idx):
+            return self._determine_permissible_values_output_region(gene_idx)
+
+        else:
+            assert False  # should never be reached
+
+    def determine_permissible_values(self) -> List[np.ndarray]:
+        """Determine permissible values for every gene.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        ----------
+        permissible_values
+            List[numpy.ndarray]: List of permissible values for every gene
+        """
+        permissible_values: List[np.ndarray] = []
+        for gene_idx in range(self._n_genes):
+            permissible_values_per_gene = self.determine_permissible_values_per_gene(gene_idx)
+            permissible_values.append(permissible_values_per_gene)
+        return permissible_values
+
+    def _determine_permissible_values_input_region(self, gene_idx: int,) -> np.ndarray:
+
+        if self._is_function_gene(gene_idx):
+            return np.array(self._id_input_node)
+        else:
+            return np.array(self._id_unused_gene)
+
+    def _determine_permissible_values_hidden_region(
+        self, gene_idx: int, region_idx: int
+    ) -> np.ndarray:
+
+        if self._is_function_gene(gene_idx):
+            return np.arange(len(self._primitives._primitives))
+
+        elif self._is_hidden_input_gene(gene_idx, region_idx):
+            return np.array(self._permissible_inputs(region_idx))
+
+        else:
+            assert False  # should never be reached
+
+    def _determine_permissible_values_output_region(self, gene_idx: int,) -> np.ndarray:
+
+        if self._is_function_gene(gene_idx):
+            return np.array(self._id_output_node)
+        else:
+            input_index = gene_idx % self._length_per_region - 1
+            if input_index == 0:
+                return np.array(self._permissible_inputs_for_output_region())
+            else:
+                return np.array(self._id_unused_gene)
 
     def _create_input_region(self) -> List[int]:
 
@@ -399,64 +466,18 @@ class Genome:
 
             region_idx = gene_idx // self._length_per_region
 
-            permissible_values = self._determine_alternative_permissible_values(
-                gene_idx, allele, region_idx
-            )
-            if len(permissible_values) > 0:
+            permissible_values = self._permissible_values[gene_idx]
+            permissible_alternative_values = permissible_values[permissible_values != allele]
 
-                dna[gene_idx] = rng.choice(permissible_values)
+            if len(permissible_alternative_values) > 0:
+
+                dna[gene_idx] = rng.choice(permissible_alternative_values)
                 silent = region_idx not in active_regions
 
                 only_silent_mutations = only_silent_mutations and silent
 
         self.dna = dna
         return only_silent_mutations
-
-    def _determine_alternative_permissible_values(
-        self, gene_idx: int, allele: int, region_idx: int
-    ) -> List[int]:
-
-        if self._is_input_region(region_idx):
-            return []  # genes in input regions have no alternative permissible values
-
-        elif self._is_hidden_region(region_idx):
-            return self._determine_alternative_permissible_values_hidden_gene(
-                gene_idx, allele, region_idx
-            )
-
-        elif self._is_output_region(region_idx):
-            return self._determine_alternative_permissible_values_output_gene(gene_idx, allele)
-
-        else:
-            assert False  # should never be reached
-
-    def _determine_alternative_permissible_values_hidden_gene(
-        self, gene_idx: int, allele: int, region_idx: int
-    ) -> List[int]:
-        if self._is_function_gene(gene_idx):
-            permissible_values = list(np.arange(len(self._primitives._primitives)))
-
-        elif self._is_hidden_input_gene(gene_idx, region_idx):
-            permissible_values = self._permissible_inputs(region_idx)
-
-        else:
-            assert False
-        permissible_values.remove(allele)
-        return permissible_values
-
-    def _determine_alternative_permissible_values_output_gene(
-        self, gene_idx: int, allele: int
-    ) -> List[int]:
-        input_index = (
-            gene_idx % self._length_per_region
-        )  # assumes that the second gene in all output regions is the index of the input
-        if input_index == 1:
-            permissible_values = self._permissible_inputs_for_output_region()
-            permissible_values.remove(allele)
-        else:
-            permissible_values = []
-
-        return permissible_values
 
     @property
     def primitives(self) -> Primitives:
