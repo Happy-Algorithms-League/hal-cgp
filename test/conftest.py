@@ -1,3 +1,4 @@
+import numpy as np
 from pytest import fixture
 
 import cgp
@@ -6,6 +7,11 @@ import cgp
 @fixture
 def rng_seed():
     return 1234
+
+
+@fixture
+def rng(rng_seed):
+    return np.random.RandomState(rng_seed)
 
 
 @fixture

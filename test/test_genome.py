@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import pytest
 
@@ -534,3 +535,15 @@ def test_permissible_values(genome_params):
         permissible_values_expected, genome._permissible_values
     ):
         assert np.all(pv_per_gene_expected == pv_per_gene)
+
+
+def test_mutate_does_not_reinitialize_parameters(genome_params, rng, mutation_rate):
+    genome_params["primitives"] = (cgp.Parameter,)
+    genome = cgp.Genome(**genome_params)
+    genome.randomize(rng)
+    genome._parameter_names_to_values["<p2>"] = math.pi
+    parameter_names_to_values_before = genome._parameter_names_to_values.copy()
+    genome.mutate(mutation_rate, rng)
+    assert genome._parameter_names_to_values["<p2>"] == pytest.approx(
+        parameter_names_to_values_before["<p2>"]
+    )
