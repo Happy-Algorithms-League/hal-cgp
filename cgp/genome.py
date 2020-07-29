@@ -314,7 +314,7 @@ class Genome:
         return gene_idx < (self._n_inputs * self._length_per_region)
 
     def _is_gene_in_hidden_region(self, gene_idx: int) -> bool:
-        return ((self._n_inputs * self._length_per_region) <= gene_idx) & (
+        return ((self._n_inputs * self._length_per_region) <= gene_idx) and (
             gene_idx < ((self._n_inputs + self._n_hidden) * self._length_per_region)
         )
 
@@ -325,7 +325,7 @@ class Genome:
         return region_idx < self._n_inputs
 
     def _is_hidden_region(self, region_idx: int) -> bool:
-        return (self._n_inputs <= region_idx) & (region_idx < self._n_inputs + self._n_hidden)
+        return (self._n_inputs <= region_idx) and (region_idx < self._n_inputs + self._n_hidden)
 
     def _is_output_region(self, region_idx: int) -> bool:
         return self._n_inputs + self._n_hidden <= region_idx
@@ -334,7 +334,7 @@ class Genome:
         return (gene_idx % self._length_per_region) == 0
 
     def _is_hidden_input_gene(self, gene_idx: int, region_idx: int) -> bool:
-        return self._is_hidden_region(region_idx) & ((gene_idx % self._length_per_region) != 0)
+        return self._is_hidden_region(region_idx) and (not self._is_function_gene(gene_idx))
 
     def _is_active_input_gene(self, gene_idx: int) -> bool:
         input_index = gene_idx % self._length_per_region
