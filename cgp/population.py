@@ -99,6 +99,7 @@ class Population:
             ind = individual_m
         ind.randomize_genome(self.rng)
         ind.idx = self.get_idx_for_new_individual()
+        ind.parent_idx = -1
         return ind
 
     def mutate(self, offsprings: List[IndividualBase]) -> List[IndividualBase]:
