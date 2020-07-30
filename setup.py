@@ -66,7 +66,7 @@ setup(
     author=read_metadata("author"),
     description=(read_metadata("description")),
     license=read_metadata("license"),
-    keywords="genetic programming",
+    keywords=("cartesian genetic programming", "evolutionary algorithm", "symbolic regression"),
     url=read_metadata("url"),
     python_requires=">=3.6, <4",
     install_requires=read_requirements(),
