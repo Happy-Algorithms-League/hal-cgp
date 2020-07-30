@@ -8,11 +8,15 @@ def _cut_version_number_from_requirement(req):
     return req.split()[0]
 
 
-def read_version():
-    with open("./cgp/__version__.py") as f:
-        line = f.read()
-        match = re.findall(r"[0-9]+\.[0-9]+\.[0-9]+", line)
-        return match[0]
+def read_metadata(metadata_str):
+    """
+    Find __"meta"__ in init file.
+    """
+    with open("./cgp/__init__.py", "r") as f:
+        meta_match = re.search(fr"^__{metadata_str}__ = ['\"]([^'\"]*)['\"]", f.read(), re.M)
+    if meta_match:
+        return meta_match.group(1)
+    raise RuntimeError(f"Unable to find __{metadata_str}__ string.")
 
 
 def read_requirements():
@@ -57,12 +61,13 @@ def read_long_description():
 
 setup(
     name="hal-cgp",
-    version=read_version(),
-    maintainer="Jakob Jordan, Maximilian Schmidt",
-    description=("Cartesian Genetic Programming in pure Python."),
-    license="GPLv3",
+    version=read_metadata("version"),
+    maintainer=read_metadata("maintainer"),
+    author=read_metadata("author"),
+    description=(read_metadata("description")),
+    license=read_metadata("license"),
     keywords="genetic programming",
-    url="https://github.com/Happy-Algorithms-League/hal-cgp",
+    url=read_metadata("url"),
     python_requires=">=3.6, <4",
     install_requires=read_requirements(),
     extras_require=read_extra_requirements(),

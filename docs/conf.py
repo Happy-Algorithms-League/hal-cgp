@@ -23,10 +23,10 @@ sys.path.insert(0, os.path.join(os.path.abspath("."), "../"))
 
 project = "hal-cgp"
 copyright = "2020, Happy Algorithms League"
-author = "Happy Algorithms League"
+author = cgp.__author__
 
 # The full version, including alpha/beta/rc tags
-release = "0.1.1"
+release = cgp.__version__
 
 
 # -- General configuration ---------------------------------------------------
