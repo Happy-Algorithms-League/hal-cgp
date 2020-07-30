@@ -30,18 +30,12 @@ script:
   - black --check .
   - flake8 --config=.flake8 .
   - mypy cgp
-  - if [ "$DEP" = "[all]" ]; then
+  - if [ "$DEP" = "[all]" -a $TRAVIS_PYTHON_VERSION = 3.8 ]; then
+       pip install gym || exit 1;
        make -C docs/ html || exit 1;
-       touch docs/_build/html/.nojekyll
-       
+       touch docs/_build/html/.nojekyll || exit 1;
     fi
   - pytest --cov=cgp
-  - if [ "$DEP" = "[all]" -a $TRAVIS_PYTHON_VERSION = 3.8 ]; then
-       python examples/example_evo_regression.py || exit 1 ;
-       python examples/example_differential_evo_regression.py || exit 1;
-       python examples/example_caching.py || exit 1;
-       python examples/example_parametrized_nodes.py || exit 1;
-    fi
 after_success:
   - coveralls
 deploy:
