@@ -405,6 +405,42 @@ def test_parameter_w_random_initial_value(rng_seed):
     assert y != pytest.approx(1.0)
 
 
+def test_multiple_parameters_per_node():
+
+    p = 3.1415
+    q = 2.7128
+
+    class DoubleParameter(cgp.OperatorNode):
+        _arity = 0
+        _initial_values = {"<p>": lambda: p, "<q>": lambda: q}
+        _def_output = "<p> + <q>"
+        _def_numpy_output = "np.ones(x.shape[0]) * (<p> + <q>)"
+        _def_torch_output = "torch.ones(1).expand(x.shape[0]) * (<p> + <q>)"
+
+    genome_params = {
+        "n_inputs": 1,
+        "n_outputs": 1,
+        "n_columns": 1,
+        "n_rows": 1,
+        "levels_back": None,
+    }
+    primitives = (DoubleParameter,)
+    genome = cgp.Genome(**genome_params, primitives=primitives)
+    # f(x) = p + q
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        ID_OUTPUT_NODE,
+        1,
+    ]
+    f = cgp.CartesianGraph(genome).to_func()
+    y = f([0.0])[0]
+
+    assert y == pytest.approx(p + q)
+
+
 def test_raise_broken_def_output():
     with pytest.raises(SyntaxError):
 
