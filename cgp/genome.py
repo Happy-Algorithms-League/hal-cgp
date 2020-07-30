@@ -403,20 +403,6 @@ class Genome:
     def _is_hidden_input_gene(self, gene_idx: int, region_idx: int) -> bool:
         return self._is_hidden_region(region_idx) and (not self._is_function_gene(gene_idx))
 
-    def _is_active_input_gene(self, gene_idx: int) -> bool:
-        input_index = gene_idx % self._length_per_region
-        assert input_index > 0
-        region_idx = gene_idx // self._length_per_region
-        if self._is_input_region(region_idx):
-            return False
-        elif self._is_hidden_region(region_idx):
-            node_arity = self._primitives[self.dna[region_idx * self._length_per_region]]._arity
-            return input_index <= node_arity
-        elif self._is_output_region(region_idx):
-            return input_index == 1
-        else:
-            assert False  # should never be reached
-
     def _select_gene_indices_for_mutation(
         self, mutation_rate: float, rng: np.random.RandomState
     ) -> List[int]:
