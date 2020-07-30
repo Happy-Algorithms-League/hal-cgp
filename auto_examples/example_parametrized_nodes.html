@@ -295,6 +295,81 @@ method to perform the evolutionary search.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[2/500] max fitness: -127.01931908693929[K
+[3/500] max fitness: -127.01931908693929[K
+[4/500] max fitness: -127.01931908693929[K
+[5/500] max fitness: -5.7621478742860965[K
+[6/500] max fitness: -4.400266790086014[K
+[7/500] max fitness: -3.3439171938076777[K
+[8/500] max fitness: -2.5221616375748344[K
+[9/500] max fitness: -1.886291288388642[K
+[10/500] max fitness: -1.3981594801407393[K
+[11/500] max fitness: -1.027024955717336[K
+[12/500] max fitness: -0.7477863327318205[K
+[13/500] max fitness: -0.5399321058490655[K
+[14/500] max fitness: -0.3868341292604577[K
+[15/500] max fitness: -0.2751900492412008[K
+[16/500] max fitness: -0.19452652473250845[K
+[17/500] max fitness: -0.13673494099465527[K
+[18/500] max fitness: -0.09563997095003499[K
+[19/500] max fitness: -0.06661059705457541[K
+[20/500] max fitness: -0.046222253258311974[K
+[21/500] max fitness: -0.031973909639731866[K
+[22/500] max fitness: -0.02205885115609153[K
+[23/500] max fitness: -0.01518420142810349[K
+[24/500] max fitness: -0.010432247679957566[K
+[25/500] max fitness: -0.007156051160756987[K
+[26/500] max fitness: -0.004902206168242835[K
+[27/500] max fitness: -0.003354500929279119[K
+[28/500] max fitness: -0.0022933114582781846[K
+[29/500] max fitness: -0.0015666233077337203[K
+[30/500] max fitness: -0.0010695205965242655[K
+[31/500] max fitness: -0.0007297666386346675[K
+[32/500] max fitness: -0.0004977239202683268[K
+[33/500] max fitness: -0.00033934028308000566[K
+[34/500] max fitness: -0.00023128736715539105[K
+[35/500] max fitness: -0.0001576015752678627[K
+[36/500] max fitness: -0.00010736927896605433[K
+[37/500] max fitness: -7.313509670770486e-05[K
+[38/500] max fitness: -4.980933852908367e-05[K
+[39/500] max fitness: -3.391918703676957e-05[K
+[40/500] max fitness: -2.3096096228535896e-05[K
+[41/500] max fitness: -1.5725246069023054e-05[K
+[42/500] max fitness: -1.0706019354335675e-05[K
+[43/500] max fitness: -7.288451067003709e-06[K
+[44/500] max fitness: -4.961616392292634e-06[K
+[45/500] max fitness: -3.3774988989541173e-06[K
+[46/500] max fitness: -2.2990801926213286e-06[K
+[47/500] max fitness: -1.564956210506372e-06[K
+[48/500] max fitness: -1.0652249266356427e-06[K
+[49/500] max fitness: -7.25058544542861e-07[K
+[50/500] max fitness: -4.935131658081641e-07[K
+[51/500] max fitness: -3.359072595462748e-07[K
+[52/500] max fitness: -2.2863140927698259e-07[K
+[53/500] max fitness: -1.556141119044658e-07[K
+[54/500] max fitness: -1.059154323848727e-07[K
+[55/500] max fitness: -7.208869798177893e-08[K
+[56/500] max fitness: -4.906515782366229e-08[K
+[57/500] max fitness: -3.33947068058455e-08[K
+[58/500] max fitness: -2.2729022729656698e-08[K
+[59/500] max fitness: -1.5469732821737942e-08[K
+[60/500] max fitness: -1.0528923586553802e-08[K
+[61/500] max fitness: -7.166125354812942e-09[K
+[62/500] max fitness: -4.877353378342053e-09[K
+[63/500] max fitness: -3.31958310056805e-09[K
+[64/500] max fitness: -2.2593444953407397e-09[K
+[65/500] max fitness: -1.5377333234503386e-09[K
+[66/500] max fitness: -1.0465965912643985e-09[K
+[67/500] max fitness: -7.123236680097046e-10[K
+[68/500] max fitness: -4.848141005422031e-10[K
+[69/500] max fitness: -3.299688575234535e-10[K
+[70/500] max fitness: -2.2457971871821608e-10[K
+[71/500] max fitness: -1.5285090235237916e-10[K
+[72/500] max fitness: -1.0403162728212182e-10[K
+[73/500] max fitness: -7.080480056918192e-11[K
+</pre></div>
+</div>
 <p>After the evolutionary search has ended, we print the expression
 with the highest fitness and plot the progression of the search.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final expression </span><span class="si">{</span><span class="n">pop</span><span class="o">.</span><span class="n">champion</span><span class="o">.</span><span class="n">to_sympy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> with fitness </span><span class="si">{</span><span class="n">pop</span><span class="o">.</span><span class="n">champion</span><span class="o">.</span><span class="n">fitness</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -323,7 +398,22 @@ with the highest fitness and plot the progression of the search.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;example_parametrized_nodes.pdf&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<img alt="example parametrized nodes" class="sphx-glr-single-img" src="../_images/sphx_glr_example_parametrized_nodes_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Final expression 3.1415928340353736*x_0 + 3.1415928340353736*x_1 + 2.7182734383513227 with fitness -7.080480056918192e-11
+Best performing expression per generation (for fitness increase &gt; 0.5):
+  0: -127.01931908693929, [x_1]
+  4: -5.7621478742860965, [3.1337934090450837*x_0 + 3.1337934090450837*x_1 + 0.31836625198458554]
+  5: -4.400266790086014, [3.1565329832083608*x_0 + 3.1565329832083608*x_1 + 0.62085799830068183]
+  6: -3.3439171938076777, [3.15892017999446*x_0 + 3.15892017999446*x_1 + 0.89027846015470884]
+  7: -2.5221616375748344, [3.1597540007392134*x_0 + 3.1597540007392134*x_1 + 1.1311091306962316]
+  8: -1.886291288388642, [3.1595918340334699*x_0 + 3.1595918340334699*x_1 + 1.3460568187315501]
+ 10: -1.027024955717336, [3.1575106310584499*x_0 + 3.1575106310584499*x_1 + 1.7062610297769132]
+ 13: -0.3868341292604577, [3.1529224955139751*x_0 + 3.1529224955139751*x_1 + 2.0975544857381176]
+ 72: -7.080480056918192e-11, [3.1415928340353736*x_0 + 3.1415928340353736*x_1 + 2.7182734383513227]
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  11.769 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-parametrized-nodes-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/1b27ac94862774586a16bbffc94c3333/example_parametrized_nodes.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_parametrized_nodes.py</span></code></a></p>
