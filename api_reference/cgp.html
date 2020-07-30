@@ -179,7 +179,7 @@
 <h2>Population<a class="headerlink" href="#population" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="cgp.Population">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.</code><code class="sig-name descname">Population</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_parents</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">mutation_rate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">genome_params</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>dict<span class="p">, </span>List<span class="p">[</span>dict<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/population.py#L9-L129"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Population" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.</code><code class="sig-name descname">Population</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_parents</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">mutation_rate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">genome_params</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>dict<span class="p">, </span>List<span class="p">[</span>dict<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/population.py#L9-L130"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Population" title="Permalink to this definition">¶</a></dt>
 <dd><p>A population of individuals.</p>
 <dl class="py method">
 <dt id="cgp.Population.champion">
@@ -189,7 +189,7 @@
 
 <dl class="py method">
 <dt id="cgp.Population.fitness_parents">
-<code class="sig-name descname">fitness_parents</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[Union[None, float]]<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/population.py#L121-L129"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Population.fitness_parents" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">fitness_parents</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[Union[None, float]]<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/population.py#L122-L130"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Population.fitness_parents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return fitness for all parents of the population.</p>
 <dl class="simple">
 <dt>List[float]</dt><dd><p>List of fitness values for all parents.</p>
@@ -199,7 +199,7 @@
 
 <dl class="py method">
 <dt id="cgp.Population.mutate">
-<code class="sig-name descname">mutate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">offsprings</span><span class="p">:</span> <span class="n">List<span class="p">[</span>cgp.individual.IndividualBase<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>cgp.individual.IndividualBase<span class="p">]</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/population.py#L104-L119"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Population.mutate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">mutate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">offsprings</span><span class="p">:</span> <span class="n">List<span class="p">[</span>cgp.individual.IndividualBase<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>cgp.individual.IndividualBase<span class="p">]</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/population.py#L105-L120"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Population.mutate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mutate a list of offspring invididuals.</p>
 <dl class="simple">
 <dt>offsprings<span class="classifier">List[IndividualBase]</span></dt><dd><p>List of offspring individuals to be mutated.</p>
