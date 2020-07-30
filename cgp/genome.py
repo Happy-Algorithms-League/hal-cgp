@@ -528,6 +528,7 @@ class Genome:
             assert issubclass(node_type, OperatorNode)
             for parameter_name in node_type._parameter_names:
                 parameter_name_with_idx = "<" + parameter_name[1:-1] + str(region_idx) + ">"
-                self._parameter_names_to_values[parameter_name_with_idx] = node_type.initial_value(
-                    parameter_name_with_idx
-                )
+                if parameter_name_with_idx not in self._parameter_names_to_values:
+                    self._parameter_names_to_values[
+                        parameter_name_with_idx
+                    ] = node_type.initial_value(parameter_name_with_idx)
