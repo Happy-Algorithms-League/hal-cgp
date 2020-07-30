@@ -6,6 +6,16 @@ Example demonstrating the use of Cartesian genetic programming for
 two regression tasks.
 """
 
+# The docopt str is added explicitly to ensure compatibility with
+# sphinx-gallery.
+docopt_str = """
+   Usage:
+     example_evo_regression.py [--max-generations=<N>]
+
+   Options:
+     -h --help
+     --max-generations=<N>  Maximum number of generations [default: 1000]
+"""
 
 import functools
 import warnings
@@ -13,8 +23,11 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.constants
+from docopt import docopt
 
 import cgp
+
+args = docopt(docopt_str)
 
 # %%
 # We first define target functions. For illustration purposes, we
@@ -123,7 +136,7 @@ def evolution(f_target):
 
     ea_params = {"n_offsprings": 10, "tournament_size": 2, "n_processes": 2}
 
-    evolve_params = {"max_generations": 1000, "min_fitness": 0.0}
+    evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
 
     # create population that will be evolved
     pop = cgp.Population(**population_params, genome_params=genome_params)
