@@ -14,6 +14,13 @@ Install the OpenAI Gym package: `pip install gym`
 
 
 import functools
+import warnings
+
+import matplotlib.pyplot as plt
+import numpy as np
+import sympy
+
+import cgp
 
 try:
     import gym
@@ -22,12 +29,6 @@ except ImportError:
         "Failed to import the OpenAI Gym package. Please install it via `pip install gym`."
     )
 
-import matplotlib.pyplot as plt
-import numpy as np
-import sympy
-import warnings
-
-import cgp
 
 # %%
 # For more flexibility in the evolved expressions, we define two
