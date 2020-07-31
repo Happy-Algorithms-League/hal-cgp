@@ -16,6 +16,7 @@ Figure from Jordan, Schmidt, Senn & Petrovici, "Evolving to learn: discovering i
 
    installation
    basic_usage
+   documentation/documentation
    auto_examples/index
    api_reference/api_reference
    references
