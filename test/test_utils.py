@@ -1,9 +1,10 @@
 import concurrent.futures
 import functools
-import numpy as np
-import pytest
 import tempfile
 import time
+
+import numpy as np
+import pytest
 
 import cgp
 

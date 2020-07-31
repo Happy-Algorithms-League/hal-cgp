@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 import cgp
-from cgp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
+from cgp.genome import ID_INPUT_NODE, ID_NON_CODING_GENE, ID_OUTPUT_NODE
 
 
 def test_inputs_are_cut_to_match_arity():
@@ -287,14 +287,7 @@ def test_parameter():
     primitives = (cgp.Parameter,)
     genome = cgp.Genome(**genome_params, primitives=primitives)
     # f(x) = c
-    genome.dna = [
-        ID_INPUT_NODE,
-        ID_NON_CODING_GENE,
-        0,
-        0,
-        ID_OUTPUT_NODE,
-        1,
-    ]
+    genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
 
     x = [1.0]
     y_target = [1.0]  # by default the output value of the Parameter node is 1.0
@@ -318,14 +311,7 @@ def test_parameter_w_custom_initial_value():
     primitives = (CustomParameter,)
     genome = cgp.Genome(**genome_params, primitives=primitives)
     # f(x) = c
-    genome.dna = [
-        ID_INPUT_NODE,
-        ID_NON_CODING_GENE,
-        0,
-        0,
-        ID_OUTPUT_NODE,
-        1,
-    ]
+    genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
 
     x = [1.0]
     y_target = [initial_value]
@@ -389,14 +375,7 @@ def test_parameter_w_random_initial_value(rng_seed):
     primitives = (CustomParameter,)
     genome = cgp.Genome(**genome_params, primitives=primitives)
     # f(x) = c
-    genome.dna = [
-        ID_INPUT_NODE,
-        ID_NON_CODING_GENE,
-        0,
-        0,
-        ID_OUTPUT_NODE,
-        1,
-    ]
+    genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
     f = cgp.CartesianGraph(genome).to_func()
     y = f([0.0])[0]
 
@@ -427,14 +406,7 @@ def test_multiple_parameters_per_node():
     primitives = (DoubleParameter,)
     genome = cgp.Genome(**genome_params, primitives=primitives)
     # f(x) = p + q
-    genome.dna = [
-        ID_INPUT_NODE,
-        ID_NON_CODING_GENE,
-        0,
-        0,
-        ID_OUTPUT_NODE,
-        1,
-    ]
+    genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
     f = cgp.CartesianGraph(genome).to_func()
     y = f([0.0])[0]
 

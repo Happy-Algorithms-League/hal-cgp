@@ -1,9 +1,10 @@
 import itertools
+
 import numpy as np
 import pytest
 
 import cgp
-from cgp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
+from cgp.genome import ID_INPUT_NODE, ID_NON_CODING_GENE, ID_OUTPUT_NODE
 
 
 def test_direct_input_output():
