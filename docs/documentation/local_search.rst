@@ -1,3 +1,5 @@
+.. _local_search:
+
 ==========================================================
 Searching numerical values for parameters via local search
 ==========================================================
