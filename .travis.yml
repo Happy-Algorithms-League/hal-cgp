@@ -30,6 +30,7 @@ script:
   - black --check .
   - flake8 --config=.flake8 .
   - mypy cgp
+  - isort --check-only cgp examples test
   - if [ "$DEP" = "[all]" -a $TRAVIS_PYTHON_VERSION = 3.8 ]; then
        pip install gym || exit 1;
        make -C docs/ html || exit 1;
