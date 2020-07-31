@@ -1,12 +1,12 @@
 import functools
 import hashlib
-import numpy as np
 import os
 import pickle
-
 from typing import Any, Callable, Dict, List, Tuple, Type, Union
 
-from .node import primitives_dict, Node
+import numpy as np
+
+from .node import Node, primitives_dict
 
 
 def __check_cache_consistency(fn: str, func: Callable[..., float]) -> None:
@@ -53,11 +53,7 @@ def __store_new_cache_entry(
 ) -> None:
     with open(fn, "ab") as f:
 
-        result = {
-            "args": args,
-            "kwargs": kwargs,
-            "return_value": return_value,
-        }
+        result = {"args": args, "kwargs": kwargs, "return_value": return_value}
 
         pickle.dump({key: result}, f)
 

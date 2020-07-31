@@ -1,8 +1,13 @@
 import collections
 import copy
 import math  # noqa: F401
-import numpy as np  # noqa: F401
 import re
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Set
+
+import numpy as np  # noqa: F401
+
+from .node import Node, OperatorNode
+from .node_input_output import InputNode, OutputNode
 
 try:
     import sympy
@@ -19,10 +24,6 @@ try:
 except ModuleNotFoundError:
     torch_available = False
 
-from typing import Callable, Dict, List, Optional, Set, TYPE_CHECKING
-
-from .node import Node, OperatorNode
-from .node_input_output import InputNode, OutputNode
 
 if TYPE_CHECKING:
     from .genome import Genome
@@ -372,7 +373,7 @@ class _C(torch.nn.Module):
             for node in active_nodes[hidden_column_idx]:
                 node.format_output_str_sympy(self)
 
-    def to_sympy(self, simplify: Optional[bool] = True,) -> List["sympy_expr.Expr"]:
+    def to_sympy(self, simplify: Optional[bool] = True) -> List["sympy_expr.Expr"]:
         """Compile the function(s) represented by the graph to a SymPy expression.
 
         Generates one SymPy expression for each output node.

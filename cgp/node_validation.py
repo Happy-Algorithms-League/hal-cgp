@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, Type
+
 import numpy as np
 
 try:
@@ -15,16 +17,15 @@ try:
 except ModuleNotFoundError:
     torch_available = False
 
-from typing import Type, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .node import OperatorNode  # noqa: F401
     from .genome import Genome  # noqa: F401
+    from .node import OperatorNode  # noqa: F401
 
 
 def _create_genome(cls: Type["OperatorNode"]) -> "Genome":
     # delayed imports to avoid circular imports
-    from .genome import Genome, ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
+    from .genome import ID_INPUT_NODE, ID_NON_CODING_GENE, ID_OUTPUT_NODE, Genome
 
     primitives = (cls,)
     genome = Genome(1, 1, 1, 1, 1, primitives)

@@ -1,4 +1,8 @@
+from typing import Callable, List, Optional, Union
+
 import numpy as np
+
+from ..individual import IndividualBase
 
 try:
     import torch  # noqa: F401
@@ -7,11 +11,6 @@ try:
     torch_available = True
 except ModuleNotFoundError:
     torch_available = False
-
-from typing import Callable, List, Optional, Union
-
-
-from ..individual import IndividualBase
 
 
 def gradient_based(
