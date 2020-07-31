@@ -109,7 +109,7 @@ def evolution(f_target):
     Individual
         Individual with the highest fitness in the last generation
     """
-    population_params = {"n_parents": 10, "mutation_rate": 0.05, "seed": 8188211}
+    population_params = {"n_parents": 10, "mutation_rate": 0.03, "seed": 8188211}
 
     genome_params = {
         "n_inputs": 2,
