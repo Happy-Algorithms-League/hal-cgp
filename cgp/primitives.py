@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
-import numpy as np
-
 from typing import Iterator, Tuple, Type
+
+import numpy as np
 
 from .node import Node
 

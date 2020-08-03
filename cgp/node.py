@@ -1,7 +1,6 @@
 import math  # noqa: F401
 import re
-
-from typing import Callable, Dict, List, Tuple, Type, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Dict, List, Tuple, Type
 
 from . import node_validation
 

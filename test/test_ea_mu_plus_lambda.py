@@ -1,4 +1,5 @@
 import functools
+
 import numpy as np
 import pytest
 
@@ -84,7 +85,7 @@ def test_offspring_individuals_are_assigned_correct_parent_indices(
 
 
 def test_local_search_is_only_applied_to_best_k_individuals(
-    population_params, local_search_params, ea_params,
+    population_params, local_search_params, ea_params
 ):
 
     torch = pytest.importorskip("torch")

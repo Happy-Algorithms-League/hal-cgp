@@ -1,4 +1,5 @@
 import dataclasses
+
 import pytest
 
 import cgp

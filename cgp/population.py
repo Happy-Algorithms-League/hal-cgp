@@ -1,9 +1,9 @@
-import numpy as np
-
 from typing import List, Union
 
+import numpy as np
+
 from .genome import Genome
-from .individual import IndividualBase, IndividualSingleGenome, IndividualMultiGenome
+from .individual import IndividualBase, IndividualMultiGenome, IndividualSingleGenome
 
 
 class Population:

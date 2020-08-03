@@ -1,5 +1,9 @@
-import numpy as np
 from typing import Callable, List, Union
+
+import numpy as np
+
+from .cartesian_graph import CartesianGraph
+from .genome import Genome
 
 try:
     import sympy  # noqa: F401
@@ -15,9 +19,6 @@ try:
     torch_available = True
 except ModuleNotFoundError:
     torch_available = False
-
-from .genome import Genome
-from .cartesian_graph import CartesianGraph
 
 
 class IndividualBase:

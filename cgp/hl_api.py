@@ -1,9 +1,10 @@
-import numpy as np
-from typing import Optional, Callable
+from typing import Callable, Optional
 
-from .population import Population
-from .individual import IndividualBase
+import numpy as np
+
 from .ea import MuPlusLambda
+from .individual import IndividualBase
+from .population import Population
 
 
 def evolve(

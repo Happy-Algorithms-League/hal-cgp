@@ -1,4 +1,10 @@
+from typing import Dict, Generator, List, Optional, Tuple, Type, Union
+
 import numpy as np
+
+from .cartesian_graph import CartesianGraph
+from .node import Node, OperatorNode
+from .primitives import Primitives
 
 try:
     import torch  # noqa: F401
@@ -6,12 +12,6 @@ try:
     torch_available = True
 except ModuleNotFoundError:
     torch_available = False
-
-from typing import Dict, Generator, List, Optional, Tuple, Type, Union
-
-from .cartesian_graph import CartesianGraph
-from .node import Node, OperatorNode
-from .primitives import Primitives
 
 
 ID_INPUT_NODE: int = -1
@@ -170,7 +170,7 @@ class Genome:
             permissible_values.append(permissible_values_per_gene)
         return permissible_values
 
-    def _determine_permissible_values_input_region(self, gene_idx: int,) -> np.ndarray:
+    def _determine_permissible_values_input_region(self, gene_idx: int) -> np.ndarray:
 
         if self._is_function_gene(gene_idx):
             return np.array(self._id_input_node)
@@ -190,7 +190,7 @@ class Genome:
         else:
             assert False  # should never be reached
 
-    def _determine_permissible_values_output_region(self, gene_idx: int,) -> np.ndarray:
+    def _determine_permissible_values_output_region(self, gene_idx: int) -> np.ndarray:
 
         if self._is_function_gene(gene_idx):
             return np.array(self._id_output_node)

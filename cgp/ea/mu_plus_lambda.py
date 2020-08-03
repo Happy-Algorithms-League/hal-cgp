@@ -1,7 +1,7 @@
 import concurrent.futures
-import numpy as np
-
 from typing import Callable, List, Union
+
+import numpy as np
 
 from ..individual import IndividualBase
 from ..population import Population

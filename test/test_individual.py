@@ -1,14 +1,13 @@
 import math
-import numpy as np
 import pickle
 from collections import namedtuple
 
+import numpy as np
 import pytest
 
 import cgp
-from cgp import IndividualSingleGenome, IndividualMultiGenome
-from cgp.genome import ID_INPUT_NODE, ID_OUTPUT_NODE, ID_NON_CODING_GENE
-
+from cgp import IndividualMultiGenome, IndividualSingleGenome
+from cgp.genome import ID_INPUT_NODE, ID_NON_CODING_GENE, ID_OUTPUT_NODE
 
 TestParams = namedtuple("TestParams", ["genome_params", "primitives", "dna", "target_function"])
 params_list = [
