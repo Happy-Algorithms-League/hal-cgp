@@ -11,13 +11,13 @@ which produces a scaled and shifted version of the sum of its inputs.
 
 import functools
 import math
+
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.constants
 import torch
 
 import cgp
-
 
 # %%
 # We first define a new node that adds two inputs then scales and
@@ -138,9 +138,7 @@ def recording_callback(pop):
 
 obj = functools.partial(objective, seed=population_params["seed"])
 
-cgp.evolve(
-    pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback,
-)
+cgp.evolve(pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback)
 
 # %%
 # After the evolutionary search has ended, we print the expression

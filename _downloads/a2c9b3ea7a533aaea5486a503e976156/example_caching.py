@@ -8,8 +8,9 @@ compare the runtime of this script when you first call it vs. the
 second time and when you comment out the decorator on
 `inner_objective`."""
 
-import numpy as np
 import time
+
+import numpy as np
 
 import cgp
 

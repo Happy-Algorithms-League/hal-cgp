@@ -180,6 +180,13 @@ observation and action spaces.</p>
 <p>Preparatory steps:
 Install the OpenAI Gym package: <cite>pip install gym</cite></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sympy</span>
+
+<span class="kn">import</span> <span class="nn">cgp</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">gym</span>
@@ -187,13 +194,6 @@ Install the OpenAI Gym package: <cite>pip install gym</cite></p>
     <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
         <span class="s2">&quot;Failed to import the OpenAI Gym package. Please install it via `pip install gym`.&quot;</span>
     <span class="p">)</span>
-
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">sympy</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-
-<span class="kn">import</span> <span class="nn">cgp</span>
 </pre></div>
 </div>
 <p>For more flexibility in the evolved expressions, we define two
@@ -1252,7 +1252,7 @@ solution with highest fitness: &quot;20.0*dx/dt&quot; (fitness: 103.17638)
 average reward over 100 consecutive trials: 94.62584-&gt; environment solved!
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  57.578 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  9.217 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-mountain-car-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/6d1d18ac3f4f0be69ba27614e36538dc/example_mountain_car.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_mountain_car.py</span></code></a></p>

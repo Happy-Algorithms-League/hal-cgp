@@ -8,10 +8,11 @@ two regression tasks.
 
 
 import functools
+import warnings
+
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.constants
-import warnings
 
 import cgp
 

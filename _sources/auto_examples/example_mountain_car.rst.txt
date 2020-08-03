@@ -26,6 +26,13 @@ Install the OpenAI Gym package: `pip install gym`
 
 
     import functools
+    import warnings
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import sympy
+
+    import cgp
 
     try:
         import gym
@@ -34,12 +41,6 @@ Install the OpenAI Gym package: `pip install gym`
             "Failed to import the OpenAI Gym package. Please install it via `pip install gym`."
         )
 
-    import matplotlib.pyplot as plt
-    import numpy as np
-    import sympy
-    import warnings
-
-    import cgp
 
 
 
@@ -406,7 +407,7 @@ the last line of the example.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  57.578 seconds)
+   **Total running time of the script:** ( 2 minutes  9.217 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_mountain_car.py:

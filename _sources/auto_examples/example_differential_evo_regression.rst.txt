@@ -33,6 +33,7 @@ References:
 
 
     import functools
+
     import matplotlib.pyplot as plt
     import numpy as np
     import scipy.constants
@@ -131,12 +132,7 @@ individuals, the evolutionary algorithm, and the local search.
         "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Parameter),
     }
 
-    ea_params = {
-        "n_offsprings": 4,
-        "tournament_size": 1,
-        "n_processes": 1,
-        "k_local_search": 2,
-    }
+    ea_params = {"n_offsprings": 4, "tournament_size": 1, "n_processes": 1, "k_local_search": 2}
 
     evolve_params = {"max_generations": 2000, "min_fitness": 0.0}
 
@@ -284,7 +280,7 @@ evolved expression.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  12.556 seconds)
+   **Total running time of the script:** ( 0 minutes  13.186 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_differential_evo_regression.py:
