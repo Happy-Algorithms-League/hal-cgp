@@ -4,3 +4,5 @@ max-line-length = 99
 max-complexity = 18
 select = B,C,E,F,W,T4,B9
 exclude = __init__.py
+per-file-ignores =
+    examples/*:E402

@@ -1,1 +1,2 @@
 numpy ~= 1.18.3
+docopt-ng~=0.7.2
