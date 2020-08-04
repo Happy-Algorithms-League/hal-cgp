@@ -33,20 +33,25 @@ script:
   - isort --check-only cgp examples test
   - if [ "$DEP" = "[all]" -a $TRAVIS_PYTHON_VERSION = 3.8 ]; then
        pip install gym || exit 1;
-       make -C docs/ html || exit 1;
-       touch docs/_build/html/.nojekyll || exit 1;
+       make -C docs/ html-examples-short || exit 1;
     fi
   - pytest --cov=cgp
 after_success:
   - coveralls
 deploy:
-  provider: pages:git
-  skip_cleanup: true
-  verbose: true
-  token: $GITHUB_TOKEN
-  edge: true
-  local_dir: ./docs/_build/html/
-  keep_history: true
-  on:
-    python: 3.8
-    condition: $DEP = "[all]"
+  - provider: script
+    script: bash docs/deploy.sh
+    on:
+      python: 3.8
+      condition: $DEP = "[all]"
+    edge: true
+  - provider: pages:git
+    skip_cleanup: true
+    verbose: true
+    token: $GITHUB_TOKEN
+    edge: true
+    local_dir: ./docs/_build/html/
+    keep_history: true
+    on:
+      python: 3.8
+      condition: $DEP = "[all]"
