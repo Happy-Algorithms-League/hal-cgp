@@ -12,6 +12,17 @@ Install the OpenAI Gym package: `pip install gym`
 
 """
 
+# The docopt str is added explicitly to ensure compatibility with
+# sphinx-gallery.
+docopt_str = """
+  Usage:
+    example_parametrized_nodes.py [--max-generations=<N>] [--visualize-final-champion]
+
+  Options:
+    -h --help
+    --max-generations=<N>  Maximum number of generations [default: 1500]
+    --visualize-final-champion  Create animation of final champion in the mountain car env.
+"""
 
 import functools
 import warnings
@@ -19,6 +30,7 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 import sympy
+from docopt import docopt
 
 import cgp
 
@@ -29,6 +41,8 @@ except ImportError:
         "Failed to import the OpenAI Gym package. Please install it via `pip install gym`."
     )
 
+
+args = docopt(docopt_str)
 
 # %%
 # For more flexibility in the evolved expressions, we define two
@@ -154,7 +168,7 @@ def evolve(seed):
 
     ea_params = {"n_offsprings": 4, "tournament_size": 1, "n_processes": 4}
 
-    evolve_params = {"max_generations": 1500, "min_fitness": 100.0}
+    evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 100.0}
 
     pop = cgp.Population(**population_params, genome_params=genome_params)
 
@@ -288,4 +302,5 @@ if __name__ == "__main__":
 
     plot_fitness_over_generation_index(history)
     evaluate_champion(champion)
-    # visualize_behaviour_for_evolutionary_jumps(seed, history)
+    if args["--visualize-final-champion"]:
+        visualize_behaviour_for_evolutionary_jumps(seed, history)

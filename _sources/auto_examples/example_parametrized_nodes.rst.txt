@@ -21,6 +21,17 @@ which produces a scaled and shifted version of the sum of its inputs.
 .. code-block:: default
 
 
+    # The docopt str is added explicitly to ensure compatibility with
+    # sphinx-gallery.
+    docopt_str = """
+      Usage:
+        example_parametrized_nodes.py [--max-generations=<N>]
+
+      Options:
+        -h --help
+        --max-generations=<N>  Maximum number of generations [default: 500]
+    """
+
     import functools
     import math
 
@@ -28,8 +39,11 @@ which produces a scaled and shifted version of the sum of its inputs.
     import numpy as np
     import scipy.constants
     import torch
+    from docopt import docopt
 
     import cgp
+
+    args = docopt(docopt_str)
 
 
 
@@ -151,7 +165,7 @@ that we add the custom node defined above as a primitive.
 
     ea_params = {"n_offsprings": 4, "tournament_size": 1, "n_processes": 2}
 
-    evolve_params = {"max_generations": 500, "min_fitness": 0.0}
+    evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
 
     local_search_params = {"lr": 1e-3, "gradient_steps": 9}
 
@@ -300,7 +314,7 @@ with the highest fitness and plot the progression of the search.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  10.788 seconds)
+   **Total running time of the script:** ( 0 minutes  10.684 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_parametrized_nodes.py:

@@ -179,12 +179,25 @@ choose the “MountainCarContinuous” environment due to its continuous
 observation and action spaces.</p>
 <p>Preparatory steps:
 Install the OpenAI Gym package: <cite>pip install gym</cite></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">functools</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># The docopt str is added explicitly to ensure compatibility with</span>
+<span class="c1"># sphinx-gallery.</span>
+<span class="n">docopt_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">  Usage:</span>
+<span class="s2">    example_parametrized_nodes.py [--max-generations=&lt;N&gt;] [--visualize-final-champion]</span>
+
+<span class="s2">  Options:</span>
+<span class="s2">    -h --help</span>
+<span class="s2">    --max-generations=&lt;N&gt;  Maximum number of generations [default: 1500]</span>
+<span class="s2">    --visualize-final-champion  Create animation of final champion in the mountain car env.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">sympy</span>
+<span class="kn">from</span> <span class="nn">docopt</span> <span class="kn">import</span> <span class="n">docopt</span>
 
 <span class="kn">import</span> <span class="nn">cgp</span>
 
@@ -194,6 +207,9 @@ Install the OpenAI Gym package: <cite>pip install gym</cite></p>
     <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
         <span class="s2">&quot;Failed to import the OpenAI Gym package. Please install it via `pip install gym`.&quot;</span>
     <span class="p">)</span>
+
+
+<span class="n">args</span> <span class="o">=</span> <span class="n">docopt</span><span class="p">(</span><span class="n">docopt_str</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>For more flexibility in the evolved expressions, we define two
@@ -308,7 +324,7 @@ is caught and the individual gets a fitness of -infinity assigned.</p>
 
     <span class="n">ea_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;n_offsprings&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;tournament_size&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;n_processes&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
 
-    <span class="n">evolve_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;max_generations&quot;</span><span class="p">:</span> <span class="mi">1500</span><span class="p">,</span> <span class="s2">&quot;min_fitness&quot;</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">}</span>
+    <span class="n">evolve_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;max_generations&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s2">&quot;--max-generations&quot;</span><span class="p">]),</span> <span class="s2">&quot;min_fitness&quot;</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">}</span>
 
     <span class="n">pop</span> <span class="o">=</span> <span class="n">cgp</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="o">**</span><span class="n">population_params</span><span class="p">,</span> <span class="n">genome_params</span><span class="o">=</span><span class="n">genome_params</span><span class="p">)</span>
 
@@ -430,7 +446,8 @@ the last line of the example.</p>
 
     <span class="n">plot_fitness_over_generation_index</span><span class="p">(</span><span class="n">history</span><span class="p">)</span>
     <span class="n">evaluate_champion</span><span class="p">(</span><span class="n">champion</span><span class="p">)</span>
-    <span class="c1"># visualize_behaviour_for_evolutionary_jumps(seed, history)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;--visualize-final-champion&quot;</span><span class="p">]:</span>
+        <span class="n">visualize_behaviour_for_evolutionary_jumps</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">history</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="example mountain car" class="sphx-glr-single-img" src="../_images/sphx_glr_example_mountain_car_001.png" />
@@ -1252,7 +1269,7 @@ solution with highest fitness: &quot;20.0*dx/dt&quot; (fitness: 103.17638)
 average reward over 100 consecutive trials: 94.62584-&gt; environment solved!
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  9.217 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  4.988 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-mountain-car-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/6d1d18ac3f4f0be69ba27614e36538dc/example_mountain_car.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_mountain_car.py</span></code></a></p>

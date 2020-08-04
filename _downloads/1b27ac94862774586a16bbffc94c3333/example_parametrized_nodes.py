@@ -9,6 +9,17 @@ which produces a scaled and shifted version of the sum of its inputs.
 
 """
 
+# The docopt str is added explicitly to ensure compatibility with
+# sphinx-gallery.
+docopt_str = """
+  Usage:
+    example_parametrized_nodes.py [--max-generations=<N>]
+
+  Options:
+    -h --help
+    --max-generations=<N>  Maximum number of generations [default: 500]
+"""
+
 import functools
 import math
 
@@ -16,8 +27,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.constants
 import torch
+from docopt import docopt
 
 import cgp
+
+args = docopt(docopt_str)
 
 # %%
 # We first define a new node that adds two inputs then scales and
@@ -99,7 +113,7 @@ genome_params = {
 
 ea_params = {"n_offsprings": 4, "tournament_size": 1, "n_processes": 2}
 
-evolve_params = {"max_generations": 500, "min_fitness": 0.0}
+evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
 
 local_search_params = {"lr": 1e-3, "gradient_steps": 9}
 

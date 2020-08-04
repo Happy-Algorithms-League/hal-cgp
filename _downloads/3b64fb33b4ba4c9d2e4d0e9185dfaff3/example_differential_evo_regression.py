@@ -20,14 +20,29 @@ References:
 
 """
 
+# The docopt str is added explicitly to ensure compatibility with
+# sphinx-gallery.
+docopt_str = """
+  Usage:
+    example_differential_evo_regression.py [--max-generations=<N>]
+
+  Options:
+    -h --help
+    --max-generations=<N>  Maximum number of generations [default: 2000]
+
+"""
+
 import functools
 
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.constants
 import torch
+from docopt import docopt
 
 import cgp
+
+args = docopt(docopt_str)
 
 # %%
 # We first define the target function. Note that this function contains
@@ -92,7 +107,7 @@ genome_params = {
 
 ea_params = {"n_offsprings": 4, "tournament_size": 1, "n_processes": 1, "k_local_search": 2}
 
-evolve_params = {"max_generations": 2000, "min_fitness": 0.0}
+evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
 
 # use an uneven number of gradient steps so they can not easily
 # average out for clipped values

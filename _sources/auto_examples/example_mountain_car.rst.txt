@@ -24,6 +24,17 @@ Install the OpenAI Gym package: `pip install gym`
 .. code-block:: default
 
 
+    # The docopt str is added explicitly to ensure compatibility with
+    # sphinx-gallery.
+    docopt_str = """
+      Usage:
+        example_parametrized_nodes.py [--max-generations=<N>] [--visualize-final-champion]
+
+      Options:
+        -h --help
+        --max-generations=<N>  Maximum number of generations [default: 1500]
+        --visualize-final-champion  Create animation of final champion in the mountain car env.
+    """
 
     import functools
     import warnings
@@ -31,6 +42,7 @@ Install the OpenAI Gym package: `pip install gym`
     import matplotlib.pyplot as plt
     import numpy as np
     import sympy
+    from docopt import docopt
 
     import cgp
 
@@ -41,6 +53,8 @@ Install the OpenAI Gym package: `pip install gym`
             "Failed to import the OpenAI Gym package. Please install it via `pip install gym`."
         )
 
+
+    args = docopt(docopt_str)
 
 
 
@@ -206,7 +220,7 @@ Finally, we call the `evolve` method to perform the evolutionary search.
 
         ea_params = {"n_offsprings": 4, "tournament_size": 1, "n_processes": 4}
 
-        evolve_params = {"max_generations": 1500, "min_fitness": 100.0}
+        evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 100.0}
 
         pop = cgp.Population(**population_params, genome_params=genome_params)
 
@@ -380,7 +394,8 @@ the last line of the example.
 
         plot_fitness_over_generation_index(history)
         evaluate_champion(champion)
-        # visualize_behaviour_for_evolutionary_jumps(seed, history)
+        if args["--visualize-final-champion"]:
+            visualize_behaviour_for_evolutionary_jumps(seed, history)
 
 
 
@@ -407,7 +422,7 @@ the last line of the example.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  9.217 seconds)
+   **Total running time of the script:** ( 2 minutes  4.988 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_mountain_car.py:
