@@ -14,5 +14,5 @@ sphinx ~=3.1.2
 recommonmark~=0.6.0
 msmb_theme~=1.2.0
 sphinx-rtd-theme~=0.5.0
-sphinx-gallery~=0.7.0
+sphinx-gallery@git+https://git@github.com/sphinx-gallery/sphinx-gallery@387900334ace5c0bf74e9e90aad1e8d2a54e6f17
 pillow~=7.2.0

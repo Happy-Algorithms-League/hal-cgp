@@ -6,15 +6,17 @@
 
 # -- Path setup --------------------------------------------------------------
 
+import inspect
+import os
+import sys
+
+import msmb_theme
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import cgp
-import inspect
-import os
-import sys
-import msmb_theme
 
 sys.path.insert(0, os.path.join(os.path.abspath("."), "../"))
 
@@ -66,6 +68,18 @@ html_static_path = ["_static"]
 
 # -- Options for Sphinx Gallery ---------------------------------------------
 
+
+class ExampleCLIArgs:
+    def __repr__(self):
+        return "ExampleCLIArgs"
+
+    def __call__(self, sphinx_gallery_conf, script_vars):
+        if "example_caching.py" in script_vars["src_file"]:
+            return []
+        else:
+            return ["--max-generations", "10"]
+
+
 sphinx_gallery_conf = {
     "filename_pattern": "/*.py",
     "examples_dirs": "../examples",  # path to your example scripts
@@ -73,6 +87,11 @@ sphinx_gallery_conf = {
     "matplotlib_animations": True,
     "image_scrapers": ("matplotlib",),
 }
+
+for arg in sys.argv:
+    if "reset_argv" in arg:
+        sphinx_gallery_conf["reset_argv"] = ExampleCLIArgs()
+        break
 
 
 def linkcode_resolve(domain, info):
