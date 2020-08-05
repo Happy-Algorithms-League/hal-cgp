@@ -1,7 +1,7 @@
 # extra requirements
 matplotlib ~= 3.2.1
 scipy ~= 1.4.1
-sympy ~= 1.5.1
+sympy ~= 1.6.1
 torch ~= 1.5.0
 # dev requirements
 pytest ~= 5.4.1
