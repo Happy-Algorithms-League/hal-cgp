@@ -11,8 +11,9 @@ def evolve(
     pop: Population,
     objective: Callable[[IndividualBase], IndividualBase],
     ea: MuPlusLambda,
-    max_generations: int,
     min_fitness: float,
+    max_generations: int = np.inf,
+    max_objective_calls: int = np.inf,
     print_progress: Optional[bool] = False,
     callback: Optional[Callable[[Population], None]] = None,
     n_processes: int = 1,
@@ -31,10 +32,15 @@ def evolve(
     ea : EA algorithm instance
         The evolution algorithm. Needs to be a class instance with an
         `initialize_fitness_parents` and `step` method.
-    max_generations : int
-        Maximum number of generations.
     min_fitness : float
         Minimum fitness at which the evolution is stopped.
+    max_generations : int
+        Maximum number of generations.
+        Defaults to positive infinity.
+        Either this or `max_objective_calls` needs to be set to a finite value.
+    max_objective_calls: int
+        Maximum number of function evaluations.
+        Defaults to positive infinity.
     print_progress : boolean, optional
         Switch to print out the progress of the algorithm. Defaults to False.
     callback :  callable, optional
@@ -49,6 +55,8 @@ def evolve(
     -------
     None
     """
+    if np.isinf(max_generations) and np.isinf(max_objective_calls):
+        raise ValueError("Either max_generations or max_objective_calls must be finite.")
 
     ea.initialize_fitness_parents(pop, objective)
     if callback is not None:
@@ -57,7 +65,7 @@ def evolve(
     # perform evolution
     max_fitness = np.finfo(np.float).min
     # Main loop: -1 offset since the last loop iteration will still increase generation by one
-    while pop.generation < max_generations - 1:
+    while pop.generation < max_generations - 1 and ea.n_objective_calls < max_objective_calls:
 
         pop = ea.step(pop, objective)
 
@@ -69,11 +77,21 @@ def evolve(
             max_fitness = pop.champion.fitness
 
         if print_progress:
-            print(
-                f"\r[{pop.generation + 1}/{max_generations}] max fitness: {max_fitness}\033[K",
-                end="",
-                flush=True,
-            )
+            if np.isfinite(max_generations):
+                print(
+                    f"\r[{pop.generation + 1}/{max_generations}] max fitness: {max_fitness}\033[K",
+                    end="",
+                    flush=True,
+                )
+            elif np.isfinite(max_objective_calls):
+                print(
+                    f"\r[{ea.n_objective_calls}/{max_objective_calls}] "
+                    f"max fitness: {max_fitness}\033[K",
+                    end="",
+                    flush=True,
+                )
+            else:
+                assert False  # should never be reached
 
         if callback is not None:
             callback(pop)
