@@ -413,6 +413,55 @@ def test_multiple_parameters_per_node():
     assert y == pytest.approx(p + q)
 
 
+def test_if_else_operator():
+
+    genome_params = {
+        "n_inputs": 3,
+        "n_outputs": 1,
+        "n_columns": 1,
+        "n_rows": 1,
+        "levels_back": None,
+    }
+    primitives = (cgp.IfElse,)
+    genome = cgp.Genome(**genome_params, primitives=primitives)
+
+    # f(x_0, x_1, x_2) = {x_1 if x_0 >= 0, x_2 otherwise}
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,  # function gene
+        0,  # first input gene is address of first input node
+        1,  # second input gene is address of second input node
+        2,  # third input gene is address of third input node
+        ID_OUTPUT_NODE,
+        3,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+    ]
+
+    x_0 = [1.0, 10.0, -20.0]
+    y_target_0 = [10.0]
+    _test_graph_call_and_to_x_compilations(genome, x_0, y_target_0)
+
+    x_1 = [0.0, 10.0, -20.0]
+    y_target_1 = [10.0]
+    _test_graph_call_and_to_x_compilations(genome, x_1, y_target_1)
+
+    x_2 = [-1.0, 10.0, -20.0]
+    y_target_2 = [-20.0]
+    _test_graph_call_and_to_x_compilations(genome, x_2, y_target_2)
+
+
 def test_raise_broken_def_output():
     with pytest.raises(SyntaxError):
 

@@ -12,5 +12,5 @@ from .genome import Genome
 from .hl_api import evolve
 from .individual import IndividualMultiGenome, IndividualSingleGenome
 from .node import OperatorNode
-from .node_impl import Add, ConstantFloat, Div, Mul, Parameter, Pow, Sub
+from .node_impl import Add, ConstantFloat, Div, IfElse, Mul, Parameter, Pow, Sub
 from .population import Population
