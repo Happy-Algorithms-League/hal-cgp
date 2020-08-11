@@ -1,0 +1,615 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Minimal example for evolutionary regression &mdash; hal-cgp 0.2.0dev documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/msmb.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/js/versions.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Example for evolutionary regression with parametrized nodes" href="example_parametrized_nodes.html" />
+    <link rel="prev" title="Example demonstrating the use of the caching decorator." href="example_caching.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> hal-cgp
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_usage.html">Basic usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="example_caching.html">Example demonstrating the use of the caching decorator.</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Minimal example for evolutionary regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_parametrized_nodes.html">Example for evolutionary regression with parametrized nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_differential_evo_regression.html">Example for differential evolutionary regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_evo_regression.html">Example for evolutionary regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_mountain_car.html">Example: Solving an OpenAI Gym environment with CGP.</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../citation.html">Citation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">hal-cgp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Examples</a> &raquo;</li>
+        
+      <li>Minimal example for evolutionary regression</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/auto_examples/example_minimal.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-example-minimal-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="minimal-example-for-evolutionary-regression">
+<span id="sphx-glr-auto-examples-example-minimal-py"></span><h1>Minimal example for evolutionary regression<a class="headerlink" href="#minimal-example-for-evolutionary-regression" title="Permalink to this headline">¶</a></h1>
+<p>Example demonstrating the use of Cartesian genetic programming for
+a simple regression task.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># The docopt str is added explicitly to ensure compatibility with</span>
+<span class="c1"># sphinx-gallery.</span>
+<span class="n">docopt_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">   Usage:</span>
+<span class="s2">     example_minimal.py [--max-generations=&lt;N&gt;]</span>
+
+<span class="s2">   Options:</span>
+<span class="s2">     -h --help</span>
+<span class="s2">     --max-generations=&lt;N&gt;  Maximum number of generations [default: 300]</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.constants</span>
+<span class="kn">from</span> <span class="nn">docopt</span> <span class="kn">import</span> <span class="n">docopt</span>
+
+<span class="kn">import</span> <span class="nn">cgp</span>
+
+<span class="n">args</span> <span class="o">=</span> <span class="n">docopt</span><span class="p">(</span><span class="n">docopt_str</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We first define a target function.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f_target</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+<p>Then we define the objective function for the evolution. It uses
+the mean-squared error between the output of the expression
+represented by a given individual and the target function evaluated
+on a set of random points.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">individual</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">individual</span>
+
+    <span class="n">n_function_evaluations</span> <span class="o">=</span> <span class="mi">1000</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">to_func</span><span class="p">()</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">n_function_evaluations</span><span class="p">):</span>
+        <span class="c1"># the callable returned from `to_func` accepts and returns</span>
+        <span class="c1"># lists; accordingly we need to pack the argument and unpack</span>
+        <span class="c1"># the return value</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">([</span><span class="n">x</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">loss</span> <span class="o">+=</span> <span class="p">(</span><span class="n">f_target</span><span class="p">([</span><span class="n">x</span><span class="p">])</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+    <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="o">-</span><span class="n">loss</span> <span class="o">/</span> <span class="n">n_function_evaluations</span>
+
+    <span class="k">return</span> <span class="n">individual</span>
+</pre></div>
+</div>
+<p>Next, we set up the evolutionary search. We first define the
+parameters for the population, the genome of individuals, and the
+evolutionary algorithm.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">population_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;n_parents&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;mutation_rate&quot;</span><span class="p">:</span> <span class="mf">0.03</span><span class="p">,</span> <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="mi">8188211</span><span class="p">}</span>
+
+<span class="n">genome_params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;n_inputs&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;n_outputs&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;n_columns&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="s2">&quot;n_rows&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;levels_back&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">&quot;primitives&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">cgp</span><span class="o">.</span><span class="n">Add</span><span class="p">,</span> <span class="n">cgp</span><span class="o">.</span><span class="n">Sub</span><span class="p">,</span> <span class="n">cgp</span><span class="o">.</span><span class="n">Mul</span><span class="p">,</span> <span class="n">cgp</span><span class="o">.</span><span class="n">ConstantFloat</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="n">ea_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;n_offsprings&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;tournament_size&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;n_processes&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+
+<span class="n">evolve_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;max_generations&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s2">&quot;--max-generations&quot;</span><span class="p">]),</span> <span class="s2">&quot;min_fitness&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>We create a population that will be evolved</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pop</span> <span class="o">=</span> <span class="n">cgp</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="o">**</span><span class="n">population_params</span><span class="p">,</span> <span class="n">genome_params</span><span class="o">=</span><span class="n">genome_params</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and an instance of the (mu + lambda) evolutionary algorithm</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ea</span> <span class="o">=</span> <span class="n">cgp</span><span class="o">.</span><span class="n">ea</span><span class="o">.</span><span class="n">MuPlusLambda</span><span class="p">(</span><span class="o">**</span><span class="n">ea_params</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We define a callback for recording of fitness over generations</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">history</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">history</span><span class="p">[</span><span class="s2">&quot;fitness_champion&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<span class="k">def</span> <span class="nf">recording_callback</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+    <span class="n">history</span><span class="p">[</span><span class="s2">&quot;fitness_champion&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">champion</span><span class="o">.</span><span class="n">fitness</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and finally perform the evolution</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cgp</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">objective</span><span class="p">,</span> <span class="n">ea</span><span class="p">,</span> <span class="o">**</span><span class="n">evolve_params</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">recording_callback</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[2/300] max fitness: -91.5955167981362[K
+[3/300] max fitness: -67.0965931324104[K
+[4/300] max fitness: -67.0965931324104[K
+[5/300] max fitness: -67.0965931324104[K
+[6/300] max fitness: -54.97072455431481[K
+[7/300] max fitness: -54.97072455431481[K
+[8/300] max fitness: -54.97072455431481[K
+[9/300] max fitness: -54.97072455431481[K
+[10/300] max fitness: -54.97072455431481[K
+[11/300] max fitness: -54.97072455431481[K
+[12/300] max fitness: -54.97072455431481[K
+[13/300] max fitness: -54.97072455431481[K
+[14/300] max fitness: -54.97072455431481[K
+[15/300] max fitness: -54.97072455431481[K
+[16/300] max fitness: -54.97072455431481[K
+[17/300] max fitness: -54.97072455431481[K
+[18/300] max fitness: -54.97072455431481[K
+[19/300] max fitness: -54.97072455431481[K
+[20/300] max fitness: -54.97072455431481[K
+[21/300] max fitness: -54.97072455431481[K
+[22/300] max fitness: -54.97072455431481[K
+[23/300] max fitness: -54.97072455431481[K
+[24/300] max fitness: -54.97072455431481[K
+[25/300] max fitness: -54.97072455431481[K
+[26/300] max fitness: -54.97072455431481[K
+[27/300] max fitness: -54.97072455431481[K
+[28/300] max fitness: -54.97072455431481[K
+[29/300] max fitness: -54.97072455431481[K
+[30/300] max fitness: -54.97072455431481[K
+[31/300] max fitness: -54.97072455431481[K
+[32/300] max fitness: -54.97072455431481[K
+[33/300] max fitness: -54.97072455431481[K
+[34/300] max fitness: -54.97072455431481[K
+[35/300] max fitness: -54.97072455431481[K
+[36/300] max fitness: -54.97072455431481[K
+[37/300] max fitness: -54.97072455431481[K
+[38/300] max fitness: -54.97072455431481[K
+[39/300] max fitness: -54.97072455431481[K
+[40/300] max fitness: -54.97072455431481[K
+[41/300] max fitness: -54.97072455431481[K
+[42/300] max fitness: -54.97072455431481[K
+[43/300] max fitness: -54.97072455431481[K
+[44/300] max fitness: -54.97072455431481[K
+[45/300] max fitness: -54.97072455431481[K
+[46/300] max fitness: -54.97072455431481[K
+[47/300] max fitness: -54.97072455431481[K
+[48/300] max fitness: -54.97072455431481[K
+[49/300] max fitness: -54.97072455431481[K
+[50/300] max fitness: -54.97072455431481[K
+[51/300] max fitness: -54.97072455431481[K
+[52/300] max fitness: -54.97072455431481[K
+[53/300] max fitness: -54.97072455431481[K
+[54/300] max fitness: -54.97072455431481[K
+[55/300] max fitness: -54.97072455431481[K
+[56/300] max fitness: -54.97072455431481[K
+[57/300] max fitness: -54.97072455431481[K
+[58/300] max fitness: -54.97072455431481[K
+[59/300] max fitness: -54.97072455431481[K
+[60/300] max fitness: -54.97072455431481[K
+[61/300] max fitness: -54.97072455431481[K
+[62/300] max fitness: -54.97072455431481[K
+[63/300] max fitness: -54.97072455431481[K
+[64/300] max fitness: -54.97072455431481[K
+[65/300] max fitness: -54.97072455431481[K
+[66/300] max fitness: -54.97072455431481[K
+[67/300] max fitness: -54.97072455431481[K
+[68/300] max fitness: -54.97072455431481[K
+[69/300] max fitness: -54.97072455431481[K
+[70/300] max fitness: -54.97072455431481[K
+[71/300] max fitness: -54.97072455431481[K
+[72/300] max fitness: -54.97072455431481[K
+[73/300] max fitness: -54.97072455431481[K
+[74/300] max fitness: -54.97072455431481[K
+[75/300] max fitness: -54.97072455431481[K
+[76/300] max fitness: -54.97072455431481[K
+[77/300] max fitness: -54.97072455431481[K
+[78/300] max fitness: -54.97072455431481[K
+[79/300] max fitness: -54.97072455431481[K
+[80/300] max fitness: -54.97072455431481[K
+[81/300] max fitness: -54.97072455431481[K
+[82/300] max fitness: -54.97072455431481[K
+[83/300] max fitness: -54.97072455431481[K
+[84/300] max fitness: -54.97072455431481[K
+[85/300] max fitness: -54.97072455431481[K
+[86/300] max fitness: -54.97072455431481[K
+[87/300] max fitness: -44.844855976219186[K
+[88/300] max fitness: -1.0[K
+[89/300] max fitness: -1.0[K
+[90/300] max fitness: -1.0[K
+[91/300] max fitness: -1.0[K
+[92/300] max fitness: -1.0[K
+[93/300] max fitness: -1.0[K
+[94/300] max fitness: -1.0[K
+[95/300] max fitness: -1.0[K
+[96/300] max fitness: -1.0[K
+[97/300] max fitness: -1.0[K
+[98/300] max fitness: -1.0[K
+[99/300] max fitness: -1.0[K
+[100/300] max fitness: -1.0[K
+[101/300] max fitness: -1.0[K
+[102/300] max fitness: -1.0[K
+[103/300] max fitness: -1.0[K
+[104/300] max fitness: -1.0[K
+[105/300] max fitness: -1.0[K
+[106/300] max fitness: -1.0[K
+[107/300] max fitness: -1.0[K
+[108/300] max fitness: -1.0[K
+[109/300] max fitness: -1.0[K
+[110/300] max fitness: -1.0[K
+[111/300] max fitness: -1.0[K
+[112/300] max fitness: -1.0[K
+[113/300] max fitness: -1.0[K
+[114/300] max fitness: -1.0[K
+[115/300] max fitness: -1.0[K
+[116/300] max fitness: -1.0[K
+[117/300] max fitness: -1.0[K
+[118/300] max fitness: -1.0[K
+[119/300] max fitness: -1.0[K
+[120/300] max fitness: -1.0[K
+[121/300] max fitness: -1.0[K
+[122/300] max fitness: -1.0[K
+[123/300] max fitness: -1.0[K
+[124/300] max fitness: -1.0[K
+[125/300] max fitness: -1.0[K
+[126/300] max fitness: -1.0[K
+[127/300] max fitness: -1.0[K
+[128/300] max fitness: -1.0[K
+[129/300] max fitness: -1.0[K
+[130/300] max fitness: -1.0[K
+[131/300] max fitness: -1.0[K
+[132/300] max fitness: -1.0[K
+[133/300] max fitness: -1.0[K
+[134/300] max fitness: -1.0[K
+[135/300] max fitness: -1.0[K
+[136/300] max fitness: -1.0[K
+[137/300] max fitness: -1.0[K
+[138/300] max fitness: -1.0[K
+[139/300] max fitness: -1.0[K
+[140/300] max fitness: -1.0[K
+[141/300] max fitness: -1.0[K
+[142/300] max fitness: -1.0[K
+[143/300] max fitness: -1.0[K
+[144/300] max fitness: -1.0[K
+[145/300] max fitness: -1.0[K
+[146/300] max fitness: -1.0[K
+[147/300] max fitness: -1.0[K
+[148/300] max fitness: -1.0[K
+[149/300] max fitness: -1.0[K
+[150/300] max fitness: -1.0[K
+[151/300] max fitness: -1.0[K
+[152/300] max fitness: -1.0[K
+[153/300] max fitness: -1.0[K
+[154/300] max fitness: -1.0[K
+[155/300] max fitness: -1.0[K
+[156/300] max fitness: -1.0[K
+[157/300] max fitness: -1.0[K
+[158/300] max fitness: -1.0[K
+[159/300] max fitness: -1.0[K
+[160/300] max fitness: -1.0[K
+[161/300] max fitness: -1.0[K
+[162/300] max fitness: -1.0[K
+[163/300] max fitness: -1.0[K
+[164/300] max fitness: -1.0[K
+[165/300] max fitness: -1.0[K
+[166/300] max fitness: -1.0[K
+[167/300] max fitness: -1.0[K
+[168/300] max fitness: -1.0[K
+[169/300] max fitness: -1.0[K
+[170/300] max fitness: -1.0[K
+[171/300] max fitness: -1.0[K
+[172/300] max fitness: -1.0[K
+[173/300] max fitness: -1.0[K
+[174/300] max fitness: -1.0[K
+[175/300] max fitness: -1.0[K
+[176/300] max fitness: -1.0[K
+[177/300] max fitness: -1.0[K
+[178/300] max fitness: -1.0[K
+[179/300] max fitness: -1.0[K
+[180/300] max fitness: -1.0[K
+[181/300] max fitness: -1.0[K
+[182/300] max fitness: -1.0[K
+[183/300] max fitness: -1.0[K
+[184/300] max fitness: -1.0[K
+[185/300] max fitness: -1.0[K
+[186/300] max fitness: -1.0[K
+[187/300] max fitness: -1.0[K
+[188/300] max fitness: -1.0[K
+[189/300] max fitness: -1.0[K
+[190/300] max fitness: -1.0[K
+[191/300] max fitness: -1.0[K
+[192/300] max fitness: -1.0[K
+[193/300] max fitness: -1.0[K
+[194/300] max fitness: -1.0[K
+[195/300] max fitness: -1.0[K
+[196/300] max fitness: -1.0[K
+[197/300] max fitness: -1.0[K
+[198/300] max fitness: -1.0[K
+[199/300] max fitness: -1.0[K
+[200/300] max fitness: -1.0[K
+[201/300] max fitness: -1.0[K
+[202/300] max fitness: -1.0[K
+[203/300] max fitness: -1.0[K
+[204/300] max fitness: -1.0[K
+[205/300] max fitness: -1.0[K
+[206/300] max fitness: -1.0[K
+[207/300] max fitness: -1.0[K
+[208/300] max fitness: -1.0[K
+[209/300] max fitness: -1.0[K
+[210/300] max fitness: -1.0[K
+[211/300] max fitness: -1.0[K
+[212/300] max fitness: -1.0[K
+[213/300] max fitness: -1.0[K
+[214/300] max fitness: -1.0[K
+[215/300] max fitness: -1.0[K
+[216/300] max fitness: -1.0[K
+[217/300] max fitness: -1.0[K
+[218/300] max fitness: -1.0[K
+[219/300] max fitness: -1.0[K
+[220/300] max fitness: -1.0[K
+[221/300] max fitness: -1.0[K
+[222/300] max fitness: -1.0[K
+[223/300] max fitness: -1.0[K
+[224/300] max fitness: -1.0[K
+[225/300] max fitness: -1.0[K
+[226/300] max fitness: -1.0[K
+[227/300] max fitness: -1.0[K
+[228/300] max fitness: -1.0[K
+[229/300] max fitness: -1.0[K
+[230/300] max fitness: -1.0[K
+[231/300] max fitness: -1.0[K
+[232/300] max fitness: -1.0[K
+[233/300] max fitness: -1.0[K
+[234/300] max fitness: -0.0[K
+</pre></div>
+</div>
+<p>After finishing the evolution, we plot the result and log the final
+evolved expression.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">width</span> <span class="o">=</span> <span class="mf">9.0</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">width</span> <span class="o">/</span> <span class="n">scipy</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">golden</span><span class="p">))</span>
+
+<span class="n">ax_fitness</span><span class="p">,</span> <span class="n">ax_function</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">ax_fitness</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Generation&quot;</span><span class="p">)</span>
+<span class="n">ax_fitness</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Fitness&quot;</span><span class="p">)</span>
+
+<span class="n">ax_fitness</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="s2">&quot;fitness_champion&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Champion&quot;</span><span class="p">)</span>
+
+<span class="n">ax_fitness</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;symlog&quot;</span><span class="p">)</span>
+<span class="n">ax_fitness</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0e2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">ax_fitness</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;0.7&quot;</span><span class="p">)</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">champion</span><span class="o">.</span><span class="n">to_func</span><span class="p">()</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">([</span><span class="n">x_i</span><span class="p">])</span> <span class="k">for</span> <span class="n">x_i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+<span class="n">y_target</span> <span class="o">=</span> <span class="p">[</span><span class="n">f_target</span><span class="p">([</span><span class="n">x_i</span><span class="p">])</span> <span class="k">for</span> <span class="n">x_i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+
+<span class="n">ax_function</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y_target</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Target&quot;</span><span class="p">)</span>
+<span class="n">ax_function</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Champion&quot;</span><span class="p">)</span>
+<span class="n">ax_function</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax_function</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$f(x)$&quot;</span><span class="p">)</span>
+<span class="n">ax_function</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$x$&quot;</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;example_minimal.pdf&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="example minimal" class="sphx-glr-single-img" src="../_images/sphx_glr_example_minimal_001.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  8.081 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-minimal-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/eb31d3eeb3ff7e7d176ebb4eb4e9ba6e/example_minimal.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_minimal.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/10b83db55be7e18a4658a8a57193dd5c/example_minimal.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">example_minimal.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="example_parametrized_nodes.html" class="btn btn-neutral float-right" title="Example for evolutionary regression with parametrized nodes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="example_caching.html" class="btn btn-neutral float-left" title="Example demonstrating the use of the caching decorator." accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Happy Algorithms League
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <script>
+    var versions_json_url = ''
+</script>
+
+<div class="rst-versions" data-toggle="rst-versions" role="note"
+     aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"></span>
+        0.2.0dev
+      <span class="fa fa-caret-down"></span>
+    </span>
+
+    <div class="rst-other-versions">
+        <dl id="versionselector">
+            <dt>Other Versions</dt>
+        </dl>
+
+    </div>
+</div>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
