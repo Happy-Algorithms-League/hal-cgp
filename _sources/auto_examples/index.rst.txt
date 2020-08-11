@@ -14,6 +14,27 @@ This folder contains a number of example scripts that demonstrate several use ca
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Caches the results of fitness evaluations in a pickle file (``example_fec_caching_cache.pkl``)....">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_example_fec_caching_thumb.png
+     :alt: Example demonstrating the use of the caching decorator with functional equivalance checking
+
+     :ref:`sphx_glr_auto_examples_example_fec_caching.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/example_fec_caching
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Caches the results of fitness evaluations in a pickle file (&#x27;example_caching_cache.pkl&#x27;). To il...">
 
 .. only:: html

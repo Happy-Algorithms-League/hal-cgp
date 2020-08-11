@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Example demonstrating the use of the caching decorator. &mdash; hal-cgp 0.2.0dev documentation</title>
+  <title>Example demonstrating the use of the caching decorator with functional equivalance checking &mdash; hal-cgp 0.2.0dev documentation</title>
   
 
   
@@ -40,8 +40,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Minimal example for evolutionary regression" href="example_minimal.html" />
-    <link rel="prev" title="Example demonstrating the use of the caching decorator with functional equivalance checking" href="example_fec_caching.html" /> 
+    <link rel="next" title="Example demonstrating the use of the caching decorator." href="example_caching.html" />
+    <link rel="prev" title="Examples" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -90,8 +90,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../basic_usage.html">Basic usage</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="example_fec_caching.html">Example demonstrating the use of the caching decorator with functional equivalance checking</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Example demonstrating the use of the caching decorator.</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Example demonstrating the use of the caching decorator with functional equivalance checking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_caching.html">Example demonstrating the use of the caching decorator.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_minimal.html">Minimal example for evolutionary regression</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_parametrized_nodes.html">Example for evolutionary regression with parametrized nodes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_differential_evo_regression.html">Example for differential evolutionary regression</a></li>
@@ -150,13 +150,13 @@
         
           <li><a href="index.html">Examples</a> &raquo;</li>
         
-      <li>Example demonstrating the use of the caching decorator.</li>
+      <li>Example demonstrating the use of the caching decorator with functional equivalance checking</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/auto_examples/example_caching.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/auto_examples/example_fec_caching.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -171,12 +171,12 @@
             
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-example-caching-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-example-fec-caching-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="example-demonstrating-the-use-of-the-caching-decorator">
-<span id="sphx-glr-auto-examples-example-caching-py"></span><h1>Example demonstrating the use of the caching decorator.<a class="headerlink" href="#example-demonstrating-the-use-of-the-caching-decorator" title="Permalink to this headline">¶</a></h1>
+<div class="sphx-glr-example-title section" id="example-demonstrating-the-use-of-the-caching-decorator-with-functional-equivalance-checking">
+<span id="sphx-glr-auto-examples-example-fec-caching-py"></span><h1>Example demonstrating the use of the caching decorator with functional equivalance checking<a class="headerlink" href="#example-demonstrating-the-use-of-the-caching-decorator-with-functional-equivalance-checking" title="Permalink to this headline">¶</a></h1>
 <p>Caches the results of fitness evaluations in a pickle file
-(‘example_caching_cache.pkl’). To illustrate its practical use,
+(<code class="docutils literal notranslate"><span class="pre">example_fec_caching_cache.pkl</span></code>). To illustrate its practical use,
 compare the runtime of this script when you first call it vs. the
 second time and when you comment out the decorator on
 <cite>inner_objective</cite>.</p>
@@ -194,25 +194,35 @@ second time and when you comment out the decorator on
 </div>
 <p>We then define the objective function for the evolutionary
 algorithm: It consists of an inner objective which we wrap with the
-caching decorator. This decorator specifies a pickle file that will be used for
-caching results of fitness evaluations. The inner objective is then used by the objective
-function to compute (or retrieve from cache) the fitness of the individual.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@cgp</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">disk_cache</span><span class="p">(</span><span class="s2">&quot;example_caching_cache.pkl&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">inner_objective</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The caching decorator uses the function parameters to identify</span>
-<span class="sd">    identical function calls. Here, as many different genotypes</span>
-<span class="sd">    produce the same simplified SymPy expression we can use such</span>
-<span class="sd">    expressions as an argument to the decorated function to avoid</span>
-<span class="sd">    reevaluating functionally identical individuals.</span>
-<span class="sd">    Note that caching only makes sense for deterministic objective</span>
-<span class="sd">    functions, as it assumes that identical expressions will always</span>
-<span class="sd">    return the same fitness values.</span>
+caching decorator. This decorator specifies a pickle file that will
+be used for caching results of fitness evaluations. In addition the
+decorator accepts keyword arguments that specifiy the statistic of
+the samples used for evaluation. The inner objective is then used by
+the objective function to compute (or retrieve from cache) the
+fitness of the individual.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@cgp</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">disk_cache</span><span class="p">(</span>
+    <span class="s2">&quot;example_fec_caching_cache.pkl&quot;</span><span class="p">,</span>
+    <span class="n">use_fec</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">fec_seed</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span>
+    <span class="n">fec_min_value</span><span class="o">=-</span><span class="mf">10.0</span><span class="p">,</span>
+    <span class="n">fec_max_value</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+    <span class="n">fec_batch_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">inner_objective</span><span class="p">(</span><span class="n">ind</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The caching decorator uses the return values generated from</span>
+<span class="sd">    providing random inputs to ind.to_numpy() to identify functionally</span>
+<span class="sd">    indentical individuals and avoid reevaluating them. Note that</span>
+<span class="sd">    caching only makes sense for deterministic objective functions, as</span>
+<span class="sd">    it assumes that identical phenotypes will always return the same</span>
+<span class="sd">    fitness values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">ind</span><span class="o">.</span><span class="n">to_func</span><span class="p">()</span>
+
     <span class="n">loss</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">x0</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">):</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">expr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">subs</span><span class="p">({</span><span class="s2">&quot;x_0&quot;</span><span class="p">:</span> <span class="n">x0</span><span class="p">})</span><span class="o">.</span><span class="n">evalf</span><span class="p">())</span>
-        <span class="n">loss</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">f_target</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">x_0</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">):</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">([</span><span class="n">x_0</span><span class="p">])</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">f_target</span><span class="p">(</span><span class="n">x_0</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span>  <span class="c1"># emulate long fitness evaluation</span>
 
@@ -223,7 +233,7 @@ function to compute (or retrieve from cache) the fitness of the individual.</p>
     <span class="k">if</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">individual</span>
 
-    <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="o">-</span><span class="n">inner_objective</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">to_sympy</span><span class="p">())</span>
+    <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="o">-</span><span class="n">inner_objective</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">individual</span>
 </pre></div>
@@ -382,13 +392,13 @@ individuals, and the evolutionary algorithm.</p>
 evolved function: [x_0**2 + x_0 + 1.0]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  3.848 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-caching-py">
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.738 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-fec-caching-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/a2c9b3ea7a533aaea5486a503e976156/example_caching.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_caching.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/3cf378937ce4036c1818eddce2d3c1d5/example_fec_caching.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_fec_caching.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/5caa78ef62743af908991f59feefe988/example_caching.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">example_caching.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/893990d8a87239cf7e72dad187fb39e4/example_fec_caching.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">example_fec_caching.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -402,10 +412,10 @@ evolved function: [x_0**2 + x_0 + 1.0]
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="example_minimal.html" class="btn btn-neutral float-right" title="Minimal example for evolutionary regression" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="example_caching.html" class="btn btn-neutral float-right" title="Example demonstrating the use of the caching decorator." accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="example_fec_caching.html" class="btn btn-neutral float-left" title="Example demonstrating the use of the caching decorator with functional equivalance checking" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
