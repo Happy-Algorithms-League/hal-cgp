@@ -9,6 +9,133 @@ import pytest
 import cgp
 
 
+@pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
+def test_cache_decorator_produces_identical_history(
+    individual_type, rng_seed, population_params, genome_params, ea_params
+):
+    pytest.importorskip("sympy")
+
+    evolve_params = {"max_generations": 10, "min_fitness": 0.0}
+
+    def f_target(x):
+        return x[0] - x[1]
+
+    def inner_objective(expr):
+        np.random.seed(rng_seed)
+
+        if individual_type == "SingleGenome":
+            expr_unpacked = expr[0]
+        elif individual_type == "MultiGenome":
+            expr_unpacked = expr[0][0]
+        else:
+            raise NotImplementedError
+
+        loss = 0
+        for x in np.random.uniform(size=(5, 2)):
+            loss += (
+                f_target(x) - float(expr_unpacked.subs({"x_0": x[0], "x_1": x[1]}).evalf())
+            ) ** 2
+        return loss
+
+    @cgp.utils.disk_cache(tempfile.mkstemp()[1])
+    def inner_objective_decorated(expr):
+        return inner_objective(expr)
+
+    def evolve(inner_objective):
+        def objective(ind):
+            ind.fitness = -inner_objective(ind.to_sympy())
+            return ind
+
+        if individual_type == "SingleGenome":
+            pop = cgp.Population(**population_params, genome_params=genome_params)
+        elif individual_type == "MultiGenome":
+            pop = cgp.Population(**population_params, genome_params=[genome_params])
+        else:
+            raise NotImplementedError
+
+        ea = cgp.ea.MuPlusLambda(**ea_params)
+
+        history = {}
+        history["fitness_champion"] = []
+
+        def recording_callback(pop):
+            history["fitness_champion"].append(pop.champion.fitness)
+
+        cgp.evolve(pop, objective, ea, **evolve_params, callback=recording_callback)
+
+        return history
+
+    history = evolve(inner_objective)
+    history_decorated = evolve(inner_objective_decorated)
+
+    for fitness, fitness_decorated in zip(
+        history["fitness_champion"], history_decorated["fitness_champion"]
+    ):
+        assert fitness == pytest.approx(fitness_decorated)
+
+
+@pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
+def test_fec_cache_decorator_produces_identical_history(
+    individual_type, rng_seed, population_params, genome_params, ea_params
+):
+
+    evolve_params = {"max_generations": 10, "min_fitness": 0.0}
+
+    def f_target(x):
+        return x[0] - x[1]
+
+    def inner_objective(ind):
+        np.random.seed(rng_seed)
+
+        if individual_type == "SingleGenome":
+            f = ind.to_func()
+        elif individual_type == "MultiGenome":
+            f = ind.to_func()[0]
+        else:
+            raise NotImplementedError
+
+        loss = 0
+        for x in np.random.uniform(size=(5, 2)):
+            loss += (f_target(x) - f(x)[0]) ** 2
+        return loss
+
+    @cgp.utils.disk_cache(tempfile.mkstemp()[1], use_fec=True, fec_seed=rng_seed)
+    def inner_objective_decorated(ind):
+        return inner_objective(ind)
+
+    def evolve(inner_objective):
+        def objective(ind):
+            ind.fitness = -inner_objective(ind)
+            return ind
+
+        if individual_type == "SingleGenome":
+            pop = cgp.Population(**population_params, genome_params=genome_params)
+        elif individual_type == "MultiGenome":
+            pop = cgp.Population(**population_params, genome_params=[genome_params])
+        else:
+            raise NotImplementedError
+
+        ea = cgp.ea.MuPlusLambda(**ea_params)
+
+        history = {}
+        history["fitness_champion"] = []
+
+        def recording_callback(pop):
+            history["fitness_champion"].append(pop.champion.fitness)
+
+        cgp.evolve(pop, objective, ea, **evolve_params, callback=recording_callback)
+
+        return history
+
+    history = evolve(inner_objective)
+    history_decorated = evolve(inner_objective_decorated)
+
+    for fitness, fitness_decorated in zip(
+        history["fitness_champion"], history_decorated["fitness_champion"]
+    ):
+        assert fitness == pytest.approx(fitness_decorated)
+
+
 @cgp.utils.disk_cache(tempfile.mkstemp()[1])
 def _cache_decorator_objective_single_process(s, sleep_time):
     time.sleep(sleep_time)  # simulate long execution time
