@@ -41,7 +41,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Examples" href="../auto_examples/index.html" />
-    <link rel="prev" title="Documentation" href="documentation.html" /> 
+    <link rel="prev" title="Populations and individuals" href="population_individual.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../basic_usage.html">Basic usage</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="documentation.html">Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="population_individual.html">Populations and individuals</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Searching numerical values for parameters via local search</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
@@ -169,7 +170,7 @@
            <div itemprop="articleBody">
             
   <div class="section" id="searching-numerical-values-for-parameters-via-local-search">
-<h1>Searching numerical values for parameters via local search<a class="headerlink" href="#searching-numerical-values-for-parameters-via-local-search" title="Permalink to this headline">¶</a></h1>
+<span id="local-search"></span><h1>Searching numerical values for parameters via local search<a class="headerlink" href="#searching-numerical-values-for-parameters-via-local-search" title="Permalink to this headline">¶</a></h1>
 <p>hal-cgp supports the use of numerical values in expression via nodes with input-independent output in order to represent expressions like <cite>f(x) = x + c</cite> with some fixed value <cite>c</cite>.</p>
 <p>While the <cite>ConstantFloat</cite> node has a fixed output value, the output value of a <cite>Parameter</cite> node is stored per individual and can be modified during evolution via local search. These parameters can be different for each position in the genome. One can define custom nodes which contain an arbitrary number of parameters (see <a class="reference internal" href="../auto_examples/example_parametrized_nodes.html#sphx-glr-auto-examples-example-parametrized-nodes-py"><span class="std std-ref">Example for evolutionary regression with parametrized nodes</span></a>)</p>
 <p>To find suitable values for these parameters we perform a numerical optimization for the parameters of the <cite>k</cite> best individuals of each generation. Since this procedure is acting on each individual separately it is referred to as “local search”. After this optimization the fitness of each modified individual is reevaluated taking into account the adapted parameter values, and finally used for selection in the evolutionary algorithm.</p>
@@ -197,7 +198,7 @@
         <a href="../auto_examples/index.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="documentation.html" class="btn btn-neutral float-left" title="Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="population_individual.html" class="btn btn-neutral float-left" title="Populations and individuals" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
