@@ -33,7 +33,7 @@ class Node:
 
     _arity: int
     _active: bool = False
-    _inputs: List[int]
+    _input_nodes: List[int]
     _output: float
     _output_str: str
     _idx: int
@@ -49,7 +49,7 @@ class Node:
             List of integers specifying the input nodes to this node.
         """
         self._idx = idx
-        self._inputs = inputs[: self._arity]
+        self._input_nodes = inputs[: self._arity]
 
         assert idx not in inputs
 
@@ -66,11 +66,11 @@ class Node:
 
     @property
     def max_arity(self) -> int:
-        return len(self._inputs)
+        return len(self._input_nodes)
 
     @property
-    def inputs(self) -> List[int]:
-        return self._inputs
+    def input_nodes(self) -> List[int]:
+        return self._input_nodes
 
     @property
     def idx(self) -> int:
@@ -79,7 +79,7 @@ class Node:
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(idx: {self.idx}, active: {self._active}, "
-            f"arity: {self._arity}, inputs {self._inputs}, output {self._output})"
+            f"arity: {self._arity}, input_nodes {self._input_nodes}"
         )
 
     def pretty_str(self, n: int) -> str:
@@ -102,7 +102,7 @@ class Node:
             if self._arity > 0:
                 s += "("
                 for i in range(self._arity):
-                    s += f"{self._inputs[i]:02d},"
+                    s += f"{self._input_nodes[i]:02d},"
                 s = s[:-1]
                 s += ")"
                 for i in range(self.max_arity - self._arity):
@@ -218,7 +218,7 @@ class OperatorNode(Node):
 
         for input_name in self._input_names:
             idx = self._extract_index_from_input_name(input_name)
-            output_str = output_str.replace(input_name, f"{graph[self._inputs[idx]].output}")
+            output_str = output_str.replace(input_name, f"{graph[self._input_nodes[idx]].output}")
 
         exec_str = f"self._output = {output_str}"
         exec(exec_str)
@@ -226,7 +226,7 @@ class OperatorNode(Node):
     def _replace_input_names(self, output_str: str, graph: "CartesianGraph") -> str:
         for input_name in self._input_names:
             idx = self._extract_index_from_input_name(input_name)
-            output_str = output_str.replace(input_name, graph[self._inputs[idx]].output_str)
+            output_str = output_str.replace(input_name, graph[self._input_nodes[idx]].output_str)
         return output_str
 
     def _replace_parameter_names(self, output_str: str, graph: "CartesianGraph") -> str:
