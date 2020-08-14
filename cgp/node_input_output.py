@@ -12,8 +12,8 @@ class InputNode(Node):
 
     _arity = 0
 
-    def __init__(self, idx: int, inputs: List[int]) -> None:
-        super().__init__(idx, inputs)
+    def __init__(self, idx: int, input_nodes: List[int]) -> None:
+        super().__init__(idx, input_nodes)
 
     def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
         assert False
@@ -37,14 +37,14 @@ class OutputNode(Node):
 
     _arity = 1
 
-    def __init__(self, idx: int, inputs: List[int]) -> None:
-        super().__init__(idx, inputs)
+    def __init__(self, idx: int, input_nodes: List[int]) -> None:
+        super().__init__(idx, input_nodes)
 
     def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
-        self._output = graph[self._inputs[0]].output
+        self._output = graph[self._input_nodes[0]].output
 
     def format_output_str(self, graph: "CartesianGraph") -> None:
-        self._output_str = f"{graph[self._inputs[0]].output_str}"
+        self._output_str = f"{graph[self._input_nodes[0]].output_str}"
 
     def format_output_str_numpy(self, graph: "CartesianGraph") -> None:
         self.format_output_str(graph)

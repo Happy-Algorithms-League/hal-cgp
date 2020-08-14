@@ -602,3 +602,10 @@ def test_pretty_str_with_unequal_inputs_rows_outputs():
 02 * InputNode          \t                        \t07 * OutputNode (04)    \t
 """
     assert graph.pretty_str() == expected_pretty_str
+
+
+def test_repr(rng, genome_params):
+    genome = cgp.Genome(**genome_params)
+    genome.randomize(rng)
+    # Assert that the CartesianGraph.__repr__ doesn't raise an error
+    str(cgp.CartesianGraph(genome))

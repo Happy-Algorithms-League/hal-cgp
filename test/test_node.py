@@ -12,16 +12,16 @@ def test_inputs_are_cut_to_match_arity():
 
     """
     idx = 0
-    inputs = [1, 2, 3, 4]
+    input_nodes = [1, 2, 3, 4]
 
-    node = cgp.ConstantFloat(idx, inputs)
-    assert node.inputs == []
+    node = cgp.ConstantFloat(idx, input_nodes)
+    assert node.input_nodes == []
 
-    node = cgp.node_input_output.OutputNode(idx, inputs)
-    assert node.inputs == inputs[:1]
+    node = cgp.node_input_output.OutputNode(idx, input_nodes)
+    assert node.input_nodes == input_nodes[:1]
 
-    node = cgp.Add(idx, inputs)
-    assert node.inputs == inputs[:2]
+    node = cgp.Add(idx, input_nodes)
+    assert node.input_nodes == input_nodes[:2]
 
 
 def _test_graph_call_and_to_x_compilations(
@@ -448,3 +448,23 @@ def test_raise_broken_def_sympy_output():
             _arity = 2
             _def_output = "x_0 + x_1"
             _def_sympy_output = "x_0 +/ x_1"
+
+
+def test_repr():
+    idx = 0
+    input_nodes = [1, 2, 3, 4]
+
+    # Test example of OperatorNode with arity 0
+    node = cgp.ConstantFloat(idx, input_nodes)
+    node_repr = str(node)
+    assert node_repr == "ConstantFloat(idx: 0, active: False, arity: 0, input_nodes []"
+
+    # Test OutputNode
+    node = cgp.node_input_output.OutputNode(idx, input_nodes)
+    node_repr = str(node)
+    assert node_repr == "OutputNode(idx: 0, active: False, arity: 1, input_nodes [1]"
+
+    # Test example of OperatorNode with arity 2
+    node = cgp.Add(idx, input_nodes)
+    node_repr = str(node)
+    assert node_repr == "Add(idx: 0, active: False, arity: 2, input_nodes [1, 2]"
