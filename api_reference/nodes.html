@@ -223,8 +223,8 @@
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="cgp.node.Node.inputs">
-<em class="property">property </em><code class="sig-name descname">inputs</code><a class="headerlink" href="#cgp.node.Node.inputs" title="Permalink to this definition">¶</a></dt>
+<dt id="cgp.node.Node.input_nodes">
+<em class="property">property </em><code class="sig-name descname">input_nodes</code><a class="headerlink" href="#cgp.node.Node.input_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -312,7 +312,7 @@
 <span id="input-output-nodes"></span><h2>Input/Output Nodes<a class="headerlink" href="#module-cgp.node_input_output" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="cgp.node_input_output.InputNode">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_input_output.</code><code class="sig-name descname">InputNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_input_output.py#L9-L31"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_input_output.InputNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_input_output.</code><code class="sig-name descname">InputNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">input_nodes</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_input_output.py#L9-L31"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_input_output.InputNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.Node" title="cgp.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.Node</span></code></a></p>
 <p>An input node of the computational graph.</p>
 <dl class="py method">
@@ -343,7 +343,7 @@
 
 <dl class="py class">
 <dt id="cgp.node_input_output.OutputNode">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_input_output.</code><code class="sig-name descname">OutputNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_input_output.py#L34-L56"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_input_output.OutputNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_input_output.</code><code class="sig-name descname">OutputNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">input_nodes</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_input_output.py#L34-L56"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_input_output.OutputNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.Node" title="cgp.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.Node</span></code></a></p>
 <p>An output node of the computational graph.</p>
 <dl class="py method">
