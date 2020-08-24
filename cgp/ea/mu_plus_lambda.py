@@ -25,6 +25,7 @@ class MuPlusLambda:
         n_processes: int = 1,
         local_search: Callable[[IndividualBase], None] = lambda combined: None,
         k_local_search: Union[int, None] = None,
+        reorder_genome: bool = False,
     ):
         """Init function
 
@@ -44,6 +45,13 @@ class MuPlusLambda:
         k_local_search : int
             Number of individuals in the whole population (parents +
             offsprings) to apply local search to.
+       reorder_genome: bool, optional
+            Whether genome reordering should be applied.
+            Reorder shuffles the genotype of an individual without changing its phenotype,
+            thereby contributing to neutral drift through the genotypic search space.
+            If True, reorder is applied to each parents genome at every generation
+            before creating offsprings.
+            Defaults to True.
         """
         self.n_offsprings = n_offsprings
 
@@ -51,6 +59,7 @@ class MuPlusLambda:
         self.n_processes = n_processes
         self.local_search = local_search
         self.k_local_search = k_local_search
+        self.reorder_genome = reorder_genome
 
     def initialize_fitness_parents(
         self, pop: Population, objective: Callable[[IndividualBase], IndividualBase]
@@ -71,7 +80,7 @@ class MuPlusLambda:
         pop._parents = self._compute_fitness(pop.parents, objective)
 
     def step(
-        self, pop: Population, objective: Callable[[IndividualBase], IndividualBase]
+        self, pop: Population, objective: Callable[[IndividualBase], IndividualBase],
     ) -> Population:
         """Perform one step in the evolution.
 
@@ -89,6 +98,10 @@ class MuPlusLambda:
         Population
             Modified population with new parents.
         """
+
+        if self.reorder_genome:
+            pop.reorder_genome()
+
         offsprings = self._create_new_offspring_generation(pop)
 
         # we want to prefer offsprings with the same fitness as their

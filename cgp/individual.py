@@ -61,6 +61,9 @@ class IndividualBase:
     def randomize_genome(self, rng):
         raise NotImplementedError()
 
+    def reorder_genome(self, rng):
+        raise NotImplementedError()
+
     def to_func(self):
         raise NotImplementedError()
 
@@ -83,6 +86,10 @@ class IndividualBase:
     @staticmethod
     def _randomize_genome(genome: Genome, rng: np.random.RandomState) -> None:
         genome.randomize(rng)
+
+    @staticmethod
+    def _reorder_genome(genome: Genome, rng: np.random.RandomState) -> None:
+        genome.reorder(rng)
 
     @staticmethod
     def _to_func(genome: Genome) -> Callable[[List[float]], List[float]]:
@@ -137,6 +144,9 @@ class IndividualSingleGenome(IndividualBase):
     def randomize_genome(self, rng: np.random.RandomState) -> None:
         self._randomize_genome(self.genome, rng)
 
+    def reorder_genome(self, rng: np.random.RandomState) -> None:
+        self._reorder_genome(self.genome, rng)
+
     def to_func(self) -> Callable[[List[float]], List[float]]:
         return self._to_func(self.genome)
 
@@ -185,6 +195,10 @@ class IndividualMultiGenome(IndividualBase):
     def randomize_genome(self, rng: np.random.RandomState) -> None:
         for g in self.genome:
             self._randomize_genome(g, rng)
+
+    def reorder_genome(self, rng: np.random.RandomState) -> None:
+        for g in self.genome:
+            self._reorder_genome(g, rng)
 
     def to_func(self) -> List[Callable[[List[float]], List[float]]]:
         return [self._to_func(g) for g in self.genome]

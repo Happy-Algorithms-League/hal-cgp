@@ -1,4 +1,4 @@
-from typing import Dict, Generator, List, Optional, Tuple, Type, Union
+from typing import Dict, Generator, List, Optional, Set, Tuple, Type, Union
 
 import numpy as np
 
@@ -138,7 +138,7 @@ class Genome:
         return s
 
     def determine_permissible_values_per_gene(self, gene_idx: int) -> np.ndarray:
-        region_idx = gene_idx // self._length_per_region
+        region_idx = self._get_region_idx(gene_idx)
 
         if self._is_input_region(region_idx):
             return self._determine_permissible_values_input_region(gene_idx)
@@ -266,6 +266,147 @@ class Genome:
 
         # accept generated dna if it is valid
         self.dna = dna
+
+    def reorder(self, rng: np.random.RandomState) -> None:
+        """Reorder the genome
+
+        Shuffle node ordering of internal (hidden) nodes in genome without changing the phenotype.
+        (Goldman 2015, DOI: 10.1109/TEVC.2014.2324539)
+
+        During reordering, inactive genes, e.g., input genes of nodes with arity zero,
+        are not taken into account and can hence have invalid values after reordering.
+        These invalid values are replaced by random values
+        for the respective gene after reordering.
+
+        Parameters
+        ----------
+        rng : numpy.RandomState
+            Random number generator instance.
+
+        Returns
+        ----------
+        None
+        """
+        if (self._n_rows != 1) or (self._levels_back != self._n_columns):
+            raise ValueError(
+                "Genome reordering is only implemented for n_rows=1" " and levels_back=n_columns"
+            )
+
+        dna = self._dna.copy()
+
+        node_dependencies: Dict[int, Set[int]] = self._determine_node_dependencies()
+
+        addable_nodes: Set[int] = self._get_addable_nodes(node_dependencies)
+
+        new_node_idx: int = self._n_inputs  # First position to be placed is after inputs
+        used_node_indices: List[int] = []
+
+        while len(addable_nodes) > 0:
+
+            old_node_idx = rng.choice(list(addable_nodes))
+
+            dna = self._copy_dna_segment(dna, old_node_idx=old_node_idx, new_node_idx=new_node_idx)
+
+            for dependencies in node_dependencies.values():
+                dependencies.discard(old_node_idx)
+
+            used_node_indices.append(old_node_idx)
+            addable_nodes = self._get_addable_nodes(node_dependencies, used_node_indices)
+            new_node_idx += 1
+
+        self._update_input_genes(dna, used_node_indices)
+        self._replace_invalid_input_alleles(dna, rng)
+
+        self.dna = dna
+
+    def _copy_dna_segment(self, dna: List[int], old_node_idx: int, new_node_idx: int) -> List[int]:
+        """ Copy a nodes dna segment from its old node location to a new location. """
+
+        dna[
+            new_node_idx * self._length_per_region : (new_node_idx + 1) * self._length_per_region
+        ] = self._dna[
+            old_node_idx * self._length_per_region : (old_node_idx + 1) * self._length_per_region
+        ]
+
+        return dna
+
+    def _update_input_genes(self, dna: List[int], used_node_indices: List[int]) -> None:
+        """Update input genes of all nodes from old node indices to new node indices"""
+        for gene_idx, gene_value in enumerate(dna):
+            region_idx = self._get_region_idx(gene_idx)
+            if self._is_hidden_input_gene(gene_idx, region_idx) or self._is_output_input_gene(
+                gene_idx
+            ):
+                if gene_value >= self._n_inputs:
+                    gene_value = self._n_inputs + used_node_indices.index(gene_value)
+            dna[gene_idx] = gene_value
+
+    def _replace_invalid_input_alleles(self, dna: List[int], rng: np.random.RandomState) -> None:
+        """Replace invalid alleles for unused input genes of all nodes
+        by random permissible values.
+        WARNING: Works only if self.n_rows==1.
+        """
+        assert self._n_rows == 1
+
+        for gene_idx, gene_value in enumerate(dna):
+            region_idx = self._get_region_idx(gene_idx)
+            if self._is_hidden_input_gene(gene_idx, region_idx) and gene_value > region_idx:
+                permissible_values = self.determine_permissible_values_per_gene(gene_idx)
+                gene_value = rng.choice(permissible_values)
+                dna[gene_idx] = gene_value
+
+    def _get_addable_nodes(
+        self, node_dependencies: Dict[int, Set[int]], used_node_indices: List[int] = [],
+    ) -> Set[int]:
+        """ Get the set of addable nodes,
+         nodes which have no dependencies and were not already used.
+        """
+        addable_nodes = set(
+            idx for idx, dependencies in node_dependencies.items() if len(dependencies) == 0
+        )
+        return addable_nodes.difference(used_node_indices)
+
+    def _get_region_idx(self, gene_idx: int) -> int:
+
+        return gene_idx // self._length_per_region
+
+    def _determine_node_dependencies(self) -> Dict[int, Set[int]]:
+        """ Determines the set of node indices on which each node depends.
+            Unused input genes are ignored.
+
+        Returns
+        ----
+        dependencies: Dict[int, Set[int]]
+            Dictionary containing for every node the set of active input genes
+
+        """
+        dependencies: Dict[int, Set[int]] = {}
+        for region_idx, _ in self.iter_hidden_regions():
+
+            current_node_dependencies: Set[int] = set()
+
+            operator_idx: int = region_idx * self._length_per_region
+
+            current_arity: int = self._determine_operator_arity(operator_idx)
+
+            for idx_gene in range(
+                1, current_arity + 1
+            ):  # shift by 1 since first gene is the operator gene
+                input_node_idx = self._dna[operator_idx + idx_gene]
+                if not self._is_input_region(
+                    input_node_idx
+                ):  # not necessary to add input regions, since their positions remain fixed
+                    current_node_dependencies.add(input_node_idx)
+
+            dependencies[region_idx] = current_node_dependencies
+
+        return dependencies
+
+    def _determine_operator_arity(self, gene_idx: int) -> int:
+
+        assert self._is_function_gene(gene_idx)
+
+        return self._primitives[self._dna[gene_idx]]._arity
 
     def _permissible_inputs(self, region_idx: int) -> List[int]:
 
@@ -403,6 +544,11 @@ class Genome:
     def _is_hidden_input_gene(self, gene_idx: int, region_idx: int) -> bool:
         return self._is_hidden_region(region_idx) and (not self._is_function_gene(gene_idx))
 
+    def _is_output_input_gene(self, gene_idx: int) -> bool:
+        return (
+            self._is_gene_in_output_region(gene_idx) and gene_idx % self._length_per_region == 1
+        )  # assumes 2nd gene in output is coding for input
+
     def _select_gene_indices_for_mutation(
         self, mutation_rate: float, rng: np.random.RandomState
     ) -> List[int]:
@@ -450,7 +596,7 @@ class Genome:
 
         for (gene_idx, allele) in zip(selected_gene_indices, np.array(dna)[selected_gene_indices]):
 
-            region_idx = gene_idx // self._length_per_region
+            region_idx = self._get_region_idx(gene_idx)
 
             permissible_values = self._permissible_values[gene_idx]
             permissible_alternative_values = permissible_values[permissible_values != allele]

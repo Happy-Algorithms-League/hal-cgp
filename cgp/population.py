@@ -133,3 +133,13 @@ class Population:
             List of fitness values for all parents.
         """
         return [ind.fitness for ind in self._parents]
+
+    def reorder_genome(self) -> None:
+        """ Reorders the genome for all parents in the population
+
+        Returns
+        ---------
+        None
+        """
+        for parent in self.parents:
+            parent.reorder_genome(self.rng)
