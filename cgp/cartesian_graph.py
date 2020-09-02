@@ -412,7 +412,10 @@ class _C(torch.nn.Module):
 
         if not simplify:
             return sympy_exprs
-        else:  # simplify expression if desired
+        else:  # simplify expression if desired and possible
             for i, expr in enumerate(sympy_exprs):
-                sympy_exprs[i] = expr.simplify()
+                try:
+                    sympy_exprs[i] = expr.simplify()
+                except TypeError:
+                    RuntimeWarning(f"SymPy could not simplify expression: {expr}")
             return sympy_exprs
