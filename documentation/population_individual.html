@@ -198,6 +198,19 @@ thus simultaneously represents multiple computational graphs.</p></li>
 </ul>
 <p>These classes are thin wrappers around the <cite>Genome</cite> (see <a class="reference internal" href="../api_reference/cgp.html#cgp.Genome" title="cgp.Genome"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cgp.Genome()</span></code></a>) and
 the <cite>CartesianGraph</cite> (see <a class="reference internal" href="../api_reference/cgp.html#cgp.CartesianGraph" title="cgp.CartesianGraph"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cgp.CartesianGraph()</span></code></a>) classes.</p>
+<p>Any custom properties of individuals that are set within the objective function are copied to their offspring.
+This, for example, allows recording of variables used during fitness evaluation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">individual</span><span class="p">):</span>
+    <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">individual</span><span class="o">.</span><span class="n">my_custom_attribute</span> <span class="o">=</span> <span class="mi">123</span>
+    <span class="k">return</span> <span class="n">individual</span>
+
+<span class="n">history</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">history</span><span class="p">[</span><span class="s2">&quot;my_custom_attribute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">def</span> <span class="nf">recording_callback</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+    <span class="n">history</span><span class="p">[</span><span class="s2">&quot;my_custom_attribute&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">champion</span><span class="o">.</span><span class="n">my_custom_attribute</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="genome">
 <h2>Genome<a class="headerlink" href="#genome" title="Permalink to this headline">¶</a></h2>
