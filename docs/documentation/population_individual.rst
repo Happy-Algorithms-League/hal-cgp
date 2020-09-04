@@ -35,6 +35,21 @@ There are two types of individuals:
 These classes are thin wrappers around the `Genome` (see :meth:`cgp.Genome`) and
 the `CartesianGraph` (see :meth:`cgp.CartesianGraph`) classes.
 
+Any custom properties of individuals that are set within the objective function are copied to their offspring.
+This, for example, allows recording of variables used during fitness evaluation:
+
+.. code-block:: python
+
+  def objective(individual):
+      individual.fitness = 1.0
+      individual.my_custom_attribute = 123
+      return individual
+
+  history = {}
+  history["my_custom_attribute"] = []
+  def recording_callback(pop):
+      history["my_custom_attribute"].append(pop.champion.my_custom_attribute)
+
 ------
 Genome
 ------

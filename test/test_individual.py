@@ -307,3 +307,16 @@ def test_individual_randomize_genome(individual_type, rng_seed):
 
     individual.randomize_genome(rng)
     assert dna_old != _unpack_genome(individual, individual_type)
+
+
+@pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
+def test_clone_copies_user_defined_attributes(individual_type, genome_params, rng):
+    genome = cgp.Genome(**genome_params)
+    genome.randomize(rng)
+    ind = _create_individual(genome, individual_type=individual_type)
+    my_attribute = "this is a custom attribute"
+    ind.my_attribute = my_attribute
+    ind_clone = ind.clone()
+
+    assert ind.my_attribute == my_attribute
+    assert ind_clone.my_attribute == my_attribute

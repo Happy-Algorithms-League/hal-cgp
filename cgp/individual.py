@@ -1,4 +1,5 @@
-from typing import Callable, List, Union
+import copy
+from typing import Callable, List, Set, Type, Union
 
 import numpy as np
 
@@ -25,6 +26,8 @@ class IndividualBase:
     """Base class for all individuals.
     """
 
+    __base_attrs__: Set[str]
+
     def __init__(self, fitness: Union[float, None]) -> None:
         """Init function.
 
@@ -32,11 +35,25 @@ class IndividualBase:
             Fitness of the individual.
         """
         self.fitness: Union[float, None] = fitness
-        self.idx: int
-        self.parent_idx: int
+        self.idx: Union[int, None] = None
+        self.parent_idx: Union[int, None] = None
+
+    def __init_subclass__(cls: Type) -> None:
+
+        # store the attributes present right after instance creation,
+        # i.e., all attributes not set by the user
+        cls.__base_attrs__ = set(cls(None, None).__dict__.keys())
 
     def clone(self):
         raise NotImplementedError()
+
+    def _copy_user_defined_attributes(self, other):
+        """Copy all attributes that are not defined in __init__ of the (sub
+        and super) class from self to other.
+        """
+        for attr in self.__dict__:
+            if attr not in self.__base_attrs__:
+                setattr(other, attr, copy.deepcopy(getattr(self, attr)))
 
     def mutate(self, mutation_rate, rng):
         raise NotImplementedError()
@@ -109,6 +126,7 @@ class IndividualSingleGenome(IndividualBase):
     def clone(self) -> "IndividualSingleGenome":
         ind = IndividualSingleGenome(self.fitness, self.genome.clone())
         ind.parent_idx = self.idx
+        self._copy_user_defined_attributes(ind)
         return ind
 
     def mutate(self, mutation_rate: float, rng: np.random.RandomState) -> None:
@@ -155,6 +173,7 @@ class IndividualMultiGenome(IndividualBase):
     def clone(self) -> "IndividualMultiGenome":
         ind = IndividualMultiGenome(self.fitness, [g.clone() for g in self.genome])
         ind.parent_idx = self.idx
+        self._copy_user_defined_attributes(ind)
         return ind
 
     def mutate(self, mutation_rate: float, rng: np.random.RandomState) -> None:
