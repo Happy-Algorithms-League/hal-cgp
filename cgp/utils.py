@@ -11,22 +11,43 @@ from .node import Node, primitives_dict
 
 
 def __check_cache_consistency(fn: str, func: Callable[..., float]) -> None:
+    """Retrieve an entry from the cache, execute the callable with the
+    cached arguments and check whether the return value matches the
+    cached result.
+
+    WARNING: consistency is only checked when a _finite_ return value
+    can be found in the cache.
+
+    """
+    cached_item: Union[Dict[str, Any], None] = __find_item_with_finite_return_value(fn)
+    if cached_item is None:
+        return
+
+    return_value: float = func(*cached_item["args"], **cached_item["kwargs"])
+
+    if not np.isclose(return_value, cached_item["return_value"]):
+        raise RuntimeError(
+            "inconsistent return values"
+            " -- are different functions using the same cache file?"
+            " please use different cache files for different functions"
+        )
+
+
+def __find_item_with_finite_return_value(fn: str) -> Union[Dict[str, Any], None]:
+    """Find a cache entry which has a finite return value."""
     if os.path.isfile(fn):
         with open(fn, "rb") as f:
-            try:
-                cursor: Dict[str, Any] = pickle.load(f)
-            except EOFError:
-                return  # no entry yet, so not possible to check
+            while True:
+                try:
+                    cursor: Dict[str, Any] = pickle.load(f)
+                except EOFError:
+                    return None  # no entry yet, so not possible to check
 
-            cached_item: Dict[str, Any] = list(cursor.values())[0]
-            return_value: float = func(*cached_item["args"], **cached_item["kwargs"])
-
-            if not np.isclose(return_value, cached_item["return_value"]):
-                raise RuntimeError(
-                    "inconsistent return values"
-                    " -- are different functions using the same cache file?"
-                    " please use different cache files for different functions"
-                )
+                cached_item: Dict[str, Any] = list(cursor.values())[0]
+                if np.isfinite(cached_item["return_value"]):
+                    return cached_item
+    else:
+        return None
 
 
 def __compute_key_from_args(*args: Any, **kwargs: Any) -> str:

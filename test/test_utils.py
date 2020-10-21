@@ -217,6 +217,42 @@ def test_cache_decorator_consistency():
         return x
 
 
+def test_cache_decorator_does_not_compare_infinite_return_values():
+    cache_fn = tempfile.mkstemp()[1]
+
+    @cgp.utils.disk_cache(cache_fn)
+    def objective_f(x):
+        try:
+            return 1.0 / x
+        except ZeroDivisionError:
+            return np.inf
+
+    # first call produces infinite return value, identical to
+    # objective_g although in general their return values are
+    # different
+    objective_f(0.0)
+    # second call produces a finite return value which should be used
+    # to check consistency
+    objective_f(2.0)
+
+    # since the consistency check uses the finite return value it
+    # should detect that the two objectives are indeed different
+    with pytest.raises(RuntimeError):
+
+        @cgp.utils.disk_cache(cache_fn)
+        def objective_g(x):
+            try:
+                return 2.0 / x
+            except ZeroDivisionError:
+                return np.inf
+
+
+def test_cache_decorator_does_nothing_for_nonexistent_file():
+    @cgp.utils.disk_cache("nonexistent_file.pkl")
+    def objective(x):
+        return x
+
+
 def objective_history_recording(individual):
     individual.fitness = 1.0
     return individual
