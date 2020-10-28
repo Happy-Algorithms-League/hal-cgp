@@ -55,7 +55,12 @@ class Population:
     def champion(self) -> IndividualBase:
         """Return parent with the highest fitness.
         """
-        return max(self._parents, key=lambda ind: ind.fitness)
+
+        def key(ind: IndividualBase) -> float:
+            assert isinstance(ind.fitness, float)
+            return ind.fitness
+
+        return max(self._parents, key=key)
 
     @property
     def parents(self) -> List[IndividualBase]:
