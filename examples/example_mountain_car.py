@@ -104,10 +104,8 @@ def inner_objective(f, seed, n_runs_per_individual, n_total_steps, *, render):
 # is caught and the individual gets a fitness of -infinity assigned.
 
 
+@cgp.objective
 def objective(ind, seed, n_runs_per_individual, n_total_steps):
-
-    if ind.fitness is not None:
-        return ind
 
     f = ind.to_func()
     try:

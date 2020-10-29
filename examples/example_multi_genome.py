@@ -45,9 +45,8 @@ def f_target(x):
 # genome (``f[1]``), depending whether the input is less or greater than zero.
 
 
+@cgp.objective
 def objective(individual):
-    if individual.fitness is not None:
-        return individual
 
     n_function_evaluations = 1000
 

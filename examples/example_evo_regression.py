@@ -50,6 +50,7 @@ def f_target_hard(x):
 # points.
 
 
+@cgp.objective
 def objective(individual, target_function, seed):
     """Objective function of the regression task.
 
@@ -65,8 +66,6 @@ def objective(individual, target_function, seed):
     Individual
         Modified individual with updated fitness value.
     """
-    if individual.fitness is not None:
-        return individual
 
     n_function_evaluations = 1000
 

@@ -84,9 +84,8 @@ def inner_objective(f, seed):
     return torch.nn.MSELoss()(f_target(x), y[:, 0])
 
 
+@cgp.objective
 def objective(individual, seed):
-    if individual.fitness is not None:
-        return individual
 
     f = individual.to_torch()
     loss = inner_objective(f, seed)

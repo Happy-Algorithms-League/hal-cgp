@@ -6,7 +6,7 @@ from typing import Any, Callable, Dict, List, Tuple, Type, Union
 
 import numpy as np
 
-from .individual import IndividualMultiGenome, IndividualSingleGenome
+from .individual import IndividualBase, IndividualMultiGenome, IndividualSingleGenome
 from .node import Node, primitives_dict
 
 
@@ -201,3 +201,25 @@ def primitives_from_class_names(primitives_str: Tuple[str, ...]) -> Tuple[Type[N
         primitives.append(primitives_dict[s])
 
     return tuple(primitives)
+
+
+def objective(
+    f: Callable[[IndividualBase, Any, Any], IndividualBase]
+) -> Callable[[IndividualBase], IndividualBase]:
+    """ Decorator for the objective function.
+    Skips evaluations of individuals with fitness != None
+
+    Parameters
+    ----------
+    f : Callable
+        The objective function.
+    """
+
+    @functools.wraps(f)
+    def wrapped(individual: IndividualBase, *args: Any, **kwargs: Any) -> IndividualBase:
+        if individual.fitness is None:
+            return f(individual, *args, **kwargs)
+        else:
+            return individual
+
+    return wrapped

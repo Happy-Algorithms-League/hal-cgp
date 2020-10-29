@@ -52,9 +52,8 @@ def inner_objective(expr):
     return np.mean(loss)
 
 
+@cgp.objective
 def objective(individual):
-    if individual.fitness is not None:
-        return individual
 
     individual.fitness = -inner_objective(individual.to_sympy())
 

@@ -41,9 +41,8 @@ def f_target(x):
 # on a set of random points.
 
 
+@cgp.objective
 def objective(individual):
-    if individual.fitness is not None:
-        return individual
 
     n_function_evaluations = 1000
 
@@ -59,7 +58,6 @@ def objective(individual):
         loss += (f_target([x]) - y) ** 2
 
     individual.fitness = -loss / n_function_evaluations
-
     return individual
 
 
@@ -82,7 +80,8 @@ genome_params = {
 
 ea_params = {"n_offsprings": 4, "tournament_size": 2, "n_processes": 2}
 
-evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
+evolve_params = {"max_generations": np.inf, "min_fitness": 0.0, "max_objective_calls": 10000}
+# Todo: change max_generations: int(args["--max-generations"])
 
 # %%
 # We create a population that will be evolved
