@@ -221,3 +221,43 @@ def test_create_new_parent_population(population_params, genome_params, ea_param
     # we picked the first three individuals
     new_parents = ea._create_new_parent_population(3, pop.parents)
     assert new_parents == pop.parents[:3]
+
+
+def test_update_n_objective_calls(population_params, genome_params, ea_params):
+    def objective(individual):
+        individual.fitness = float(individual.idx)
+        return individual
+
+    n_objective_calls_expected = 0
+    pop = cgp.Population(**population_params, genome_params=genome_params)
+    ea = cgp.ea.MuPlusLambda(**ea_params)
+    assert ea.n_objective_calls == n_objective_calls_expected
+
+    ea.initialize_fitness_parents(pop, objective)
+    n_objective_calls_expected = population_params["n_parents"]
+    assert ea.n_objective_calls == n_objective_calls_expected
+
+    n_generations = 100
+    for _ in range(n_generations):
+        offsprings = ea._create_new_offspring_generation(pop)
+        combined = offsprings + pop.parents
+        n_objective_calls_expected += sum([1 for ind in combined if ind.fitness is None])
+        combined = ea._compute_fitness(combined, objective)
+        assert n_objective_calls_expected == ea.n_objective_calls
+
+
+def test_update_n_objective_calls_mutation_rate_one(population_params, genome_params, ea_params):
+    def objective(individual):
+        individual.fitness = float(individual.idx)
+        return individual
+
+    population_params["mutation_rate"] = 1.0
+    pop = cgp.Population(**population_params, genome_params=genome_params)
+    ea = cgp.ea.MuPlusLambda(**ea_params)
+    ea.initialize_fitness_parents(pop, objective)
+    n_objective_calls_expected = population_params["n_parents"]
+    n_step_calls = 100
+    for idx_current_step in range(n_step_calls):
+        ea.step(pop, objective)
+        n_objective_calls_expected += ea_params["n_offsprings"]
+        assert ea.n_objective_calls == n_objective_calls_expected
