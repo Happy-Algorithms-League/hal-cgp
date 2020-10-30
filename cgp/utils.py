@@ -217,6 +217,7 @@ def objective(
 
     @functools.wraps(f)
     def wrapped(individual: IndividualBase, *args: Any, **kwargs: Any) -> IndividualBase:
+        print('yay it works with more than one process')
         if individual.fitness is None:
             return f(individual, *args, **kwargs)
         else:

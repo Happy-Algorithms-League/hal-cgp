@@ -80,8 +80,7 @@ genome_params = {
 
 ea_params = {"n_offsprings": 4, "tournament_size": 2, "n_processes": 2}
 
-evolve_params = {"max_generations": np.inf, "min_fitness": 0.0, "max_objective_calls": 10000}
-# Todo: change max_generations: int(args["--max-generations"])
+evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
 
 # %%
 # We create a population that will be evolved
