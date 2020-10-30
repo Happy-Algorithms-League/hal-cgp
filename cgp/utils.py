@@ -205,7 +205,7 @@ def primitives_from_class_names(primitives_str: Tuple[str, ...]) -> Tuple[Type[N
 
 def objective(
     f: Callable[[IndividualBase, Any, Any], IndividualBase]
-) -> Callable[[IndividualBase], IndividualBase]:
+) -> Callable[[IndividualBase, Any, Any], IndividualBase]:
     """ Decorator for the objective function.
     Skips evaluations of individuals with fitness != None
 
@@ -216,10 +216,9 @@ def objective(
     """
 
     @functools.wraps(f)
-    def wrapped(individual: IndividualBase, *args: Any, **kwargs: Any) -> IndividualBase:
-        print('yay it works with more than one process')
+    def wrapped(individual: IndividualBase, *args: Any) -> IndividualBase:
         if individual.fitness is None:
-            return f(individual, *args, **kwargs)
+            return f(individual, *args)
         else:
             return individual
 
