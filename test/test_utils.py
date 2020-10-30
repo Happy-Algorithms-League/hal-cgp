@@ -271,3 +271,21 @@ def test_primitives_from_class_names_for_genome(genome_params):
     genome_params["primitives"] = primitives
 
     cgp.Genome(**genome_params)
+
+
+def test_objective_wrapper(genome_params):
+    @cgp.objective
+    def objective(individual):
+        individual.fitness = 1
+        return individual
+
+    genome = cgp.Genome(**genome_params)
+
+    individual_0 = cgp.IndividualSingleGenome(fitness=0, genome=genome)
+    individual_1 = cgp.IndividualSingleGenome(fitness=None, genome=genome)
+
+    objective(individual_0)
+    assert individual_0.fitness == 0
+
+    objective(individual_1)
+    assert individual_1.fitness == 1
