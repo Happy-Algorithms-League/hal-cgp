@@ -216,9 +216,9 @@ def objective(
     """
 
     @functools.wraps(f)
-    def wrapped(individual: IndividualBase, *args: Any) -> IndividualBase:
+    def wrapped(individual: IndividualBase, *args: Any, **kwargs) -> IndividualBase:
         if individual.fitness is None:
-            return f(individual, *args)
+            return f(individual, *args, **kwargs)
         else:
             return individual
 
