@@ -548,3 +548,102 @@ def test_mutate_does_not_reinitialize_parameters(genome_params, rng, mutation_ra
     assert genome._parameter_names_to_values["<p2>"] == pytest.approx(
         parameter_names_to_values_before["<p2>"]
     )
+
+
+def test_genome_reordering_empirically(rng):
+    # empirically test that reordering does not change the output function of a genome
+
+    pytest.importorskip("sympy")
+
+    genome_params = {
+        "n_inputs": 2,
+        "n_outputs": 1,
+        "n_columns": 10,
+        "n_rows": 1,
+        "levels_back": None,
+        "primitives": (cgp.Mul, cgp.Sub, cgp.Add, cgp.ConstantFloat),
+    }
+
+    genome = cgp.Genome(**genome_params)
+
+    # f(x_0, x_1) = x_0 ** 2 - x_1 + 1
+    dna_fixed = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,  # Mul ->  x_0^2 (address 2)
+        0,  # x
+        0,  # x
+        1,  # Sub -> x_0^2 - x_1 (address 3)
+        2,  # x^2
+        1,  # y
+        1,  # Sub ->  0 (address 4)
+        0,  # x
+        0,  # x
+        3,  # const ->  1 (address 5)
+        2,  # address of x_0^2 (unused)
+        3,  # address of 0 (unused)
+        3,  # const -> outs 1 (address 6)
+        0,
+        0,
+        2,  # Add -> x_0^2 - x_1 + 1 (address 7)
+        3,  # x_0^2 - x_1
+        5,  # 1
+        3,  # const (address 8)
+        0,
+        1,
+        3,  # const (address 9)
+        0,
+        1,
+        3,  # const (address 10)
+        0,
+        1,
+        3,  # const (address 11)
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        7,
+        ID_NON_CODING_GENE,
+    ]
+
+    genome.dna = dna_fixed
+    sympy_expression = cgp.CartesianGraph(genome).to_sympy()
+    n_reorderings = 100
+    for _ in range(n_reorderings):
+        genome.reorder(rng)
+        sympy_expression_after_reorder = cgp.CartesianGraph(genome).to_sympy()
+        assert sympy_expression_after_reorder == sympy_expression
+
+
+def test_genome_reordering_parameterization_consistency(rng):
+
+    genome_params = {
+        "n_inputs": 2,
+        "n_outputs": 1,
+        "n_columns": 10,
+        "n_rows": 2,
+        "levels_back": None,
+        "primitives": (cgp.Mul, cgp.Sub, cgp.Add, cgp.ConstantFloat),
+    }
+
+    genome = cgp.Genome(**genome_params)
+
+    with pytest.raises(ValueError):
+        genome.reorder(rng)
+
+    genome_params = {
+        "n_inputs": 2,
+        "n_outputs": 1,
+        "n_columns": 10,
+        "n_rows": 1,
+        "levels_back": 5,
+        "primitives": (cgp.Mul, cgp.Sub, cgp.Add, cgp.ConstantFloat),
+    }
+
+    genome = cgp.Genome(**genome_params)
+
+    with pytest.raises(ValueError):
+        genome.reorder(rng)
