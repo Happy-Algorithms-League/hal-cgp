@@ -185,7 +185,7 @@ class OperatorNode(Node):
 
     @classmethod
     def _extract_input_names_from_def_output(self, cls: Type["OperatorNode"]) -> None:
-        g = re.findall("x_[0-9]+", cls._def_output)
+        g = set(re.findall("x_[0-9]+", cls._def_output))
 
         if not len(g) == cls._arity:
             raise RuntimeError(f'wrong number of inputs defined in OperatorNode "{cls.__name__}"')

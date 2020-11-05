@@ -59,3 +59,14 @@ class Parameter(OperatorNode):
     _def_output = "<p>"
     _def_numpy_output = "np.ones(x.shape[0]) * <p>"
     _def_torch_output = "torch.ones(1).expand(x.shape[0]) * <p>"
+
+
+class IfElse(OperatorNode):
+    """A node that outputs the value of its second input if its first input
+    is non-negative, and the value of its third input otherwise."""
+
+    _arity = 3
+    _def_output = "x_1 if x_0 >= 0 else x_2"
+    _def_numpy_output = "np.piecewise(x_0, [x_0 >= 0, x_0 < 0], [x_1[x_0 >= 0] , x_2[x_0 < 0]])"
+    _def_sympy_output = "Piecewise((x_1, x_0 >= 0), (x_2, x_0 < 0))"
+    _def_torch_output = "torch.where(x_0 >= 0, x_1, x_2)"
