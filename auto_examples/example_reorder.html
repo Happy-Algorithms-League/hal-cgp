@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Minimal example for evolutionary regression &mdash; hal-cgp 0.2.0dev documentation</title>
+  <title>Example for evolutionary regression with genome reordering &mdash; hal-cgp 0.2.0dev documentation</title>
   
 
   
@@ -40,8 +40,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Example for evolutionary regression with multiple genomes" href="example_multi_genome.html" />
-    <link rel="prev" title="Example demonstrating the use of the caching decorator." href="example_caching.html" /> 
+    <link rel="next" title="Example for evolutionary regression with parametrized nodes" href="example_parametrized_nodes.html" />
+    <link rel="prev" title="Example for evolutionary regression with multiple genomes" href="example_multi_genome.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -93,9 +93,12 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="example_fec_caching.html">Example demonstrating the use of the caching decorator with functional equivalance checking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_caching.html">Example demonstrating the use of the caching decorator.</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Minimal example for evolutionary regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_minimal.html">Minimal example for evolutionary regression</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_multi_genome.html">Example for evolutionary regression with multiple genomes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_reorder.html">Example for evolutionary regression with genome reordering</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Example for evolutionary regression with genome reordering</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="example_parametrized_nodes.html">Example for evolutionary regression with parametrized nodes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_differential_evo_regression.html">Example for differential evolutionary regression</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_evo_regression.html">Example for evolutionary regression</a></li>
@@ -153,13 +156,13 @@
         
           <li><a href="index.html">Examples</a> &raquo;</li>
         
-      <li>Minimal example for evolutionary regression</li>
+      <li>Example for evolutionary regression with genome reordering</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/auto_examples/example_minimal.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/auto_examples/example_reorder.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -174,17 +177,21 @@
             
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-example-minimal-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-example-reorder-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="minimal-example-for-evolutionary-regression">
-<span id="sphx-glr-auto-examples-example-minimal-py"></span><h1>Minimal example for evolutionary regression<a class="headerlink" href="#minimal-example-for-evolutionary-regression" title="Permalink to this headline">¶</a></h1>
-<p>Example demonstrating the use of Cartesian genetic programming for
-a simple regression task.</p>
+<div class="sphx-glr-example-title section" id="example-for-evolutionary-regression-with-genome-reordering">
+<span id="sphx-glr-auto-examples-example-reorder-py"></span><h1>Example for evolutionary regression with genome reordering<a class="headerlink" href="#example-for-evolutionary-regression-with-genome-reordering" title="Permalink to this headline">¶</a></h1>
+<p>Example demonstrating the effect of genome reordering.</p>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Goldman B.W., Punch W.F. (2014): Analysis of Cartesian Genetic Programming’s
+Evolutionary Mechanisms
+DOI: 10.1109/TEVC.2014.2324539</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># The docopt str is added explicitly to ensure compatibility with</span>
 <span class="c1"># sphinx-gallery.</span>
 <span class="n">docopt_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">   Usage:</span>
-<span class="s2">     example_minimal.py [--max-generations=&lt;N&gt;]</span>
+<span class="s2">     example_reorder.py [--max-generations=&lt;N&gt;]</span>
 
 <span class="s2">   Options:</span>
 <span class="s2">     -h --help</span>
@@ -233,132 +240,159 @@ on a set of random points.</p>
 </pre></div>
 </div>
 <p>Next, we set up the evolutionary search. We first define the
-parameters for the population, the genome of individuals, and the
-evolutionary algorithm.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">population_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;n_parents&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;mutation_rate&quot;</span><span class="p">:</span> <span class="mf">0.03</span><span class="p">,</span> <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="mi">8188211</span><span class="p">}</span>
+parameters for the population, the genome of individuals, and two
+evolutionary algorithms without (default) and with genome reordering.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">population_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;n_parents&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;mutation_rate&quot;</span><span class="p">:</span> <span class="mf">0.03</span><span class="p">,</span> <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="mi">818821</span><span class="p">}</span>
 
 <span class="n">genome_params</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;n_inputs&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="s2">&quot;n_outputs&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="s2">&quot;n_columns&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
     <span class="s2">&quot;n_rows&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="s2">&quot;levels_back&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">&quot;levels_back&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
     <span class="s2">&quot;primitives&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">cgp</span><span class="o">.</span><span class="n">Add</span><span class="p">,</span> <span class="n">cgp</span><span class="o">.</span><span class="n">Sub</span><span class="p">,</span> <span class="n">cgp</span><span class="o">.</span><span class="n">Mul</span><span class="p">,</span> <span class="n">cgp</span><span class="o">.</span><span class="n">ConstantFloat</span><span class="p">),</span>
 <span class="p">}</span>
 
 <span class="n">ea_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;n_offsprings&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;tournament_size&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;n_processes&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+<span class="n">ea_params_with_reorder</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;n_offsprings&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">&quot;tournament_size&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;n_processes&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;reorder_genome&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">}</span>
 
 <span class="n">evolve_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;max_generations&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s2">&quot;--max-generations&quot;</span><span class="p">]),</span> <span class="s2">&quot;min_fitness&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
 </pre></div>
 </div>
-<p>We create a population that will be evolved</p>
+<p>We create two populations that will be evolved</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pop</span> <span class="o">=</span> <span class="n">cgp</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="o">**</span><span class="n">population_params</span><span class="p">,</span> <span class="n">genome_params</span><span class="o">=</span><span class="n">genome_params</span><span class="p">)</span>
+<span class="n">pop_with_reorder</span> <span class="o">=</span> <span class="n">cgp</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="o">**</span><span class="n">population_params</span><span class="p">,</span> <span class="n">genome_params</span><span class="o">=</span><span class="n">genome_params</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>and an instance of the (mu + lambda) evolutionary algorithm</p>
+<p>and two instances of the (mu + lambda) evolutionary algorithm</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ea</span> <span class="o">=</span> <span class="n">cgp</span><span class="o">.</span><span class="n">ea</span><span class="o">.</span><span class="n">MuPlusLambda</span><span class="p">(</span><span class="o">**</span><span class="n">ea_params</span><span class="p">)</span>
+<span class="n">ea_with_reorder</span> <span class="o">=</span> <span class="n">cgp</span><span class="o">.</span><span class="n">ea</span><span class="o">.</span><span class="n">MuPlusLambda</span><span class="p">(</span><span class="o">**</span><span class="n">ea_params_with_reorder</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>We define a callback for recording of fitness over generations</p>
+<p>We define two callbacks for recording of fitness over generations</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">history</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">history</span><span class="p">[</span><span class="s2">&quot;fitness_champion&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
 
 <span class="k">def</span> <span class="nf">recording_callback</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
     <span class="n">history</span><span class="p">[</span><span class="s2">&quot;fitness_champion&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">champion</span><span class="o">.</span><span class="n">fitness</span><span class="p">)</span>
+
+
+<span class="n">history_with_reorder</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">history_with_reorder</span><span class="p">[</span><span class="s2">&quot;fitness_champion&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<span class="k">def</span> <span class="nf">recording_callback_with_reorder</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+    <span class="n">history_with_reorder</span><span class="p">[</span><span class="s2">&quot;fitness_champion&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">champion</span><span class="o">.</span><span class="n">fitness</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>and finally perform the evolution</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cgp</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">objective</span><span class="p">,</span> <span class="n">ea</span><span class="p">,</span> <span class="o">**</span><span class="n">evolve_params</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">recording_callback</span><span class="p">)</span>
+<p>and finally perform the evolution of the two populations</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cgp</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+    <span class="n">pop</span><span class="p">,</span> <span class="n">objective</span><span class="p">,</span> <span class="n">ea</span><span class="p">,</span> <span class="o">**</span><span class="n">evolve_params</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">recording_callback</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">cgp</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+    <span class="n">pop_with_reorder</span><span class="p">,</span>
+    <span class="n">objective</span><span class="p">,</span>
+    <span class="n">ea_with_reorder</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">evolve_params</span><span class="p">,</span>
+    <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">callback</span><span class="o">=</span><span class="n">recording_callback_with_reorder</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[2/300] max fitness: -91.5955167981362[K
-[3/300] max fitness: -67.0965931324104[K
-[4/300] max fitness: -67.0965931324104[K
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[2/300] max fitness: -107.98528863498699[K
+[3/300] max fitness: -107.98528863498699[K
+[4/300] max fitness: -73.78312067622548[K
 [5/300] max fitness: -67.0965931324104[K
-[6/300] max fitness: -54.97072455431481[K
-[7/300] max fitness: -54.97072455431481[K
-[8/300] max fitness: -54.97072455431481[K
-[9/300] max fitness: -54.97072455431481[K
-[10/300] max fitness: -54.97072455431481[K
-[11/300] max fitness: -54.97072455431481[K
-[12/300] max fitness: -54.97072455431481[K
-[13/300] max fitness: -54.97072455431481[K
-[14/300] max fitness: -54.97072455431481[K
-[15/300] max fitness: -54.97072455431481[K
-[16/300] max fitness: -54.97072455431481[K
+[6/300] max fitness: -67.0965931324104[K
+[7/300] max fitness: -67.0965931324104[K
+[8/300] max fitness: -67.0965931324104[K
+[9/300] max fitness: -67.0965931324104[K
+[10/300] max fitness: -67.0965931324104[K
+[11/300] max fitness: -67.0965931324104[K
+[12/300] max fitness: -67.0965931324104[K
+[13/300] max fitness: -67.0965931324104[K
+[14/300] max fitness: -67.0965931324104[K
+[15/300] max fitness: -67.0965931324104[K
+[16/300] max fitness: -67.0965931324104[K
 [17/300] max fitness: -54.97072455431481[K
 [18/300] max fitness: -54.97072455431481[K
-[19/300] max fitness: -54.97072455431481[K
-[20/300] max fitness: -54.97072455431481[K
-[21/300] max fitness: -54.97072455431481[K
-[22/300] max fitness: -54.97072455431481[K
-[23/300] max fitness: -54.97072455431481[K
-[24/300] max fitness: -54.97072455431481[K
-[25/300] max fitness: -54.97072455431481[K
-[26/300] max fitness: -54.97072455431481[K
-[27/300] max fitness: -54.97072455431481[K
-[28/300] max fitness: -54.97072455431481[K
-[29/300] max fitness: -54.97072455431481[K
-[30/300] max fitness: -54.97072455431481[K
-[31/300] max fitness: -54.97072455431481[K
-[32/300] max fitness: -54.97072455431481[K
-[33/300] max fitness: -54.97072455431481[K
-[34/300] max fitness: -54.97072455431481[K
-[35/300] max fitness: -54.97072455431481[K
-[36/300] max fitness: -54.97072455431481[K
-[37/300] max fitness: -54.97072455431481[K
-[38/300] max fitness: -54.97072455431481[K
-[39/300] max fitness: -54.97072455431481[K
-[40/300] max fitness: -54.97072455431481[K
-[41/300] max fitness: -54.97072455431481[K
-[42/300] max fitness: -54.97072455431481[K
-[43/300] max fitness: -54.97072455431481[K
-[44/300] max fitness: -54.97072455431481[K
-[45/300] max fitness: -54.97072455431481[K
-[46/300] max fitness: -54.97072455431481[K
-[47/300] max fitness: -54.97072455431481[K
-[48/300] max fitness: -54.97072455431481[K
-[49/300] max fitness: -54.97072455431481[K
-[50/300] max fitness: -54.97072455431481[K
-[51/300] max fitness: -54.97072455431481[K
-[52/300] max fitness: -54.97072455431481[K
-[53/300] max fitness: -54.97072455431481[K
-[54/300] max fitness: -54.97072455431481[K
-[55/300] max fitness: -54.97072455431481[K
-[56/300] max fitness: -54.97072455431481[K
-[57/300] max fitness: -54.97072455431481[K
-[58/300] max fitness: -54.97072455431481[K
-[59/300] max fitness: -54.97072455431481[K
-[60/300] max fitness: -54.97072455431481[K
-[61/300] max fitness: -54.97072455431481[K
-[62/300] max fitness: -54.97072455431481[K
-[63/300] max fitness: -54.97072455431481[K
-[64/300] max fitness: -54.97072455431481[K
-[65/300] max fitness: -54.97072455431481[K
-[66/300] max fitness: -54.97072455431481[K
-[67/300] max fitness: -54.97072455431481[K
-[68/300] max fitness: -54.97072455431481[K
-[69/300] max fitness: -54.97072455431481[K
-[70/300] max fitness: -54.97072455431481[K
-[71/300] max fitness: -54.97072455431481[K
-[72/300] max fitness: -54.97072455431481[K
-[73/300] max fitness: -54.97072455431481[K
-[74/300] max fitness: -54.97072455431481[K
-[75/300] max fitness: -54.97072455431481[K
-[76/300] max fitness: -54.97072455431481[K
-[77/300] max fitness: -54.97072455431481[K
-[78/300] max fitness: -54.97072455431481[K
-[79/300] max fitness: -54.97072455431481[K
-[80/300] max fitness: -54.97072455431481[K
-[81/300] max fitness: -54.97072455431481[K
-[82/300] max fitness: -54.97072455431481[K
-[83/300] max fitness: -54.97072455431481[K
-[84/300] max fitness: -54.97072455431481[K
-[85/300] max fitness: -54.97072455431481[K
-[86/300] max fitness: -54.97072455431481[K
-[87/300] max fitness: -44.844855976219186[K
+[19/300] max fitness: -1.0[K
+[20/300] max fitness: -1.0[K
+[21/300] max fitness: -1.0[K
+[22/300] max fitness: -1.0[K
+[23/300] max fitness: -1.0[K
+[24/300] max fitness: -1.0[K
+[25/300] max fitness: -1.0[K
+[26/300] max fitness: -1.0[K
+[27/300] max fitness: -1.0[K
+[28/300] max fitness: -1.0[K
+[29/300] max fitness: -1.0[K
+[30/300] max fitness: -1.0[K
+[31/300] max fitness: -1.0[K
+[32/300] max fitness: -1.0[K
+[33/300] max fitness: -1.0[K
+[34/300] max fitness: -1.0[K
+[35/300] max fitness: -1.0[K
+[36/300] max fitness: -1.0[K
+[37/300] max fitness: -1.0[K
+[38/300] max fitness: -1.0[K
+[39/300] max fitness: -1.0[K
+[40/300] max fitness: -1.0[K
+[41/300] max fitness: -1.0[K
+[42/300] max fitness: -1.0[K
+[43/300] max fitness: -1.0[K
+[44/300] max fitness: -1.0[K
+[45/300] max fitness: -1.0[K
+[46/300] max fitness: -1.0[K
+[47/300] max fitness: -1.0[K
+[48/300] max fitness: -1.0[K
+[49/300] max fitness: -1.0[K
+[50/300] max fitness: -1.0[K
+[51/300] max fitness: -1.0[K
+[52/300] max fitness: -1.0[K
+[53/300] max fitness: -1.0[K
+[54/300] max fitness: -1.0[K
+[55/300] max fitness: -1.0[K
+[56/300] max fitness: -1.0[K
+[57/300] max fitness: -1.0[K
+[58/300] max fitness: -1.0[K
+[59/300] max fitness: -1.0[K
+[60/300] max fitness: -1.0[K
+[61/300] max fitness: -1.0[K
+[62/300] max fitness: -1.0[K
+[63/300] max fitness: -1.0[K
+[64/300] max fitness: -1.0[K
+[65/300] max fitness: -1.0[K
+[66/300] max fitness: -1.0[K
+[67/300] max fitness: -1.0[K
+[68/300] max fitness: -1.0[K
+[69/300] max fitness: -1.0[K
+[70/300] max fitness: -1.0[K
+[71/300] max fitness: -1.0[K
+[72/300] max fitness: -1.0[K
+[73/300] max fitness: -1.0[K
+[74/300] max fitness: -1.0[K
+[75/300] max fitness: -1.0[K
+[76/300] max fitness: -1.0[K
+[77/300] max fitness: -1.0[K
+[78/300] max fitness: -1.0[K
+[79/300] max fitness: -1.0[K
+[80/300] max fitness: -1.0[K
+[81/300] max fitness: -1.0[K
+[82/300] max fitness: -1.0[K
+[83/300] max fitness: -1.0[K
+[84/300] max fitness: -1.0[K
+[85/300] max fitness: -1.0[K
+[86/300] max fitness: -1.0[K
+[87/300] max fitness: -1.0[K
 [88/300] max fitness: -1.0[K
 [89/300] max fitness: -1.0[K
 [90/300] max fitness: -1.0[K
@@ -505,49 +539,221 @@ evolutionary algorithm.</p>
 [231/300] max fitness: -1.0[K
 [232/300] max fitness: -1.0[K
 [233/300] max fitness: -1.0[K
-[234/300] max fitness: -0.0[K
+[234/300] max fitness: -1.0[K
+[235/300] max fitness: -1.0[K
+[236/300] max fitness: -1.0[K
+[237/300] max fitness: -1.0[K
+[238/300] max fitness: -1.0[K
+[239/300] max fitness: -1.0[K
+[240/300] max fitness: -1.0[K
+[241/300] max fitness: -1.0[K
+[242/300] max fitness: -1.0[K
+[243/300] max fitness: -0.0[K
+
+[2/300] max fitness: -49.56594653387306[K
+[3/300] max fitness: -1.0[K
+[4/300] max fitness: -1.0[K
+[5/300] max fitness: -1.0[K
+[6/300] max fitness: -1.0[K
+[7/300] max fitness: -1.0[K
+[8/300] max fitness: -1.0[K
+[9/300] max fitness: -1.0[K
+[10/300] max fitness: -1.0[K
+[11/300] max fitness: -1.0[K
+[12/300] max fitness: -1.0[K
+[13/300] max fitness: -1.0[K
+[14/300] max fitness: -1.0[K
+[15/300] max fitness: -1.0[K
+[16/300] max fitness: -1.0[K
+[17/300] max fitness: -1.0[K
+[18/300] max fitness: -1.0[K
+[19/300] max fitness: -1.0[K
+[20/300] max fitness: -1.0[K
+[21/300] max fitness: -1.0[K
+[22/300] max fitness: -1.0[K
+[23/300] max fitness: -1.0[K
+[24/300] max fitness: -1.0[K
+[25/300] max fitness: -1.0[K
+[26/300] max fitness: -1.0[K
+[27/300] max fitness: -1.0[K
+[28/300] max fitness: -1.0[K
+[29/300] max fitness: -1.0[K
+[30/300] max fitness: -1.0[K
+[31/300] max fitness: -1.0[K
+[32/300] max fitness: -1.0[K
+[33/300] max fitness: -1.0[K
+[34/300] max fitness: -1.0[K
+[35/300] max fitness: -1.0[K
+[36/300] max fitness: -1.0[K
+[37/300] max fitness: -1.0[K
+[38/300] max fitness: -1.0[K
+[39/300] max fitness: -1.0[K
+[40/300] max fitness: -1.0[K
+[41/300] max fitness: -1.0[K
+[42/300] max fitness: -1.0[K
+[43/300] max fitness: -1.0[K
+[44/300] max fitness: -1.0[K
+[45/300] max fitness: -1.0[K
+[46/300] max fitness: -1.0[K
+[47/300] max fitness: -1.0[K
+[48/300] max fitness: -1.0[K
+[49/300] max fitness: -1.0[K
+[50/300] max fitness: -1.0[K
+[51/300] max fitness: -1.0[K
+[52/300] max fitness: -1.0[K
+[53/300] max fitness: -1.0[K
+[54/300] max fitness: -1.0[K
+[55/300] max fitness: -1.0[K
+[56/300] max fitness: -1.0[K
+[57/300] max fitness: -1.0[K
+[58/300] max fitness: -1.0[K
+[59/300] max fitness: -1.0[K
+[60/300] max fitness: -1.0[K
+[61/300] max fitness: -1.0[K
+[62/300] max fitness: -1.0[K
+[63/300] max fitness: -1.0[K
+[64/300] max fitness: -1.0[K
+[65/300] max fitness: -1.0[K
+[66/300] max fitness: -1.0[K
+[67/300] max fitness: -1.0[K
+[68/300] max fitness: -1.0[K
+[69/300] max fitness: -1.0[K
+[70/300] max fitness: -1.0[K
+[71/300] max fitness: -1.0[K
+[72/300] max fitness: -1.0[K
+[73/300] max fitness: -1.0[K
+[74/300] max fitness: -1.0[K
+[75/300] max fitness: -1.0[K
+[76/300] max fitness: -1.0[K
+[77/300] max fitness: -1.0[K
+[78/300] max fitness: -1.0[K
+[79/300] max fitness: -1.0[K
+[80/300] max fitness: -1.0[K
+[81/300] max fitness: -1.0[K
+[82/300] max fitness: -1.0[K
+[83/300] max fitness: -1.0[K
+[84/300] max fitness: -1.0[K
+[85/300] max fitness: -1.0[K
+[86/300] max fitness: -1.0[K
+[87/300] max fitness: -1.0[K
+[88/300] max fitness: -1.0[K
+[89/300] max fitness: -1.0[K
+[90/300] max fitness: -1.0[K
+[91/300] max fitness: -1.0[K
+[92/300] max fitness: -1.0[K
+[93/300] max fitness: -1.0[K
+[94/300] max fitness: -1.0[K
+[95/300] max fitness: -1.0[K
+[96/300] max fitness: -1.0[K
+[97/300] max fitness: -1.0[K
+[98/300] max fitness: -1.0[K
+[99/300] max fitness: -1.0[K
+[100/300] max fitness: -1.0[K
+[101/300] max fitness: -1.0[K
+[102/300] max fitness: -1.0[K
+[103/300] max fitness: -1.0[K
+[104/300] max fitness: -1.0[K
+[105/300] max fitness: -1.0[K
+[106/300] max fitness: -1.0[K
+[107/300] max fitness: -1.0[K
+[108/300] max fitness: -1.0[K
+[109/300] max fitness: -1.0[K
+[110/300] max fitness: -1.0[K
+[111/300] max fitness: -1.0[K
+[112/300] max fitness: -1.0[K
+[113/300] max fitness: -1.0[K
+[114/300] max fitness: -1.0[K
+[115/300] max fitness: -1.0[K
+[116/300] max fitness: -1.0[K
+[117/300] max fitness: -1.0[K
+[118/300] max fitness: -1.0[K
+[119/300] max fitness: -1.0[K
+[120/300] max fitness: -1.0[K
+[121/300] max fitness: -1.0[K
+[122/300] max fitness: -1.0[K
+[123/300] max fitness: -1.0[K
+[124/300] max fitness: -1.0[K
+[125/300] max fitness: -1.0[K
+[126/300] max fitness: -1.0[K
+[127/300] max fitness: -1.0[K
+[128/300] max fitness: -1.0[K
+[129/300] max fitness: -1.0[K
+[130/300] max fitness: -1.0[K
+[131/300] max fitness: -1.0[K
+[132/300] max fitness: -1.0[K
+[133/300] max fitness: -1.0[K
+[134/300] max fitness: -1.0[K
+[135/300] max fitness: -1.0[K
+[136/300] max fitness: -1.0[K
+[137/300] max fitness: -1.0[K
+[138/300] max fitness: -1.0[K
+[139/300] max fitness: -1.0[K
+[140/300] max fitness: -1.0[K
+[141/300] max fitness: -1.0[K
+[142/300] max fitness: -1.0[K
+[143/300] max fitness: -1.0[K
+[144/300] max fitness: -1.0[K
+[145/300] max fitness: -1.0[K
+[146/300] max fitness: -1.0[K
+[147/300] max fitness: -1.0[K
+[148/300] max fitness: -1.0[K
+[149/300] max fitness: -1.0[K
+[150/300] max fitness: -1.0[K
+[151/300] max fitness: -1.0[K
+[152/300] max fitness: -1.0[K
+[153/300] max fitness: -1.0[K
+[154/300] max fitness: -1.0[K
+[155/300] max fitness: -1.0[K
+[156/300] max fitness: -1.0[K
+[157/300] max fitness: -1.0[K
+[158/300] max fitness: -1.0[K
+[159/300] max fitness: -1.0[K
+[160/300] max fitness: -1.0[K
+[161/300] max fitness: -1.0[K
+[162/300] max fitness: -1.0[K
+[163/300] max fitness: -1.0[K
+[164/300] max fitness: -1.0[K
+[165/300] max fitness: -1.0[K
+[166/300] max fitness: -1.0[K
+[167/300] max fitness: -1.0[K
+[168/300] max fitness: -1.0[K
+[169/300] max fitness: -1.0[K
+[170/300] max fitness: -1.0[K
+[171/300] max fitness: -1.0[K
+[172/300] max fitness: -0.0[K
 </pre></div>
 </div>
-<p>After finishing the evolution, we plot the result and log the final
-evolved expression.</p>
+<p>After finishing the evolution, we plot the evolution of the fittest individual
+with and without genome reordering</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">width</span> <span class="o">=</span> <span class="mf">9.0</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">width</span> <span class="o">/</span> <span class="n">scipy</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">golden</span><span class="p">))</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="n">width</span><span class="p">,</span> <span class="n">width</span> <span class="o">/</span> <span class="n">scipy</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">golden</span><span class="p">])</span>
 
-<span class="n">ax_fitness</span><span class="p">,</span> <span class="n">ax_function</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">ax_fitness</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Generation&quot;</span><span class="p">)</span>
-<span class="n">ax_fitness</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Fitness&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="s2">&quot;fitness_champion&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Champion&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history_with_reorder</span><span class="p">[</span><span class="s2">&quot;fitness_champion&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Champion with reorder&quot;</span><span class="p">)</span>
 
-<span class="n">ax_fitness</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="s2">&quot;fitness_champion&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Champion&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Generation&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Fitness&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s2">&quot;Champion&quot;</span><span class="p">,</span> <span class="s2">&quot;Champion with reorder&quot;</span><span class="p">])</span>
 
-<span class="n">ax_fitness</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;symlog&quot;</span><span class="p">)</span>
-<span class="n">ax_fitness</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0e2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-<span class="n">ax_fitness</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;0.7&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;symlog&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0e2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;0.7&quot;</span><span class="p">)</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">champion</span><span class="o">.</span><span class="n">to_func</span><span class="p">()</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">([</span><span class="n">x_i</span><span class="p">])</span> <span class="k">for</span> <span class="n">x_i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
-<span class="n">y_target</span> <span class="o">=</span> <span class="p">[</span><span class="n">f_target</span><span class="p">([</span><span class="n">x_i</span><span class="p">])</span> <span class="k">for</span> <span class="n">x_i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
-
-<span class="n">ax_function</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y_target</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Target&quot;</span><span class="p">)</span>
-<span class="n">ax_function</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Champion&quot;</span><span class="p">)</span>
-<span class="n">ax_function</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">ax_function</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$f(x)$&quot;</span><span class="p">)</span>
-<span class="n">ax_function</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$x$&quot;</span><span class="p">)</span>
-
-<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;example_minimal.pdf&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;example_reorder.pdf&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="example minimal" class="sphx-glr-single-img" src="../_images/sphx_glr_example_minimal_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  9.712 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-minimal-py">
+<img alt="example reorder" class="sphx-glr-single-img" src="../_images/sphx_glr_example_reorder_001.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  24.133 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-reorder-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/eb31d3eeb3ff7e7d176ebb4eb4e9ba6e/example_minimal.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_minimal.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/ebc84819f51720cc4f44c5363ad5dcdc/example_reorder.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_reorder.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/10b83db55be7e18a4658a8a57193dd5c/example_minimal.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">example_minimal.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/160c6787ccc7bab47e121909b760d5c8/example_reorder.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">example_reorder.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
 </div>
 
 
@@ -558,10 +764,10 @@ evolved expression.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="example_multi_genome.html" class="btn btn-neutral float-right" title="Example for evolutionary regression with multiple genomes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="example_parametrized_nodes.html" class="btn btn-neutral float-right" title="Example for evolutionary regression with parametrized nodes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="example_caching.html" class="btn btn-neutral float-left" title="Example demonstrating the use of the caching decorator." accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="example_multi_genome.html" class="btn btn-neutral float-left" title="Example for evolutionary regression with multiple genomes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
