@@ -135,6 +135,24 @@ def test_evolve_two_expressions(population_params, ea_params):
     assert abs(pop.champion.fitness) == pytest.approx(0.0)
 
 
+def test_finite_max_generations_or_max_objective_calls(
+    population_params, genome_params, ea_params
+):
+    def objective(individual):
+        individual.fitness = float(individual.idx)
+        return individual
+
+    pop = cgp.Population(**population_params, genome_params=genome_params)
+    ea = cgp.ea.MuPlusLambda(**ea_params)
+    evolve_params = {
+        "max_generations": np.inf,
+        "min_fitness": 0,
+        "max_objective_calls": np.inf,
+    }
+    with pytest.raises(ValueError):
+        cgp.evolve(pop, objective, ea, **evolve_params)
+
+
 def _objective_speedup_parallel_evolve(individual):
 
     time.sleep(0.25)

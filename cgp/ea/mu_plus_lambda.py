@@ -52,6 +52,8 @@ class MuPlusLambda:
         self.local_search = local_search
         self.k_local_search = k_local_search
 
+        self.n_objective_calls: int = 0
+
     def initialize_fitness_parents(
         self, pop: Population, objective: Callable[[IndividualBase], IndividualBase]
     ) -> None:
@@ -145,6 +147,9 @@ class MuPlusLambda:
     def _compute_fitness(
         self, combined: List[IndividualBase], objective: Callable[[IndividualBase], IndividualBase]
     ) -> List[IndividualBase]:
+
+        self.update_n_objective_calls(combined)
+
         # computes fitness on all individuals, objective functions
         # should return immediately if fitness is not None
         if self.n_processes == 1:
@@ -182,3 +187,11 @@ class MuPlusLambda:
 
         """
         return combined[:n_parents]
+
+    def update_n_objective_calls(self, combined: List[IndividualBase]) -> None:
+        """Increase n_objective_calls by the number of individuals with fitness=None,
+         i.e., for which the objective function will be evaluated.
+        """
+        for individual in combined:
+            if individual.fitness is None:
+                self.n_objective_calls += 1
