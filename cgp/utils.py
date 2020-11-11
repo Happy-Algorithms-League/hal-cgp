@@ -2,7 +2,7 @@ import functools
 import hashlib
 import os
 import pickle
-from typing import Any, Callable, Dict, List, Tuple, Type, Union
+from typing import Any, Callable, cast, Dict, List, Tuple, Type, TypeVar, Union
 
 import numpy as np
 
@@ -203,11 +203,13 @@ def primitives_from_class_names(primitives_str: Tuple[str, ...]) -> Tuple[Type[N
     return tuple(primitives)
 
 
-def objective(
-    f: Callable[[IndividualBase, Any, Any], IndividualBase]
-) -> Callable[[IndividualBase, Any, Any], IndividualBase]:
+F = TypeVar("F", bound=Callable[..., IndividualBase])
+
+
+def objective(f: F) -> F:
     """ Decorator for the objective function.
-    Skips evaluations of individuals with fitness != None
+    Skips evaluations of individuals with fitness != None,
+    i.e., for individuals where the fitness has been evaluated already.
 
     Parameters
     ----------
@@ -222,4 +224,4 @@ def objective(
         else:
             return individual
 
-    return wrapped
+    return cast(F, wrapped)
