@@ -222,3 +222,7 @@ def primitives_from_class_names(primitives_str: Tuple[str, ...]) -> Tuple[Type[N
         primitives.append(primitives_dict[s])
 
     return tuple(primitives)
+
+
+def useless_function():
+    return None
