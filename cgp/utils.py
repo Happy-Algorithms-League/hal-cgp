@@ -2,7 +2,7 @@ import functools
 import hashlib
 import os
 import pickle
-from typing import Any, Callable, cast, Dict, List, Tuple, Type, TypeVar, Union
+from typing import Any, Callable, Dict, List, Tuple, Type, TypeVar, Union, cast
 
 import numpy as np
 
