@@ -9,6 +9,7 @@ env:
 branches:
   only:
     - master
+    - sphinx_doc/multi_version
 jobs:
   exclude:
   - python: "3.6"
@@ -27,6 +28,7 @@ install:
   - pip install -e .$DEP
   - pip install pytest-cov coveralls
 script:
+  - git fetch --all --tags
   - black --check .
   - flake8 --config=.flake8 .
   - mypy cgp
@@ -44,6 +46,7 @@ deploy:
     on:
       python: 3.8
       condition: $DEP = "[all]"
+      tags: true
     edge: true
   - provider: pages:git
     skip_cleanup: true
