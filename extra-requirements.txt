@@ -12,7 +12,7 @@ isort ~=5.2.2
 # doc requirements
 sphinx ~=3.1.2
 recommonmark~=0.6.0
-msmb_theme~=1.2.0
 sphinx-rtd-theme~=0.5.0
 sphinx-gallery~=0.8.0
+sphinx-multiversion~=0.2.4
 pillow~=7.2.0
