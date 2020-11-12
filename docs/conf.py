@@ -10,21 +10,21 @@ import inspect
 import os
 import sys
 
-import msmb_theme
+import sphinx_rtd_theme
+
+# -- Project information -----------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import cgp
+rootdir = os.path.join(os.getenv("SPHINX_MULTIVERSION_SOURCEDIR", default="."), "../")
+sys.path.insert(0, rootdir)
 
-sys.path.insert(0, os.path.join(os.path.abspath("."), "../"))
-
-
-# -- Project information -----------------------------------------------------
+import cgp  # noqa: E402 isort:skip
 
 project = "hal-cgp"
-copyright = "2020, Happy Algorithms League"
+copyright = "2021, Happy Algorithms League"
 author = cgp.__author__
 
 # The full version, including alpha/beta/rc tags
@@ -40,7 +40,9 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.linkcode",
     "recommonmark",
+    "sphinx_rtd_theme",
     "sphinx_gallery.gen_gallery",
+    "sphinx_multiversion",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -57,9 +59,17 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "msmb_theme"
+html_theme = "sphinx_rtd_theme"
 
-html_theme_path = [msmb_theme.get_html_theme_path()]
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
+
+# Configuration for multiversion builds
+smv_branch_whitelist = "master"  # Only build master branch
+smv_remote_whitelist = None
+smv_tag_whitelist = "0.2.0"  # Only release 0.2.0 has a sphinx documentation
+smv_released_pattern = r".*"  # Tags only
+smv_outputdir_format = "{ref.name}"  # Use the branch/tag name
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
