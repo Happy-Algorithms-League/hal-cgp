@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 import cgp
+from cgp.genome import ID_INPUT_NODE, ID_NON_CODING_GENE, ID_OUTPUT_NODE
 
 
 def test_assert_mutation_rate(rng_seed, genome_params, mutation_rate):
@@ -76,3 +77,56 @@ def test_parent_individuals_are_assigned_correct_indices(population_params, geno
 
     for idx, ind in enumerate(pop.parents):
         assert ind.idx == idx
+
+
+def test_individual_init(population_params, genome_params):
+
+    dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        ID_OUTPUT_NODE,
+        3,
+        ID_NON_CODING_GENE,
+    ]
+
+    def individual_init(ind):
+        ind.genome.dna = dna
+        return ind
+
+    genome_params = {
+        "n_inputs": 1,
+        "n_outputs": 1,
+        "n_columns": 3,
+        "n_rows": 1,
+        "levels_back": None,
+        "primitives": (cgp.Add, cgp.Sub, cgp.ConstantFloat),
+    }
+
+    # without passing individual_init comparison fails
+    pop = cgp.Population(**population_params, genome_params=genome_params)
+    for ind in pop.parents:
+        with pytest.raises(AssertionError):
+            assert ind.genome.dna == dna
+
+    # with passing individual_init comparison succeeds
+    pop = cgp.Population(
+        **population_params, genome_params=genome_params, individual_init=individual_init
+    )
+    for ind in pop.parents:
+        assert ind.genome.dna == dna
+
+
+def test_individual_init_expects_callable(population_params, genome_params):
+    # passing a list as individual_init fails
+    with pytest.raises(TypeError):
+        cgp.Population(**population_params, genome_params=genome_params, individual_init=[])
