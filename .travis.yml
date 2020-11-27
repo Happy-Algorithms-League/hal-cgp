@@ -10,6 +10,8 @@ branches:
   only:
     - master
     - sphinx_doc/multi_version
+git:
+  depth: false
 jobs:
   exclude:
   - python: "3.6"
