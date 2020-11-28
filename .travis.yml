@@ -27,6 +27,7 @@ before_install:
   - source activate myenv
   - pip install --upgrade pip
 install:
+  - git fetch --all --tags
   - pip install -e .$DEP
   - pip install pytest-cov coveralls
 script:
