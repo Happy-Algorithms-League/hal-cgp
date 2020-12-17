@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Callable, List, Union
 
 import numpy as np
 
@@ -17,6 +17,7 @@ class Population:
         mutation_rate: float,
         seed: int,
         genome_params: Union[dict, List[dict]],
+        individual_init: Union[Callable[[IndividualBase], IndividualBase], None] = None,
     ) -> None:
         """Init function.
 
@@ -30,6 +31,9 @@ class Population:
             Seed for internal random number generator.
         genome_params : dict
             Parameters for the genomes of the population's individuals.
+        individual_init: callable, optional
+            If not None, called for each individual of the initial
+            parent population, for example, to set the dna of parents.
         """
         self.n_parents = n_parents  # number of individuals in parent population
 
@@ -49,7 +53,10 @@ class Population:
         self.generation = 0
         self._max_idx = 0  # keeps track of maximal idx in population used to label individuals
 
-        self._generate_random_parent_population()
+        if individual_init is not None and not callable(individual_init):
+            raise TypeError("individual_init must be a callable")
+
+        self._generate_random_parent_population(individual_init)
 
     @property
     def champion(self) -> IndividualBase:
@@ -74,10 +81,15 @@ class Population:
     def __getitem__(self, idx: int) -> IndividualBase:
         return self._parents[idx]
 
-    def _generate_random_parent_population(self) -> None:
+    def _generate_random_parent_population(
+        self, individual_init: Union[Callable[[IndividualBase], IndividualBase], None] = None
+    ) -> None:
         parents: List[IndividualBase] = []
         for _ in range(self.n_parents):
-            parents.append(self.generate_random_individual())
+            ind = self.generate_random_individual()
+            if individual_init is not None:
+                ind = individual_init(ind)
+            parents.append(ind)
         self._parents = parents
 
     def get_idx_for_new_individual(self) -> int:
