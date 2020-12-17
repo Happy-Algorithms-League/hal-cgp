@@ -603,3 +603,51 @@ def test_custom_node_with_custom_atomic_operator():
     _test_graph_call_and_to_x_compilations(
         genome, x, y_target, test_graph_call=False, test_to_sympy=False
     )
+
+
+def test_custom_node_with_custom_atomic_operator_with_external_library():
+    scipy_const = pytest.importorskip("scipy.constants")
+
+    @cgp.atomic_operator
+    def f_scale(x):
+        return scipy_const.golden_ratio * x
+
+    class MyScaledAdd(cgp.node.OperatorNode):
+
+        _arity = 2
+        _def_output = "f_scale((x_0 + x_1))"
+
+    primitives = (MyScaledAdd,)
+    params = {
+        "n_inputs": 2,
+        "n_outputs": 1,
+        "n_columns": 1,
+        "n_rows": 1,
+        "levels_back": 1,
+        "primitives": primitives,
+    }
+
+    genome = cgp.Genome(**params)
+
+    # f(x) = f_scale(x[0] + x[1])
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
+
+    x = [5.0, 1.5]
+    y_target = [scipy_const.golden_ratio * (x[0] + x[1])]
+
+    _test_graph_call_and_to_x_compilations(
+        genome, x, y_target, test_graph_call=False, test_to_sympy=False
+    )
