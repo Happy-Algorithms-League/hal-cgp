@@ -7,7 +7,7 @@ __url__ = "https://happy-algorithms-league.github.io/hal-cgp/"
 __doc__ = f"{__description__} <{__url__}>"
 
 from . import ea, local_search, utils
-from .cartesian_graph import CartesianGraph
+from .cartesian_graph import CartesianGraph, atomic_operator
 from .genome import Genome
 from .hl_api import evolve
 from .individual import IndividualMultiGenome, IndividualSingleGenome
