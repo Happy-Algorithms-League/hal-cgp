@@ -517,3 +517,43 @@ def test_repr():
     node = cgp.Add(idx, input_nodes)
     node_repr = str(node)
     assert node_repr == "Add(idx: 0, active: False, arity: 2, input_nodes [1, 2]"
+
+
+def test_custom_node():
+    class MyScaledAdd(cgp.node.OperatorNode):
+
+        _arity = 2
+        _def_output = "2.0 * (x_0 + x_1)"
+
+    primitives = (MyScaledAdd,)
+    params = {
+        "n_inputs": 2,
+        "n_outputs": 1,
+        "n_columns": 1,
+        "n_rows": 1,
+        "levels_back": 1,
+        "primitives": primitives,
+    }
+
+    genome = cgp.Genome(**params)
+
+    # f(x) = 2 * (x[0] + x[1])
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
+
+    x = [5.0, 1.5]
+    y_target = [2 * (x[0] + x[1])]
+
+    _test_graph_call_and_to_x_compilations(genome, x, y_target)
