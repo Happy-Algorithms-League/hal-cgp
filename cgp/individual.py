@@ -28,13 +28,12 @@ class IndividualBase:
 
     __base_attrs__: Set[str]
 
-    def __init__(self, fitness: Union[float, None]) -> None:
+    def __init__(self) -> None:
         """Init function.
-
-        fitness : float
-            Fitness of the individual.
         """
-        self.fitness: Union[float, None] = fitness
+        self._fitness: List[Union[None, float]] = [None]
+        self._objective_idx: int = 0
+
         self.idx: Union[int, None] = None
         self.parent_idx: Union[int, None] = None
 
@@ -42,7 +41,32 @@ class IndividualBase:
 
         # store the attributes present right after instance creation,
         # i.e., all attributes not set by the user
-        cls.__base_attrs__ = set(cls(None, None).__dict__.keys())
+        cls.__base_attrs__ = set(cls(None).__dict__.keys())
+
+    @property
+    def fitness(self) -> float:
+        return sum([f for f in self._fitness if f is not None])
+
+    @fitness.setter
+    def fitness(self, v: float) -> None:
+        if not isinstance(v, float):
+            raise ValueError(f"IndividualBase fitness value is of wrong type {type(v)}.")
+
+        self._fitness[self._objective_idx] = v
+
+    @property
+    def fitness_current_objective(self) -> Union[None, float]:
+        return self._fitness[self._objective_idx]
+
+    @property
+    def objective_idx(self) -> int:
+        return self._objective_idx
+
+    @objective_idx.setter
+    def objective_idx(self, v: int) -> None:
+        if len(self._fitness) <= v:
+            self._fitness = list(self._fitness) + [None]
+        self._objective_idx = v
 
     def clone(self):
         raise NotImplementedError()
@@ -55,6 +79,9 @@ class IndividualBase:
             if attr not in self.__base_attrs__:
                 setattr(other, attr, copy.deepcopy(getattr(self, attr)))
 
+    def fitness_is_None(self) -> bool:
+        return self._fitness[self._objective_idx] is None
+
     def mutate(self, mutation_rate, rng):
         raise NotImplementedError()
 
@@ -63,6 +90,10 @@ class IndividualBase:
 
     def reorder_genome(self, rng):
         raise NotImplementedError()
+
+    def reset_fitness(self):
+        for i in range(len(self._fitness)):
+            self._fitness[i] = None
 
     def to_func(self):
         raise NotImplementedError()
@@ -111,27 +142,38 @@ class IndividualBase:
     def _update_parameters_from_torch_class(genome: Genome, torch_cls: "torch.nn.Module") -> bool:
         return genome.update_parameters_from_torch_class(torch_cls)
 
+    def __lt__(self, other):
+        for i in range(len(self._fitness)):
+            if self._fitness[i] is None and other._fitness[i] is None:
+                return False
+            elif self._fitness[i] is not None and other._fitness[i] is None:
+                return False
+            elif self._fitness[i] is None and other._fitness[i] is not None:
+                return True
+            elif self._fitness[i] < other._fitness[i]:
+                return True
+        return False
+
 
 class IndividualSingleGenome(IndividualBase):
     """An individual representing a particular computational graph.
     """
 
-    def __init__(self, fitness: Union[float, None], genome: Genome) -> None:
+    def __init__(self, genome: Genome) -> None:
         """Init function.
 
-        fitness : float
-            Fitness of the individual.
         genome: Genome
             Genome of the individual.
         """
-        super().__init__(fitness)
+        super().__init__()
         self.genome: Genome = genome
 
     def __repr__(self):
         return f"Individual(idx={self.idx}, fitness={self.fitness}, genome={self.genome}))"
 
     def clone(self) -> "IndividualSingleGenome":
-        ind = IndividualSingleGenome(self.fitness, self.genome.clone())
+        ind = IndividualSingleGenome(self.genome.clone())
+        ind._fitness = list(self._fitness)
         ind.parent_idx = self.idx
         self._copy_user_defined_attributes(ind)
         return ind
@@ -139,7 +181,7 @@ class IndividualSingleGenome(IndividualBase):
     def mutate(self, mutation_rate: float, rng: np.random.RandomState) -> None:
         only_silent_mutations = self._mutate_genome(self.genome, mutation_rate, rng)
         if not only_silent_mutations:
-            self.fitness = None
+            self.reset_fitness()
 
     def randomize_genome(self, rng: np.random.RandomState) -> None:
         self._randomize_genome(self.genome, rng)
@@ -162,26 +204,25 @@ class IndividualSingleGenome(IndividualBase):
     def update_parameters_from_torch_class(self, torch_cls: "torch.nn.Module") -> None:
         any_parameter_updated = self._update_parameters_from_torch_class(self.genome, torch_cls)
         if any_parameter_updated:
-            self.fitness = None
+            self.reset_fitness()
 
 
 class IndividualMultiGenome(IndividualBase):
     """An individual with multiple genomes each representing a particular computational graph.
     """
 
-    def __init__(self, fitness: Union[float, None], genome: List[Genome]) -> None:
+    def __init__(self, genome: List[Genome]) -> None:
         """Init function.
 
-        fitness : float
-            Fitness of the individual.
         genome: List[Genome]
             List of genomes of the individual.
         """
-        super().__init__(fitness)
+        super().__init__()
         self.genome: List[Genome] = genome
 
     def clone(self) -> "IndividualMultiGenome":
-        ind = IndividualMultiGenome(self.fitness, [g.clone() for g in self.genome])
+        ind = IndividualMultiGenome([g.clone() for g in self.genome])
+        ind._fitness = list(self._fitness)
         ind.parent_idx = self.idx
         self._copy_user_defined_attributes(ind)
         return ind
@@ -190,7 +231,7 @@ class IndividualMultiGenome(IndividualBase):
         for g in self.genome:
             only_silent_mutations = self._mutate_genome(g, mutation_rate, rng)
             if not only_silent_mutations:
-                self.fitness = None
+                self.reset_fitness()
 
     def randomize_genome(self, rng: np.random.RandomState) -> None:
         for g in self.genome:
@@ -220,4 +261,4 @@ class IndividualMultiGenome(IndividualBase):
             ]
         )
         if any_parameter_updated:
-            self.fitness = None
+            self.reset_fitness()

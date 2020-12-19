@@ -64,7 +64,6 @@ class Population:
         """
 
         def key(ind: IndividualBase) -> float:
-            assert isinstance(ind.fitness, float)
             return ind.fitness
 
         return max(self._parents, key=key)
@@ -101,7 +100,7 @@ class Population:
         if isinstance(self._genome_params, dict):
             genome: Genome = Genome(**self._genome_params)
             individual_s = IndividualSingleGenome(
-                fitness=None, genome=genome
+                genome=genome
             )  # type: IndividualBase # indicates to mypy that
             # individual_s is instance of a child class of
             # IndividualBase
@@ -109,7 +108,7 @@ class Population:
         else:
             genomes: List[Genome] = [Genome(**gd) for gd in self._genome_params]
             individual_m = IndividualMultiGenome(
-                fitness=None, genome=genomes
+                genome=genomes
             )  # type: IndividualBase # indicates to mypy that
             # individual_m is an instance of a child class of
             # IndividualBase

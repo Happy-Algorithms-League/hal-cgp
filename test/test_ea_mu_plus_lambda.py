@@ -42,8 +42,7 @@ def test_fitness_contains_and_maintains_nan(population_params, genome_params, ea
     ea = cgp.ea.MuPlusLambda(**ea_params)
     ea.initialize_fitness_parents(pop, objective)
     ea.step(pop, objective)
-
-    assert np.nan in [ind.fitness for ind in pop]
+    assert any([np.isnan(ind.fitness) for ind in pop])
 
 
 def test_offspring_individuals_are_assigned_correct_indices(
@@ -94,7 +93,7 @@ def test_local_search_is_only_applied_to_best_k_individuals(
         return torch.nn.MSELoss()(torch.Tensor([[1.1]]), f(torch.zeros(1, 1)))
 
     def objective(ind):
-        if ind.fitness is not None:
+        if not ind.fitness_is_None():
             return ind
 
         f = ind.to_torch()
@@ -138,10 +137,9 @@ def test_raise_fitness_has_wrong_type(population_params, genome_params, ea_param
 
     pop = cgp.Population(**population_params, genome_params=genome_params)
     ea = cgp.ea.MuPlusLambda(**ea_params)
-    ea.initialize_fitness_parents(pop, objective)
 
     with pytest.raises(ValueError):
-        ea.step(pop, objective)
+        ea.initialize_fitness_parents(pop, objective)
 
 
 def test_initialize_fitness_parents(population_params, genome_params, ea_params):
@@ -153,7 +151,7 @@ def test_initialize_fitness_parents(population_params, genome_params, ea_params)
 
     ea = cgp.ea.MuPlusLambda(**ea_params)
     ea.initialize_fitness_parents(pop, objective)
-    assert all([ind.fitness is not None for ind in pop.parents])
+    assert all([not ind.fitness_is_None() for ind in pop.parents])
 
 
 def test_step(population_params, genome_params, ea_params):
@@ -241,7 +239,7 @@ def test_update_n_objective_calls(population_params, genome_params, ea_params):
     for _ in range(n_generations):
         offsprings = ea._create_new_offspring_generation(pop)
         combined = offsprings + pop.parents
-        n_objective_calls_expected += sum([1 for ind in combined if ind.fitness is None])
+        n_objective_calls_expected += sum([1 for ind in combined if ind.fitness_is_None()])
         combined = ea._compute_fitness(combined, objective)
         assert n_objective_calls_expected == ea.n_objective_calls
 
@@ -261,3 +259,56 @@ def test_update_n_objective_calls_mutation_rate_one(population_params, genome_pa
         ea.step(pop, objective)
         n_objective_calls_expected += ea_params["n_offsprings"]
         assert ea.n_objective_calls == n_objective_calls_expected
+
+
+def test_hurdles(population_params, genome_params, ea_params):
+
+    # make sure all offsprings are assigned fitness None
+    population_params["mutation_rate"] = 1.0
+    population_params["n_parents"] = 3
+    ea_params["n_offsprings"] = 3
+    ea_params["hurdle_percentile"] = [0.1, 0.0]
+
+    def objective_one(ind):
+        # assign low fitness to individuals 4 and 5 to check blocking via hurdle
+        if ind.idx in (4, 5):
+            ind.fitness = -float(ind.idx)
+        else:
+            ind.fitness = float(ind.idx)
+        return ind
+
+    def objective_two(ind):
+        if ind.idx == 4:
+            ind.fitness = -((1.0 + float(ind.idx)) ** 2)
+        else:
+            ind.fitness = (1.0 + float(ind.idx)) ** 2
+        return ind
+
+    pop = cgp.Population(**population_params, genome_params=genome_params)
+    ea = cgp.ea.MuPlusLambda(**ea_params)
+
+    ea.initialize_fitness_parents(pop, [objective_one, objective_two])
+
+    # while initializing parents, both objectives should have been
+    # evaluated for all parents; the parents fitness is hence the sum
+    # of both objectives
+    parents_expected = [(0, 1), (1, 5), (2, 11)]
+    for ind, ind_expected in zip(pop.parents, parents_expected):
+        assert ind.idx == ind_expected[0]
+        assert ind.fitness == pytest.approx(ind_expected[1])
+
+    # code below implements `ea.step`, but keeps offsprings around to
+    # check combined population
+    offsprings = ea._create_new_offspring_generation(pop)
+    combined = offsprings + pop.parents
+
+    combined = ea._compute_fitness(combined, [objective_one, objective_two])
+    combined = ea._sort(combined)
+
+    # individual 4 has higher fitness as individual 5 as the latter
+    # didn't make it past the first hurdle
+    combined_expected = [(3, 19), (2, 11), (1, 5), (0, 1), (4, -29), (5, -5)]
+    assert len(combined) == len(combined_expected)
+    for ind, ind_expected in zip(combined, combined_expected):
+        assert ind.idx == ind_expected[0]
+        assert ind.fitness == pytest.approx(ind_expected[1])
