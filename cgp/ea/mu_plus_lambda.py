@@ -1,4 +1,4 @@
-import concurrent.futures
+import multiprocessing as mp
 from typing import Callable, List, Union
 
 import numpy as np
@@ -61,7 +61,16 @@ class MuPlusLambda:
         self.k_local_search = k_local_search
         self.reorder_genome = reorder_genome
 
+        self.process_pool: Union[None, "mp.pool.Pool"]
+        if self.n_processes > 1:
+            self.process_pool = mp.Pool(processes=self.n_processes)
+        else:
+            self.process_pool = None
         self.n_objective_calls: int = 0
+
+    def __del__(self):
+        if self.n_processes > 1:
+            self.process_pool.close()
 
     def initialize_fitness_parents(
         self, pop: Population, objective: Callable[[IndividualBase], IndividualBase]
@@ -166,10 +175,12 @@ class MuPlusLambda:
         # computes fitness on all individuals, objective functions
         # should return immediately if fitness is not None
         if self.n_processes == 1:
+            # don't use the process pool if running just a single
+            # process to avoid any multiprocessing-associated overhead
             combined = list(map(objective, combined))
         else:
-            with concurrent.futures.ProcessPoolExecutor(max_workers=self.n_processes) as executor:
-                combined = list(executor.map(objective, combined))
+            assert isinstance(self.process_pool, mp.pool.Pool)
+            combined = self.process_pool.map(objective, combined)
 
         return combined
 
