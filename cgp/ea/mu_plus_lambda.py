@@ -24,7 +24,7 @@ class MuPlusLambda:
         *,
         tournament_size: Union[None, int] = None,
         n_processes: int = 1,
-        local_search: Callable[[IndividualBase], None] = lambda combined: None,
+        local_search: Union[None, Callable[[IndividualBase], None]] = None,
         k_local_search: Union[int, None] = None,
         reorder_genome: bool = False,
         hurdle_percentile: List = [0.0],
@@ -152,17 +152,53 @@ class MuPlusLambda:
         combined = self._compute_fitness(combined, objective)
         combined = self._sort(combined)
 
-        n_total = self.n_offsprings + pop.n_parents
-        k_local_search = n_total if self.k_local_search is None else self.k_local_search
-        for idx in range(k_local_search):
-            self.local_search(combined[idx])
+        if self.local_search is not None:
+            assert isinstance(pop.champion.fitness, float)
+            prev_avg_fitness: float = np.mean([ind.fitness for ind in combined])
 
-        combined = self._compute_fitness(combined, objective)
-        combined = self._sort(combined)
+            combined_copy = [ind.copy() for ind in combined]
+
+            k_local_search = (
+                len(combined_copy) if self.k_local_search is None else self.k_local_search
+            )
+            for idx in range(k_local_search):
+                self.local_search(combined_copy[idx])
+
+            combined_copy = self._compute_fitness(combined_copy, objective)
+
+            new_combined = self._create_new_combined_population_after_local_search(
+                combined, combined_copy
+            )
+
+            combined = self._sort(new_combined)
+
+            avg_fitness: float = np.mean([ind.fitness for ind in combined])
+            if prev_avg_fitness > avg_fitness:
+                raise RuntimeError(
+                    "The average fitness decreased after executing the local search. This"
+                    "indicates that something went wrong during the"
+                    "optimization. Aborting."
+                )
 
         pop.parents = self._create_new_parent_population(pop.n_parents, combined)
 
         return pop
+
+    @staticmethod
+    def _create_new_combined_population_after_local_search(
+        combined: List["IndividualBase"], combined_copy: List["IndividualBase"]
+    ) -> List["IndividualBase"]:
+        new_combined: List["IndividualBase"] = []
+        for ind in combined:
+            for ind_copy in combined_copy:
+                if ind.idx == ind_copy.idx:
+                    assert ind.fitness is not None
+                    assert ind_copy.fitness is not None
+                    if ind.fitness < ind_copy.fitness:
+                        new_combined.append(ind_copy)
+                    else:
+                        new_combined.append(ind)
+        return new_combined
 
     def _create_new_offspring_generation(self, pop: Population) -> List[IndividualBase]:
         # use tournament selection to randomly select individuals from

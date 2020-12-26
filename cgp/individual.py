@@ -71,6 +71,9 @@ class IndividualBase:
     def clone(self):
         raise NotImplementedError()
 
+    def copy(self):
+        raise NotImplementedError()
+
     def _copy_user_defined_attributes(self, other):
         """Copy all attributes that are not defined in __init__ of the (sub
         and super) class from self to other.
@@ -110,6 +113,12 @@ class IndividualBase:
     def update_parameters_from_torch_class(self, torch_cls):
         raise NotImplementedError()
 
+    def parameters_to_numpy_array(self, only_active_nodes: bool = False) -> "np.ndarray[float]":
+        raise NotImplementedError()
+
+    def update_parameters_from_numpy_array(self, params, params_names):
+        raise NotImplementedError()
+
     @staticmethod
     def _mutate_genome(genome: Genome, mutation_rate: float, rng: np.random.RandomState) -> bool:
         return genome.mutate(mutation_rate, rng)
@@ -141,6 +150,16 @@ class IndividualBase:
     @staticmethod
     def _update_parameters_from_torch_class(genome: Genome, torch_cls: "torch.nn.Module") -> bool:
         return genome.update_parameters_from_torch_class(torch_cls)
+
+    @staticmethod
+    def _parameters_to_numpy_array(genome: Genome, only_active_nodes: bool) -> "np.ndarray[float]":
+        return genome.parameters_to_numpy_array(only_active_nodes)
+
+    @staticmethod
+    def _update_parameters_from_numpy_array(
+        genome: Genome, params: "np.ndarray[float]", params_names: List[str]
+    ) -> bool:
+        return genome.update_parameters_from_numpy_array(params, params_names)
 
     def __lt__(self, other):
         for i in range(len(self._fitness)):
@@ -178,6 +197,14 @@ class IndividualSingleGenome(IndividualBase):
         self._copy_user_defined_attributes(ind)
         return ind
 
+    def copy(self) -> "IndividualSingleGenome":
+        ind = IndividualSingleGenome(self.genome.clone())
+        ind._fitness = list(self._fitness)
+        ind.idx = self.idx
+        ind.parent_idx = self.parent_idx
+        self._copy_user_defined_attributes(ind)
+        return ind
+
     def mutate(self, mutation_rate: float, rng: np.random.RandomState) -> None:
         only_silent_mutations = self._mutate_genome(self.genome, mutation_rate, rng)
         if not only_silent_mutations:
@@ -206,6 +233,18 @@ class IndividualSingleGenome(IndividualBase):
         if any_parameter_updated:
             self.reset_fitness()
 
+    def parameters_to_numpy_array(self, only_active_nodes: bool = False) -> "np.ndarray[float]":
+        return self._parameters_to_numpy_array(self.genome, only_active_nodes)
+
+    def update_parameters_from_numpy_array(
+        self, params: "np.ndarray[float]", params_names: List[str]
+    ) -> None:
+        any_parameter_updated: bool = self._update_parameters_from_numpy_array(
+            self.genome, params, params_names
+        )
+        if any_parameter_updated:
+            self.reset_fitness()
+
 
 class IndividualMultiGenome(IndividualBase):
     """An individual with multiple genomes each representing a particular computational graph.
@@ -224,6 +263,14 @@ class IndividualMultiGenome(IndividualBase):
         ind = IndividualMultiGenome([g.clone() for g in self.genome])
         ind._fitness = list(self._fitness)
         ind.parent_idx = self.idx
+        self._copy_user_defined_attributes(ind)
+        return ind
+
+    def copy(self) -> "IndividualMultiGenome":
+        ind = IndividualMultiGenome([g.clone() for g in self.genome])
+        ind._fitness = list(self._fitness)
+        ind.idx = self.idx
+        ind.parent_idx = self.parent_idx
         self._copy_user_defined_attributes(ind)
         return ind
 
@@ -260,5 +307,31 @@ class IndividualMultiGenome(IndividualBase):
                 for g, tcls in zip(self.genome, torch_cls)
             ]
         )
+        if any_parameter_updated:
+            self.reset_fitness()
+
+    def parameters_to_numpy_array(self, only_active_nodes: bool = False) -> "np.ndarray[float]":
+        params: List[np.ndarray[float]] = []
+        params_names: List[str] = []
+        for g in self.genome:
+            p, pn = self._parameters_to_numpy_array(g, only_active_nodes)
+            params.append(p)
+            params_names += pn
+        return np.hstack(params), params_names
+
+    def update_parameters_from_numpy_array(
+        self, params: "np.ndarray[float]", params_names: List[str]
+    ) -> None:
+        any_parameter_updated: bool = False
+        offset: int = 0
+        for g in self.genome:
+            n_parameters: int = len(g._parameter_names_to_values)
+            any_parameter_updated_inner: bool = self._update_parameters_from_numpy_array(
+                g,
+                params[offset : offset + n_parameters],
+                params_names[offset : offset + n_parameters],
+            )
+            any_parameter_updated = any_parameter_updated or any_parameter_updated_inner
+            offset += n_parameters
         if any_parameter_updated:
             self.reset_fitness()

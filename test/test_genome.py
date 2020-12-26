@@ -651,3 +651,102 @@ def test_genome_reordering_parameterization_consistency(rng):
 
     with pytest.raises(ValueError):
         genome.reorder(rng)
+
+
+def test_parameters_to_numpy_array():
+
+    primitives = (cgp.Parameter,)
+    genome = cgp.Genome(1, 1, 2, 1, primitives)
+    # [f0(x), f1(x)] = [c1, c2]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        0,
+        0,
+        ID_OUTPUT_NODE,
+        1,
+    ]
+
+    genome._parameter_names_to_values["<p1>"] = 0.8
+    genome._parameter_names_to_values["<p2>"] = 0.9
+
+    # all parameters
+    expected_params = np.array([0.8, 0.9])
+    expected_params_names = ["<p1>", "<p2>"]
+    params, params_names = genome.parameters_to_numpy_array()
+    assert np.all(params == pytest.approx(expected_params))
+    assert params_names == expected_params_names
+
+    # only parameters of active nodes
+    expected_params = np.array([0.8])
+    expected_params_names = ["<p1>"]
+    params, params_names = genome.parameters_to_numpy_array(only_active_nodes=True)
+    assert np.all(params == pytest.approx(expected_params))
+
+
+def test_update_parameters_from_numpy_array():
+
+    primitives = (cgp.Parameter,)
+    genome = cgp.Genome(1, 1, 2, 1, primitives)
+    # [f0(x), f1(x)] = [c1, c2]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        0,
+        0,
+        ID_OUTPUT_NODE,
+        1,
+    ]
+
+    params = np.array([0.8, 0.9])
+    params_names = ["<p1>", "<p2>"]
+    any_parameter_changed = genome.update_parameters_from_numpy_array(params, params_names)
+
+    assert any_parameter_changed
+    assert genome._parameter_names_to_values["<p1>"] == pytest.approx(0.8)
+    assert genome._parameter_names_to_values["<p2>"] == pytest.approx(0.9)
+
+    # parameters do not change value
+    any_parameter_changed = genome.update_parameters_from_numpy_array(params, params_names)
+
+    assert not any_parameter_changed
+    assert genome._parameter_names_to_values["<p1>"] == pytest.approx(0.8)
+    assert genome._parameter_names_to_values["<p2>"] == pytest.approx(0.9)
+
+
+def test_parameters_numpy_array_consistency():
+    primitives = (cgp.Parameter,)
+    genome = cgp.Genome(1, 1, 2, 1, primitives)
+    # [f0(x), f1(x)] = [c1, c2]
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        0,
+        0,
+        ID_OUTPUT_NODE,
+        1,
+    ]
+
+    genome._parameter_names_to_values["<p1>"] = 0.8
+    genome._parameter_names_to_values["<p2>"] = 0.9
+
+    genome.update_parameters_from_numpy_array(*genome.parameters_to_numpy_array())
+
+    assert genome._parameter_names_to_values["<p1>"] == pytest.approx(0.8)
+    assert genome._parameter_names_to_values["<p2>"] == pytest.approx(0.9)
+
+    genome._parameter_names_to_values["<p1>"] = 1.1
+    genome._parameter_names_to_values["<p2>"] = 1.2
+
+    genome.update_parameters_from_numpy_array(
+        *genome.parameters_to_numpy_array(only_active_nodes=True)
+    )
+
+    assert genome._parameter_names_to_values["<p1>"] == pytest.approx(1.1)
+    assert genome._parameter_names_to_values["<p2>"] == pytest.approx(1.2)
