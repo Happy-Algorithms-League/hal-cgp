@@ -29,6 +29,14 @@ if TYPE_CHECKING:
     from .genome import Genome
 
 
+CUSTOM_ATOMIC_OPERATORS = {}
+
+
+def atomic_operator(f: Callable) -> Callable:
+    CUSTOM_ATOMIC_OPERATORS[f.__name__] = f
+    return f
+
+
 class CartesianGraph:
     """Class representing a particular Cartesian graph defined by a
     Genome.
@@ -256,7 +264,7 @@ def _f(x):
     return [{s}]
 """
         func_str = self._fill_parameter_values(func_str)
-        exec(func_str)
+        exec(func_str, {**globals(), **CUSTOM_ATOMIC_OPERATORS}, locals())
         return locals()["_f"]
 
     def _format_output_str_numpy_of_all_nodes(self):
@@ -299,7 +307,7 @@ def _f(x):
     return np.stack([{s}], axis=1)
 """
         func_str = self._fill_parameter_values(func_str)
-        exec(func_str)
+        exec(func_str, {**globals(), **CUSTOM_ATOMIC_OPERATORS}, locals())
 
         return locals()["_f"]
 
@@ -358,7 +366,7 @@ class _C(torch.nn.Module):
         class_str += func_str
         class_str = self._fill_parameter_values(class_str)
 
-        exec(class_str)
+        exec(class_str, {**globals(), **CUSTOM_ATOMIC_OPERATORS}, locals())
         exec("_c = _C()")
 
         return locals()["_c"]
