@@ -2,12 +2,15 @@ import functools
 import hashlib
 import os
 import pickle
-from typing import Any, Callable, Dict, List, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple, Type, Union
 
 import numpy as np
 
 from .individual import IndividualMultiGenome, IndividualSingleGenome
 from .node import Node, primitives_dict
+
+if TYPE_CHECKING:
+    import multiprocessing as mp  # noqa: F401
 
 
 def __check_cache_consistency(fn: str, func: Callable[..., float]) -> None:
@@ -19,7 +22,9 @@ def __check_cache_consistency(fn: str, func: Callable[..., float]) -> None:
     can be found in the cache.
 
     """
-    cached_item: Union[Dict[str, Any], None] = __find_item_with_finite_return_value(fn)
+    cached_item: Union[Dict[str, Any], None] = __find_args_and_return_value_for_consistency_check(
+        fn
+    )
     if cached_item is None:
         return
 
@@ -33,21 +38,21 @@ def __check_cache_consistency(fn: str, func: Callable[..., float]) -> None:
         )
 
 
-def __find_item_with_finite_return_value(fn: str) -> Union[Dict[str, Any], None]:
-    """Find a cache entry which has a finite return value."""
+def __find_args_and_return_value_for_consistency_check(fn: str) -> Union[Dict[str, Any], None]:
+    """Try to retrieve argument and return value for consistency check."""
     if os.path.isfile(fn):
         with open(fn, "rb") as f:
-            while True:
-                try:
-                    cursor: Dict[str, Any] = pickle.load(f)
-                except EOFError:
-                    return None  # no entry yet, so not possible to check
+            try:
+                res: Dict[str, Any] = pickle.load(f)
+            except EOFError:
+                return None
 
-                cached_item: Dict[str, Any] = list(cursor.values())[0]
-                if np.isfinite(cached_item["return_value"]):
-                    return cached_item
-    else:
-        return None
+        if "args_return_value_consistency_check" in res and np.all(
+            np.isfinite(res["args_return_value_consistency_check"]["return_value"])
+        ):
+            return res["args_return_value_consistency_check"]
+
+    return None
 
 
 def __compute_key_from_args(*args: Any, **kwargs: Any) -> str:
@@ -97,14 +102,16 @@ def __compute_key_from_evaluation(
 def __find_result_in_cache_file(fn: str, key: str) -> Union[float, None]:
     if os.path.isfile(fn):
         with open(fn, "rb") as f:
-            while True:
-                try:
-                    cursor: Dict[str, Any] = pickle.load(f)
-                except EOFError:
-                    break
 
-                if key in cursor:
-                    return cursor[key]["return_value"]
+            try:
+                res = pickle.load(f)
+            except EOFError:
+                return None
+
+        if key in res:
+            return res[key]
+        else:
+            return None
 
     return None
 
@@ -112,11 +119,27 @@ def __find_result_in_cache_file(fn: str, key: str) -> Union[float, None]:
 def __store_new_cache_entry(
     fn: str, key: str, return_value: float, args: Tuple, kwargs: Dict[str, Any]
 ) -> None:
-    with open(fn, "ab") as f:
 
-        result = {"args": args, "kwargs": kwargs, "return_value": return_value}
+    res: Dict[str, Any]
+    try:
+        with open(fn, "rb") as f:
+            res = pickle.load(f)
+    except (EOFError, FileNotFoundError):
+        res = {}
 
-        pickle.dump({key: result}, f)
+    res[key] = return_value
+
+    if "args_return_value_consistency_check" not in res or not np.all(
+        np.isfinite(res["args_return_value_consistency_check"]["return_value"])
+    ):
+        res["args_return_value_consistency_check"] = {
+            "args": args,
+            "kwargs": kwargs,
+            "return_value": return_value,
+        }
+
+    with open(fn, "wb") as f:
+        pickle.dump(res, f)
 
 
 def disk_cache(
@@ -126,7 +149,8 @@ def disk_cache(
     fec_seed: int = 0,
     fec_min_value: float = -100.0,
     fec_max_value: float = 100.0,
-    fec_batch_size: int = 10
+    fec_batch_size: int = 10,
+    file_lock: Union[None, "mp.synchronize.Lock"] = None,
 ) -> Callable[[Callable[..., float]], Callable[..., float]]:
     """Cache function return values on disk.
 
@@ -169,16 +193,19 @@ def disk_cache(
     ----------
     fn : str
         Name of the cache file.
-    use_fec : bool
-        Whether to use functional equivalance checking.
-    fec_seed : int
-        Seed value for fec.
-    fec_min_value : float
-        Minimal value for fec input samples.
-    fec_max_value : float
-        Maximal value for fec input samples.
-    fec_batch_size : int
-        Number of fec input samples.
+    use_fec : bool, optional
+        Whether to use functional equivalance checking. Defaults to False.
+    fec_seed : int, optional
+        Seed value for fec. Defaults to 0.
+    fec_min_value : float, optional
+        Minimal value for fec input samples. Defaults to -100.0.
+    fec_max_value : float, optional
+        Maximal value for fec input samples. Defaults to 100.0.
+    fec_batch_size : int, optional
+        Number of fec input samples. Defaults to 10.
+    file_lock : multiprocessing.synchronize.Lock, optional
+        Lock to make sure only a single process reads from/write to
+        cache file. Defaults to None.
 
     Returns
     -------
@@ -201,12 +228,26 @@ def disk_cache(
             else:
                 key = __compute_key_from_args(*args, **kwargs)
 
+            if file_lock is not None:
+                file_lock.acquire()
+
             result_value_cached: Union[float, None] = __find_result_in_cache_file(fn, key)
+
+            if file_lock is not None:
+                file_lock.release()
+
             if result_value_cached is not None:
                 return result_value_cached
 
             return_value: float = func(*args, **kwargs)
+
+            if file_lock is not None:
+                file_lock.acquire()
+
             __store_new_cache_entry(fn, key, return_value, args, kwargs)
+
+            if file_lock is not None:
+                file_lock.release()
 
             return return_value
 
