@@ -1,9 +1,22 @@
 """
-Minimal example for evolutionary regression
-===========================================
+Minimal example for evolutionary regression using hurdles
+=========================================================
 
-Example demonstrating the use of Cartesian genetic programming for
-a simple regression task.
+Example demonstrating the use of Cartesian genetic programming for a
+simple regression task where we use hurdles to implement early
+stopping for low-performing invididuals.
+
+Hurdles are implemented by introducing multiple objectives, here two,
+which are sequentially evaluated. Only those individuals with fitness
+in the upper 50th percentile on the first objective are evaluated on
+the second objective.
+
+References:
+
+- Real, E., Liang, C., So, D., & Le, Q. (2020, November). AutoML-zero:
+  evolving machine learning algorithms from scratch. In International
+  Conference on Machine Learning (pp. 8007-8019). PMLR.
+
 """
 
 # The docopt str is added explicitly to ensure compatibility with
@@ -35,24 +48,52 @@ def f_target(x):
 
 
 # %%
-# Then we define the objective function for the evolution. It uses
+# Then we define two objective functions for the evolution. They use
 # the mean-squared error between the output of the expression
 # represented by a given individual and the target function evaluated
-# on a set of random points.
+# on a set of random points. The first objective uses only few samples
+# (100) to get a fast estimate how well an individual performs. The
+# second objective uses may samples (99900) to determine the fitness
+# precisely.
 
 
-def objective(individual):
+def objective_one(individual):
 
     if not individual.fitness_is_None():
         return individual
 
-    n_function_evaluations = 1000
+    n_function_evaluations = 100000
 
     np.random.seed(1234)
+    values = np.random.uniform(-4, 4, n_function_evaluations)
 
     f = individual.to_func()
     loss = 0
-    for x in np.random.uniform(-4, 4, n_function_evaluations):
+    for x in values[:100]:
+        # the callable returned from `to_func` accepts and returns
+        # lists; accordingly we need to pack the argument and unpack
+        # the return value
+        y = f([x])[0]
+        loss += (f_target([x]) - y) ** 2
+
+    individual.fitness = -loss / n_function_evaluations
+
+    return individual
+
+
+def objective_two(individual):
+
+    if not individual.fitness_is_None():
+        return individual
+
+    n_function_evaluations = 100000
+
+    np.random.seed(1234)
+    values = np.random.uniform(-4, 4, n_function_evaluations)
+
+    f = individual.to_func()
+    loss = 0
+    for x in values[100:]:
         # the callable returned from `to_func` accepts and returns
         # lists; accordingly we need to pack the argument and unpack
         # the return value
@@ -81,7 +122,15 @@ genome_params = {
     "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat),
 }
 
-ea_params = {"n_offsprings": 4, "tournament_size": 2, "n_processes": 2}
+# %%
+# We define the upper percentile of individuals which are evaluated on
+# the (n+1)th objective by a list of numbers between 0 and 1.
+ea_params = {
+    "n_offsprings": 4,
+    "tournament_size": 2,
+    "n_processes": 1,
+    "hurdle_percentile": [0.5, 0.0],
+}
 
 evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
 
@@ -105,7 +154,14 @@ def recording_callback(pop):
 
 # %%
 # and finally perform the evolution
-cgp.evolve(pop, objective, ea, **evolve_params, print_progress=True, callback=recording_callback)
+cgp.evolve(
+    pop,
+    [objective_one, objective_two],
+    ea,
+    **evolve_params,
+    print_progress=True,
+    callback=recording_callback
+)
 
 
 # %%

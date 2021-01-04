@@ -50,9 +50,15 @@ def _create_genome(genome_params, primitives, dna):
 
 def _create_individual(genome, fitness=None, individual_type="SingleGenome"):
     if individual_type == "SingleGenome":
-        return IndividualSingleGenome(fitness, genome)
+        ind = IndividualSingleGenome(genome)
+        if fitness is not None:
+            ind.fitness = fitness
+        return ind
     elif individual_type == "MultiGenome":
-        return IndividualMultiGenome(fitness, [genome])
+        ind = IndividualMultiGenome([genome])
+        if fitness is not None:
+            ind.fitness = fitness
+        return ind
     else:
         raise NotImplementedError("Unknown individual type.")
 
@@ -250,9 +256,9 @@ def test_update_parameters_from_torch_class_resets_fitness(individual_type):
     f_opt = _unpack_evaluation(f, individual_type=individual_type)
     f_opt._p1.data[0] = math.pi
 
-    assert individual.fitness is not None
+    assert not individual.fitness_is_None()
     individual.update_parameters_from_torch_class(f)
-    assert individual.fitness is None
+    assert individual.fitness_is_None()
 
     g = _unpack_evaluation(individual.to_func(), individual_type)
     x = 2.0
@@ -286,9 +292,9 @@ def test_update_parameters_from_torch_class_does_not_reset_fitness_for_unused_pa
 
     f = individual.to_torch()
 
-    assert individual.fitness is not None
+    assert not individual.fitness_is_None()
     individual.update_parameters_from_torch_class(f)
-    assert individual.fitness is not None
+    assert not individual.fitness_is_None()
 
     g = _unpack_evaluation(individual.to_func(), individual_type)
     x = 2.0

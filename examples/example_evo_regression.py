@@ -65,7 +65,7 @@ def objective(individual, target_function, seed):
     Individual
         Modified individual with updated fitness value.
     """
-    if individual.fitness is not None:
+    if not individual.fitness_is_None():
         return individual
 
     n_function_evaluations = 1000

@@ -26,6 +26,7 @@ class MuPlusLambda:
         local_search: Callable[[IndividualBase], None] = lambda combined: None,
         k_local_search: Union[int, None] = None,
         reorder_genome: bool = False,
+        hurdle_percentile: List = [0.0]
     ):
         """Init function
 
@@ -45,13 +46,18 @@ class MuPlusLambda:
         k_local_search : int
             Number of individuals in the whole population (parents +
             offsprings) to apply local search to.
-       reorder_genome: bool, optional
+       reorder_genome : bool, optional
             Whether genome reordering should be applied.
             Reorder shuffles the genotype of an individual without changing its phenotype,
             thereby contributing to neutral drift through the genotypic search space.
             If True, reorder is applied to each parents genome at every generation
             before creating offsprings.
             Defaults to True.
+        hurdle_percentile : List[float], optional
+            Specifies which percentile of individuals passes the
+            respective hurdle, i.e., is evaluated on the next
+            objective when providing a list of objectives to be
+            evaluated sequentially.
         """
         self.n_offsprings = n_offsprings
 
@@ -60,6 +66,7 @@ class MuPlusLambda:
         self.local_search = local_search
         self.k_local_search = k_local_search
         self.reorder_genome = reorder_genome
+        self.hurdle_percentile = hurdle_percentile
 
         self.process_pool: Union[None, "mp.pool.Pool"]
         if self.n_processes > 1:
@@ -88,7 +95,7 @@ class MuPlusLambda:
         """
         # TODO can we avoid this function? how should a population be
         # initialized?
-        pop._parents = self._compute_fitness(pop.parents, objective)
+        pop._parents = self._compute_fitness(pop.parents, objective, use_hurdles=False)
 
     def step(
         self, pop: Population, objective: Callable[[IndividualBase], IndividualBase],
@@ -155,7 +162,7 @@ class MuPlusLambda:
         offsprings: List[IndividualBase] = []
         while len(offsprings) < self.n_offsprings:
             tournament_pool = pop.rng.permutation(pop.parents)[: self.tournament_size]
-            best_in_tournament = sorted(tournament_pool, key=lambda x: -x.fitness)[0]
+            best_in_tournament = sorted(tournament_pool, reverse=True)[0]
             offsprings.append(best_in_tournament.clone())
 
         # mutate individuals to create offsprings
@@ -167,41 +174,57 @@ class MuPlusLambda:
         return offsprings
 
     def _compute_fitness(
-        self, combined: List[IndividualBase], objective: Callable[[IndividualBase], IndividualBase]
+        self,
+        combined: List[IndividualBase],
+        objective: Union[
+            Callable[[IndividualBase], IndividualBase],
+            List[Callable[[IndividualBase], IndividualBase]],
+        ],
+        use_hurdles=True,
     ) -> List[IndividualBase]:
+        def compute_fitness_hurdle(ind_evaluating: List[IndividualBase]) -> float:
+            return np.percentile(
+                np.unique([ind.fitness_current_objective for ind in ind_evaluating]),
+                self.hurdle_percentile[ind_evaluating[0].objective_idx] * 100,
+            )
 
         self.update_n_objective_calls(combined)
 
-        # computes fitness on all individuals, objective functions
-        # should return immediately if fitness is not None
-        if self.n_processes == 1:
-            # don't use the process pool if running just a single
-            # process to avoid any multiprocessing-associated overhead
-            combined = list(map(objective, combined))
-        else:
-            assert isinstance(self.process_pool, mp.pool.Pool)
-            combined = self.process_pool.map(objective, combined)
+        if callable(objective):
+            objective = [objective]
 
+        ind_evaluating = list(combined)
+        ind_done_evaluating = []
+        for obj_idx, obj in enumerate(objective):
+
+            # prime individuals for receiving fitness for this objective
+            for ind in ind_evaluating:
+                ind.objective_idx = obj_idx
+
+            if self.n_processes == 1:
+                # don't use the process pool if running just a single
+                # process to avoid any multiprocessing-associated overhead
+                ind_evaluating = list(map(obj, ind_evaluating))
+            else:
+                assert isinstance(self.process_pool, mp.pool.Pool)
+                ind_evaluating = self.process_pool.map(obj, ind_evaluating)
+
+            fitness_hurdle = compute_fitness_hurdle(ind_evaluating)
+
+            ind_evaluating_new = []
+            for ind in ind_evaluating:
+                assert isinstance(ind.fitness_current_objective, float)
+                if not use_hurdles or ind.fitness_current_objective >= fitness_hurdle:
+                    ind_evaluating_new.append(ind)
+                else:
+                    ind_done_evaluating.append(ind)
+            ind_evaluating = ind_evaluating_new
+
+        combined = ind_done_evaluating + [ind for ind in ind_evaluating]
         return combined
 
     def _sort(self, combined: List[IndividualBase]) -> List[IndividualBase]:
-        def sort_func(ind: IndividualBase) -> float:
-            """Return fitness of an individual, return -infinity for an individual
-            with fitness equal nan, or raise error if the fitness is
-            not a float.
-
-            """
-            if np.isnan(ind.fitness):
-                return -np.inf
-
-            if isinstance(ind.fitness, float):
-                return ind.fitness
-            else:
-                raise ValueError(
-                    f"IndividualBase fitness value is of wrong type {type(ind.fitness)}."
-                )
-
-        return sorted(combined, key=sort_func, reverse=True)
+        return sorted(combined, reverse=True)
 
     def _create_new_parent_population(
         self, n_parents: int, combined: List[IndividualBase]
@@ -217,5 +240,5 @@ class MuPlusLambda:
          i.e., for which the objective function will be evaluated.
         """
         for individual in combined:
-            if individual.fitness is None:
+            if individual.fitness_is_None():
                 self.n_objective_calls += 1
