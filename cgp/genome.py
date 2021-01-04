@@ -602,8 +602,17 @@ class Genome:
             if len(permissible_alternative_values) > 0:
 
                 dna[gene_idx] = rng.choice(permissible_alternative_values)
-                silent = region_idx not in active_regions
+                modified_parameter_value: bool
+                if self._is_function_gene(gene_idx):
+                    region_idx = self._get_region_idx(gene_idx)
+                    region = self._get_region(region_idx, dna)
+                    modified_parameter_value = self._initialize_parameter_values(
+                        region_idx, region, reinitialize=True
+                    )
+                else:
+                    modified_parameter_value = False
 
+                silent = (region_idx not in active_regions) and (not modified_parameter_value)
                 only_silent_mutations = only_silent_mutations and silent
 
         self.dna = dna
@@ -667,12 +676,20 @@ class Genome:
 
     def _initialize_unknown_parameters(self) -> None:
         for region_idx, region in self.iter_hidden_regions():
-            node_id = region[0]
-            node_type = self._primitives[node_id]
-            assert issubclass(node_type, OperatorNode)
-            for parameter_name in node_type._parameter_names:
-                parameter_name_with_idx = "<" + parameter_name[1:-1] + str(region_idx) + ">"
-                if parameter_name_with_idx not in self._parameter_names_to_values:
-                    self._parameter_names_to_values[
-                        parameter_name_with_idx
-                    ] = node_type.initial_value(parameter_name_with_idx)
+            self._initialize_parameter_values(region_idx, region)
+
+    def _initialize_parameter_values(
+        self, region_idx: int, region: List[int], reinitialize: bool = False
+    ) -> bool:
+        node_id = region[0]
+        node_type = self._primitives[node_id]
+        assert issubclass(node_type, OperatorNode)
+        modified_parameter_value: bool = False
+        for parameter_name in node_type._parameter_names:
+            parameter_name_with_idx = "<" + parameter_name[1:-1] + str(region_idx) + ">"
+            if reinitialize or (parameter_name_with_idx not in self._parameter_names_to_values):
+                self._parameter_names_to_values[parameter_name_with_idx] = node_type.initial_value(
+                    parameter_name_with_idx
+                )
+                modified_parameter_value = True
+        return modified_parameter_value
