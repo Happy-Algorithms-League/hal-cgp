@@ -367,8 +367,12 @@ class Genome:
         return addable_nodes.difference(used_node_indices)
 
     def _get_region_idx(self, gene_idx: int) -> int:
-
         return gene_idx // self._length_per_region
+
+    def _get_region(self, region_idx: int, dna: List[int]) -> List[int]:
+        return dna[
+            region_idx * self._length_per_region : (region_idx + 1) * self._length_per_region
+        ]
 
     def _determine_node_dependencies(self) -> Dict[int, Set[int]]:
         """ Determines the set of node indices on which each node depends.
@@ -484,14 +488,12 @@ class Genome:
 
     def iter_input_regions(
         self, dna: Optional[List[int]] = None
-    ) -> Generator[Tuple[int, list], None, None]:
+    ) -> Generator[Tuple[int, List[int]], None, None]:
         if dna is None:
             dna = self.dna
         for i in range(self._n_inputs):
             region_idx = i
-            region = dna[
-                region_idx * self._length_per_region : (region_idx + 1) * self._length_per_region
-            ]
+            region = self._get_region(region_idx, dna)
             yield region_idx, region
 
     def iter_hidden_regions(
@@ -501,9 +503,7 @@ class Genome:
             dna = self.dna
         for i in range(self._n_hidden):
             region_idx = i + self._n_inputs
-            region = dna[
-                region_idx * self._length_per_region : (region_idx + 1) * self._length_per_region
-            ]
+            region = self._get_region(region_idx, dna)
             yield region_idx, region
 
     def iter_output_regions(
@@ -513,9 +513,7 @@ class Genome:
             dna = self.dna
         for i in range(self._n_outputs):
             region_idx = i + self._n_inputs + self._n_hidden
-            region = dna[
-                region_idx * self._length_per_region : (region_idx + 1) * self._length_per_region
-            ]
+            region = self._get_region(region_idx, dna)
             yield region_idx, region
 
     def _is_gene_in_input_region(self, gene_idx: int) -> bool:
