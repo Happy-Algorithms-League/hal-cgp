@@ -1,3 +1,4 @@
+import re
 from typing import Dict, Generator, List, Optional, Set, Tuple, Type, Union
 
 import numpy as np
@@ -300,12 +301,16 @@ class Genome:
 
         new_node_idx: int = self._n_inputs  # First position to be placed is after inputs
         used_node_indices: List[int] = []
+        old_to_new_parameter_names_to_values: Dict[Tuple[str, str], float] = {}
 
         while len(addable_nodes) > 0:
 
             old_node_idx = rng.choice(list(addable_nodes))
-
             dna = self._copy_dna_segment(dna, old_node_idx=old_node_idx, new_node_idx=new_node_idx)
+
+            old_to_new_parameter_names_to_values.update(
+                self._convert_parameter_names(old_node_idx, new_node_idx)
+            )
 
             for dependencies in node_dependencies.values():
                 dependencies.discard(old_node_idx)
@@ -316,8 +321,39 @@ class Genome:
 
         self._update_input_genes(dna, used_node_indices)
         self._replace_invalid_input_alleles(dna, rng)
+        self._update_parameters_names_to_values(old_to_new_parameter_names_to_values)
 
         self.dna = dna
+
+    def _convert_parameter_names(
+        self, old_node_idx: int, new_node_idx: int
+    ) -> Dict[Tuple[str, str], float]:
+        node_id: int = self.dna[old_node_idx * self._length_per_region]
+        node_type = self._primitives[node_id]
+        d: Dict[Tuple[str, str], float] = {}
+        if issubclass(node_type, OperatorNode):
+            for old_parameter_name in self._get_parameter_names_with_idx_of_node(
+                node_type, old_node_idx
+            ):
+                g = re.findall(f"<([a-z]+){old_node_idx}>", old_parameter_name)
+                if len(g) != 0:
+                    assert len(g) == 1
+                    new_parameter_name: str = "<" + g[0] + str(new_node_idx) + ">"
+                    d[(old_parameter_name, new_parameter_name)] = self._parameter_names_to_values[
+                        old_parameter_name
+                    ]
+        return d
+
+    def _update_parameters_names_to_values(
+        self, old_to_new_parameter_names_to_values: Dict[Tuple[str, str], float]
+    ) -> None:
+        # first we delete all old parameter names
+        for old_parameter_name, _ in old_to_new_parameter_names_to_values:
+            del self._parameter_names_to_values[old_parameter_name]
+
+        # then we add new parameter names and corresponding values
+        for (_, new_parameter_name), v in old_to_new_parameter_names_to_values.items():
+            self._parameter_names_to_values[new_parameter_name] = v
 
     def _copy_dna_segment(self, dna: List[int], old_node_idx: int, new_node_idx: int) -> List[int]:
         """ Copy a nodes dna segment from its old node location to a new location. """
@@ -676,7 +712,24 @@ class Genome:
 
     def _initialize_unknown_parameters(self) -> None:
         for region_idx, region in self.iter_hidden_regions():
-            self._initialize_parameter_values(region_idx, region)
+            node_id = region[0]
+            node_type = self._primitives[node_id]
+            assert issubclass(node_type, OperatorNode)
+            for parameter_name_with_idx in self._get_parameter_names_with_idx_of_node(
+                node_type, region_idx
+            ):
+                if parameter_name_with_idx not in self._parameter_names_to_values:
+                    self._parameter_names_to_values[
+                        parameter_name_with_idx
+                    ] = node_type.initial_value(parameter_name_with_idx)
+
+    def _get_parameter_names_with_idx_of_node(
+        self, node_type: Type[OperatorNode], region_idx: int
+    ) -> List[str]:
+        parameter_names_with_idx: List[str] = []
+        for parameter_name in node_type._parameter_names:
+            parameter_names_with_idx.append("<" + parameter_name[1:-1] + str(region_idx) + ">")
+        return parameter_names_with_idx
 
     def _initialize_parameter_values(
         self, region_idx: int, region: List[int], reinitialize: bool = False
