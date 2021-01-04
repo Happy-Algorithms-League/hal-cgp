@@ -53,7 +53,7 @@ def inner_objective(expr):
 
 
 def objective(individual):
-    if individual.fitness is not None:
+    if not individual.fitness_is_None():
         return individual
 
     individual.fitness = -inner_objective(individual.to_sympy())

@@ -41,7 +41,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Example for evolutionary regression with parametrized nodes" href="example_parametrized_nodes.html" />
+    <link rel="next" title="Minimal example for evolutionary regression using hurdles" href="example_hurdles.html" />
     <link rel="prev" title="Example for evolutionary regression with multiple genomes" href="example_multi_genome.html" /> 
 </head>
 
@@ -100,6 +100,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="example_hurdles.html">Minimal example for evolutionary regression using hurdles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_parametrized_nodes.html">Example for evolutionary regression with parametrized nodes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_piecewise_target_function.html">Example for evolutionary regression on a piecewise target function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_differential_evo_regression.html">Example for differential evolutionary regression</a></li>
@@ -221,7 +222,7 @@ the mean-squared error between the output of the expression
 represented by a given individual and the target function evaluated
 on a set of random points.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">individual</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness_is_None</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">individual</span>
 
     <span class="n">n_function_evaluations</span> <span class="o">=</span> <span class="mi">1000</span>
@@ -551,7 +552,7 @@ evolutionary algorithms without (default) and with genome reordering.</p>
 [240/300] max fitness: -1.0[K
 [241/300] max fitness: -1.0[K
 [242/300] max fitness: -1.0[K
-[243/300] max fitness: -0.0[K
+[243/300] max fitness: 0.0[K
 
 [2/300] max fitness: -49.56594653387306[K
 [3/300] max fitness: -1.0[K
@@ -723,7 +724,7 @@ evolutionary algorithms without (default) and with genome reordering.</p>
 [169/300] max fitness: -1.0[K
 [170/300] max fitness: -1.0[K
 [171/300] max fitness: -1.0[K
-[172/300] max fitness: -0.0[K
+[172/300] max fitness: 0.0[K
 </pre></div>
 </div>
 <p>After finishing the evolution, we plot the evolution of the fittest individual
@@ -746,7 +747,7 @@ with and without genome reordering</p>
 </pre></div>
 </div>
 <img alt="example reorder" class="sphx-glr-single-img" src="../_images/sphx_glr_example_reorder_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  25.133 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.839 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-reorder-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/ebc84819f51720cc4f44c5363ad5dcdc/example_reorder.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_reorder.py</span></code></a></p>
@@ -767,7 +768,7 @@ with and without genome reordering</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="example_parametrized_nodes.html" class="btn btn-neutral float-right" title="Example for evolutionary regression with parametrized nodes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="example_hurdles.html" class="btn btn-neutral float-right" title="Minimal example for evolutionary regression using hurdles" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="example_multi_genome.html" class="btn btn-neutral float-left" title="Example for evolutionary regression with multiple genomes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

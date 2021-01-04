@@ -127,7 +127,7 @@ actual objective function to update the fitness of the individual.
     def objective(individual, seed):
         """Objective function of the regression task."""
 
-        if individual.fitness is not None:
+        if not individual.fitness_is_None():
             return individual
 
         f = individual.to_torch()
@@ -326,7 +326,7 @@ evolved expression.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  14.023 seconds)
+   **Total running time of the script:** ( 0 minutes  13.528 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_differential_evo_regression.py:

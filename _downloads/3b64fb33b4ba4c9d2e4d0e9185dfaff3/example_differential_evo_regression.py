@@ -79,7 +79,7 @@ def inner_objective(f, seed):
 def objective(individual, seed):
     """Objective function of the regression task."""
 
-    if individual.fitness is not None:
+    if not individual.fitness_is_None():
         return individual
 
     f = individual.to_torch()

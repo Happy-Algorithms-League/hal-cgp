@@ -84,14 +84,15 @@ the mean-squared error between the output of the expression
 represented by a given individual and the target function evaluated
 on a set of random points.
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-66
+.. GENERATED FROM PYTHON SOURCE LINES 42-67
 
 .. code-block:: default
 
 
 
     def objective(individual):
-        if individual.fitness is not None:
+
+        if not individual.fitness_is_None():
             return individual
 
         n_function_evaluations = 1000
@@ -119,13 +120,13 @@ on a set of random points.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-70
+.. GENERATED FROM PYTHON SOURCE LINES 68-71
 
 Next, we set up the evolutionary search. We first define the
 parameters for the population, the genome of individuals, and the
 evolutionary algorithm.
 
-.. GENERATED FROM PYTHON SOURCE LINES 70-87
+.. GENERATED FROM PYTHON SOURCE LINES 71-88
 
 .. code-block:: default
 
@@ -153,11 +154,11 @@ evolutionary algorithm.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 88-89
+.. GENERATED FROM PYTHON SOURCE LINES 89-90
 
 We create a population that will be evolved
 
-.. GENERATED FROM PYTHON SOURCE LINES 89-91
+.. GENERATED FROM PYTHON SOURCE LINES 90-92
 
 .. code-block:: default
 
@@ -170,11 +171,11 @@ We create a population that will be evolved
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 92-93
+.. GENERATED FROM PYTHON SOURCE LINES 93-94
 
 and an instance of the (mu + lambda) evolutionary algorithm
 
-.. GENERATED FROM PYTHON SOURCE LINES 93-95
+.. GENERATED FROM PYTHON SOURCE LINES 94-96
 
 .. code-block:: default
 
@@ -187,11 +188,11 @@ and an instance of the (mu + lambda) evolutionary algorithm
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 96-97
+.. GENERATED FROM PYTHON SOURCE LINES 97-98
 
 We define a callback for recording of fitness over generations
 
-.. GENERATED FROM PYTHON SOURCE LINES 97-105
+.. GENERATED FROM PYTHON SOURCE LINES 98-106
 
 .. code-block:: default
 
@@ -210,11 +211,11 @@ We define a callback for recording of fitness over generations
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-107
+.. GENERATED FROM PYTHON SOURCE LINES 107-108
 
 and finally perform the evolution
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-110
+.. GENERATED FROM PYTHON SOURCE LINES 108-111
 
 .. code-block:: default
 
@@ -231,17 +232,17 @@ and finally perform the evolution
 
  .. code-block:: none
 
-    [2/300] max fitness: -91.5955167981362[K    [3/300] max fitness: -67.0965931324104[K    [4/300] max fitness: -67.0965931324104[K    [5/300] max fitness: -67.0965931324104[K    [6/300] max fitness: -54.97072455431481[K    [7/300] max fitness: -54.97072455431481[K    [8/300] max fitness: -54.97072455431481[K    [9/300] max fitness: -54.97072455431481[K    [10/300] max fitness: -54.97072455431481[K    [11/300] max fitness: -54.97072455431481[K    [12/300] max fitness: -54.97072455431481[K    [13/300] max fitness: -54.97072455431481[K    [14/300] max fitness: -54.97072455431481[K    [15/300] max fitness: -54.97072455431481[K    [16/300] max fitness: -54.97072455431481[K    [17/300] max fitness: -54.97072455431481[K    [18/300] max fitness: -54.97072455431481[K    [19/300] max fitness: -54.97072455431481[K    [20/300] max fitness: -54.97072455431481[K    [21/300] max fitness: -54.97072455431481[K    [22/300] max fitness: -54.97072455431481[K    [23/300] max fitness: -54.97072455431481[K    [24/300] max fitness: -54.97072455431481[K    [25/300] max fitness: -54.97072455431481[K    [26/300] max fitness: -54.97072455431481[K    [27/300] max fitness: -54.97072455431481[K    [28/300] max fitness: -54.97072455431481[K    [29/300] max fitness: -54.97072455431481[K    [30/300] max fitness: -54.97072455431481[K    [31/300] max fitness: -54.97072455431481[K    [32/300] max fitness: -54.97072455431481[K    [33/300] max fitness: -54.97072455431481[K    [34/300] max fitness: -54.97072455431481[K    [35/300] max fitness: -54.97072455431481[K    [36/300] max fitness: -54.97072455431481[K    [37/300] max fitness: -54.97072455431481[K    [38/300] max fitness: -54.97072455431481[K    [39/300] max fitness: -54.97072455431481[K    [40/300] max fitness: -54.97072455431481[K    [41/300] max fitness: -54.97072455431481[K    [42/300] max fitness: -54.97072455431481[K    [43/300] max fitness: -54.97072455431481[K    [44/300] max fitness: -54.97072455431481[K    [45/300] max fitness: -54.97072455431481[K    [46/300] max fitness: -54.97072455431481[K    [47/300] max fitness: -54.97072455431481[K    [48/300] max fitness: -54.97072455431481[K    [49/300] max fitness: -54.97072455431481[K    [50/300] max fitness: -54.97072455431481[K    [51/300] max fitness: -54.97072455431481[K    [52/300] max fitness: -54.97072455431481[K    [53/300] max fitness: -54.97072455431481[K    [54/300] max fitness: -54.97072455431481[K    [55/300] max fitness: -54.97072455431481[K    [56/300] max fitness: -54.97072455431481[K    [57/300] max fitness: -54.97072455431481[K    [58/300] max fitness: -54.97072455431481[K    [59/300] max fitness: -54.97072455431481[K    [60/300] max fitness: -54.97072455431481[K    [61/300] max fitness: -54.97072455431481[K    [62/300] max fitness: -54.97072455431481[K    [63/300] max fitness: -54.97072455431481[K    [64/300] max fitness: -54.97072455431481[K    [65/300] max fitness: -54.97072455431481[K    [66/300] max fitness: -54.97072455431481[K    [67/300] max fitness: -54.97072455431481[K    [68/300] max fitness: -54.97072455431481[K    [69/300] max fitness: -54.97072455431481[K    [70/300] max fitness: -54.97072455431481[K    [71/300] max fitness: -54.97072455431481[K    [72/300] max fitness: -54.97072455431481[K    [73/300] max fitness: -54.97072455431481[K    [74/300] max fitness: -54.97072455431481[K    [75/300] max fitness: -54.97072455431481[K    [76/300] max fitness: -54.97072455431481[K    [77/300] max fitness: -54.97072455431481[K    [78/300] max fitness: -54.97072455431481[K    [79/300] max fitness: -54.97072455431481[K    [80/300] max fitness: -54.97072455431481[K    [81/300] max fitness: -54.97072455431481[K    [82/300] max fitness: -54.97072455431481[K    [83/300] max fitness: -54.97072455431481[K    [84/300] max fitness: -54.97072455431481[K    [85/300] max fitness: -54.97072455431481[K    [86/300] max fitness: -54.97072455431481[K    [87/300] max fitness: -44.844855976219186[K    [88/300] max fitness: -1.0[K    [89/300] max fitness: -1.0[K    [90/300] max fitness: -1.0[K    [91/300] max fitness: -1.0[K    [92/300] max fitness: -1.0[K    [93/300] max fitness: -1.0[K    [94/300] max fitness: -1.0[K    [95/300] max fitness: -1.0[K    [96/300] max fitness: -1.0[K    [97/300] max fitness: -1.0[K    [98/300] max fitness: -1.0[K    [99/300] max fitness: -1.0[K    [100/300] max fitness: -1.0[K    [101/300] max fitness: -1.0[K    [102/300] max fitness: -1.0[K    [103/300] max fitness: -1.0[K    [104/300] max fitness: -1.0[K    [105/300] max fitness: -1.0[K    [106/300] max fitness: -1.0[K    [107/300] max fitness: -1.0[K    [108/300] max fitness: -1.0[K    [109/300] max fitness: -1.0[K    [110/300] max fitness: -1.0[K    [111/300] max fitness: -1.0[K    [112/300] max fitness: -1.0[K    [113/300] max fitness: -1.0[K    [114/300] max fitness: -1.0[K    [115/300] max fitness: -1.0[K    [116/300] max fitness: -1.0[K    [117/300] max fitness: -1.0[K    [118/300] max fitness: -1.0[K    [119/300] max fitness: -1.0[K    [120/300] max fitness: -1.0[K    [121/300] max fitness: -1.0[K    [122/300] max fitness: -1.0[K    [123/300] max fitness: -1.0[K    [124/300] max fitness: -1.0[K    [125/300] max fitness: -1.0[K    [126/300] max fitness: -1.0[K    [127/300] max fitness: -1.0[K    [128/300] max fitness: -1.0[K    [129/300] max fitness: -1.0[K    [130/300] max fitness: -1.0[K    [131/300] max fitness: -1.0[K    [132/300] max fitness: -1.0[K    [133/300] max fitness: -1.0[K    [134/300] max fitness: -1.0[K    [135/300] max fitness: -1.0[K    [136/300] max fitness: -1.0[K    [137/300] max fitness: -1.0[K    [138/300] max fitness: -1.0[K    [139/300] max fitness: -1.0[K    [140/300] max fitness: -1.0[K    [141/300] max fitness: -1.0[K    [142/300] max fitness: -1.0[K    [143/300] max fitness: -1.0[K    [144/300] max fitness: -1.0[K    [145/300] max fitness: -1.0[K    [146/300] max fitness: -1.0[K    [147/300] max fitness: -1.0[K    [148/300] max fitness: -1.0[K    [149/300] max fitness: -1.0[K    [150/300] max fitness: -1.0[K    [151/300] max fitness: -1.0[K    [152/300] max fitness: -1.0[K    [153/300] max fitness: -1.0[K    [154/300] max fitness: -1.0[K    [155/300] max fitness: -1.0[K    [156/300] max fitness: -1.0[K    [157/300] max fitness: -1.0[K    [158/300] max fitness: -1.0[K    [159/300] max fitness: -1.0[K    [160/300] max fitness: -1.0[K    [161/300] max fitness: -1.0[K    [162/300] max fitness: -1.0[K    [163/300] max fitness: -1.0[K    [164/300] max fitness: -1.0[K    [165/300] max fitness: -1.0[K    [166/300] max fitness: -1.0[K    [167/300] max fitness: -1.0[K    [168/300] max fitness: -1.0[K    [169/300] max fitness: -1.0[K    [170/300] max fitness: -1.0[K    [171/300] max fitness: -1.0[K    [172/300] max fitness: -1.0[K    [173/300] max fitness: -1.0[K    [174/300] max fitness: -1.0[K    [175/300] max fitness: -1.0[K    [176/300] max fitness: -1.0[K    [177/300] max fitness: -1.0[K    [178/300] max fitness: -1.0[K    [179/300] max fitness: -1.0[K    [180/300] max fitness: -1.0[K    [181/300] max fitness: -1.0[K    [182/300] max fitness: -1.0[K    [183/300] max fitness: -1.0[K    [184/300] max fitness: -1.0[K    [185/300] max fitness: -1.0[K    [186/300] max fitness: -1.0[K    [187/300] max fitness: -1.0[K    [188/300] max fitness: -1.0[K    [189/300] max fitness: -1.0[K    [190/300] max fitness: -1.0[K    [191/300] max fitness: -1.0[K    [192/300] max fitness: -1.0[K    [193/300] max fitness: -1.0[K    [194/300] max fitness: -1.0[K    [195/300] max fitness: -1.0[K    [196/300] max fitness: -1.0[K    [197/300] max fitness: -1.0[K    [198/300] max fitness: -1.0[K    [199/300] max fitness: -1.0[K    [200/300] max fitness: -1.0[K    [201/300] max fitness: -1.0[K    [202/300] max fitness: -1.0[K    [203/300] max fitness: -1.0[K    [204/300] max fitness: -1.0[K    [205/300] max fitness: -1.0[K    [206/300] max fitness: -1.0[K    [207/300] max fitness: -1.0[K    [208/300] max fitness: -1.0[K    [209/300] max fitness: -1.0[K    [210/300] max fitness: -1.0[K    [211/300] max fitness: -1.0[K    [212/300] max fitness: -1.0[K    [213/300] max fitness: -1.0[K    [214/300] max fitness: -1.0[K    [215/300] max fitness: -1.0[K    [216/300] max fitness: -1.0[K    [217/300] max fitness: -1.0[K    [218/300] max fitness: -1.0[K    [219/300] max fitness: -1.0[K    [220/300] max fitness: -1.0[K    [221/300] max fitness: -1.0[K    [222/300] max fitness: -1.0[K    [223/300] max fitness: -1.0[K    [224/300] max fitness: -1.0[K    [225/300] max fitness: -1.0[K    [226/300] max fitness: -1.0[K    [227/300] max fitness: -1.0[K    [228/300] max fitness: -1.0[K    [229/300] max fitness: -1.0[K    [230/300] max fitness: -1.0[K    [231/300] max fitness: -1.0[K    [232/300] max fitness: -1.0[K    [233/300] max fitness: -1.0[K    [234/300] max fitness: -0.0[K
+    [2/300] max fitness: -91.5955167981362[K    [3/300] max fitness: -67.0965931324104[K    [4/300] max fitness: -67.0965931324104[K    [5/300] max fitness: -67.0965931324104[K    [6/300] max fitness: -54.97072455431481[K    [7/300] max fitness: -54.97072455431481[K    [8/300] max fitness: -54.97072455431481[K    [9/300] max fitness: -54.97072455431481[K    [10/300] max fitness: -54.97072455431481[K    [11/300] max fitness: -54.97072455431481[K    [12/300] max fitness: -54.97072455431481[K    [13/300] max fitness: -54.97072455431481[K    [14/300] max fitness: -54.97072455431481[K    [15/300] max fitness: -54.97072455431481[K    [16/300] max fitness: -54.97072455431481[K    [17/300] max fitness: -54.97072455431481[K    [18/300] max fitness: -54.97072455431481[K    [19/300] max fitness: -54.97072455431481[K    [20/300] max fitness: -54.97072455431481[K    [21/300] max fitness: -54.97072455431481[K    [22/300] max fitness: -54.97072455431481[K    [23/300] max fitness: -54.97072455431481[K    [24/300] max fitness: -54.97072455431481[K    [25/300] max fitness: -54.97072455431481[K    [26/300] max fitness: -54.97072455431481[K    [27/300] max fitness: -54.97072455431481[K    [28/300] max fitness: -54.97072455431481[K    [29/300] max fitness: -54.97072455431481[K    [30/300] max fitness: -54.97072455431481[K    [31/300] max fitness: -54.97072455431481[K    [32/300] max fitness: -54.97072455431481[K    [33/300] max fitness: -54.97072455431481[K    [34/300] max fitness: -54.97072455431481[K    [35/300] max fitness: -54.97072455431481[K    [36/300] max fitness: -54.97072455431481[K    [37/300] max fitness: -54.97072455431481[K    [38/300] max fitness: -54.97072455431481[K    [39/300] max fitness: -54.97072455431481[K    [40/300] max fitness: -54.97072455431481[K    [41/300] max fitness: -54.97072455431481[K    [42/300] max fitness: -54.97072455431481[K    [43/300] max fitness: -54.97072455431481[K    [44/300] max fitness: -54.97072455431481[K    [45/300] max fitness: -54.97072455431481[K    [46/300] max fitness: -54.97072455431481[K    [47/300] max fitness: -54.97072455431481[K    [48/300] max fitness: -54.97072455431481[K    [49/300] max fitness: -54.97072455431481[K    [50/300] max fitness: -54.97072455431481[K    [51/300] max fitness: -54.97072455431481[K    [52/300] max fitness: -54.97072455431481[K    [53/300] max fitness: -54.97072455431481[K    [54/300] max fitness: -54.97072455431481[K    [55/300] max fitness: -54.97072455431481[K    [56/300] max fitness: -54.97072455431481[K    [57/300] max fitness: -54.97072455431481[K    [58/300] max fitness: -54.97072455431481[K    [59/300] max fitness: -54.97072455431481[K    [60/300] max fitness: -54.97072455431481[K    [61/300] max fitness: -54.97072455431481[K    [62/300] max fitness: -54.97072455431481[K    [63/300] max fitness: -54.97072455431481[K    [64/300] max fitness: -54.97072455431481[K    [65/300] max fitness: -54.97072455431481[K    [66/300] max fitness: -54.97072455431481[K    [67/300] max fitness: -54.97072455431481[K    [68/300] max fitness: -54.97072455431481[K    [69/300] max fitness: -54.97072455431481[K    [70/300] max fitness: -54.97072455431481[K    [71/300] max fitness: -54.97072455431481[K    [72/300] max fitness: -54.97072455431481[K    [73/300] max fitness: -54.97072455431481[K    [74/300] max fitness: -54.97072455431481[K    [75/300] max fitness: -54.97072455431481[K    [76/300] max fitness: -54.97072455431481[K    [77/300] max fitness: -54.97072455431481[K    [78/300] max fitness: -54.97072455431481[K    [79/300] max fitness: -54.97072455431481[K    [80/300] max fitness: -54.97072455431481[K    [81/300] max fitness: -54.97072455431481[K    [82/300] max fitness: -54.97072455431481[K    [83/300] max fitness: -54.97072455431481[K    [84/300] max fitness: -54.97072455431481[K    [85/300] max fitness: -54.97072455431481[K    [86/300] max fitness: -54.97072455431481[K    [87/300] max fitness: -44.844855976219186[K    [88/300] max fitness: -1.0[K    [89/300] max fitness: -1.0[K    [90/300] max fitness: -1.0[K    [91/300] max fitness: -1.0[K    [92/300] max fitness: -1.0[K    [93/300] max fitness: -1.0[K    [94/300] max fitness: -1.0[K    [95/300] max fitness: -1.0[K    [96/300] max fitness: -1.0[K    [97/300] max fitness: -1.0[K    [98/300] max fitness: -1.0[K    [99/300] max fitness: -1.0[K    [100/300] max fitness: -1.0[K    [101/300] max fitness: -1.0[K    [102/300] max fitness: -1.0[K    [103/300] max fitness: -1.0[K    [104/300] max fitness: -1.0[K    [105/300] max fitness: -1.0[K    [106/300] max fitness: -1.0[K    [107/300] max fitness: -1.0[K    [108/300] max fitness: -1.0[K    [109/300] max fitness: -1.0[K    [110/300] max fitness: -1.0[K    [111/300] max fitness: -1.0[K    [112/300] max fitness: -1.0[K    [113/300] max fitness: -1.0[K    [114/300] max fitness: -1.0[K    [115/300] max fitness: -1.0[K    [116/300] max fitness: -1.0[K    [117/300] max fitness: -1.0[K    [118/300] max fitness: -1.0[K    [119/300] max fitness: -1.0[K    [120/300] max fitness: -1.0[K    [121/300] max fitness: -1.0[K    [122/300] max fitness: -1.0[K    [123/300] max fitness: -1.0[K    [124/300] max fitness: -1.0[K    [125/300] max fitness: -1.0[K    [126/300] max fitness: -1.0[K    [127/300] max fitness: -1.0[K    [128/300] max fitness: -1.0[K    [129/300] max fitness: -1.0[K    [130/300] max fitness: -1.0[K    [131/300] max fitness: -1.0[K    [132/300] max fitness: -1.0[K    [133/300] max fitness: -1.0[K    [134/300] max fitness: -1.0[K    [135/300] max fitness: -1.0[K    [136/300] max fitness: -1.0[K    [137/300] max fitness: -1.0[K    [138/300] max fitness: -1.0[K    [139/300] max fitness: -1.0[K    [140/300] max fitness: -1.0[K    [141/300] max fitness: -1.0[K    [142/300] max fitness: -1.0[K    [143/300] max fitness: -1.0[K    [144/300] max fitness: -1.0[K    [145/300] max fitness: -1.0[K    [146/300] max fitness: -1.0[K    [147/300] max fitness: -1.0[K    [148/300] max fitness: -1.0[K    [149/300] max fitness: -1.0[K    [150/300] max fitness: -1.0[K    [151/300] max fitness: -1.0[K    [152/300] max fitness: -1.0[K    [153/300] max fitness: -1.0[K    [154/300] max fitness: -1.0[K    [155/300] max fitness: -1.0[K    [156/300] max fitness: -1.0[K    [157/300] max fitness: -1.0[K    [158/300] max fitness: -1.0[K    [159/300] max fitness: -1.0[K    [160/300] max fitness: -1.0[K    [161/300] max fitness: -1.0[K    [162/300] max fitness: -1.0[K    [163/300] max fitness: -1.0[K    [164/300] max fitness: -1.0[K    [165/300] max fitness: -1.0[K    [166/300] max fitness: -1.0[K    [167/300] max fitness: -1.0[K    [168/300] max fitness: -1.0[K    [169/300] max fitness: -1.0[K    [170/300] max fitness: -1.0[K    [171/300] max fitness: -1.0[K    [172/300] max fitness: -1.0[K    [173/300] max fitness: -1.0[K    [174/300] max fitness: -1.0[K    [175/300] max fitness: -1.0[K    [176/300] max fitness: -1.0[K    [177/300] max fitness: -1.0[K    [178/300] max fitness: -1.0[K    [179/300] max fitness: -1.0[K    [180/300] max fitness: -1.0[K    [181/300] max fitness: -1.0[K    [182/300] max fitness: -1.0[K    [183/300] max fitness: -1.0[K    [184/300] max fitness: -1.0[K    [185/300] max fitness: -1.0[K    [186/300] max fitness: -1.0[K    [187/300] max fitness: -1.0[K    [188/300] max fitness: -1.0[K    [189/300] max fitness: -1.0[K    [190/300] max fitness: -1.0[K    [191/300] max fitness: -1.0[K    [192/300] max fitness: -1.0[K    [193/300] max fitness: -1.0[K    [194/300] max fitness: -1.0[K    [195/300] max fitness: -1.0[K    [196/300] max fitness: -1.0[K    [197/300] max fitness: -1.0[K    [198/300] max fitness: -1.0[K    [199/300] max fitness: -1.0[K    [200/300] max fitness: -1.0[K    [201/300] max fitness: -1.0[K    [202/300] max fitness: -1.0[K    [203/300] max fitness: -1.0[K    [204/300] max fitness: -1.0[K    [205/300] max fitness: -1.0[K    [206/300] max fitness: -1.0[K    [207/300] max fitness: -1.0[K    [208/300] max fitness: -1.0[K    [209/300] max fitness: -1.0[K    [210/300] max fitness: -1.0[K    [211/300] max fitness: -1.0[K    [212/300] max fitness: -1.0[K    [213/300] max fitness: -1.0[K    [214/300] max fitness: -1.0[K    [215/300] max fitness: -1.0[K    [216/300] max fitness: -1.0[K    [217/300] max fitness: -1.0[K    [218/300] max fitness: -1.0[K    [219/300] max fitness: -1.0[K    [220/300] max fitness: -1.0[K    [221/300] max fitness: -1.0[K    [222/300] max fitness: -1.0[K    [223/300] max fitness: -1.0[K    [224/300] max fitness: -1.0[K    [225/300] max fitness: -1.0[K    [226/300] max fitness: -1.0[K    [227/300] max fitness: -1.0[K    [228/300] max fitness: -1.0[K    [229/300] max fitness: -1.0[K    [230/300] max fitness: -1.0[K    [231/300] max fitness: -1.0[K    [232/300] max fitness: -1.0[K    [233/300] max fitness: -1.0[K    [234/300] max fitness: 0.0[K
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 111-113
+.. GENERATED FROM PYTHON SOURCE LINES 112-114
 
 After finishing the evolution, we plot the result and log the final
 evolved expression.
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-140
+.. GENERATED FROM PYTHON SOURCE LINES 114-141
 
 .. code-block:: default
 
@@ -286,7 +287,7 @@ evolved expression.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  10.555 seconds)
+   **Total running time of the script:** ( 0 minutes  3.392 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_minimal.py:

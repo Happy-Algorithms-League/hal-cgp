@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Minimal example for evolutionary regression &mdash; hal-cgp 0.2.0 documentation</title>
+  <title>Minimal example for evolutionary regression using hurdles &mdash; hal-cgp 0.2.0 documentation</title>
   
 
   
@@ -41,8 +41,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Example for evolutionary regression with multiple genomes" href="example_multi_genome.html" />
-    <link rel="prev" title="Example demonstrating the use of the caching decorator." href="example_caching.html" /> 
+    <link rel="next" title="Example for evolutionary regression with parametrized nodes" href="example_parametrized_nodes.html" />
+    <link rel="prev" title="Example for evolutionary regression with genome reordering" href="example_reorder.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -94,10 +94,10 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="example_fec_caching.html">Example demonstrating the use of the caching decorator with functional equivalance checking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_caching.html">Example demonstrating the use of the caching decorator.</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Minimal example for evolutionary regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_minimal.html">Minimal example for evolutionary regression</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_multi_genome.html">Example for evolutionary regression with multiple genomes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_reorder.html">Example for evolutionary regression with genome reordering</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_hurdles.html">Minimal example for evolutionary regression using hurdles</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Minimal example for evolutionary regression using hurdles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_parametrized_nodes.html">Example for evolutionary regression with parametrized nodes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_piecewise_target_function.html">Example for evolutionary regression on a piecewise target function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_differential_evo_regression.html">Example for differential evolutionary regression</a></li>
@@ -156,13 +156,13 @@
         
           <li><a href="index.html">Examples</a> &raquo;</li>
         
-      <li>Minimal example for evolutionary regression</li>
+      <li>Minimal example for evolutionary regression using hurdles</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/auto_examples/example_minimal.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/auto_examples/example_hurdles.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -177,13 +177,24 @@
             
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-example-minimal-py"><span class="std std-ref">here</span></a>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-example-hurdles-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="minimal-example-for-evolutionary-regression">
-<span id="sphx-glr-auto-examples-example-minimal-py"></span><h1>Minimal example for evolutionary regression<a class="headerlink" href="#minimal-example-for-evolutionary-regression" title="Permalink to this headline">¶</a></h1>
-<p>Example demonstrating the use of Cartesian genetic programming for
-a simple regression task.</p>
+<div class="sphx-glr-example-title section" id="minimal-example-for-evolutionary-regression-using-hurdles">
+<span id="sphx-glr-auto-examples-example-hurdles-py"></span><h1>Minimal example for evolutionary regression using hurdles<a class="headerlink" href="#minimal-example-for-evolutionary-regression-using-hurdles" title="Permalink to this headline">¶</a></h1>
+<p>Example demonstrating the use of Cartesian genetic programming for a
+simple regression task where we use hurdles to implement early
+stopping for low-performing invididuals.</p>
+<p>Hurdles are implemented by introducing multiple objectives, here two,
+which are sequentially evaluated. Only those individuals with fitness
+in the upper 50th percentile on the first objective are evaluated on
+the second objective.</p>
+<p>References:</p>
+<ul class="simple">
+<li><p>Real, E., Liang, C., So, D., &amp; Le, Q. (2020, November). AutoML-zero:
+evolving machine learning algorithms from scratch. In International
+Conference on Machine Learning (pp. 8007-8019). PMLR.</p></li>
+</ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># The docopt str is added explicitly to ensure compatibility with</span>
 <span class="c1"># sphinx-gallery.</span>
 <span class="n">docopt_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -210,22 +221,50 @@ a simple regression task.</p>
     <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mf">1.0</span>
 </pre></div>
 </div>
-<p>Then we define the objective function for the evolution. It uses
+<p>Then we define two objective functions for the evolution. They use
 the mean-squared error between the output of the expression
 represented by a given individual and the target function evaluated
-on a set of random points.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">individual</span><span class="p">):</span>
+on a set of random points. The first objective uses only few samples
+(100) to get a fast estimate how well an individual performs. The
+second objective uses may samples (99900) to determine the fitness
+precisely.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective_one</span><span class="p">(</span><span class="n">individual</span><span class="p">):</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness_is_None</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">individual</span>
 
-    <span class="n">n_function_evaluations</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">n_function_evaluations</span> <span class="o">=</span> <span class="mi">100000</span>
 
     <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">n_function_evaluations</span><span class="p">)</span>
 
     <span class="n">f</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">to_func</span><span class="p">()</span>
     <span class="n">loss</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">n_function_evaluations</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">values</span><span class="p">[:</span><span class="mi">100</span><span class="p">]:</span>
+        <span class="c1"># the callable returned from `to_func` accepts and returns</span>
+        <span class="c1"># lists; accordingly we need to pack the argument and unpack</span>
+        <span class="c1"># the return value</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">([</span><span class="n">x</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">loss</span> <span class="o">+=</span> <span class="p">(</span><span class="n">f_target</span><span class="p">([</span><span class="n">x</span><span class="p">])</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+    <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="o">-</span><span class="n">loss</span> <span class="o">/</span> <span class="n">n_function_evaluations</span>
+
+    <span class="k">return</span> <span class="n">individual</span>
+
+
+<span class="k">def</span> <span class="nf">objective_two</span><span class="p">(</span><span class="n">individual</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness_is_None</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">individual</span>
+
+    <span class="n">n_function_evaluations</span> <span class="o">=</span> <span class="mi">100000</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">n_function_evaluations</span><span class="p">)</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">to_func</span><span class="p">()</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">values</span><span class="p">[</span><span class="mi">100</span><span class="p">:]:</span>
         <span class="c1"># the callable returned from `to_func` accepts and returns</span>
         <span class="c1"># lists; accordingly we need to pack the argument and unpack</span>
         <span class="c1"># the return value</span>
@@ -250,8 +289,16 @@ evolutionary algorithm.</p>
     <span class="s2">&quot;levels_back&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
     <span class="s2">&quot;primitives&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">cgp</span><span class="o">.</span><span class="n">Add</span><span class="p">,</span> <span class="n">cgp</span><span class="o">.</span><span class="n">Sub</span><span class="p">,</span> <span class="n">cgp</span><span class="o">.</span><span class="n">Mul</span><span class="p">,</span> <span class="n">cgp</span><span class="o">.</span><span class="n">ConstantFloat</span><span class="p">),</span>
 <span class="p">}</span>
-
-<span class="n">ea_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;n_offsprings&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;tournament_size&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;n_processes&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>We define the upper percentile of individuals which are evaluated on
+the (n+1)th objective by a list of numbers between 0 and 1.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ea_params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;n_offsprings&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">&quot;tournament_size&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;n_processes&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;hurdle_percentile&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+<span class="p">}</span>
 
 <span class="n">evolve_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;max_generations&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s2">&quot;--max-generations&quot;</span><span class="p">]),</span> <span class="s2">&quot;min_fitness&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
 </pre></div>
@@ -274,96 +321,103 @@ evolutionary algorithm.</p>
 </pre></div>
 </div>
 <p>and finally perform the evolution</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cgp</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">objective</span><span class="p">,</span> <span class="n">ea</span><span class="p">,</span> <span class="o">**</span><span class="n">evolve_params</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">recording_callback</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cgp</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+    <span class="n">pop</span><span class="p">,</span>
+    <span class="p">[</span><span class="n">objective_one</span><span class="p">,</span> <span class="n">objective_two</span><span class="p">],</span>
+    <span class="n">ea</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">evolve_params</span><span class="p">,</span>
+    <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">callback</span><span class="o">=</span><span class="n">recording_callback</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[2/300] max fitness: -91.5955167981362[K
-[3/300] max fitness: -67.0965931324104[K
-[4/300] max fitness: -67.0965931324104[K
-[5/300] max fitness: -67.0965931324104[K
-[6/300] max fitness: -54.97072455431481[K
-[7/300] max fitness: -54.97072455431481[K
-[8/300] max fitness: -54.97072455431481[K
-[9/300] max fitness: -54.97072455431481[K
-[10/300] max fitness: -54.97072455431481[K
-[11/300] max fitness: -54.97072455431481[K
-[12/300] max fitness: -54.97072455431481[K
-[13/300] max fitness: -54.97072455431481[K
-[14/300] max fitness: -54.97072455431481[K
-[15/300] max fitness: -54.97072455431481[K
-[16/300] max fitness: -54.97072455431481[K
-[17/300] max fitness: -54.97072455431481[K
-[18/300] max fitness: -54.97072455431481[K
-[19/300] max fitness: -54.97072455431481[K
-[20/300] max fitness: -54.97072455431481[K
-[21/300] max fitness: -54.97072455431481[K
-[22/300] max fitness: -54.97072455431481[K
-[23/300] max fitness: -54.97072455431481[K
-[24/300] max fitness: -54.97072455431481[K
-[25/300] max fitness: -54.97072455431481[K
-[26/300] max fitness: -54.97072455431481[K
-[27/300] max fitness: -54.97072455431481[K
-[28/300] max fitness: -54.97072455431481[K
-[29/300] max fitness: -54.97072455431481[K
-[30/300] max fitness: -54.97072455431481[K
-[31/300] max fitness: -54.97072455431481[K
-[32/300] max fitness: -54.97072455431481[K
-[33/300] max fitness: -54.97072455431481[K
-[34/300] max fitness: -54.97072455431481[K
-[35/300] max fitness: -54.97072455431481[K
-[36/300] max fitness: -54.97072455431481[K
-[37/300] max fitness: -54.97072455431481[K
-[38/300] max fitness: -54.97072455431481[K
-[39/300] max fitness: -54.97072455431481[K
-[40/300] max fitness: -54.97072455431481[K
-[41/300] max fitness: -54.97072455431481[K
-[42/300] max fitness: -54.97072455431481[K
-[43/300] max fitness: -54.97072455431481[K
-[44/300] max fitness: -54.97072455431481[K
-[45/300] max fitness: -54.97072455431481[K
-[46/300] max fitness: -54.97072455431481[K
-[47/300] max fitness: -54.97072455431481[K
-[48/300] max fitness: -54.97072455431481[K
-[49/300] max fitness: -54.97072455431481[K
-[50/300] max fitness: -54.97072455431481[K
-[51/300] max fitness: -54.97072455431481[K
-[52/300] max fitness: -54.97072455431481[K
-[53/300] max fitness: -54.97072455431481[K
-[54/300] max fitness: -54.97072455431481[K
-[55/300] max fitness: -54.97072455431481[K
-[56/300] max fitness: -54.97072455431481[K
-[57/300] max fitness: -54.97072455431481[K
-[58/300] max fitness: -54.97072455431481[K
-[59/300] max fitness: -54.97072455431481[K
-[60/300] max fitness: -54.97072455431481[K
-[61/300] max fitness: -54.97072455431481[K
-[62/300] max fitness: -54.97072455431481[K
-[63/300] max fitness: -54.97072455431481[K
-[64/300] max fitness: -54.97072455431481[K
-[65/300] max fitness: -54.97072455431481[K
-[66/300] max fitness: -54.97072455431481[K
-[67/300] max fitness: -54.97072455431481[K
-[68/300] max fitness: -54.97072455431481[K
-[69/300] max fitness: -54.97072455431481[K
-[70/300] max fitness: -54.97072455431481[K
-[71/300] max fitness: -54.97072455431481[K
-[72/300] max fitness: -54.97072455431481[K
-[73/300] max fitness: -54.97072455431481[K
-[74/300] max fitness: -54.97072455431481[K
-[75/300] max fitness: -54.97072455431481[K
-[76/300] max fitness: -54.97072455431481[K
-[77/300] max fitness: -54.97072455431481[K
-[78/300] max fitness: -54.97072455431481[K
-[79/300] max fitness: -54.97072455431481[K
-[80/300] max fitness: -54.97072455431481[K
-[81/300] max fitness: -54.97072455431481[K
-[82/300] max fitness: -54.97072455431481[K
-[83/300] max fitness: -54.97072455431481[K
-[84/300] max fitness: -54.97072455431481[K
-[85/300] max fitness: -54.97072455431481[K
-[86/300] max fitness: -54.97072455431481[K
-[87/300] max fitness: -44.844855976219186[K
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[2/300] max fitness: -84.24595774757668[K
+[3/300] max fitness: -62.89903747153193[K
+[4/300] max fitness: -62.89903747153193[K
+[5/300] max fitness: -62.89903747153193[K
+[6/300] max fitness: -51.22588427381885[K
+[7/300] max fitness: -51.22588427381885[K
+[8/300] max fitness: -51.22588427381885[K
+[9/300] max fitness: -51.22588427381885[K
+[10/300] max fitness: -51.22588427381885[K
+[11/300] max fitness: -51.22588427381885[K
+[12/300] max fitness: -51.22588427381885[K
+[13/300] max fitness: -51.22588427381885[K
+[14/300] max fitness: -51.22588427381885[K
+[15/300] max fitness: -51.22588427381885[K
+[16/300] max fitness: -51.22588427381885[K
+[17/300] max fitness: -51.22588427381885[K
+[18/300] max fitness: -51.22588427381885[K
+[19/300] max fitness: -51.22588427381885[K
+[20/300] max fitness: -51.22588427381885[K
+[21/300] max fitness: -51.22588427381885[K
+[22/300] max fitness: -51.22588427381885[K
+[23/300] max fitness: -51.22588427381885[K
+[24/300] max fitness: -51.22588427381885[K
+[25/300] max fitness: -51.22588427381885[K
+[26/300] max fitness: -51.22588427381885[K
+[27/300] max fitness: -51.22588427381885[K
+[28/300] max fitness: -51.22588427381885[K
+[29/300] max fitness: -51.22588427381885[K
+[30/300] max fitness: -51.22588427381885[K
+[31/300] max fitness: -51.22588427381885[K
+[32/300] max fitness: -51.22588427381885[K
+[33/300] max fitness: -51.22588427381885[K
+[34/300] max fitness: -51.22588427381885[K
+[35/300] max fitness: -51.22588427381885[K
+[36/300] max fitness: -51.22588427381885[K
+[37/300] max fitness: -51.22588427381885[K
+[38/300] max fitness: -51.22588427381885[K
+[39/300] max fitness: -51.22588427381885[K
+[40/300] max fitness: -51.22588427381885[K
+[41/300] max fitness: -51.22588427381885[K
+[42/300] max fitness: -51.22588427381885[K
+[43/300] max fitness: -51.22588427381885[K
+[44/300] max fitness: -51.22588427381885[K
+[45/300] max fitness: -51.22588427381885[K
+[46/300] max fitness: -51.22588427381885[K
+[47/300] max fitness: -51.22588427381885[K
+[48/300] max fitness: -51.22588427381885[K
+[49/300] max fitness: -51.22588427381885[K
+[50/300] max fitness: -51.22588427381885[K
+[51/300] max fitness: -51.22588427381885[K
+[52/300] max fitness: -51.22588427381885[K
+[53/300] max fitness: -51.22588427381885[K
+[54/300] max fitness: -51.22588427381885[K
+[55/300] max fitness: -51.22588427381885[K
+[56/300] max fitness: -51.22588427381885[K
+[57/300] max fitness: -51.22588427381885[K
+[58/300] max fitness: -51.22588427381885[K
+[59/300] max fitness: -51.22588427381885[K
+[60/300] max fitness: -51.22588427381885[K
+[61/300] max fitness: -51.22588427381885[K
+[62/300] max fitness: -51.22588427381885[K
+[63/300] max fitness: -51.22588427381885[K
+[64/300] max fitness: -51.22588427381885[K
+[65/300] max fitness: -51.22588427381885[K
+[66/300] max fitness: -51.22588427381885[K
+[67/300] max fitness: -51.22588427381885[K
+[68/300] max fitness: -51.22588427381885[K
+[69/300] max fitness: -51.22588427381885[K
+[70/300] max fitness: -51.22588427381885[K
+[71/300] max fitness: -51.22588427381885[K
+[72/300] max fitness: -51.22588427381885[K
+[73/300] max fitness: -51.22588427381885[K
+[74/300] max fitness: -51.22588427381885[K
+[75/300] max fitness: -51.22588427381885[K
+[76/300] max fitness: -51.22588427381885[K
+[77/300] max fitness: -51.22588427381885[K
+[78/300] max fitness: -51.22588427381885[K
+[79/300] max fitness: -51.22588427381885[K
+[80/300] max fitness: -51.22588427381885[K
+[81/300] max fitness: -51.22588427381885[K
+[82/300] max fitness: -51.22588427381885[K
+[83/300] max fitness: -51.22588427381885[K
+[84/300] max fitness: -51.22588427381885[K
+[85/300] max fitness: -51.22588427381885[K
+[86/300] max fitness: -51.22588427381885[K
+[87/300] max fitness: -41.552731076106[K
 [88/300] max fitness: -1.0[K
 [89/300] max fitness: -1.0[K
 [90/300] max fitness: -1.0[K
@@ -542,14 +596,14 @@ evolved expression.</p>
 <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;example_minimal.pdf&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="example minimal" class="sphx-glr-single-img" src="../_images/sphx_glr_example_minimal_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  3.392 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-minimal-py">
+<img alt="example hurdles" class="sphx-glr-single-img" src="../_images/sphx_glr_example_hurdles_001.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  8.937 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-hurdles-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/eb31d3eeb3ff7e7d176ebb4eb4e9ba6e/example_minimal.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_minimal.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/072ec7052c8ffdfccd943f8ef787f3bf/example_hurdles.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_hurdles.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/10b83db55be7e18a4658a8a57193dd5c/example_minimal.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">example_minimal.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/b22c32da5a34a8738d79bd21b06a40b2/example_hurdles.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">example_hurdles.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -563,10 +617,10 @@ evolved expression.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="example_multi_genome.html" class="btn btn-neutral float-right" title="Example for evolutionary regression with multiple genomes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="example_parametrized_nodes.html" class="btn btn-neutral float-right" title="Example for evolutionary regression with parametrized nodes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="example_caching.html" class="btn btn-neutral float-left" title="Example demonstrating the use of the caching decorator." accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="example_reorder.html" class="btn btn-neutral float-left" title="Example for evolutionary regression with genome reordering" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -97,6 +97,7 @@
 <li class="toctree-l2"><a class="reference internal" href="example_minimal.html">Minimal example for evolutionary regression</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_multi_genome.html">Example for evolutionary regression with multiple genomes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_reorder.html">Example for evolutionary regression with genome reordering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_hurdles.html">Minimal example for evolutionary regression using hurdles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_parametrized_nodes.html">Example for evolutionary regression with parametrized nodes</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Example for evolutionary regression on a piecewise target function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_differential_evo_regression.html">Example for differential evolutionary regression</a></li>
@@ -230,7 +231,7 @@ individual and the target function evaluated on a set of pseudo-random points.</
 <span class="sd">    Individual</span>
 <span class="sd">        Modified individual with updated fitness value.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness_is_None</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">individual</span>
 
     <span class="n">n_function_evaluations</span> <span class="o">=</span> <span class="mi">1000</span>
@@ -1887,7 +1888,7 @@ algorithm.</p>
 [1587/5000] max fitness: -0.476[K
 [1588/5000] max fitness: -0.476[K
 [1589/5000] max fitness: -0.476[K
-[1590/5000] max fitness: -0.0[K
+[1590/5000] max fitness: 0.0[K
 </pre></div>
 </div>
 <p>After the evolutionary search has ended, we print the expression
@@ -1930,10 +1931,10 @@ with the highest fitness and plot the search progression and target and evolved 
 </li>
 </ul>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Final expression Piecewise((x_0**2 + 1.0, x_0 &gt;= 0), (-x_0, True)) with fitness -0.0
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Final expression Piecewise((x_0**2 + 1.0, x_0 &gt;= 0), (-x_0, True)) with fitness 0.0
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 4 minutes  22.902 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  36.987 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-piecewise-target-function-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/acc3ba5b277614d64b13a50c14cd107e/example_piecewise_target_function.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_piecewise_target_function.py</span></code></a></p>

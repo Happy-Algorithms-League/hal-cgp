@@ -97,6 +97,7 @@
 <li class="toctree-l2"><a class="reference internal" href="example_minimal.html">Minimal example for evolutionary regression</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Example for evolutionary regression with multiple genomes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_reorder.html">Example for evolutionary regression with genome reordering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_hurdles.html">Minimal example for evolutionary regression using hurdles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_parametrized_nodes.html">Example for evolutionary regression with parametrized nodes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_piecewise_target_function.html">Example for evolutionary regression on a piecewise target function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_differential_evo_regression.html">Example for differential evolutionary regression</a></li>
@@ -218,7 +219,7 @@ individual and the target function evaluated on a set of random points. We
 here either evaluate the function represented by the first (<code class="docutils literal notranslate"><span class="pre">f[0]</span></code>) or the second
 genome (<code class="docutils literal notranslate"><span class="pre">f[1]</span></code>), depending whether the input is less or greater than zero.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">individual</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness_is_None</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">individual</span>
 
     <span class="n">n_function_evaluations</span> <span class="o">=</span> <span class="mi">1000</span>
@@ -383,7 +384,7 @@ dictionaries which causes the population to create instances of
 [103/300] max fitness: -1.2705362372221112[K
 [104/300] max fitness: -1.2705362372221112[K
 [105/300] max fitness: -1.2705362372221112[K
-[106/300] max fitness: -0.0[K
+[106/300] max fitness: 0.0[K
 </pre></div>
 </div>
 <p>After finishing the evolution, we print the evolved expression and plot the result.</p>
@@ -426,7 +427,7 @@ dictionaries which causes the population to create instances of
     x&gt; 0: [x_0**2 + 1.0]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.774 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.800 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-multi-genome-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/9ec8da952a802d0f55f82eabeed987b1/example_multi_genome.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_multi_genome.py</span></code></a></p>

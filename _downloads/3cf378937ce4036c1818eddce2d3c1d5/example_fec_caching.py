@@ -65,7 +65,7 @@ def inner_objective(ind):
 
 
 def objective(individual):
-    if individual.fitness is not None:
+    if not individual.fitness_is_None():
         return individual
 
     individual.fitness = -inner_objective(individual)

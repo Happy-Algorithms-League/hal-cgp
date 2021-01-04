@@ -119,6 +119,27 @@ This folder contains a number of example scripts that demonstrate several use ca
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Example demonstrating the use of Cartesian genetic programming for a simple regression task whe...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_example_hurdles_thumb.png
+     :alt: Minimal example for evolutionary regression using hurdles
+
+     :ref:`sphx_glr_auto_examples_example_hurdles.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/example_hurdles
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Example demonstrating the use of Cartesian genetic programming for a regression task that requi...">
 
 .. only:: html

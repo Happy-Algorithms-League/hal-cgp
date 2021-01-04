@@ -85,7 +85,7 @@ def inner_objective(f, seed):
 
 
 def objective(individual, seed):
-    if individual.fitness is not None:
+    if not individual.fitness_is_None():
         return individual
 
     f = individual.to_torch()

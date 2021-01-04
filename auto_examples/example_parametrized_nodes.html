@@ -42,7 +42,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Example for evolutionary regression on a piecewise target function" href="example_piecewise_target_function.html" />
-    <link rel="prev" title="Example for evolutionary regression with genome reordering" href="example_reorder.html" /> 
+    <link rel="prev" title="Minimal example for evolutionary regression using hurdles" href="example_hurdles.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -97,6 +97,7 @@
 <li class="toctree-l2"><a class="reference internal" href="example_minimal.html">Minimal example for evolutionary regression</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_multi_genome.html">Example for evolutionary regression with multiple genomes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_reorder.html">Example for evolutionary regression with genome reordering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_hurdles.html">Minimal example for evolutionary regression using hurdles</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Example for evolutionary regression with parametrized nodes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_piecewise_target_function.html">Example for evolutionary regression on a piecewise target function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_differential_evo_regression.html">Example for differential evolutionary regression</a></li>
@@ -253,7 +254,7 @@ function to determine the fitness of the individual.</p>
 
 
 <span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">individual</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness_is_None</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">individual</span>
 
     <span class="n">f</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">to_torch</span><span class="p">()</span>
@@ -434,7 +435,7 @@ Best performing expression per generation (for fitness increase &gt; 0.5):
  72: -7.080480056918192e-11, [3.1415928340353736*x_0 + 3.1415928340353736*x_1 + 2.7182734383513227]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  11.856 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  7.391 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-parametrized-nodes-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/1b27ac94862774586a16bbffc94c3333/example_parametrized_nodes.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_parametrized_nodes.py</span></code></a></p>
@@ -457,7 +458,7 @@ Best performing expression per generation (for fitness increase &gt; 0.5):
         <a href="example_piecewise_target_function.html" class="btn btn-neutral float-right" title="Example for evolutionary regression on a piecewise target function" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="example_reorder.html" class="btn btn-neutral float-left" title="Example for evolutionary regression with genome reordering" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="example_hurdles.html" class="btn btn-neutral float-left" title="Minimal example for evolutionary regression using hurdles" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
