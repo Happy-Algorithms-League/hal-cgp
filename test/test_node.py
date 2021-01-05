@@ -24,19 +24,16 @@ def test_inputs_are_cut_to_match_arity():
     assert node.input_nodes == input_nodes[:2]
 
 
-def _test_graph_call_and_to_x_compilations(
+def _test_to_x_compilations(
     genome,
     x,
     y_target,
     *,
-    test_graph_call=True,
     test_to_func=True,
     test_to_numpy=True,
     test_to_torch=True,
     test_to_sympy=True,
 ):
-    if test_graph_call:
-        _test_graph_call(genome, x, y_target)
     if test_to_func:
         _test_to_func(genome, x, y_target)
     if test_to_numpy:
@@ -45,11 +42,6 @@ def _test_graph_call_and_to_x_compilations(
         _test_to_torch(genome, x, y_target)
     if test_to_sympy:
         _test_to_sympy(genome, x, y_target)
-
-
-def _test_graph_call(genome, x, y_target):
-    graph = cgp.CartesianGraph(genome)
-    assert graph(x) == pytest.approx(y_target)
 
 
 def _test_to_func(genome, x, y_target):
@@ -107,7 +99,7 @@ def test_add():
     x = [5.0, 1.5]
     y_target = [x[0] + x[1]]
 
-    _test_graph_call_and_to_x_compilations(genome, x, y_target)
+    _test_to_x_compilations(genome, x, y_target)
 
 
 def test_sub():
@@ -141,7 +133,7 @@ def test_sub():
     x = [5.0, 1.5]
     y_target = [x[0] - x[1]]
 
-    _test_graph_call_and_to_x_compilations(genome, x, y_target)
+    _test_to_x_compilations(genome, x, y_target)
 
 
 def test_mul():
@@ -175,7 +167,7 @@ def test_mul():
     x = [5.0, 1.5]
     y_target = [x[0] * x[1]]
 
-    _test_graph_call_and_to_x_compilations(genome, x, y_target)
+    _test_to_x_compilations(genome, x, y_target)
 
 
 def test_div():
@@ -209,7 +201,7 @@ def test_div():
     x = [5.0, 1.5]
     y_target = [x[0] / x[1]]
 
-    _test_graph_call_and_to_x_compilations(genome, x, y_target)
+    _test_to_x_compilations(genome, x, y_target)
 
 
 def test_pow():
@@ -243,7 +235,7 @@ def test_pow():
     x = [5.0, 1.5]
     y_target = [x[0] ** x[1]]
 
-    _test_graph_call_and_to_x_compilations(genome, x, y_target)
+    _test_to_x_compilations(genome, x, y_target)
 
 
 def test_constant_float():
@@ -273,7 +265,7 @@ def test_constant_float():
     x = [1.0, 2.0]
     y_target = [1.0]  # by default the output value of the ConstantFloat node is 1.0
 
-    _test_graph_call_and_to_x_compilations(genome, x, y_target)
+    _test_to_x_compilations(genome, x, y_target)
 
 
 def test_parameter():
@@ -292,7 +284,7 @@ def test_parameter():
     x = [1.0]
     y_target = [1.0]  # by default the output value of the Parameter node is 1.0
 
-    _test_graph_call_and_to_x_compilations(genome, x, y_target, test_graph_call=False)
+    _test_to_x_compilations(genome, x, y_target)
 
 
 def test_parameter_w_custom_initial_value():
@@ -316,7 +308,7 @@ def test_parameter_w_custom_initial_value():
     x = [1.0]
     y_target = [initial_value]
 
-    _test_graph_call_and_to_x_compilations(genome, x, y_target, test_graph_call=False)
+    _test_to_x_compilations(genome, x, y_target)
 
 
 def test_parameter_two_nodes():
@@ -353,7 +345,7 @@ def test_parameter_two_nodes():
     # hence the sum of two Parameter nodes is 2.0
     y_target = [2.0]
 
-    _test_graph_call_and_to_x_compilations(genome, x, y_target, test_graph_call=False)
+    _test_to_x_compilations(genome, x, y_target)
 
 
 def test_parameter_w_random_initial_value(rng_seed):
@@ -486,15 +478,15 @@ def test_if_else_operator():
 
     x_0 = [1.0, 10.0, -20.0]
     y_target_0 = [10.0]
-    _test_graph_call_and_to_x_compilations(genome, x_0, y_target_0)
+    _test_to_x_compilations(genome, x_0, y_target_0)
 
     x_1 = [0.0, 10.0, -20.0]
     y_target_1 = [10.0]
-    _test_graph_call_and_to_x_compilations(genome, x_1, y_target_1)
+    _test_to_x_compilations(genome, x_1, y_target_1)
 
     x_2 = [-1.0, 10.0, -20.0]
     y_target_2 = [-20.0]
-    _test_graph_call_and_to_x_compilations(genome, x_2, y_target_2)
+    _test_to_x_compilations(genome, x_2, y_target_2)
 
 
 def test_raise_broken_def_output():
@@ -591,7 +583,7 @@ def test_custom_node():
     x = [5.0, 1.5]
     y_target = [2 * (x[0] + x[1])]
 
-    _test_graph_call_and_to_x_compilations(genome, x, y_target)
+    _test_to_x_compilations(genome, x, y_target)
 
 
 def test_custom_node_with_custom_atomic_operator():
@@ -635,8 +627,8 @@ def test_custom_node_with_custom_atomic_operator():
     x = [5.0, 1.5]
     y_target = [2 * (x[0] + x[1])]
 
-    _test_graph_call_and_to_x_compilations(
-        genome, x, y_target, test_graph_call=False, test_to_sympy=False
+    _test_to_x_compilations(
+        genome, x, y_target, test_to_sympy=False
     )
 
 
@@ -683,6 +675,6 @@ def test_custom_node_with_custom_atomic_operator_with_external_library():
     x = [5.0, 1.5]
     y_target = [scipy_const.golden_ratio * (x[0] + x[1])]
 
-    _test_graph_call_and_to_x_compilations(
-        genome, x, y_target, test_graph_call=False, test_to_sympy=False
+    _test_to_x_compilations(
+        genome, x, y_target, test_to_sympy=False
     )

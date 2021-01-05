@@ -7,28 +7,6 @@ import cgp
 from cgp.genome import ID_INPUT_NODE, ID_NON_CODING_GENE, ID_OUTPUT_NODE
 
 
-def test_direct_input_output():
-    params = {"n_inputs": 1, "n_outputs": 1, "n_columns": 3, "n_rows": 3, "levels_back": 2}
-    primitives = (cgp.Add, cgp.Sub)
-    genome = cgp.Genome(
-        params["n_inputs"],
-        params["n_outputs"],
-        params["n_columns"],
-        params["n_rows"],
-        params["levels_back"],
-        primitives,
-    )
-    genome.randomize(np.random)
-
-    genome[-2:] = [0, ID_NON_CODING_GENE]  # set inputs for output node to input node
-    graph = cgp.CartesianGraph(genome)
-
-    x = [2.14159]
-    y = graph(x)
-
-    assert x[0] == pytest.approx(y[0])
-
-
 def test_to_func_simple():
     primitives = (cgp.Add,)
     genome = cgp.Genome(2, 1, 1, 1, 1, primitives)
