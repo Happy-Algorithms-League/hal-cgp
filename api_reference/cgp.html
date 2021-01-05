@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>CGP Population structure &mdash; hal-cgp 0.2.0 documentation</title>
   
@@ -20,7 +20,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -56,7 +59,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> hal-cgp
+            <a href="../index.html" class="icon icon-home"> hal-cgp
           
 
           
@@ -148,6 +151,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -161,7 +166,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/api_reference/cgp.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -328,11 +333,11 @@ executes it to create an instance of the class.</p>
 <h2>Genome<a class="headerlink" href="#genome" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="cgp.Genome">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.</code><code class="sig-name descname">Genome</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_inputs</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_outputs</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_columns</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_rows</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">levels_back</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">primitives</span><span class="p">:</span> <span class="n">Tuple[Type[cgp.node.Node], …]</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L22-L680"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.</code><code class="sig-name descname">Genome</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_inputs</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_outputs</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_columns</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_rows</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">levels_back</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">primitives</span><span class="p">:</span> <span class="n">Tuple[Type[cgp.node.Node], …]</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L22-L695"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome" title="Permalink to this definition">¶</a></dt>
 <dd><p>Genome class for  individuals.</p>
 <dl class="py method">
 <dt id="cgp.Genome.clone">
-<code class="sig-name descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; cgp.genome.Genome<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L618-L640"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.clone" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; cgp.genome.Genome<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L625-L647"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.clone" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clone the genome.</p>
 <p>Genome</p>
 </dd></dl>
@@ -350,7 +355,7 @@ executes it to create an instance of the class.</p>
 
 <dl class="py method">
 <dt id="cgp.Genome.mutate">
-<code class="sig-name descname">mutate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mutation_rate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">rng</span><span class="p">:</span> <span class="n">numpy.random.mtrand.RandomState</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L573-L612"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.mutate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">mutate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mutation_rate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">rng</span><span class="p">:</span> <span class="n">numpy.random.mtrand.RandomState</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L571-L619"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.mutate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mutate the genome.</p>
 <dl class="simple">
 <dt>mutation_rate<span class="classifier">float</span></dt><dd><p>Probability of a gene to be mutated, between 0 (excluded) and 1 (included).</p>
@@ -394,7 +399,7 @@ for the respective gene after reordering.</p>
 
 <dl class="py method">
 <dt id="cgp.Genome.update_parameters_from_torch_class">
-<code class="sig-name descname">update_parameters_from_torch_class</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">torch_cls</span><span class="p">:</span> <span class="n">torch.nn.modules.module.Module</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L642-L668"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.update_parameters_from_torch_class" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update_parameters_from_torch_class</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">torch_cls</span><span class="p">:</span> <span class="n">torch.nn.modules.module.Module</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L649-L675"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.update_parameters_from_torch_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update values stored in Parameter nodes of graph from parameters of
 a given Torch instance.  Can be used to import new values from
 a Torch class after they have been altered, e.g., by local
@@ -419,29 +424,21 @@ search.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="nodes.html" class="btn btn-neutral float-right" title="Nodes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="hl_api.html" class="btn btn-neutral float-left" title="High-level API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="nodes.html" class="btn btn-neutral float-right" title="Nodes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="hl_api.html" class="btn btn-neutral float-left" title="High-level API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, Happy Algorithms League
+        &#169; Copyright 2020, Happy Algorithms League.
 
     </p>
   </div> 
 
 </footer>
-
         </div>
       </div>
 
