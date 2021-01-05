@@ -20,6 +20,7 @@ class MuPlusLambda:
     def __init__(
         self,
         n_offsprings: int,
+        mutation_rate: float,
         *,
         tournament_size: Union[None, int] = None,
         n_processes: int = 1,
@@ -34,6 +35,8 @@ class MuPlusLambda:
         ----------
         n_offsprings : int
             Number of offspring in each iteration.
+        mutation_rate : float
+            Probability of a gene to be mutated, between 0 (excluded) and 1 (included).
         tournament_size : int, optional
             Tournament size in each iteration. Defaults to the number of parents in the population
         n_processes : int, optional
@@ -62,6 +65,11 @@ class MuPlusLambda:
         self.n_offsprings = n_offsprings
 
         self.tournament_size = tournament_size
+
+        if not (0.0 < mutation_rate and mutation_rate <= 1.0):
+            raise ValueError("mutation rate needs to be in (0, 1]")
+        self._mutation_rate = mutation_rate  # probability of mutation per gene
+
         self.n_processes = n_processes
         self.local_search = local_search
         self.k_local_search = k_local_search
@@ -173,7 +181,7 @@ class MuPlusLambda:
             offsprings.append(best_in_tournament.clone())
 
         # mutate individuals to create offsprings
-        offsprings = pop.mutate(offsprings)
+        offsprings = self.mutate(offsprings, pop.rng)
 
         for ind in offsprings:
             ind.idx = pop.get_idx_for_new_individual()
@@ -249,3 +257,23 @@ class MuPlusLambda:
         for individual in combined:
             if individual.fitness_is_None():
                 self.n_objective_calls += 1
+
+    def mutate(
+        self, offsprings: List[IndividualBase], rng: np.random.RandomState
+    ) -> List[IndividualBase]:
+        """Mutate a list of offspring individuals.
+
+        Parameters
+        ----------
+        offsprings : List[IndividualBase]
+            List of offspring individuals to be mutated.
+        rng: np.random.RandomState
+
+        Returns
+        ----------
+        List[IndividualBase]
+            List of mutated offspring individuals.
+        """
+        for off in offsprings:
+            off.mutate(self._mutation_rate, rng)
+        return offsprings

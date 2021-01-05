@@ -74,7 +74,7 @@ def objective(individual):
 # evolutionary algorithms without (default) and with genome reordering.
 
 
-population_params = {"n_parents": 1, "mutation_rate": 0.03, "seed": 818821}
+population_params = {"n_parents": 1, "seed": 818821}
 
 genome_params = {
     "n_inputs": 1,
@@ -85,9 +85,10 @@ genome_params = {
     "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat),
 }
 
-ea_params = {"n_offsprings": 4, "n_processes": 2}
+ea_params = {"n_offsprings": 4, "mutation_rate": 0.03, "n_processes": 2}
 ea_params_with_reorder = {
     "n_offsprings": 4,
+    "mutation_rate": 0.03,
     "n_processes": 2,
     "reorder_genome": True,
 }

@@ -76,7 +76,6 @@ def objective(individual, rng):
 # algorithm.
 population_params = {
     "n_parents": 1,
-    "mutation_rate": 0.03,
     "seed": 8188211,
 }
 
@@ -89,7 +88,7 @@ genome_params = {
     "primitives": (cgp.IfElse, cgp.Mul, cgp.Add, cgp.Sub, cgp.ConstantFloat,),
 }
 
-ea_params = {"n_offsprings": 4, "n_processes": 2}
+ea_params = {"n_offsprings": 4, "mutation_rate": 0.03, "n_processes": 2}
 
 evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
 

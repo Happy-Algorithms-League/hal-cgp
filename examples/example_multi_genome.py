@@ -70,7 +70,7 @@ def objective(individual):
 # dictionaries which causes the population to create instances of
 # ``InvidividualMultiGenome``.
 
-population_params = {"n_parents": 1, "mutation_rate": 0.03, "seed": 8188211}
+population_params = {"n_parents": 1, "seed": 8188211}
 
 single_genome_params = {
     "n_inputs": 1,
@@ -82,7 +82,7 @@ single_genome_params = {
 }
 genome_params = [single_genome_params, single_genome_params]
 
-ea_params = {"n_offsprings": 4, "n_processes": 1}
+ea_params = {"n_offsprings": 4, "mutation_rate": 0.03, "n_processes": 1}
 
 evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
 
