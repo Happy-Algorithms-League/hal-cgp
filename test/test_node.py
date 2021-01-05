@@ -627,9 +627,7 @@ def test_custom_node_with_custom_atomic_operator():
     x = [5.0, 1.5]
     y_target = [2 * (x[0] + x[1])]
 
-    _test_to_x_compilations(
-        genome, x, y_target, test_to_sympy=False
-    )
+    _test_to_x_compilations(genome, x, y_target, test_to_sympy=False)
 
 
 def test_custom_node_with_custom_atomic_operator_with_external_library():
@@ -675,6 +673,4 @@ def test_custom_node_with_custom_atomic_operator_with_external_library():
     x = [5.0, 1.5]
     y_target = [scipy_const.golden_ratio * (x[0] + x[1])]
 
-    _test_to_x_compilations(
-        genome, x, y_target, test_to_sympy=False
-    )
+    _test_to_x_compilations(genome, x, y_target, test_to_sympy=False)
