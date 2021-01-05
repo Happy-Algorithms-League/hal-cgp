@@ -181,7 +181,7 @@ class CartesianGraph:
                 continue
             active_nodes_by_hidden_column_idx[self._hidden_column_idx(node.idx)].add(node)
 
-            for i in node.input_nodes:
+            for i in node.addresses:
                 nodes_to_process.append(self._nodes[i])
 
         return active_nodes_by_hidden_column_idx

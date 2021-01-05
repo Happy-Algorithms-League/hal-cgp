@@ -70,7 +70,7 @@ def test_check_dna_consistency():
             ID_NON_CODING_GENE,
         ]
 
-    # invalid input gene for input node
+    # invalid address gene for input node
     with pytest.raises(ValueError):
         genome.dna = [
             ID_INPUT_NODE,
@@ -104,7 +104,7 @@ def test_check_dna_consistency():
             ID_NON_CODING_GENE,
         ]
 
-    # invalid input gene for hidden node
+    # invalid address gene for hidden node
     with pytest.raises(ValueError):
         genome.dna = [
             ID_INPUT_NODE,
@@ -138,7 +138,7 @@ def test_check_dna_consistency():
             ID_NON_CODING_GENE,
         ]
 
-    # invalid input gene for input node
+    # invalid address gene for input node
     with pytest.raises(ValueError):
         genome.dna = [
             ID_INPUT_NODE,
@@ -155,7 +155,7 @@ def test_check_dna_consistency():
             ID_NON_CODING_GENE,
         ]
 
-    # invalid inactive input gene for output node
+    # invalid inactive address gene for output node
     with pytest.raises(ValueError):
         genome.dna = [
             ID_INPUT_NODE,
@@ -173,7 +173,7 @@ def test_check_dna_consistency():
         ]
 
 
-def test_permissible_inputs():
+def test_permissible_addresses():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 4, "n_rows": 3, "levels_back": 2}
 
     primitives = (cgp.Add,)
@@ -190,7 +190,7 @@ def test_permissible_inputs():
     for input_idx in range(params["n_inputs"]):
         region_idx = input_idx
         with pytest.raises(AssertionError):
-            genome._permissible_inputs(region_idx)
+            genome._permissible_addresses(region_idx)
 
     expected_for_hidden = [
         [0, 1],
@@ -201,13 +201,13 @@ def test_permissible_inputs():
 
     for column_idx in range(params["n_columns"]):
         region_idx = params["n_inputs"] + params["n_rows"] * column_idx
-        assert expected_for_hidden[column_idx] == genome._permissible_inputs(region_idx)
+        assert expected_for_hidden[column_idx] == genome._permissible_addresses(region_idx)
 
     expected_for_output = list(range(params["n_inputs"] + params["n_rows"] * params["n_columns"]))
 
     for output_idx in range(params["n_outputs"]):
         region_idx = params["n_inputs"] + params["n_rows"] * params["n_columns"] + output_idx
-        assert expected_for_output == genome._permissible_inputs(region_idx)
+        assert expected_for_output == genome._permissible_addresses(region_idx)
 
 
 def test_region_iterators():
@@ -289,8 +289,8 @@ def test_catch_invalid_allele_in_inactive_region():
     primitives = (cgp.ConstantFloat,)
     genome = cgp.Genome(1, 1, 1, 1, 1, primitives)
 
-    # should raise error: ConstantFloat node has no inputs, but silent
-    # input gene should still specify valid input
+    # should raise error: ConstantFloat node has no addresses, but silent
+    # address gene should still specify valid address
     with pytest.raises(ValueError):
         genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, ID_NON_CODING_GENE, ID_OUTPUT_NODE, 1]
 
@@ -359,7 +359,7 @@ def test_mutation_rate(rng_seed, mutation_rate):
     genome.randomize(rng)
 
     def count_n_immutable_genes(n_inputs, n_outputs, n_rows):
-        length_per_region = genome.primitives.max_arity + 1  # function gene + input gene addresses
+        length_per_region = genome.primitives.max_arity + 1  # function gene + address gene
         n_immutable_genes = n_inputs * length_per_region  # none of the input genes are mutable
         n_immutable_genes += n_outputs * (
             length_per_region - 1
@@ -367,7 +367,7 @@ def test_mutation_rate(rng_seed, mutation_rate):
         if n_inputs == 1:
             n_immutable_genes += (
                 n_rows * genome.primitives.max_arity
-            )  # input gene addresses in the first (hidden) column can't be mutated
+            )  # address gene in the first (hidden) column can't be mutated
             # if only one input node exists
         return n_immutable_genes
 
@@ -447,7 +447,7 @@ def test_only_silent_mutations(genome_params, mutation_rate, rng_seed):
     genome.dna = dna_fixed
     graph = CartesianGraph(genome)
     active_regions = graph.determine_active_regions()
-    length_per_region = genome.primitives.max_arity + 1  # function gene + input gene addresses
+    length_per_region = genome.primitives.max_arity + 1  # function gene + address gene
     gene_to_be_mutated_non_active = (
         3 * length_per_region
     )  # operator gene of 2nd hidden node, a silent node in this dna configuration
@@ -488,10 +488,10 @@ def test_permissible_values(genome_params):
     genome = cgp.Genome(n_inputs, n_outputs, n_columns, n_rows, levels_back, primitives)
 
     permissible_function_gene_values = np.arange(len(genome._primitives._primitives))
-    permissible_inputs_first_internal_column = np.array([0, 1])
-    permissible_inputs_second_internal_column = np.array([0, 1, 2, 3, 4])
-    permissible_inputs_third_internal_column = np.array([0, 1, 2, 3, 4, 5, 6, 7])
-    permissible_inputs_output_gene = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    permissible_addresses_first_internal_column = np.array([0, 1])
+    permissible_addresses_second_internal_column = np.array([0, 1, 2, 3, 4])
+    permissible_addresses_third_internal_column = np.array([0, 1, 2, 3, 4, 5, 6, 7])
+    permissible_addresses_output = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
     permissible_values_expected = [
         np.array(ID_INPUT_NODE),
@@ -501,34 +501,34 @@ def test_permissible_values(genome_params):
         np.array(ID_NON_CODING_GENE),
         np.array(ID_NON_CODING_GENE),
         permissible_function_gene_values,
-        permissible_inputs_first_internal_column,
-        permissible_inputs_first_internal_column,
+        permissible_addresses_first_internal_column,
+        permissible_addresses_first_internal_column,
         permissible_function_gene_values,
-        permissible_inputs_first_internal_column,
-        permissible_inputs_first_internal_column,
+        permissible_addresses_first_internal_column,
+        permissible_addresses_first_internal_column,
         permissible_function_gene_values,
-        permissible_inputs_first_internal_column,
-        permissible_inputs_first_internal_column,
+        permissible_addresses_first_internal_column,
+        permissible_addresses_first_internal_column,
         permissible_function_gene_values,
-        permissible_inputs_second_internal_column,
-        permissible_inputs_second_internal_column,
+        permissible_addresses_second_internal_column,
+        permissible_addresses_second_internal_column,
         permissible_function_gene_values,
-        permissible_inputs_second_internal_column,
-        permissible_inputs_second_internal_column,
+        permissible_addresses_second_internal_column,
+        permissible_addresses_second_internal_column,
         permissible_function_gene_values,
-        permissible_inputs_second_internal_column,
-        permissible_inputs_second_internal_column,
+        permissible_addresses_second_internal_column,
+        permissible_addresses_second_internal_column,
         permissible_function_gene_values,
-        permissible_inputs_third_internal_column,
-        permissible_inputs_third_internal_column,
+        permissible_addresses_third_internal_column,
+        permissible_addresses_third_internal_column,
         permissible_function_gene_values,
-        permissible_inputs_third_internal_column,
-        permissible_inputs_third_internal_column,
+        permissible_addresses_third_internal_column,
+        permissible_addresses_third_internal_column,
         permissible_function_gene_values,
-        permissible_inputs_third_internal_column,
-        permissible_inputs_third_internal_column,
+        permissible_addresses_third_internal_column,
+        permissible_addresses_third_internal_column,
         np.array(ID_OUTPUT_NODE),
-        permissible_inputs_output_gene,
+        permissible_addresses_output,
         np.array(ID_NON_CODING_GENE),
     ]
 

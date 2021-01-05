@@ -5,23 +5,23 @@ import cgp
 from cgp.genome import ID_INPUT_NODE, ID_NON_CODING_GENE, ID_OUTPUT_NODE
 
 
-def test_inputs_are_cut_to_match_arity():
-    """Test that even if a list of inputs longer than the node arity is
-    provided, Node.inputs only returns the initial <arity> inputs,
+def test_addresses_are_cut_to_match_arity():
+    """Test that even if a list of addresses longer than the node arity is
+    provided, Node.addresses only returns the initial <arity> addresses,
     ignoring the inactive genes.
 
     """
     idx = 0
-    input_nodes = [1, 2, 3, 4]
+    addresses = [1, 2, 3, 4]
 
-    node = cgp.ConstantFloat(idx, input_nodes)
-    assert node.input_nodes == []
+    node = cgp.ConstantFloat(idx, addresses)
+    assert node.addresses == []
 
-    node = cgp.node_input_output.OutputNode(idx, input_nodes)
-    assert node.input_nodes == input_nodes[:1]
+    node = cgp.node_input_output.OutputNode(idx, addresses)
+    assert node.addresses == addresses[:1]
 
-    node = cgp.Add(idx, input_nodes)
-    assert node.input_nodes == input_nodes[:2]
+    node = cgp.Add(idx, addresses)
+    assert node.addresses == addresses[:2]
 
 
 def _test_to_x_compilations(
@@ -467,9 +467,9 @@ def test_if_else_operator():
         ID_NON_CODING_GENE,
         ID_NON_CODING_GENE,
         0,  # function gene
-        0,  # first input gene is address of first input node
-        1,  # second input gene is address of second input node
-        2,  # third input gene is address of third input node
+        0,  # first gene is address of first input node
+        1,  # second gene is address of second input node
+        2,  # third gene is address of third input node
         ID_OUTPUT_NODE,
         3,
         ID_NON_CODING_GENE,
@@ -528,22 +528,22 @@ def test_raise_broken_def_sympy_output():
 
 def test_repr():
     idx = 0
-    input_nodes = [1, 2, 3, 4]
+    addresses = [1, 2, 3, 4]
 
     # Test example of OperatorNode with arity 0
-    node = cgp.ConstantFloat(idx, input_nodes)
+    node = cgp.ConstantFloat(idx, addresses)
     node_repr = str(node)
-    assert node_repr == "ConstantFloat(idx: 0, active: False, arity: 0, input_nodes []"
+    assert node_repr == "ConstantFloat(idx: 0, active: False, arity: 0, addresses of inputs []"
 
     # Test OutputNode
-    node = cgp.node_input_output.OutputNode(idx, input_nodes)
+    node = cgp.node_input_output.OutputNode(idx, addresses)
     node_repr = str(node)
-    assert node_repr == "OutputNode(idx: 0, active: False, arity: 1, input_nodes [1]"
+    assert node_repr == "OutputNode(idx: 0, active: False, arity: 1, addresses of inputs [1]"
 
     # Test example of OperatorNode with arity 2
-    node = cgp.Add(idx, input_nodes)
+    node = cgp.Add(idx, addresses)
     node_repr = str(node)
-    assert node_repr == "Add(idx: 0, active: False, arity: 2, input_nodes [1, 2]"
+    assert node_repr == "Add(idx: 0, active: False, arity: 2, addresses of inputs [1, 2]"
 
 
 def test_custom_node():

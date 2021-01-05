@@ -37,7 +37,7 @@ class Primitives:
 
     def _determine_max_arity(self) -> int:
 
-        arity = 1  # minimal possible arity (output nodes need one input)
+        arity = 1  # minimal possible arity (output nodes need one address)
 
         for p in self._primitives:
             if arity < p._arity:
