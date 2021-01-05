@@ -71,9 +71,9 @@ def test_offspring_individuals_are_assigned_correct_parent_indices(
         return ind
 
     population_params["n_parents"] = 1
-
     pop = cgp.Population(**population_params, genome_params=genome_params)
 
+    ea_params["tournament_size"] = 1
     ea = cgp.ea.MuPlusLambda(**ea_params)
     ea.initialize_fitness_parents(pop, objective)
 

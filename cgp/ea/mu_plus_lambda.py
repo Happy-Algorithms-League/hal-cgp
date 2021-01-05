@@ -159,6 +159,10 @@ class MuPlusLambda:
     def _create_new_offspring_generation(self, pop: Population) -> List[IndividualBase]:
         # use tournament selection to randomly select individuals from
         # parent population
+
+        if self.tournament_size > pop.n_parents:
+            raise ValueError("tournament_size must be less or equal n_parents")
+
         offsprings: List[IndividualBase] = []
         while len(offsprings) < self.n_offsprings:
             tournament_pool = pop.rng.permutation(pop.parents)[: self.tournament_size]
