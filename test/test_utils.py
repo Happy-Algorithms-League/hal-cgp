@@ -1,5 +1,6 @@
 import concurrent.futures
 import functools
+import multiprocessing as mp
 import tempfile
 import time
 
@@ -7,6 +8,7 @@ import numpy as np
 import pytest
 
 import cgp
+from cgp.genome import ID_INPUT_NODE, ID_NON_CODING_GENE, ID_OUTPUT_NODE
 
 
 @pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
@@ -136,13 +138,84 @@ def test_fec_cache_decorator_produces_identical_history(
         assert fitness == pytest.approx(fitness_decorated)
 
 
+@cgp.utils.disk_cache(tempfile.mkstemp()[1], use_fec=True)
+def _fec_cache_decorator_with_multiple_inputs_multiple_outputs_objective(ind):
+    f = ind.to_numpy()
+    x = np.array([[1.0, 2.0], [3.0, 4.0]])
+    y = f(x)
+    return y
+
+
+def test_fec_cache_decorator_with_multiple_inputs_multiple_outputs(genome_params):
+
+    genome_params = {
+        "n_inputs": 2,
+        "n_outputs": 2,
+        "n_columns": 1,
+        "n_rows": 1,
+        "levels_back": None,
+        "primitives": (cgp.Add, cgp.Sub),
+    }
+
+    genome0 = cgp.Genome(**genome_params)
+    # [f0(x), f1(x)] = [x_0, x_0 + x_1]
+    genome0.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        0,
+        ID_NON_CODING_GENE,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
+    ind0 = cgp.IndividualSingleGenome(genome0)
+
+    genome1 = cgp.Genome(**genome_params)
+    # [f0(x), f1(x)] = [x_0, x_0 - x_1]
+    genome1.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        1,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        0,
+        ID_NON_CODING_GENE,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
+    ind1 = cgp.IndividualSingleGenome(genome1)
+
+    y0 = _fec_cache_decorator_with_multiple_inputs_multiple_outputs_objective(ind0)
+
+    # next call should *not* use the cached value despite the first
+    # dimension being identical
+    y1 = _fec_cache_decorator_with_multiple_inputs_multiple_outputs_objective(ind1)
+
+    assert y0[:, 0] == pytest.approx(y1[:, 0])
+    assert y0[:, 1] != pytest.approx(y1[:, 1])
+
+
 @cgp.utils.disk_cache(tempfile.mkstemp()[1])
 def _cache_decorator_objective_single_process(s, sleep_time):
     time.sleep(sleep_time)  # simulate long execution time
     return s
 
 
-@cgp.utils.disk_cache(tempfile.mkstemp()[1])
+@cgp.utils.disk_cache(tempfile.mkstemp()[1], file_lock=mp.Lock())
 def _cache_decorator_objective_two_processes(s, sleep_time):
     time.sleep(sleep_time)  # simulate long execution time
     return s
@@ -164,7 +237,7 @@ def test_cache_decorator(n_processes):
                 return list(executor.map(objective, x))
 
     sleep_time = 1.0
-    x = ["test0", "test1"]
+    x = [0, 1]
 
     # WARNING: below the number of processes is *not* taken into
     # account in the timing; one would expect a two-fold speedup when

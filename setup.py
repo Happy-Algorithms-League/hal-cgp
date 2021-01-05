@@ -1,7 +1,8 @@
 # encoding: utf8
 import re
-from setuptools import setup
 from collections import defaultdict
+
+from setuptools import setup
 
 
 def _cut_version_number_from_requirement(req):
