@@ -413,6 +413,41 @@ def test_multiple_parameters_per_node():
     assert y == pytest.approx(p + q)
 
 
+def test_reset_parameters_upon_creation_of_node(rng):
+    class CustomParameter(cgp.Parameter):
+        _initial_values = {"<p>": lambda: np.pi}
+
+    genome_params = {
+        "n_inputs": 1,
+        "n_outputs": 1,
+        "n_columns": 1,
+        "n_rows": 1,
+        "levels_back": None,
+    }
+    primitives = (CustomParameter, CustomParameter)
+    genome = cgp.Genome(**genome_params, primitives=primitives)
+    # f(x) = p
+    genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
+    genome._parameter_names_to_values["<p1>"] = 1.0
+
+    f = cgp.CartesianGraph(genome).to_func()
+    y = f([0.0])[0]
+    assert y == pytest.approx(1.0)
+
+    # now mutate the genome, since there is only one other option for
+    # the hidden node, a new CustomParameter node will be created;
+    # creating this new node should reset the parameter to its initial
+    # value; after mutation we recreate the correct graph connectivity
+    # manually
+    genome.mutate(1.0, rng)
+    # f(x) = p
+    genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
+
+    f = cgp.CartesianGraph(genome).to_func()
+    y = f([0.0])[0]
+    assert y == pytest.approx(np.pi)
+
+
 def test_if_else_operator():
 
     genome_params = {
