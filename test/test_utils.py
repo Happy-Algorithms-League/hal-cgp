@@ -380,3 +380,30 @@ def test_primitives_from_class_names_for_genome(genome_params):
     genome_params["primitives"] = primitives
 
     cgp.Genome(**genome_params)
+
+
+def test_fec_cache_decorator_with_additional_arguments(genome_params, rng, rng_seed):
+    def f_target(x):
+        return x[0] - x[1]
+
+    @cgp.utils.disk_cache(tempfile.mkstemp()[1], use_fec=True, fec_seed=rng_seed)
+    def inner_objective(ind, n_samples):
+        np.random.seed(rng_seed)
+
+        f = ind.to_func()
+
+        loss = 0
+        for x in np.random.uniform(size=(n_samples, 2)):
+            loss += (f_target(x) - f(x)[0]) ** 2
+        return loss
+
+    g = cgp.Genome(**genome_params)
+    g.randomize(rng)
+    ind = cgp.IndividualSingleGenome(g)
+
+    # call with 5 and 10 samples, results should be different since
+    # the second call should *not* return the cached value
+    y0 = inner_objective(ind, 5)
+    y1 = inner_objective(ind, 10)
+
+    assert y0 != pytest.approx(y1)
