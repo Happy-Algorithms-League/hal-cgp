@@ -558,20 +558,20 @@ def test_genome_reordering_empirically(rng):
     genome_params = {
         "n_inputs": 2,
         "n_outputs": 1,
-        "n_columns": 10,
+        "n_columns": 14,
         "n_rows": 1,
         "levels_back": None,
-        "primitives": (cgp.Mul, cgp.Sub, cgp.Add, cgp.ConstantFloat),
+        "primitives": (cgp.Mul, cgp.Sub, cgp.Add, cgp.ConstantFloat, cgp.Parameter),
     }
 
     genome = cgp.Genome(**genome_params)
 
-    # f(x_0, x_1) = x_0 ** 2 - x_1 + 1
+    # f(x_0, x_1) = x_0 ** 2 - x_1 + 1 + 0.5
     dna_fixed = [
-        ID_INPUT_NODE,
+        ID_INPUT_NODE,  # x_0 (address 0)
         ID_NON_CODING_GENE,
         ID_NON_CODING_GENE,
-        ID_INPUT_NODE,
+        ID_INPUT_NODE,  # x_1 (address 1)
         ID_NON_CODING_GENE,
         ID_NON_CODING_GENE,
         0,  # Mul ->  x_0^2 (address 2)
@@ -583,38 +583,54 @@ def test_genome_reordering_empirically(rng):
         1,  # Sub ->  0 (address 4)
         0,  # x
         0,  # x
-        3,  # const ->  1 (address 5)
-        2,  # address of x_0^2 (unused)
-        3,  # address of 0 (unused)
-        3,  # const -> outs 1 (address 6)
+        3,  # const -> 1 (address 5)
+        2,
+        3,
+        3,  # const -> 1 (address 6)
         0,
         0,
-        2,  # Add -> x_0^2 - x_1 + 1 (address 7)
+        4,  # param -> 0.9 (address 7)
+        4,
+        3,
+        4,  # param -> 0.4 (address 8)
+        7,
+        2,
+        2,  # Add -> x_0^2 - x_1 + 1 (address 9)
         3,  # x_0^2 - x_1
         5,  # 1
-        3,  # const (address 8)
+        1,  # Sub -> x_0^2 - x_1 + 1 - 0.9 (address 10)
+        9,  # x_0^2 - x_1 + 1
+        7,  # 0.9
+        2,  # Add -> x_0^2 - x_1 + 1 - 0.9 + 0.4 (address 11)
+        10,  # x_0^2 - x_1 + 1 - 0.9
+        8,  # 0.4
+        3,  # const (address 12)
         0,
         1,
-        3,  # const (address 9)
+        3,  # const (address 13)
         0,
         1,
-        3,  # const (address 10)
+        3,  # const (address 14)
         0,
         1,
-        3,  # const (address 11)
+        3,  # const (address 15)
         0,
         1,
         ID_OUTPUT_NODE,
-        7,
+        11,
         ID_NON_CODING_GENE,
     ]
 
     genome.dna = dna_fixed
+    genome._parameter_names_to_values["<p7>"] = 0.9
+    genome._parameter_names_to_values["<p8>"] = 0.4
+
     sympy_expression = cgp.CartesianGraph(genome).to_sympy()
     n_reorderings = 100
     for _ in range(n_reorderings):
         genome.reorder(rng)
-        sympy_expression_after_reorder = cgp.CartesianGraph(genome).to_sympy()
+        new_graph = cgp.CartesianGraph(genome)
+        sympy_expression_after_reorder = new_graph.to_sympy()
         assert sympy_expression_after_reorder == sympy_expression
 
 
