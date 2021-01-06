@@ -20,8 +20,8 @@ class MuPlusLambda:
     def __init__(
         self,
         n_offsprings: int,
-        tournament_size: int,
         *,
+        tournament_size: Union[None, int] = None,
         n_processes: int = 1,
         local_search: Callable[[IndividualBase], None] = lambda combined: None,
         k_local_search: Union[int, None] = None,
@@ -34,8 +34,8 @@ class MuPlusLambda:
         ----------
         n_offsprings : int
             Number of offspring in each iteration.
-        tournament_size : int
-            Tournament size in each iteration.
+        tournament_size : int, optional
+            Tournament size in each iteration. Defaults to the number of parents in the population
         n_processes : int, optional
             Number of parallel processes to be used. If greater than 1,
             parallel evaluation of the objective is supported. Defaults to 1.
@@ -159,6 +159,13 @@ class MuPlusLambda:
     def _create_new_offspring_generation(self, pop: Population) -> List[IndividualBase]:
         # use tournament selection to randomly select individuals from
         # parent population
+
+        if self.tournament_size is None:
+            self.tournament_size = pop.n_parents
+
+        if self.tournament_size > pop.n_parents:
+            raise ValueError("tournament_size must be less or equal n_parents")
+
         offsprings: List[IndividualBase] = []
         while len(offsprings) < self.n_offsprings:
             tournament_pool = pop.rng.permutation(pop.parents)[: self.tournament_size]
