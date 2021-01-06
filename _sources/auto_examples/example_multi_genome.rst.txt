@@ -144,7 +144,7 @@ dictionaries which causes the population to create instances of
     }
     genome_params = [single_genome_params, single_genome_params]
 
-    ea_params = {"n_offsprings": 4, "tournament_size": 2, "n_processes": 1}
+    ea_params = {"n_offsprings": 4, "n_processes": 1}
 
     evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
 
@@ -300,7 +300,7 @@ After finishing the evolution, we print the evolved expression and plot the resu
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.830 seconds)
+   **Total running time of the script:** ( 0 minutes  0.806 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_multi_genome.py:

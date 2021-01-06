@@ -127,7 +127,6 @@ genome_params = {
 # the (n+1)th objective by a list of numbers between 0 and 1.
 ea_params = {
     "n_offsprings": 4,
-    "tournament_size": 2,
     "n_processes": 1,
     "hurdle_percentile": [0.5, 0.0],
 }

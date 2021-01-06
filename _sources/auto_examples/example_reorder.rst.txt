@@ -130,7 +130,7 @@ Next, we set up the evolutionary search. We first define the
 parameters for the population, the genome of individuals, and two
 evolutionary algorithms without (default) and with genome reordering.
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-98
+.. GENERATED FROM PYTHON SOURCE LINES 75-97
 
 .. code-block:: default
 
@@ -147,10 +147,9 @@ evolutionary algorithms without (default) and with genome reordering.
         "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat),
     }
 
-    ea_params = {"n_offsprings": 4, "tournament_size": 2, "n_processes": 2}
+    ea_params = {"n_offsprings": 4, "n_processes": 2}
     ea_params_with_reorder = {
         "n_offsprings": 4,
-        "tournament_size": 2,
         "n_processes": 2,
         "reorder_genome": True,
     }
@@ -164,11 +163,11 @@ evolutionary algorithms without (default) and with genome reordering.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 99-100
+.. GENERATED FROM PYTHON SOURCE LINES 98-99
 
 We create two populations that will be evolved
 
-.. GENERATED FROM PYTHON SOURCE LINES 100-103
+.. GENERATED FROM PYTHON SOURCE LINES 99-102
 
 .. code-block:: default
 
@@ -182,11 +181,11 @@ We create two populations that will be evolved
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 104-105
+.. GENERATED FROM PYTHON SOURCE LINES 103-104
 
 and two instances of the (mu + lambda) evolutionary algorithm
 
-.. GENERATED FROM PYTHON SOURCE LINES 105-108
+.. GENERATED FROM PYTHON SOURCE LINES 104-107
 
 .. code-block:: default
 
@@ -200,11 +199,11 @@ and two instances of the (mu + lambda) evolutionary algorithm
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-110
+.. GENERATED FROM PYTHON SOURCE LINES 108-109
 
 We define two callbacks for recording of fitness over generations
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-126
+.. GENERATED FROM PYTHON SOURCE LINES 109-125
 
 .. code-block:: default
 
@@ -231,11 +230,11 @@ We define two callbacks for recording of fitness over generations
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-128
+.. GENERATED FROM PYTHON SOURCE LINES 126-127
 
 and finally perform the evolution of the two populations
 
-.. GENERATED FROM PYTHON SOURCE LINES 128-142
+.. GENERATED FROM PYTHON SOURCE LINES 127-141
 
 .. code-block:: default
 
@@ -269,12 +268,12 @@ and finally perform the evolution of the two populations
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 143-145
+.. GENERATED FROM PYTHON SOURCE LINES 142-144
 
 After finishing the evolution, we plot the evolution of the fittest individual
 with and without genome reordering
 
-.. GENERATED FROM PYTHON SOURCE LINES 145-162
+.. GENERATED FROM PYTHON SOURCE LINES 144-161
 
 .. code-block:: default
 
@@ -309,7 +308,7 @@ with and without genome reordering
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  6.427 seconds)
+   **Total running time of the script:** ( 0 minutes  5.882 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_reorder.py:
