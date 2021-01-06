@@ -132,13 +132,12 @@ Next, we set up the evolutionary search. First, we define the parameters for
 the population, the genomes of individuals, and the evolutionary
 algorithm.
 
-.. GENERATED FROM PYTHON SOURCE LINES 77-126
+.. GENERATED FROM PYTHON SOURCE LINES 77-125
 
 .. code-block:: default
 
     population_params = {
         "n_parents": 1,
-        "mutation_rate": 0.03,
         "seed": 8188211,
     }
 
@@ -151,7 +150,7 @@ algorithm.
         "primitives": (cgp.IfElse, cgp.Mul, cgp.Add, cgp.Sub, cgp.ConstantFloat,),
     }
 
-    ea_params = {"n_offsprings": 4, "n_processes": 2}
+    ea_params = {"n_offsprings": 4, "mutation_rate": 0.03, "n_processes": 2}
 
     evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
 
@@ -200,12 +199,12 @@ algorithm.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-129
+.. GENERATED FROM PYTHON SOURCE LINES 126-128
 
 After the evolutionary search has ended, we print the expression
 with the highest fitness and plot the search progression and target and evolved functions.
 
-.. GENERATED FROM PYTHON SOURCE LINES 129-158
+.. GENERATED FROM PYTHON SOURCE LINES 128-157
 
 .. code-block:: default
 
@@ -271,7 +270,7 @@ with the highest fitness and plot the search progression and target and evolved 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  34.382 seconds)
+   **Total running time of the script:** ( 2 minutes  40.283 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_piecewise_target_function.py:

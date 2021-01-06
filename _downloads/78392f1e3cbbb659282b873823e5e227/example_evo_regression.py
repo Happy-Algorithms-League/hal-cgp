@@ -123,7 +123,7 @@ def evolution(f_target):
     Individual
         Individual with the highest fitness in the last generation
     """
-    population_params = {"n_parents": 10, "mutation_rate": 0.03, "seed": 8188211}
+    population_params = {"n_parents": 10, "seed": 8188211}
 
     genome_params = {
         "n_inputs": 2,
@@ -134,7 +134,7 @@ def evolution(f_target):
         "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Div, cgp.ConstantFloat),
     }
 
-    ea_params = {"n_offsprings": 10, "tournament_size": 2, "n_processes": 2}
+    ea_params = {"n_offsprings": 10, "tournament_size": 2, "mutation_rate": 0.03, "n_processes": 2}
 
     evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
 

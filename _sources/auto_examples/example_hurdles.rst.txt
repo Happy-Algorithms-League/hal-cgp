@@ -172,7 +172,7 @@ evolutionary algorithm.
 
 
 
-    population_params = {"n_parents": 1, "mutation_rate": 0.03, "seed": 8188211}
+    population_params = {"n_parents": 1, "seed": 8188211}
 
     genome_params = {
         "n_inputs": 1,
@@ -195,12 +195,13 @@ evolutionary algorithm.
 We define the upper percentile of individuals which are evaluated on
 the (n+1)th objective by a list of numbers between 0 and 1.
 
-.. GENERATED FROM PYTHON SOURCE LINES 128-136
+.. GENERATED FROM PYTHON SOURCE LINES 128-137
 
 .. code-block:: default
 
     ea_params = {
         "n_offsprings": 4,
+        "mutation_rate": 0.03,
         "n_processes": 1,
         "hurdle_percentile": [0.5, 0.0],
     }
@@ -214,11 +215,11 @@ the (n+1)th objective by a list of numbers between 0 and 1.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 137-138
+.. GENERATED FROM PYTHON SOURCE LINES 138-139
 
 We create a population that will be evolved
 
-.. GENERATED FROM PYTHON SOURCE LINES 138-140
+.. GENERATED FROM PYTHON SOURCE LINES 139-141
 
 .. code-block:: default
 
@@ -231,11 +232,11 @@ We create a population that will be evolved
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 141-142
+.. GENERATED FROM PYTHON SOURCE LINES 142-143
 
 and an instance of the (mu + lambda) evolutionary algorithm
 
-.. GENERATED FROM PYTHON SOURCE LINES 142-144
+.. GENERATED FROM PYTHON SOURCE LINES 143-145
 
 .. code-block:: default
 
@@ -248,11 +249,11 @@ and an instance of the (mu + lambda) evolutionary algorithm
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 145-146
+.. GENERATED FROM PYTHON SOURCE LINES 146-147
 
 We define a callback for recording of fitness over generations
 
-.. GENERATED FROM PYTHON SOURCE LINES 146-154
+.. GENERATED FROM PYTHON SOURCE LINES 147-155
 
 .. code-block:: default
 
@@ -271,11 +272,11 @@ We define a callback for recording of fitness over generations
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 155-156
+.. GENERATED FROM PYTHON SOURCE LINES 156-157
 
 and finally perform the evolution
 
-.. GENERATED FROM PYTHON SOURCE LINES 156-166
+.. GENERATED FROM PYTHON SOURCE LINES 157-167
 
 .. code-block:: default
 
@@ -304,12 +305,12 @@ and finally perform the evolution
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 167-169
+.. GENERATED FROM PYTHON SOURCE LINES 168-170
 
 After finishing the evolution, we plot the result and log the final
 evolved expression.
 
-.. GENERATED FROM PYTHON SOURCE LINES 169-196
+.. GENERATED FROM PYTHON SOURCE LINES 170-197
 
 .. code-block:: default
 
@@ -354,7 +355,7 @@ evolved expression.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  8.663 seconds)
+   **Total running time of the script:** ( 0 minutes  8.817 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_hurdles.py:

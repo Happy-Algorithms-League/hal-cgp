@@ -185,7 +185,7 @@
 <span id="abstract-nodes"></span><h2>Abstract Nodes<a class="headerlink" href="#module-cgp.node" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="cgp.node.Node">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node.</code><code class="sig-name descname">Node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L30-L153"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.Node" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node.</code><code class="sig-name descname">Node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">addresses</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L30-L153"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.Node" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class for input/output and hidden nodes.</p>
 <dl class="py method">
@@ -193,6 +193,11 @@
 <code class="sig-name descname">activate</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L130-L133"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.Node.activate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set node to active.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt id="cgp.node.Node.addresses">
+<em class="property">property </em><code class="sig-name descname">addresses</code><a class="headerlink" href="#cgp.node.Node.addresses" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt id="cgp.node.Node.arity">
@@ -229,11 +234,6 @@
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="cgp.node.Node.input_nodes">
-<em class="property">property </em><code class="sig-name descname">input_nodes</code><a class="headerlink" href="#cgp.node.Node.input_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="cgp.node.Node.max_arity">
 <em class="property">property </em><code class="sig-name descname">max_arity</code><a class="headerlink" href="#cgp.node.Node.max_arity" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -257,7 +257,7 @@
 
 <dl class="py class">
 <dt id="cgp.node.OperatorNode">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node.</code><code class="sig-name descname">OperatorNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L156-L266"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.OperatorNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node.</code><code class="sig-name descname">OperatorNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">addresses</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node.py#L156-L266"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node.OperatorNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.Node" title="cgp.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.Node</span></code></a></p>
 <p>Base class of hidden nodes.</p>
 <p>Subclasses provide the atomic operations of the computational graph.</p>
@@ -383,28 +383,28 @@
 <span id="operator-nodes"></span><h2>Operator Nodes<a class="headerlink" href="#module-cgp.node_impl" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="cgp.node_impl.Add">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L13-L17"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Add" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">addresses</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L13-L17"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.OperatorNode</span></code></a></p>
 <p>A node that adds its two inputs.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="cgp.node_impl.ConstantFloat">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">ConstantFloat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L4-L10"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.ConstantFloat" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">ConstantFloat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">addresses</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L4-L10"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.ConstantFloat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.OperatorNode</span></code></a></p>
 <p>A node with a constant output.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="cgp.node_impl.Div">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Div</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L34-L38"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Div" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Div</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">addresses</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L34-L38"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Div" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.OperatorNode</span></code></a></p>
 <p>A node that devides its first by its second input.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="cgp.node_impl.IfElse">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">IfElse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L64-L72"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.IfElse" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">IfElse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">addresses</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L64-L72"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.IfElse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.OperatorNode</span></code></a></p>
 <p>A node that outputs the value of its second input if its first input
 is non-negative, and the value of its third input otherwise.</p>
@@ -412,14 +412,14 @@ is non-negative, and the value of its third input otherwise.</p>
 
 <dl class="py class">
 <dt id="cgp.node_impl.Mul">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Mul</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L27-L31"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Mul" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Mul</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">addresses</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L27-L31"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Mul" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.OperatorNode</span></code></a></p>
 <p>A node that multiplies its two inputs.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="cgp.node_impl.Parameter">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Parameter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L49-L61"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Parameter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Parameter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">addresses</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L49-L61"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Parameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.OperatorNode</span></code></a></p>
 <p>A node that provides a parametrized constant output.</p>
 <p>The value of the parameter can be adapted via local search and is
@@ -428,14 +428,14 @@ passed on from parents to their offspring.</p>
 
 <dl class="py class">
 <dt id="cgp.node_impl.Pow">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Pow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L41-L46"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Pow" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Pow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">addresses</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L41-L46"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Pow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.OperatorNode</span></code></a></p>
 <p>A node that raises its first to the power of its second input.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="cgp.node_impl.Sub">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Sub</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L20-L24"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Sub" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.node_impl.</code><code class="sig-name descname">Sub</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">addresses</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/node_impl.py#L20-L24"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.node_impl.Sub" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">cgp.node.OperatorNode</span></code></a></p>
 <p>A node that substracts its second from its first input.</p>
 </dd></dl>

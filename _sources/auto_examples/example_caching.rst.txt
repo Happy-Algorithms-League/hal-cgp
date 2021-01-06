@@ -123,15 +123,20 @@ function to compute (or retrieve from cache) the fitness of the individual.
 Next, we define the parameters for the population, the genome of
 individuals, and the evolutionary algorithm.
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-83
+.. GENERATED FROM PYTHON SOURCE LINES 67-88
 
 .. code-block:: default
 
 
 
     params = {
-        "population_params": {"n_parents": 10, "mutation_rate": 0.05, "seed": 8188211},
-        "ea_params": {"n_offsprings": 10, "tournament_size": 1, "n_processes": 1},
+        "population_params": {"n_parents": 10, "seed": 8188211},
+        "ea_params": {
+            "n_offsprings": 10,
+            "tournament_size": 1,
+            "mutation_rate": 0.05,
+            "n_processes": 1,
+        },
         "genome_params": {
             "n_inputs": 1,
             "n_outputs": 1,
@@ -150,11 +155,11 @@ individuals, and the evolutionary algorithm.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 84-85
+.. GENERATED FROM PYTHON SOURCE LINES 89-90
 
 We then create a Population instance and instantiate the evolutionary algorithm.
 
-.. GENERATED FROM PYTHON SOURCE LINES 85-90
+.. GENERATED FROM PYTHON SOURCE LINES 90-95
 
 .. code-block:: default
 
@@ -170,11 +175,11 @@ We then create a Population instance and instantiate the evolutionary algorithm.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-92
+.. GENERATED FROM PYTHON SOURCE LINES 96-97
 
 Finally, we call the `evolve` method to perform the evolutionary search.
 
-.. GENERATED FROM PYTHON SOURCE LINES 92-98
+.. GENERATED FROM PYTHON SOURCE LINES 97-103
 
 .. code-block:: default
 
@@ -203,7 +208,7 @@ Finally, we call the `evolve` method to perform the evolutionary search.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.945 seconds)
+   **Total running time of the script:** ( 0 minutes  3.090 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_caching.py:

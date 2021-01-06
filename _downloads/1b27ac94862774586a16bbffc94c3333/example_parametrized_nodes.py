@@ -34,7 +34,7 @@ import cgp
 args = docopt(docopt_str)
 
 # %%
-# We first define a new node that adds two inputs then scales and
+# We first define a new node that adds the values of its two inputs then scales and
 # finally shifts the result. The scale ("w") and shift factors ("b")
 # are parameters that are adapted by local search. We need to define
 # the arity of the node, callables for the initial values for the
@@ -100,7 +100,7 @@ def objective(individual, seed):
 # individuals, the evolutionary algorithm, and the local search. Note
 # that we add the custom node defined above as a primitive.
 
-population_params = {"n_parents": 1, "mutation_rate": 0.04, "seed": 818821}
+population_params = {"n_parents": 1, "seed": 818821}
 
 genome_params = {
     "n_inputs": 2,
@@ -111,7 +111,7 @@ genome_params = {
     "primitives": (ParametrizedAdd, cgp.Add, cgp.Sub, cgp.Mul),
 }
 
-ea_params = {"n_offsprings": 4, "tournament_size": 1, "n_processes": 2}
+ea_params = {"n_offsprings": 4, "tournament_size": 1, "mutation_rate": 0.04, "n_processes": 2}
 
 evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
 

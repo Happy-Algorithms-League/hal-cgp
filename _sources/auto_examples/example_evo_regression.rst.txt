@@ -185,7 +185,7 @@ Finally, we call the `evolve` method to perform the evolutionary search.
         Individual
             Individual with the highest fitness in the last generation
         """
-        population_params = {"n_parents": 10, "mutation_rate": 0.03, "seed": 8188211}
+        population_params = {"n_parents": 10, "seed": 8188211}
 
         genome_params = {
             "n_inputs": 2,
@@ -196,7 +196,7 @@ Finally, we call the `evolve` method to perform the evolutionary search.
             "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Div, cgp.ConstantFloat),
         }
 
-        ea_params = {"n_offsprings": 10, "tournament_size": 2, "n_processes": 2}
+        ea_params = {"n_offsprings": 10, "tournament_size": 2, "mutation_rate": 0.03, "n_processes": 2}
 
         evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
 
@@ -299,7 +299,7 @@ result and log the final evolved expression.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  46.329 seconds)
+   **Total running time of the script:** ( 1 minutes  50.020 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_evo_regression.py:

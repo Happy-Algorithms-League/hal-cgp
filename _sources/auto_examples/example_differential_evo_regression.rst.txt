@@ -149,13 +149,13 @@ actual objective function to update the fitness of the individual.
 Next, we define the parameters for the population, the genome of
 individuals, the evolutionary algorithm, and the local search.
 
-.. GENERATED FROM PYTHON SOURCE LINES 95-116
+.. GENERATED FROM PYTHON SOURCE LINES 95-122
 
 .. code-block:: default
 
 
 
-    population_params = {"n_parents": 1, "mutation_rate": 0.05, "seed": 818821}
+    population_params = {"n_parents": 1, "seed": 818821}
 
     genome_params = {
         "n_inputs": 1,
@@ -166,7 +166,13 @@ individuals, the evolutionary algorithm, and the local search.
         "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Parameter),
     }
 
-    ea_params = {"n_offsprings": 4, "tournament_size": 1, "n_processes": 1, "k_local_search": 2}
+    ea_params = {
+        "n_offsprings": 4,
+        "tournament_size": 1,
+        "mutation_rate": 0.05,
+        "n_processes": 1,
+        "k_local_search": 2,
+    }
 
     evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
 
@@ -181,12 +187,12 @@ individuals, the evolutionary algorithm, and the local search.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 117-119
+.. GENERATED FROM PYTHON SOURCE LINES 123-125
 
 We then create a Population instance and instantiate the local search
 and evolutionary algorithm.
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-134
+.. GENERATED FROM PYTHON SOURCE LINES 125-140
 
 .. code-block:: default
 
@@ -212,11 +218,11 @@ and evolutionary algorithm.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 135-136
+.. GENERATED FROM PYTHON SOURCE LINES 141-142
 
 We define a recording callback closure for bookkeeping of the progression of the evolution.
 
-.. GENERATED FROM PYTHON SOURCE LINES 136-150
+.. GENERATED FROM PYTHON SOURCE LINES 142-156
 
 .. code-block:: default
 
@@ -241,11 +247,11 @@ We define a recording callback closure for bookkeeping of the progression of the
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 151-152
+.. GENERATED FROM PYTHON SOURCE LINES 157-158
 
 Finally, we call the `evolve` method to perform the evolutionary search.
 
-.. GENERATED FROM PYTHON SOURCE LINES 152-156
+.. GENERATED FROM PYTHON SOURCE LINES 158-162
 
 .. code-block:: default
 
@@ -268,12 +274,12 @@ Finally, we call the `evolve` method to perform the evolutionary search.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 157-159
+.. GENERATED FROM PYTHON SOURCE LINES 163-165
 
 After finishing the evolution, we plot the result and log the final
 evolved expression.
 
-.. GENERATED FROM PYTHON SOURCE LINES 159-186
+.. GENERATED FROM PYTHON SOURCE LINES 165-192
 
 .. code-block:: default
 
@@ -326,7 +332,7 @@ evolved expression.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  18.003 seconds)
+   **Total running time of the script:** ( 0 minutes  18.820 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_differential_evo_regression.py:
