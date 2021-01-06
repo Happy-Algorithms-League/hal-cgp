@@ -41,10 +41,10 @@ class OutputNode(Node):
         super().__init__(idx, input_nodes)
 
     def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
-        self._output = graph[self._input_nodes[0]].output
+        self._output = graph[self._addresses[0]].output
 
     def format_output_str(self, graph: "CartesianGraph") -> None:
-        self._output_str = f"{graph[self._input_nodes[0]].output_str}"
+        self._output_str = f"{graph[self._addresses[0]].output_str}"
 
     def format_output_str_numpy(self, graph: "CartesianGraph") -> None:
         self.format_output_str(graph)

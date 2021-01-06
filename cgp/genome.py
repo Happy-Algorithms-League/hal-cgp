@@ -79,7 +79,7 @@ class Genome:
         self._primitives = Primitives(primitives)
         self._length_per_region = (
             1 + self._primitives.max_arity
-        )  # one function gene + multiple input genes
+        )  # one function gene + multiple address genes
 
         self._dna: List[int] = []  # stores dna as list of alleles for all regions
 
@@ -185,8 +185,8 @@ class Genome:
         if self._is_function_gene(gene_idx):
             return np.arange(len(self._primitives._primitives))
 
-        elif self._is_hidden_input_gene(gene_idx, region_idx):
-            return np.array(self._permissible_inputs(region_idx))
+        elif self._is_hidden_address_gene(gene_idx, region_idx):
+            return np.array(self._permissible_addresses(region_idx))
 
         else:
             assert False  # should never be reached
@@ -196,9 +196,9 @@ class Genome:
         if self._is_function_gene(gene_idx):
             return np.array(self._id_output_node)
         else:
-            input_index = gene_idx % self._length_per_region - 1
-            if input_index == 0:
-                return np.array(self._permissible_inputs_for_output_region())
+            address_idx = gene_idx % self._length_per_region - 1
+            if address_idx == 0:
+                return np.array(self._permissible_addresses_for_output_region())
             else:
                 return np.array(self._id_unused_gene)
 
@@ -206,30 +206,30 @@ class Genome:
 
         region = []
         region.append(self._id_input_node)
-        # non-coding input genes since input nodes do not receive
+        # non-coding address genes since input nodes do not receive
         # inputs themselves
         region += [self._id_unused_gene] * self._primitives.max_arity
         return region
 
     def _create_random_hidden_region(
-        self, rng: np.random.RandomState, permissible_inputs: List[int]
+        self, rng: np.random.RandomState, permissible_addresses: List[int]
     ) -> List[int]:
 
         region = []
         node_id = self._primitives.sample_allele(rng)
         region.append(node_id)
-        region += list(rng.choice(permissible_inputs, self._primitives.max_arity))
+        region += list(rng.choice(permissible_addresses, self._primitives.max_arity))
 
         return region
 
     def _create_random_output_region(
-        self, rng: np.random.RandomState, permissible_inputs: List[int]
+        self, rng: np.random.RandomState, permissible_addresses: List[int]
     ) -> List[int]:
 
         region = []
         region.append(self._id_output_node)
-        region.append(rng.choice(permissible_inputs))
-        # output nodes have only one input, other genes are hence non-coding
+        region.append(rng.choice(permissible_addresses))
+        # output nodes have only one address, other genes are hence non-coding
         region += [self._id_unused_gene] * (self._primitives.max_arity - 1)
 
         return region
@@ -255,15 +255,17 @@ class Genome:
         # add hidden nodes
         for i in range(self._n_hidden):
 
-            if i % self._n_rows == 0:  # only compute permissible inputs once per column
-                permissible_inputs = self._permissible_inputs(i + self._n_inputs)
+            if i % self._n_rows == 0:  # only compute permissible addresses once per column
+                permissible_addresses = self._permissible_addresses(i + self._n_inputs)
 
-            dna += self._create_random_hidden_region(rng, permissible_inputs)
+            dna += self._create_random_hidden_region(rng, permissible_addresses)
 
         # add output nodes
-        permissible_inputs = self._permissible_inputs_for_output_region()  # identical for outputs
+        permissible_addresses = (
+            self._permissible_addresses_for_output_region()
+        )  # identical for outputs
         for i in range(self._n_outputs):
-            dna += self._create_random_output_region(rng, permissible_inputs)
+            dna += self._create_random_output_region(rng, permissible_addresses)
 
         # accept generated dna if it is valid
         self.dna = dna
@@ -274,7 +276,7 @@ class Genome:
         Shuffle node ordering of internal (hidden) nodes in genome without changing the phenotype.
         (Goldman 2015, DOI: 10.1109/TEVC.2014.2324539)
 
-        During reordering, inactive genes, e.g., input genes of nodes with arity zero,
+        During reordering, inactive genes, e.g., address genes of nodes with arity zero,
         are not taken into account and can hence have invalid values after reordering.
         These invalid values are replaced by random values
         for the respective gene after reordering.
@@ -319,8 +321,8 @@ class Genome:
             addable_nodes = self._get_addable_nodes(node_dependencies, used_node_indices)
             new_node_idx += 1
 
-        self._update_input_genes(dna, used_node_indices)
-        self._replace_invalid_input_alleles(dna, rng)
+        self._update_address_genes(dna, used_node_indices)
+        self._replace_invalid_address_alleles(dna, rng)
         self._update_parameters_names_to_values(old_to_new_parameter_names_to_values)
 
         self.dna = dna
@@ -366,19 +368,19 @@ class Genome:
 
         return dna
 
-    def _update_input_genes(self, dna: List[int], used_node_indices: List[int]) -> None:
-        """Update input genes of all nodes from old node indices to new node indices"""
+    def _update_address_genes(self, dna: List[int], used_node_indices: List[int]) -> None:
+        """Update address genes of all nodes from old node indices to new node indices"""
         for gene_idx, gene_value in enumerate(dna):
             region_idx = self._get_region_idx(gene_idx)
-            if self._is_hidden_input_gene(gene_idx, region_idx) or self._is_output_input_gene(
+            if self._is_hidden_address_gene(gene_idx, region_idx) or self._is_output_address_gene(
                 gene_idx
             ):
                 if gene_value >= self._n_inputs:
                     gene_value = self._n_inputs + used_node_indices.index(gene_value)
             dna[gene_idx] = gene_value
 
-    def _replace_invalid_input_alleles(self, dna: List[int], rng: np.random.RandomState) -> None:
-        """Replace invalid alleles for unused input genes of all nodes
+    def _replace_invalid_address_alleles(self, dna: List[int], rng: np.random.RandomState) -> None:
+        """Replace invalid alleles for unused address genes of all nodes
         by random permissible values.
         WARNING: Works only if self.n_rows==1.
         """
@@ -386,7 +388,7 @@ class Genome:
 
         for gene_idx, gene_value in enumerate(dna):
             region_idx = self._get_region_idx(gene_idx)
-            if self._is_hidden_input_gene(gene_idx, region_idx) and gene_value > region_idx:
+            if self._is_hidden_address_gene(gene_idx, region_idx) and gene_value > region_idx:
                 permissible_values = self.determine_permissible_values_per_gene(gene_idx)
                 gene_value = rng.choice(permissible_values)
                 dna[gene_idx] = gene_value
@@ -412,12 +414,12 @@ class Genome:
 
     def _determine_node_dependencies(self) -> Dict[int, Set[int]]:
         """ Determines the set of node indices on which each node depends.
-            Unused input genes are ignored.
+            Unused address genes are ignored.
 
         Returns
         ----
         dependencies: Dict[int, Set[int]]
-            Dictionary containing for every node the set of active input genes
+            Dictionary containing for every node the set of active address genes
 
         """
         dependencies: Dict[int, Set[int]] = {}
@@ -432,11 +434,11 @@ class Genome:
             for idx_gene in range(
                 1, current_arity + 1
             ):  # shift by 1 since first gene is the operator gene
-                input_node_idx = self._dna[operator_idx + idx_gene]
+                address = self._dna[operator_idx + idx_gene]
                 if not self._is_input_region(
-                    input_node_idx
+                    address
                 ):  # not necessary to add input regions, since their positions remain fixed
-                    current_node_dependencies.add(input_node_idx)
+                    current_node_dependencies.add(address)
 
             dependencies[region_idx] = current_node_dependencies
 
@@ -448,14 +450,14 @@ class Genome:
 
         return self._primitives[self._dna[gene_idx]]._arity
 
-    def _permissible_inputs(self, region_idx: int) -> List[int]:
+    def _permissible_addresses(self, region_idx: int) -> List[int]:
 
         assert not self._is_input_region(region_idx)
 
-        permissible_inputs = []
+        permissible_addresses = []
 
         # all nodes can be connected to input
-        permissible_inputs += [j for j in range(0, self._n_inputs)]
+        permissible_addresses += [j for j in range(0, self._n_inputs)]
 
         # add all nodes reachable according to levels back
         if self._is_hidden_region(region_idx):
@@ -467,12 +469,12 @@ class Genome:
             lower = self._n_inputs
             upper = self._n_inputs + self._n_rows * self._n_columns
 
-        permissible_inputs += [j for j in range(lower, upper)]
+        permissible_addresses += [j for j in range(lower, upper)]
 
-        return permissible_inputs
+        return permissible_addresses
 
-    def _permissible_inputs_for_output_region(self) -> List[int]:
-        return self._permissible_inputs(self._n_inputs + self._n_rows * self._n_columns)
+    def _permissible_addresses_for_output_region(self) -> List[int]:
+        return self._permissible_addresses(self._n_inputs + self._n_rows * self._n_columns)
 
     def _validate_dna(self, dna: List[int]) -> None:
 
@@ -487,18 +489,18 @@ class Genome:
                 )
 
             if input_region[1:] != ([self._id_unused_gene] * self._primitives.max_arity):
-                raise ValueError("input genes for input nodes need to be empty")
+                raise ValueError("address genes for input nodes need to be empty")
 
         for region_idx, hidden_region in self.iter_hidden_regions(dna):
 
             if not self._primitives.is_valid_allele(hidden_region[0]):
                 raise ValueError("function gene for hidden node has invalid value")
 
-            input_genes = hidden_region[1:]
+            address_genes = hidden_region[1:]
 
-            permissible_inputs = set(self._permissible_inputs(region_idx))
-            if not set(input_genes).issubset(permissible_inputs):
-                raise ValueError("input genes for hidden nodes have invalid value")
+            permissible_addresses = set(self._permissible_addresses(region_idx))
+            if not set(address_genes).issubset(permissible_addresses):
+                raise ValueError("address genes for hidden nodes have invalid value")
 
         for region_idx, output_region in self.iter_output_regions(dna):
 
@@ -508,11 +510,11 @@ class Genome:
                     "identical to output node identifiers"
                 )
 
-            if output_region[1] not in self._permissible_inputs_for_output_region():
-                raise ValueError("input gene for output nodes has invalid value")
+            if output_region[1] not in self._permissible_addresses_for_output_region():
+                raise ValueError("address gene for output nodes has invalid value")
 
             if output_region[2:] != [self._id_unused_gene] * (self._primitives.max_arity - 1):
-                raise ValueError("inactive input genes for output nodes need to be empty")
+                raise ValueError("inactive address genes for output nodes need to be empty")
 
     def _hidden_column_idx(self, region_idx: int) -> int:
         assert self._n_inputs <= region_idx
@@ -575,13 +577,13 @@ class Genome:
     def _is_function_gene(self, gene_idx: int) -> bool:
         return (gene_idx % self._length_per_region) == 0
 
-    def _is_hidden_input_gene(self, gene_idx: int, region_idx: int) -> bool:
+    def _is_hidden_address_gene(self, gene_idx: int, region_idx: int) -> bool:
         return self._is_hidden_region(region_idx) and (not self._is_function_gene(gene_idx))
 
-    def _is_output_input_gene(self, gene_idx: int) -> bool:
+    def _is_output_address_gene(self, gene_idx: int) -> bool:
         return (
             self._is_gene_in_output_region(gene_idx) and gene_idx % self._length_per_region == 1
-        )  # assumes 2nd gene in output is coding for input
+        )  # assumes 2nd gene in output is coding for address
 
     def _select_gene_indices_for_mutation(
         self, mutation_rate: float, rng: np.random.RandomState

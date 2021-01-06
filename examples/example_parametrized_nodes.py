@@ -34,7 +34,7 @@ import cgp
 args = docopt(docopt_str)
 
 # %%
-# We first define a new node that adds two inputs then scales and
+# We first define a new node that adds the values of its two inputs then scales and
 # finally shifts the result. The scale ("w") and shift factors ("b")
 # are parameters that are adapted by local search. We need to define
 # the arity of the node, callables for the initial values for the

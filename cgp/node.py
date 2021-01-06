@@ -33,25 +33,25 @@ class Node:
 
     _arity: int
     _active: bool = False
-    _input_nodes: List[int]
+    _addresses: List[int]
     _output: float
     _output_str: str
     _idx: int
 
-    def __init__(self, idx: int, inputs: List[int]) -> None:
+    def __init__(self, idx: int, addresses: List[int]) -> None:
         """Init function.
 
         Parameters
         ----------
         idx : int
             id of the node.
-        inputs : List[int]
-            List of integers specifying the input nodes to this node.
+        addresses : List[int]
+            List of integers specifying the address of input nodes to this node.
         """
         self._idx = idx
-        self._input_nodes = inputs[: self._arity]
+        self._addresses = addresses[: self._arity]
 
-        assert idx not in inputs
+        assert idx not in addresses
 
     def __init_subclass__(cls: Type["Node"]) -> None:
         super().__init_subclass__()
@@ -63,11 +63,11 @@ class Node:
 
     @property
     def max_arity(self) -> int:
-        return len(self._input_nodes)
+        return len(self._addresses)
 
     @property
-    def input_nodes(self) -> List[int]:
-        return self._input_nodes
+    def addresses(self) -> List[int]:
+        return self._addresses
 
     @property
     def idx(self) -> int:
@@ -76,15 +76,15 @@ class Node:
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(idx: {self.idx}, active: {self._active}, "
-            f"arity: {self._arity}, input_nodes {self._input_nodes}"
+            f"arity: {self._arity}, addresses of inputs {self._addresses}"
         )
 
     def pretty_str(self, n: int) -> str:
         used_characters = 0
         used_characters += 3  # for two digit idx and following whitespace
         used_characters += 3  # for "active" marker
-        # for brackets around inputs, two digits inputs separated by
-        # comma and last input without comma
+        # for brackets around addresses, two digits addresses separated by
+        # comma and last address without comma
         used_characters += 2 + self.max_arity * 3 - 1
 
         assert n > used_characters
@@ -99,7 +99,7 @@ class Node:
             if self._arity > 0:
                 s += "("
                 for i in range(self._arity):
-                    s += f"{self._input_nodes[i]:02d},"
+                    s += f"{self._addresses[i]:02d},"
                 s = s[:-1]
                 s += ")"
                 for i in range(self.max_arity - self._arity):
@@ -159,7 +159,7 @@ class OperatorNode(Node):
     Subclasses provide the atomic operations of the computational graph.
     """
 
-    _input_names: Tuple[str, ...]
+    _address_names: Tuple[str, ...]
     _parameter_names: Tuple[str, ...]
     _initial_values: Dict[str, Callable[[], float]]
 
@@ -187,7 +187,7 @@ class OperatorNode(Node):
         if not len(g) == cls._arity:
             raise RuntimeError(f'wrong number of inputs defined in OperatorNode "{cls.__name__}"')
 
-        cls._input_names = tuple(g)
+        cls._address_names = tuple(g)
 
     @classmethod
     def _extract_parameter_names_from_def_output(self, cls: Type["OperatorNode"]) -> None:
@@ -195,8 +195,8 @@ class OperatorNode(Node):
         cls._parameter_names = tuple(g)
 
     @staticmethod
-    def _extract_index_from_input_name(input_name: str) -> int:
-        return int(input_name.split("_")[1])
+    def _extract_index_from_address_name(address_name: str) -> int:
+        return int(address_name.split("_")[1])
 
     @classmethod
     def initial_value(cls, parameter_name: str) -> float:
@@ -207,10 +207,10 @@ class OperatorNode(Node):
     def parameter_str(self) -> List[str]:
         return self._parameter_str
 
-    def _replace_input_names(self, output_str: str, graph: "CartesianGraph") -> str:
-        for input_name in self._input_names:
-            idx = self._extract_index_from_input_name(input_name)
-            output_str = output_str.replace(input_name, graph[self._input_nodes[idx]].output_str)
+    def _replace_address_names(self, output_str: str, graph: "CartesianGraph") -> str:
+        for address_name in self._address_names:
+            idx = self._extract_index_from_address_name(address_name)
+            output_str = output_str.replace(address_name, graph[self._addresses[idx]].output_str)
         return output_str
 
     def _replace_parameter_names(self, output_str: str, graph: "CartesianGraph") -> str:
@@ -221,7 +221,7 @@ class OperatorNode(Node):
 
     def _format_output_str(self, output_str: str, graph: "CartesianGraph") -> str:
         output_str = str(output_str)
-        output_str = self._replace_input_names(output_str, graph)
+        output_str = self._replace_address_names(output_str, graph)
         output_str = self._replace_parameter_names(output_str, graph)
         return "(" + output_str + ")"
 
