@@ -65,8 +65,8 @@ def __compute_key_from_args(*args: Any, **kwargs: Any) -> str:
     return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
 
-def __compute_key_from_evaluation(
-    seed: int, min_value: float, max_value: float, batch_size: int, *args: Any
+def __compute_key_from_evaluation_and_args(
+    seed: int, min_value: float, max_value: float, batch_size: int, *args: Any, **kwargs: Any
 ) -> str:
     """Compute a key for the function encoded in an individual by
     evaluating it's NumPy expression on random input samples and
@@ -95,6 +95,8 @@ def __compute_key_from_evaluation(
             s += np.array_str(y, precision=15)
     else:
         assert False  # should never be reached
+
+    s += str(args) + str(kwargs)
 
     return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
@@ -222,8 +224,8 @@ def disk_cache(
 
             key: str
             if use_fec:
-                key = __compute_key_from_evaluation(
-                    fec_seed, fec_min_value, fec_max_value, fec_batch_size, *args
+                key = __compute_key_from_evaluation_and_args(
+                    fec_seed, fec_min_value, fec_max_value, fec_batch_size, *args, **kwargs
                 )
             else:
                 key = __compute_key_from_args(*args, **kwargs)
