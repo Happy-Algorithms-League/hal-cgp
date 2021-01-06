@@ -89,7 +89,7 @@ genome_params = {
     "primitives": (cgp.IfElse, cgp.Mul, cgp.Add, cgp.Sub, cgp.ConstantFloat,),
 }
 
-ea_params = {"n_offsprings": 4, "tournament_size": 2, "n_processes": 2}
+ea_params = {"n_offsprings": 4, "n_processes": 2}
 
 evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
 

@@ -85,10 +85,9 @@ genome_params = {
     "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat),
 }
 
-ea_params = {"n_offsprings": 4, "tournament_size": 2, "n_processes": 2}
+ea_params = {"n_offsprings": 4, "n_processes": 2}
 ea_params_with_reorder = {
     "n_offsprings": 4,
-    "tournament_size": 2,
     "n_processes": 2,
     "reorder_genome": True,
 }
