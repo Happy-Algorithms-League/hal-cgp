@@ -333,18 +333,18 @@ executes it to create an instance of the class.</p>
 <h2>Genome<a class="headerlink" href="#genome" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="cgp.Genome">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.</code><code class="sig-name descname">Genome</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_inputs</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_outputs</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_columns</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_rows</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">levels_back</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">primitives</span><span class="p">:</span> <span class="n">Tuple[Type[cgp.node.Node], …]</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L22-L695"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.</code><code class="sig-name descname">Genome</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_inputs</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_outputs</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_columns</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">n_rows</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">levels_back</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">primitives</span><span class="p">:</span> <span class="n">Tuple[Type[cgp.node.Node], …]</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L23-L748"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome" title="Permalink to this definition">¶</a></dt>
 <dd><p>Genome class for  individuals.</p>
 <dl class="py method">
 <dt id="cgp.Genome.clone">
-<code class="sig-name descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; cgp.genome.Genome<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L625-L647"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.clone" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; cgp.genome.Genome<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L661-L683"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.clone" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clone the genome.</p>
 <p>Genome</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.Genome.determine_permissible_values">
-<code class="sig-name descname">determine_permissible_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>numpy.ndarray<span class="p">]</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L155-L171"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.determine_permissible_values" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">determine_permissible_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>numpy.ndarray<span class="p">]</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L156-L172"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.determine_permissible_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determine permissible values for every gene.</p>
 <p>None</p>
 <dl class="simple">
@@ -355,7 +355,7 @@ executes it to create an instance of the class.</p>
 
 <dl class="py method">
 <dt id="cgp.Genome.mutate">
-<code class="sig-name descname">mutate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mutation_rate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">rng</span><span class="p">:</span> <span class="n">numpy.random.mtrand.RandomState</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L571-L619"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.mutate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">mutate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mutation_rate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">rng</span><span class="p">:</span> <span class="n">numpy.random.mtrand.RandomState</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L607-L655"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.mutate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mutate the genome.</p>
 <dl class="simple">
 <dt>mutation_rate<span class="classifier">float</span></dt><dd><p>Probability of a gene to be mutated, between 0 (excluded) and 1 (included).</p>
@@ -371,7 +371,7 @@ executes it to create an instance of the class.</p>
 
 <dl class="py method">
 <dt id="cgp.Genome.randomize">
-<code class="sig-name descname">randomize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rng</span><span class="p">:</span> <span class="n">numpy.random.mtrand.RandomState</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L236-L268"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.randomize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">randomize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rng</span><span class="p">:</span> <span class="n">numpy.random.mtrand.RandomState</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L237-L269"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.randomize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Randomize the genome.</p>
 <dl class="simple">
 <dt>rng<span class="classifier">numpy.RandomState</span></dt><dd><p>Random number generator instance to use for randomizing.</p>
@@ -382,7 +382,7 @@ executes it to create an instance of the class.</p>
 
 <dl class="py method">
 <dt id="cgp.Genome.reorder">
-<code class="sig-name descname">reorder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rng</span><span class="p">:</span> <span class="n">numpy.random.mtrand.RandomState</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L270-L320"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.reorder" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">reorder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rng</span><span class="p">:</span> <span class="n">numpy.random.mtrand.RandomState</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L271-L326"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.reorder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reorder the genome</p>
 <p>Shuffle node ordering of internal (hidden) nodes in genome without changing the phenotype.
 (Goldman 2015, DOI: 10.1109/TEVC.2014.2324539)</p>
@@ -399,7 +399,7 @@ for the respective gene after reordering.</p>
 
 <dl class="py method">
 <dt id="cgp.Genome.update_parameters_from_torch_class">
-<code class="sig-name descname">update_parameters_from_torch_class</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">torch_cls</span><span class="p">:</span> <span class="n">torch.nn.modules.module.Module</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L649-L675"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.update_parameters_from_torch_class" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update_parameters_from_torch_class</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">torch_cls</span><span class="p">:</span> <span class="n">torch.nn.modules.module.Module</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/genome.py#L685-L711"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.Genome.update_parameters_from_torch_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update values stored in Parameter nodes of graph from parameters of
 a given Torch instance.  Can be used to import new values from
 a Torch class after they have been altered, e.g., by local
