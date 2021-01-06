@@ -14,7 +14,6 @@ class Population:
     def __init__(
         self,
         n_parents: int,
-        mutation_rate: float,
         seed: int,
         genome_params: Union[dict, List[dict]],
         individual_init: Union[Callable[[IndividualBase], IndividualBase], None] = None,
@@ -25,8 +24,6 @@ class Population:
         ----------
         n_parents : int
             Number of parent individuals.
-        mutation_rate : float
-            Probability of a gene to be mutated, between 0 (excluded) and 1 (included).
         seed : int
             Seed for internal random number generator.
         genome_params : dict
@@ -36,10 +33,6 @@ class Population:
             parent population, for example, to set the dna of parents.
         """
         self.n_parents = n_parents  # number of individuals in parent population
-
-        if not (0.0 < mutation_rate and mutation_rate <= 1.0):
-            raise ValueError("mutation rate needs to be in (0, 1]")
-        self._mutation_rate = mutation_rate  # probability of mutation per gene
 
         self.seed = seed
         self.rng = np.random.RandomState(self.seed)
@@ -117,23 +110,6 @@ class Population:
         ind.idx = self.get_idx_for_new_individual()
         ind.parent_idx = -1
         return ind
-
-    def mutate(self, offsprings: List[IndividualBase]) -> List[IndividualBase]:
-        """Mutate a list of offspring invididuals.
-
-        Parameters
-        ----------
-        offsprings : List[IndividualBase]
-            List of offspring individuals to be mutated.
-
-        Returns
-        ----------
-        List[IndividualBase]
-            List of mutated offspring individuals.
-        """
-        for off in offsprings:
-            off.mutate(self._mutation_rate, self.rng)
-        return offsprings
 
     def fitness_parents(self) -> List[Union[None, float]]:
         """Return fitness for all parents of the population.

@@ -111,7 +111,7 @@ def objective_two(individual):
 # evolutionary algorithm.
 
 
-population_params = {"n_parents": 1, "mutation_rate": 0.03, "seed": 8188211}
+population_params = {"n_parents": 1, "seed": 8188211}
 
 genome_params = {
     "n_inputs": 1,
@@ -127,6 +127,7 @@ genome_params = {
 # the (n+1)th objective by a list of numbers between 0 and 1.
 ea_params = {
     "n_offsprings": 4,
+    "mutation_rate": 0.03,
     "n_processes": 1,
     "hurdle_percentile": [0.5, 0.0],
 }

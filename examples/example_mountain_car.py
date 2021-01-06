@@ -147,7 +147,7 @@ def evolve(seed):
 
     objective_params = {"n_runs_per_individual": 3, "n_total_steps": 2000}
 
-    population_params = {"n_parents": 1, "mutation_rate": 0.04, "seed": seed}
+    population_params = {"n_parents": 1, "seed": seed}
 
     genome_params = {
         "n_inputs": 2,
@@ -166,7 +166,7 @@ def evolve(seed):
         ),
     }
 
-    ea_params = {"n_offsprings": 4, "tournament_size": 1, "n_processes": 4}
+    ea_params = {"n_offsprings": 4, "tournament_size": 1, "mutation_rate": 0.04, "n_processes": 4}
 
     evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 100.0}
 

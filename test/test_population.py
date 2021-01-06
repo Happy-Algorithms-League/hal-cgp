@@ -1,21 +1,8 @@
-import copy
-
 import numpy as np
 import pytest
 
 import cgp
 from cgp.genome import ID_INPUT_NODE, ID_NON_CODING_GENE, ID_OUTPUT_NODE
-
-
-def test_assert_mutation_rate(rng_seed, genome_params, mutation_rate):
-    with pytest.raises(ValueError):
-        cgp.Population(5, -0.1, rng_seed, genome_params)
-
-    with pytest.raises(ValueError):
-        cgp.Population(5, 1.1, rng_seed, genome_params)
-
-    # assert that no error is thrown for a suitable mutation rate
-    cgp.Population(5, mutation_rate, rng_seed, genome_params)
 
 
 def test_init_random_parent_population(population_params, genome_params):
@@ -26,18 +13,6 @@ def test_init_random_parent_population(population_params, genome_params):
 def test_champion(population_simple_fitness):
     pop = population_simple_fitness
     assert pop.champion == pop.parents[-1]
-
-
-def test_mutate(population_params, genome_params):
-    population_params["mutation_rate"] = 0.5
-    pop = cgp.Population(**population_params, genome_params=genome_params)
-
-    offspring = pop.parents
-    offspring_original = copy.deepcopy(offspring)
-    offspring = pop.mutate(offspring)
-    assert np.any(
-        [off_orig != off_mutated for off_orig, off_mutated in zip(offspring_original, offspring)]
-    )
 
 
 def test_fitness_parents(population_params, genome_params):

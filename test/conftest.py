@@ -32,13 +32,17 @@ def genome_params_list(genome_params):
 
 
 @fixture
-def population_params(mutation_rate, rng_seed):
-    return {"n_parents": 5, "mutation_rate": mutation_rate, "seed": rng_seed}
+def population_params(rng_seed):
+    return {"n_parents": 5, "seed": rng_seed}
 
 
 @fixture
-def ea_params():
-    return {"n_offsprings": 5, "tournament_size": 2}
+def ea_params(n_offsprings, tournament_size, mutation_rate):
+    return {
+        "n_offsprings": n_offsprings,
+        "tournament_size": tournament_size,
+        "mutation_rate": mutation_rate,
+    }
 
 
 @fixture
@@ -59,3 +63,13 @@ def population_simple_fitness(population_params, genome_params):
 @fixture
 def local_search_params():
     return {"lr": 1e-3, "gradient_steps": 9}
+
+
+@fixture
+def n_offsprings():
+    return 5
+
+
+@fixture
+def tournament_size():
+    return 2

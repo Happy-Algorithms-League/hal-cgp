@@ -1,9 +1,21 @@
+import copy
 import functools
 
 import numpy as np
 import pytest
 
 import cgp
+
+
+def test_assert_mutation_rate(n_offsprings, mutation_rate):
+    with pytest.raises(ValueError):
+        cgp.ea.MuPlusLambda(n_offsprings, -0.1)
+
+    with pytest.raises(ValueError):
+        cgp.ea.MuPlusLambda(n_offsprings, 1.1)
+
+    # assert that no error is thrown for a suitable mutation rate
+    cgp.ea.MuPlusLambda(n_offsprings, mutation_rate)
 
 
 def test_objective_with_label(population_params, genome_params, ea_params):
@@ -100,8 +112,6 @@ def test_local_search_is_only_applied_to_best_k_individuals(
         ind.fitness = -inner_objective(f).item()
         return ind
 
-    population_params["mutation_rate"] = 0.3
-
     genome_params = {
         "n_inputs": 1,
         "n_outputs": 1,
@@ -195,7 +205,7 @@ def test_create_new_offspring_and_parent_generation(population_params, genome_pa
         individual.fitness = float(individual.idx)
         return individual
 
-    population_params["mutation_rate"] = 1.0  # ensures every offspring has mutations
+    ea_params["mutation_rate"] = 1.0  # ensures every offspring has mutations
 
     pop = cgp.Population(**population_params, genome_params=genome_params)
     ea = cgp.ea.MuPlusLambda(**ea_params)
@@ -249,7 +259,7 @@ def test_update_n_objective_calls_mutation_rate_one(population_params, genome_pa
         individual.fitness = float(individual.idx)
         return individual
 
-    population_params["mutation_rate"] = 1.0
+    ea_params["mutation_rate"] = 1.0
     pop = cgp.Population(**population_params, genome_params=genome_params)
     ea = cgp.ea.MuPlusLambda(**ea_params)
     ea.initialize_fitness_parents(pop, objective)
@@ -264,8 +274,8 @@ def test_update_n_objective_calls_mutation_rate_one(population_params, genome_pa
 def test_hurdles(population_params, genome_params, ea_params):
 
     # make sure all offsprings are assigned fitness None
-    population_params["mutation_rate"] = 1.0
     population_params["n_parents"] = 3
+    ea_params["mutation_rate"] = 1.0
     ea_params["n_offsprings"] = 3
     ea_params["hurdle_percentile"] = [0.1, 0.0]
 
@@ -312,3 +322,16 @@ def test_hurdles(population_params, genome_params, ea_params):
     for ind, ind_expected in zip(combined, combined_expected):
         assert ind.idx == ind_expected[0]
         assert ind.fitness == pytest.approx(ind_expected[1])
+
+
+def test_mutate(population_params, genome_params, ea_params):
+    ea_params["mutation_rate"] = 0.5
+    pop = cgp.Population(**population_params, genome_params=genome_params)
+    ea = cgp.ea.MuPlusLambda(**ea_params)
+
+    offspring = pop.parents
+    offspring_original = copy.deepcopy(offspring)
+    offspring = ea.mutate(offspring, pop.rng)
+    assert np.any(
+        [off_orig != off_mutated for off_orig, off_mutated in zip(offspring_original, offspring)]
+    )
