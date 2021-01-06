@@ -281,13 +281,9 @@ def _f(x):
         s = ", ".join(node.output_str for node in self.output_nodes)
         func_str = f"""\
 def _f(x):
-    if len(x.shape) != 2:
+    if (len(x.shape) != 2) or (x.shape[1] != {self._n_inputs}):
         raise ValueError(
             f"input has shape {{tuple(x.shape)}}, expected (<batch_size>, {self._n_inputs})"
-        )
-    if x.shape[1] != {self._n_inputs}:
-        raise ValueError(
-            f"input has shape {{tuple(x.shape)}}, expected ({{x.shape[0]}}, {self._n_inputs})"
         )
 
     return np.stack([{s}], axis=1)
@@ -339,13 +335,9 @@ class _C(torch.nn.Module):
         func_str = f"""\
 
     def forward(self, x):
-        if len(x.shape) != 2:
+        if (len(x.shape) != 2) or (x.shape[1] != {self._n_inputs}):
             raise ValueError(
                 f"input has shape {{tuple(x.shape)}}, expected (<batch_size>, {self._n_inputs})"
-            )
-        if x.shape[1] != {self._n_inputs}:
-            raise ValueError(
-                f"input has shape {{tuple(x.shape)}}, expected ({{x.shape[0]}}, {self._n_inputs})"
             )
         return torch.stack([{forward_str}], dim=1)
         """
