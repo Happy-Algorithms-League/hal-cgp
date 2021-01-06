@@ -96,7 +96,7 @@ def __compute_key_from_evaluation_and_args(
     else:
         assert False  # should never be reached
 
-    s += str(args) + str(kwargs)
+    s += str(args[1:]) + str(kwargs)
 
     return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
