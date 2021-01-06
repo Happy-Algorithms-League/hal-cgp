@@ -202,20 +202,6 @@ class CartesianGraph:
 
         return active_regions
 
-    def __call__(self, x: List[float]) -> List[float]:
-        # store values of x in input nodes
-        for i, xi in enumerate(x):
-            assert isinstance(self._nodes[i], InputNode)
-            self._nodes[i]._output = xi
-
-        # evaluate active nodes in order
-        active_nodes_by_hidden_column_idx = self._determine_active_nodes()
-        for hidden_column_idx in sorted(active_nodes_by_hidden_column_idx):
-            for node in active_nodes_by_hidden_column_idx[hidden_column_idx]:
-                node(x, self)
-
-        return [node._output for node in self.output_nodes]
-
     def __getitem__(self, key: int) -> Node:
         return self._nodes[key]
 

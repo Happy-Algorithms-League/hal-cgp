@@ -57,9 +57,6 @@ class Node:
         super().__init_subclass__()
         register(cls)
 
-    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
-        raise NotImplementedError
-
     @property
     def arity(self) -> int:
         return self._arity
@@ -209,19 +206,6 @@ class OperatorNode(Node):
     @property
     def parameter_str(self) -> List[str]:
         return self._parameter_str
-
-    def __call__(self, x: List[float], graph: "CartesianGraph") -> None:
-        output_str = str(self._def_output)
-
-        if len(self._parameter_names) > 0:
-            raise RuntimeError("can not call a node that uses parameters")
-
-        for input_name in self._input_names:
-            idx = self._extract_index_from_input_name(input_name)
-            output_str = output_str.replace(input_name, f"{graph[self._input_nodes[idx]].output}")
-
-        exec_str = f"self._output = {output_str}"
-        exec(exec_str)
 
     def _replace_input_names(self, output_str: str, graph: "CartesianGraph") -> str:
         for input_name in self._input_names:
