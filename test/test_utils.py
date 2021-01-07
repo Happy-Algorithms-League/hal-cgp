@@ -1,6 +1,5 @@
 import concurrent.futures
 import functools
-import multiprocessing as mp
 import tempfile
 import time
 
@@ -215,7 +214,7 @@ def _cache_decorator_objective_single_process(s, sleep_time):
     return s
 
 
-@cgp.utils.disk_cache(tempfile.mkstemp()[1], file_lock=mp.Lock())
+@cgp.utils.disk_cache(tempfile.mkstemp()[1], file_lock=cgp.mp_context.Lock())
 def _cache_decorator_objective_two_processes(s, sleep_time):
     time.sleep(sleep_time)  # simulate long execution time
     return s

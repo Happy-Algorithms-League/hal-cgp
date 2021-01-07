@@ -10,7 +10,6 @@ second time and when you comment out the decorator on
 
 """
 
-import multiprocessing as mp
 import time
 
 import numpy as np
@@ -43,7 +42,7 @@ def f_target(x):
     fec_min_value=-10.0,
     fec_max_value=10.0,
     fec_batch_size=5,
-    file_lock=mp.Lock(),
+    file_lock=cgp.mp_context.Lock(),
 )
 def inner_objective(ind):
     """The caching decorator uses the return values generated from

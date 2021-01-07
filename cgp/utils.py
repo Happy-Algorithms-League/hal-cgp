@@ -207,7 +207,8 @@ def disk_cache(
         Number of fec input samples. Defaults to 10.
     file_lock : multiprocessing.synchronize.Lock, optional
         Lock to make sure only a single process reads from/write to
-        cache file. Defaults to None.
+        cache file. If provided, should be created by the
+        cgp.mp_context context. Defaults to None.
 
     Returns
     -------

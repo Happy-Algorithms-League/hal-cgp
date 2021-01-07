@@ -4,6 +4,7 @@ from typing import Callable, List, Union
 import numpy as np
 
 from ..individual import IndividualBase
+from ..mp_context import mp_context
 from ..population import Population
 
 
@@ -76,15 +77,13 @@ class MuPlusLambda:
         self.reorder_genome = reorder_genome
         self.hurdle_percentile = hurdle_percentile
 
-        self.process_pool: Union[None, "mp.pool.Pool"]
+        self.process_pool: Union[None, "mp.pool.Pool"] = None
         if self.n_processes > 1:
-            self.process_pool = mp.Pool(processes=self.n_processes)
-        else:
-            self.process_pool = None
+            self.process_pool = mp_context.Pool(processes=self.n_processes)
         self.n_objective_calls: int = 0
 
     def __del__(self):
-        if self.n_processes > 1:
+        if hasattr(self, "process_pool") and self.process_pool is not None:
             self.process_pool.close()
 
     def initialize_fitness_parents(
