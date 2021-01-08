@@ -16,7 +16,6 @@ def evolve(
     max_objective_calls: int = np.inf,
     print_progress: Optional[bool] = False,
     callback: Optional[Callable[[Population], None]] = None,
-    n_processes: int = 1,
 ) -> None:
     """
     Evolves a population and returns the history of fitness of parents.
@@ -46,11 +45,6 @@ def evolve(
     callback :  callable, optional
         Called after each iteration with the population instance.
         Defaults to None.
-    n_processes : int, optional
-        Number of parallel processes to be used. If greater than 1,
-        parallel evaluation of the objective is supported. Currently
-        not implemented. Defaults to 1.
-
 
     Returns
     -------
