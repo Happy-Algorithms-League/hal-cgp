@@ -299,7 +299,7 @@ result and log the final evolved expression.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  50.026 seconds)
+   **Total running time of the script:** ( 1 minutes  48.043 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_evo_regression.py:
