@@ -28,7 +28,7 @@ def _create_genome(cls: Type["OperatorNode"]) -> "Genome":
     from .genome import ID_INPUT_NODE, ID_NON_CODING_GENE, ID_OUTPUT_NODE, Genome
 
     primitives = (cls,)
-    genome = Genome(1, 1, 1, 1, 1, primitives)
+    genome = Genome(1, 1, 1, 1, primitives)
     dna = [ID_INPUT_NODE]
     arity = max(cls._arity, 1)
     for _ in range(arity):

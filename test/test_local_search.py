@@ -8,7 +8,7 @@ def test_gradient_based_step_towards_maximum():
     torch = pytest.importorskip("torch")
 
     primitives = (cgp.Parameter,)
-    genome = cgp.Genome(1, 1, 1, 1, 1, primitives)
+    genome = cgp.Genome(1, 1, 1, 1, primitives)
     # f(x) = c
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
     ind = cgp.individual.IndividualSingleGenome(genome)
@@ -38,7 +38,7 @@ def test_gradient_based_step_towards_maximum_multi_genome():
     torch = pytest.importorskip("torch")
 
     primitives = (cgp.Parameter,)
-    genome = cgp.Genome(1, 1, 1, 1, 1, primitives)
+    genome = cgp.Genome(1, 1, 1, 1, primitives)
     # f(x) = c
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
     genome2 = genome.clone()
