@@ -30,8 +30,8 @@ class Genome:
         n_outputs: int,
         n_columns: int,
         n_rows: int,
-        levels_back: Union[int, None],
         primitives: Tuple[Type[Node], ...],
+        levels_back: Union[int, None] = None,
     ) -> None:
         """Init function.
 
@@ -45,11 +45,11 @@ class Genome:
             Number of columns in the representation of the genome.
         n_rows : int
             Number of rows in the representation of the genome.
-        levels_back : Union[int, None]
-            Maximal column distance of inputs to an internal node. If
-            set to `None`, no restrictions are used.
         primitives : Tuple[Type[Node], ...]
            Tuple of primitives that the genome can refer to.
+        levels_back : Union[int, None]
+            Maximal column distance of inputs to an internal node. If
+            set to `None`, no restrictions are used. Defaults to None
 
         """
         if n_inputs <= 0:
@@ -70,7 +70,7 @@ class Genome:
 
         if levels_back is None:
             levels_back = n_columns
-        if levels_back == 0:
+        if levels_back == 0 and n_columns != 0:
             raise ValueError("levels_back must be strictly positive")
         if levels_back > n_columns:
             raise ValueError("levels_back can not be larger than n_columns")
@@ -673,8 +673,8 @@ class Genome:
             self._n_outputs,
             self._n_columns,
             self._n_rows,
-            self._levels_back,
             tuple(self._primitives),
+            self._levels_back,
         )
         new.dna = self.dna.copy()
 

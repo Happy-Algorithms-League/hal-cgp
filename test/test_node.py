@@ -69,16 +69,11 @@ def _test_to_sympy(genome, x, y_target):
 
 
 def test_add():
-    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
+    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1}
 
     primitives = (cgp.Add,)
     genome = cgp.Genome(
-        params["n_inputs"],
-        params["n_outputs"],
-        params["n_columns"],
-        params["n_rows"],
-        params["levels_back"],
-        primitives,
+        params["n_inputs"], params["n_outputs"], params["n_columns"], params["n_rows"], primitives,
     )
     # f(x) = x[0] + x[1]
     genome.dna = [
@@ -103,16 +98,11 @@ def test_add():
 
 
 def test_sub():
-    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
+    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1}
 
     primitives = (cgp.Sub,)
     genome = cgp.Genome(
-        params["n_inputs"],
-        params["n_outputs"],
-        params["n_columns"],
-        params["n_rows"],
-        params["levels_back"],
-        primitives,
+        params["n_inputs"], params["n_outputs"], params["n_columns"], params["n_rows"], primitives,
     )
     # f(x) = x[0] - x[1]
     genome.dna = [
@@ -137,16 +127,11 @@ def test_sub():
 
 
 def test_mul():
-    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
+    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1}
 
     primitives = (cgp.Mul,)
     genome = cgp.Genome(
-        params["n_inputs"],
-        params["n_outputs"],
-        params["n_columns"],
-        params["n_rows"],
-        params["levels_back"],
-        primitives,
+        params["n_inputs"], params["n_outputs"], params["n_columns"], params["n_rows"], primitives,
     )
     # f(x) = x[0] * x[1]
     genome.dna = [
@@ -171,16 +156,11 @@ def test_mul():
 
 
 def test_div():
-    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
+    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1}
 
     primitives = (cgp.Div,)
     genome = cgp.Genome(
-        params["n_inputs"],
-        params["n_outputs"],
-        params["n_columns"],
-        params["n_rows"],
-        params["levels_back"],
-        primitives,
+        params["n_inputs"], params["n_outputs"], params["n_columns"], params["n_rows"], primitives,
     )
     # f(x) = x[0] / x[1]
     genome.dna = [
@@ -205,16 +185,11 @@ def test_div():
 
 
 def test_pow():
-    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
+    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1}
 
     primitives = (cgp.Pow,)
     genome = cgp.Genome(
-        params["n_inputs"],
-        params["n_outputs"],
-        params["n_columns"],
-        params["n_rows"],
-        params["levels_back"],
-        primitives,
+        params["n_inputs"], params["n_outputs"], params["n_columns"], params["n_rows"], primitives,
     )
     # f(x) = x[0] ** x[1]
     genome.dna = [
@@ -239,17 +214,12 @@ def test_pow():
 
 
 def test_constant_float():
-    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1, "levels_back": 1}
+    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1}
 
     primitives = (cgp.ConstantFloat,)
     # f(x) = c
     genome = cgp.Genome(
-        params["n_inputs"],
-        params["n_outputs"],
-        params["n_columns"],
-        params["n_rows"],
-        params["levels_back"],
-        primitives,
+        params["n_inputs"], params["n_outputs"], params["n_columns"], params["n_rows"], primitives,
     )
     genome.dna = [
         ID_INPUT_NODE,
@@ -274,7 +244,6 @@ def test_parameter():
         "n_outputs": 1,
         "n_columns": 1,
         "n_rows": 1,
-        "levels_back": None,
     }
     primitives = (cgp.Parameter,)
     genome = cgp.Genome(**genome_params, primitives=primitives)
@@ -298,7 +267,6 @@ def test_parameter_w_custom_initial_value():
         "n_outputs": 1,
         "n_columns": 1,
         "n_rows": 1,
-        "levels_back": None,
     }
     primitives = (CustomParameter,)
     genome = cgp.Genome(**genome_params, primitives=primitives)
@@ -317,7 +285,6 @@ def test_parameter_two_nodes():
         "n_outputs": 1,
         "n_columns": 3,
         "n_rows": 1,
-        "levels_back": None,
     }
     primitives = (cgp.Parameter, cgp.Add)
     genome = cgp.Genome(**genome_params, primitives=primitives)
@@ -362,7 +329,6 @@ def test_parameter_w_random_initial_value(rng_seed):
         "n_outputs": 1,
         "n_columns": 1,
         "n_rows": 1,
-        "levels_back": None,
     }
     primitives = (CustomParameter,)
     genome = cgp.Genome(**genome_params, primitives=primitives)
@@ -393,7 +359,6 @@ def test_multiple_parameters_per_node():
         "n_outputs": 1,
         "n_columns": 1,
         "n_rows": 1,
-        "levels_back": None,
     }
     primitives = (DoubleParameter,)
     genome = cgp.Genome(**genome_params, primitives=primitives)
@@ -414,7 +379,6 @@ def test_reset_parameters_upon_creation_of_node(rng):
         "n_outputs": 1,
         "n_columns": 1,
         "n_rows": 1,
-        "levels_back": None,
     }
     primitives = (CustomParameter, CustomParameter)
     genome = cgp.Genome(**genome_params, primitives=primitives)
@@ -447,7 +411,6 @@ def test_if_else_operator():
         "n_outputs": 1,
         "n_columns": 1,
         "n_rows": 1,
-        "levels_back": None,
     }
     primitives = (cgp.IfElse,)
     genome = cgp.Genome(**genome_params, primitives=primitives)
