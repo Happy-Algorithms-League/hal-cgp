@@ -27,7 +27,7 @@ class MuPlusLambda:
         local_search: Callable[[IndividualBase], None] = lambda combined: None,
         k_local_search: Union[int, None] = None,
         reorder_genome: bool = False,
-        hurdle_percentile: List = [0.0]
+        hurdle_percentile: List = [0.0],
     ):
         """Init function
 
@@ -207,6 +207,12 @@ class MuPlusLambda:
 
         if callable(objective):
             objective = [objective]
+        else:
+            if len(objective) != len(self.hurdle_percentile):
+                raise ValueError(
+                    f"{len(objective)} objectives found, but hurdle percentile"
+                    " defined for {len(self.hurdle_percentile)} objectives."
+                )
 
         ind_evaluating = list(combined)
         ind_done_evaluating = []
