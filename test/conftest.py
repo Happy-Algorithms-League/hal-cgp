@@ -73,3 +73,10 @@ def n_offsprings():
 @fixture
 def tournament_size():
     return 2
+
+
+@fixture
+def individual(genome_params, rng):
+    g = cgp.Genome(**genome_params)
+    g.randomize(rng)
+    return cgp.IndividualSingleGenome(g)
