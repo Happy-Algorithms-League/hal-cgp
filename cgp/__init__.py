@@ -11,6 +11,7 @@ from .cartesian_graph import CartesianGraph, atomic_operator
 from .genome import Genome
 from .hl_api import evolve
 from .individual import IndividualMultiGenome, IndividualSingleGenome
+from .mp_context import fork_context, spawn_context
 from .node import OperatorNode
 from .node_impl import Add, ConstantFloat, Div, IfElse, Mul, Parameter, Pow, Sub
 from .population import Population

@@ -4,6 +4,7 @@ from typing import Callable, List, Union
 import numpy as np
 
 from ..individual import IndividualBase
+from ..mp_context import fork_context, spawn_context
 from ..population import Population
 
 
@@ -78,7 +79,7 @@ class MuPlusLambda:
 
         self.process_pool: Union[None, "mp.pool.Pool"]
         if self.n_processes > 1:
-            self.process_pool = mp.Pool(processes=self.n_processes)
+            self.process_pool = fork_context.Pool(processes=self.n_processes)
         else:
             self.process_pool = None
         self.n_objective_calls: int = 0
@@ -283,3 +284,8 @@ class MuPlusLambda:
         for off in offsprings:
             off.mutate(self._mutation_rate, rng)
         return offsprings
+
+    def use_spawn_context(self):
+        assert self.n_processes > 1
+        self.process_pool.close()
+        self.process_pool = spawn_context.Pool(processes=self.n_processes)
