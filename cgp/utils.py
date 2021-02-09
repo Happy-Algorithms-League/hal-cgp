@@ -55,22 +55,9 @@ def __find_args_and_return_value_for_consistency_check(fn: str) -> Union[Dict[st
     return None
 
 
-def __compute_key_from_args(*args: Any, **kwargs: Any) -> str:
-    """Compute a key from the arguments passed to the decorated
-    function.
-
-    """
-
-    s: str = str(args) + str(kwargs)
-    return hashlib.sha1(s.encode("utf-8")).hexdigest()
-
-
-def __compute_key_from_evaluation_and_args(
-    seed: int, min_value: float, max_value: float, batch_size: int, *args: Any, **kwargs: Any
-) -> str:
-    """Compute a key for the function encoded in an individual by
-    evaluating it's NumPy expression on random input samples and
-    hashing the output values.
+def compute_key_from_sympy_expr_and_args(*args: Any, **kwargs: Any) -> str:
+    """Compute a key from the sympy expression encoded in an individual
+    and the remaining arguments passed to the decorated function.
 
     """
 
@@ -79,18 +66,54 @@ def __compute_key_from_evaluation_and_args(
     ):
         raise ValueError("first argument of decorated function must be an Individual instance")
 
-    rng = np.random.RandomState(seed=seed)
+    s: str = str(args[0].to_sympy()) + str(args[1:]) + str(kwargs)
+    return hashlib.sha1(s.encode("utf-8")).hexdigest()
+
+
+def compute_key_from_numpy_evaluation_and_args(
+    *args: Any,
+    _seed: int = 0,
+    _min_value: float = -100.0,
+    _max_value: float = 100.0,
+    _batch_size: int = 10,
+    **kwargs: Any,
+) -> str:
+    """Compute a key from the function encoded in an individual
+    and the remaining arguments passed to the decorated function.
+
+    The function is evaluated on random inputs and a key is generated
+    by hashing the corresponding output values.
+
+    Parameters
+    ----------
+    _seed : int, optional
+        Seed value for fec. Defaults to 0.
+    _min_value : float, optional
+        Minimal value for fec input samples. Defaults to -100.0.
+    _max_value : float, optional
+        Maximal value for fec input samples. Defaults to 100.0.
+    _batch_size : int, optional
+        Number of fec input samples. Defaults to 10.
+
+    """
+
+    if not (
+        isinstance(args[0], IndividualSingleGenome) or isinstance(args[0], IndividualMultiGenome)
+    ):
+        raise ValueError("first argument of decorated function must be an Individual instance")
+
+    rng = np.random.RandomState(seed=_seed)
     ind = args[0]
     if isinstance(ind, IndividualSingleGenome):
         f_single = ind.to_numpy()
-        x = rng.uniform(min_value, max_value, (batch_size, ind.genome._n_inputs))
+        x = rng.uniform(_min_value, _max_value, (_batch_size, ind.genome._n_inputs))
         y = f_single(x)
         s = np.array_str(y, precision=15)
     elif isinstance(ind, IndividualMultiGenome):
         f_multi = ind.to_numpy()
         s = ""
         for i in range(len(ind.genome)):
-            x = rng.uniform(min_value, max_value, (batch_size, ind.genome[i]._n_inputs))
+            x = rng.uniform(_min_value, _max_value, (_batch_size, ind.genome[i]._n_inputs))
             y = f_multi[i](x)
             s += np.array_str(y, precision=15)
     else:
@@ -147,39 +170,37 @@ def __store_new_cache_entry(
 def disk_cache(
     fn: str,
     *,
-    use_fec: bool = False,
-    fec_seed: int = 0,
-    fec_min_value: float = -100.0,
-    fec_max_value: float = 100.0,
-    fec_batch_size: int = 10,
+    compute_key: Callable[..., str] = compute_key_from_numpy_evaluation_and_args,
     file_lock: Union[None, "mp.synchronize.Lock"] = None,
 ) -> Callable[[Callable[..., float]], Callable[..., float]]:
     """Cache function return values on disk.
 
-    Decorator that caches a function's return values on disk. Next time the
-    decorated function is called with the same arguments it returns the stored
-    values from disk instead of executing the function.
+    Decorator that caches a function's return values on disk. Next
+    time the decorated function is called with the same arguments it
+    returns the stored values from disk instead of executing the
+    function. The first argument of the decorated function *must* be
+    an IndividualBase instance.
 
     Consistency of the cache is checked upon decorating the function
     by making sure the it returns the same value as the first
     argument/keyword argument combination found in the cache.
 
-    If `use_fec` is `False` (default) the arguments of the decorated
-    function are used to compute a hash. If `use_fec` is `True` the
-    decorator uses functional equivalance checking [Real et al.,
-    2020]: It generates a NumPy-compatible expression from the
-    function's first argument (*must* be an `IndividualSingleGenome`
-    or `IndividualMultiGenome` instance) and evaluates it on randomly
-    generated values. The output values are then used to compute a
-    hash.
+    The `compute_key` parameter is a function receiving the aguments
+    and keyword arguments of the decorated function and must return a
+    unique key. By default, the decorator uses functional equivalance
+    checking [Real et al., 2020]: It generates a NumPy-compatible
+    expression from the function's first argument (*must* be an
+    `IndividualSingleGenome` or `IndividualMultiGenome` instance) and
+    evaluates it on randomly generated values. The output values are
+    then used to compute a hash.
 
     WARNING: this implementation is neither optimized for speed nor storage
     space and does not limit the size of the cache file.
 
     WARNING: the consistency check may pass incorrectly if the
     decorated function happens to return a consistent value for the
-    first argument from the cache although it returns different values
-    for other arguments.
+    arguments from the cache although it returns different values for
+    other arguments.
 
     WARNING: avoid using the decorator on nested functions as the
     consistency check will be applied on each decoration thus doubling
@@ -195,16 +216,10 @@ def disk_cache(
     ----------
     fn : str
         Name of the cache file.
-    use_fec : bool, optional
-        Whether to use functional equivalance checking. Defaults to False.
-    fec_seed : int, optional
-        Seed value for fec. Defaults to 0.
-    fec_min_value : float, optional
-        Minimal value for fec input samples. Defaults to -100.0.
-    fec_max_value : float, optional
-        Maximal value for fec input samples. Defaults to 100.0.
-    fec_batch_size : int, optional
-        Number of fec input samples. Defaults to 10.
+    compute_key : Callable[..., str], optional
+        Function to compute a unique key from an individual and the
+        remaining function arguments. Defaults to
+        `compute_key_from_numpy_evaluation_and_args`.
     file_lock : multiprocessing.synchronize.Lock, optional
         Lock to make sure only a single process reads from/write to
         cache file. Defaults to None.
@@ -220,15 +235,9 @@ def disk_cache(
         __check_cache_consistency(fn, func)
 
         @functools.wraps(func)
-        def wrapper(*args: Any, **kwargs: Any) -> Union[float, None]:
+        def wrapper(*args: Any, **kwargs: Any) -> float:
 
-            key: str
-            if use_fec:
-                key = __compute_key_from_evaluation_and_args(
-                    fec_seed, fec_min_value, fec_max_value, fec_batch_size, *args, **kwargs
-                )
-            else:
-                key = __compute_key_from_args(*args, **kwargs)
+            key: str = compute_key(*args, **kwargs)
 
             if file_lock is not None:
                 file_lock.acquire()

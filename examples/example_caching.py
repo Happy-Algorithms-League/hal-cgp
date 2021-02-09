@@ -30,18 +30,20 @@ def f_target(x):
 # function to compute (or retrieve from cache) the fitness of the individual.
 
 
-@cgp.utils.disk_cache("example_caching_cache.pkl")
-def inner_objective(expr):
+@cgp.utils.disk_cache(
+    "example_caching_cache.pkl", compute_key=cgp.utils.compute_key_from_sympy_expr_and_args
+)
+def inner_objective(ind):
     """The caching decorator uses the function parameters to identify
     identical function calls. Here, as many different genotypes
-    produce the same simplified SymPy expression we can use such
-    expressions as an argument to the decorated function to avoid
-    reevaluating functionally identical individuals.
-    Note that caching only makes sense for deterministic objective
-    functions, as it assumes that identical expressions will always
-    return the same fitness values.
+    produce the same simplified SymPy expression we can use these
+    avoid reevaluating functionally identical individuals. Note that
+    caching only makes sense for deterministic objective functions, as
+    it assumes that identical expressions will always return the same
+    fitness values.
 
     """
+    expr = ind.to_sympy()
     loss = []
     for x0 in np.linspace(-2.0, 2.0, 100):
         y = float(expr[0].subs({"x_0": x0}).evalf())
@@ -56,7 +58,7 @@ def objective(individual):
     if not individual.fitness_is_None():
         return individual
 
-    individual.fitness = -inner_objective(individual.to_sympy())
+    individual.fitness = -inner_objective(individual)
 
     return individual
 

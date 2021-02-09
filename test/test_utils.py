@@ -22,7 +22,8 @@ def test_cache_decorator_produces_identical_history(
     def f_target(x):
         return x[0] - x[1]
 
-    def inner_objective(expr):
+    def inner_objective(ind):
+        expr = ind.to_sympy()
         np.random.seed(rng_seed)
 
         if individual_type == "SingleGenome":
@@ -39,13 +40,15 @@ def test_cache_decorator_produces_identical_history(
             ) ** 2
         return loss
 
-    @cgp.utils.disk_cache(tempfile.mkstemp()[1])
-    def inner_objective_decorated(expr):
-        return inner_objective(expr)
+    @cgp.utils.disk_cache(
+        tempfile.mkstemp()[1], compute_key=cgp.utils.compute_key_from_sympy_expr_and_args
+    )
+    def inner_objective_decorated(ind):
+        return inner_objective(ind)
 
     def evolve(inner_objective):
         def objective(ind):
-            ind.fitness = -inner_objective(ind.to_sympy())
+            ind.fitness = -inner_objective(ind)
             return ind
 
         if individual_type == "SingleGenome":
@@ -101,7 +104,9 @@ def test_fec_cache_decorator_produces_identical_history(
             loss += (f_target(x) - f(x)[0]) ** 2
         return loss
 
-    @cgp.utils.disk_cache(tempfile.mkstemp()[1], use_fec=True, fec_seed=rng_seed)
+    @cgp.utils.disk_cache(
+        tempfile.mkstemp()[1], compute_key=cgp.utils.compute_key_from_numpy_evaluation_and_args
+    )
     def inner_objective_decorated(ind):
         return inner_objective(ind)
 
@@ -138,7 +143,9 @@ def test_fec_cache_decorator_produces_identical_history(
         assert fitness == pytest.approx(fitness_decorated)
 
 
-@cgp.utils.disk_cache(tempfile.mkstemp()[1], use_fec=True)
+@cgp.utils.disk_cache(
+    tempfile.mkstemp()[1], compute_key=cgp.utils.compute_key_from_numpy_evaluation_and_args
+)
 def _fec_cache_decorator_with_multiple_inputs_multiple_outputs_objective(ind):
     f = ind.to_numpy()
     x = np.array([[1.0, 2.0], [3.0, 4.0]])
@@ -210,19 +217,19 @@ def test_fec_cache_decorator_with_multiple_inputs_multiple_outputs(genome_params
 
 
 @cgp.utils.disk_cache(tempfile.mkstemp()[1])
-def _cache_decorator_objective_single_process(s, sleep_time):
+def _cache_decorator_objective_single_process(ind, sleep_time):
     time.sleep(sleep_time)  # simulate long execution time
-    return s
+    return 0.0
 
 
 @cgp.utils.disk_cache(tempfile.mkstemp()[1], file_lock=mp.Lock())
-def _cache_decorator_objective_two_processes(s, sleep_time):
+def _cache_decorator_objective_two_processes(ind, sleep_time):
     time.sleep(sleep_time)  # simulate long execution time
-    return s
+    return 0.0
 
 
 @pytest.mark.parametrize("n_processes", [1, 2])
-def test_cache_decorator(n_processes):
+def test_cache_decorator(n_processes, individual):
     def evaluate_objective_on_list(x):
         if n_processes == 1:
             objective = functools.partial(
@@ -237,7 +244,7 @@ def test_cache_decorator(n_processes):
                 return list(executor.map(objective, x))
 
     sleep_time = 1.0
-    x = [0, 1]
+    x = [individual, individual]
 
     # WARNING: below the number of processes is *not* taken into
     # account in the timing; one would expect a two-fold speedup when
@@ -263,38 +270,38 @@ def test_cache_decorator(n_processes):
     assert (time.time() - t0) < (0.4 * sleep_time)
 
 
-def test_cache_decorator_consistency():
+def test_cache_decorator_consistency(individual):
 
     cache_fn = tempfile.mkstemp()[1]
     x = 2
 
     @cgp.utils.disk_cache(cache_fn)
-    def objective_f(x):
+    def objective_f(ind):
         return x
 
     # call objective_f once to initialize the cache
-    assert objective_f(x) == pytest.approx(x)
+    assert objective_f(individual) == pytest.approx(x)
 
     # decorating a different function with different output using same
     # filename should raise an error
     with pytest.raises(RuntimeError):
 
         @cgp.utils.disk_cache(cache_fn)
-        def objective_g(x):
+        def objective_g(ind):
             return x ** 2
 
     # decorating a different function with identical output using the
     # same filename should NOT raise an error
     @cgp.utils.disk_cache(cache_fn)
-    def objective_h(x):
+    def objective_h(ind):
         return x
 
 
-def test_cache_decorator_does_not_compare_infinite_return_values():
+def test_cache_decorator_does_not_compare_infinite_return_values(individual):
     cache_fn = tempfile.mkstemp()[1]
 
     @cgp.utils.disk_cache(cache_fn)
-    def objective_f(x):
+    def objective_f(ind, x):
         try:
             return 1.0 / x
         except ZeroDivisionError:
@@ -303,17 +310,17 @@ def test_cache_decorator_does_not_compare_infinite_return_values():
     # first call produces infinite return value, identical to
     # objective_g although in general their return values are
     # different
-    objective_f(0.0)
+    objective_f(individual, 0.0)
     # second call produces a finite return value which should be used
     # to check consistency
-    objective_f(2.0)
+    objective_f(individual, 2.0)
 
     # since the consistency check uses the finite return value it
     # should detect that the two objectives are indeed different
     with pytest.raises(RuntimeError):
 
         @cgp.utils.disk_cache(cache_fn)
-        def objective_g(x):
+        def objective_g(ind, x):
             try:
                 return 2.0 / x
             except ZeroDivisionError:
@@ -322,7 +329,7 @@ def test_cache_decorator_does_not_compare_infinite_return_values():
 
 def test_cache_decorator_does_nothing_for_nonexistent_file():
     @cgp.utils.disk_cache("nonexistent_file.pkl")
-    def objective(x):
+    def objective(ind, x):
         return x
 
 
@@ -386,7 +393,9 @@ def test_fec_cache_decorator_with_additional_arguments(genome_params, rng, rng_s
     def f_target(x):
         return x[0] - x[1]
 
-    @cgp.utils.disk_cache(tempfile.mkstemp()[1], use_fec=True, fec_seed=rng_seed)
+    @cgp.utils.disk_cache(
+        tempfile.mkstemp()[1], compute_key=cgp.utils.compute_key_from_numpy_evaluation_and_args
+    )
     def inner_objective(ind, n_samples):
         np.random.seed(rng_seed)
 
@@ -407,3 +416,33 @@ def test_fec_cache_decorator_with_additional_arguments(genome_params, rng, rng_s
     y1 = inner_objective(ind, 10)
 
     assert y0 != pytest.approx(y1)
+
+
+def test_custom_compute_key_for_disk_cache(individual, rng):
+    @cgp.utils.disk_cache(
+        tempfile.mkstemp()[1], compute_key=cgp.utils.compute_key_from_numpy_evaluation_and_args
+    )
+    def inner_objective(ind):
+        return ind.to_func()([1.0, 2.0])[0]
+
+    def my_compute_key(ind):
+        return 0
+
+    @cgp.utils.disk_cache(tempfile.mkstemp()[1], compute_key=my_compute_key)
+    def inner_objective_custom_compute_key(ind):
+        return ind.to_func()([1.0, 2.0])[0]
+
+    individual0 = individual.clone()
+    individual0.genome.randomize(rng)
+    individual1 = individual.clone()
+    individual1.genome.randomize(rng)
+
+    loss0 = inner_objective(individual0)
+    loss1 = inner_objective(individual1)
+
+    assert loss0 != pytest.approx(loss1)
+
+    loss0 = inner_objective_custom_compute_key(individual0)
+    loss1 = inner_objective_custom_compute_key(individual1)
+
+    assert loss0 == pytest.approx(loss1)
