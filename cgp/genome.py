@@ -748,3 +748,35 @@ class Genome:
                 )
                 modified_parameter_value = True
         return modified_parameter_value
+
+    def parameters_to_numpy_array(self, only_active_nodes: bool = False) -> "np.ndarray[float]":
+        if only_active_nodes:
+            graph = CartesianGraph(self)
+            active_regions: List[int] = graph.determine_active_regions()
+            params_names: List[str] = []
+            params: List[float] = []
+            for p in self._parameter_names_to_values:
+                region_idx: int = self._region_idx_from_parameter_name(p)
+                if region_idx in active_regions:
+                    params_names.append(p)
+                    params.append(self._parameter_names_to_values[p])
+            return np.fromiter(params, dtype=np.float), params_names
+        else:
+            return (
+                np.fromiter(self._parameter_names_to_values.values(), dtype=np.float),
+                list(self._parameter_names_to_values.keys()),
+            )
+
+    def _region_idx_from_parameter_name(self, parameter_name: str) -> int:
+        return int(re.findall("<[A-z]+([0-9]+)>", parameter_name)[0])
+
+    def update_parameters_from_numpy_array(
+        self, params: "np.ndarray[float]", params_names: List[str]
+    ) -> bool:
+        any_parameter_updated: bool = False
+        for v, p in zip(params, params_names):
+            assert p in self._parameter_names_to_values
+            if not np.isclose(self._parameter_names_to_values[p], v, rtol=0.0):
+                self._parameter_names_to_values[p] = v
+                any_parameter_updated = True
+        return any_parameter_updated
