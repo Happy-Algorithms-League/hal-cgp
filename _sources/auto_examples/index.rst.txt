@@ -203,6 +203,27 @@ This folder contains a number of example scripts that demonstrate several use ca
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Example demonstrating the use of Cartesian genetic programming for a regression task that invol...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_example_local_search_evolution_strategies_thumb.png
+     :alt: Example for evolutionary regression with local search via evolution strategies
+
+     :ref:`sphx_glr_auto_examples_example_local_search_evolution_strategies.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/example_local_search_evolution_strategies
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Example demonstrating the use of Cartesian genetic programming for two regression tasks.">
 
 .. only:: html
