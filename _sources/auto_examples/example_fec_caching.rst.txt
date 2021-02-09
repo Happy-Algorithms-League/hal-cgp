@@ -27,11 +27,12 @@ compare the runtime of this script when you first call it vs. the
 second time and when you comment out the decorator on
 `inner_objective`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 12-20
+.. GENERATED FROM PYTHON SOURCE LINES 12-21
 
 .. code-block:: default
 
 
+    import functools
     import multiprocessing as mp
     import time
 
@@ -46,11 +47,11 @@ second time and when you comment out the decorator on
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 21-22
+.. GENERATED FROM PYTHON SOURCE LINES 22-23
 
 We define the target function for this example.
 
-.. GENERATED FROM PYTHON SOURCE LINES 22-28
+.. GENERATED FROM PYTHON SOURCE LINES 23-29
 
 .. code-block:: default
 
@@ -67,7 +68,7 @@ We define the target function for this example.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 29-37
+.. GENERATED FROM PYTHON SOURCE LINES 30-38
 
 We then define the objective function for the evolutionary
 algorithm: It consists of an inner objective which we wrap with the
@@ -78,7 +79,7 @@ the samples used for evaluation. The inner objective is then used by
 the objective function to compute (or retrieve from cache) the
 fitness of the individual.
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-78
+.. GENERATED FROM PYTHON SOURCE LINES 38-81
 
 .. code-block:: default
 
@@ -86,11 +87,13 @@ fitness of the individual.
 
     @cgp.utils.disk_cache(
         "example_fec_caching_cache.pkl",
-        use_fec=True,
-        fec_seed=12345,
-        fec_min_value=-10.0,
-        fec_max_value=10.0,
-        fec_batch_size=5,
+        compute_key=functools.partial(
+            cgp.utils.compute_key_from_numpy_evaluation_and_args,
+            _seed=12345,
+            _min_value=-10.0,
+            _max_value=10.0,
+            _batch_size=5,
+        ),
         file_lock=mp.Lock(),
     )
     def inner_objective(ind):
@@ -130,12 +133,12 @@ fitness of the individual.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-81
+.. GENERATED FROM PYTHON SOURCE LINES 82-84
 
 Next, we define the parameters for the population, the genome of
 individuals, and the evolutionary algorithm.
 
-.. GENERATED FROM PYTHON SOURCE LINES 81-102
+.. GENERATED FROM PYTHON SOURCE LINES 84-105
 
 .. code-block:: default
 
@@ -167,11 +170,11 @@ individuals, and the evolutionary algorithm.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 103-104
+.. GENERATED FROM PYTHON SOURCE LINES 106-107
 
 We then create a Population instance and instantiate the evolutionary algorithm.
 
-.. GENERATED FROM PYTHON SOURCE LINES 104-109
+.. GENERATED FROM PYTHON SOURCE LINES 107-112
 
 .. code-block:: default
 
@@ -187,11 +190,11 @@ We then create a Population instance and instantiate the evolutionary algorithm.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-111
+.. GENERATED FROM PYTHON SOURCE LINES 113-114
 
 Finally, we call the `evolve` method to perform the evolutionary search.
 
-.. GENERATED FROM PYTHON SOURCE LINES 111-117
+.. GENERATED FROM PYTHON SOURCE LINES 114-120
 
 .. code-block:: default
 
@@ -220,7 +223,7 @@ Finally, we call the `evolve` method to perform the evolutionary search.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.368 seconds)
+   **Total running time of the script:** ( 0 minutes  1.452 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_fec_caching.py:

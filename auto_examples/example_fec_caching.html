@@ -192,7 +192,8 @@ to download the full example code</p>
 compare the runtime of this script when you first call it vs. the
 second time and when you comment out the decorator on
 <cite>inner_objective</cite>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -215,11 +216,13 @@ the objective function to compute (or retrieve from cache) the
 fitness of the individual.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@cgp</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">disk_cache</span><span class="p">(</span>
     <span class="s2">&quot;example_fec_caching_cache.pkl&quot;</span><span class="p">,</span>
-    <span class="n">use_fec</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">fec_seed</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span>
-    <span class="n">fec_min_value</span><span class="o">=-</span><span class="mf">10.0</span><span class="p">,</span>
-    <span class="n">fec_max_value</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
-    <span class="n">fec_batch_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">compute_key</span><span class="o">=</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span>
+        <span class="n">cgp</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">compute_key_from_numpy_evaluation_and_args</span><span class="p">,</span>
+        <span class="n">_seed</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span>
+        <span class="n">_min_value</span><span class="o">=-</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">_max_value</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">_batch_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="p">),</span>
     <span class="n">file_lock</span><span class="o">=</span><span class="n">mp</span><span class="o">.</span><span class="n">Lock</span><span class="p">(),</span>
 <span class="p">)</span>
 <span class="k">def</span> <span class="nf">inner_objective</span><span class="p">(</span><span class="n">ind</span><span class="p">):</span>
@@ -411,7 +414,7 @@ individuals, and the evolutionary algorithm.</p>
 evolved function: [x_0**2 + x_0 + 1.0]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.368 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.452 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-fec-caching-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3cf378937ce4036c1818eddce2d3c1d5/example_fec_caching.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_fec_caching.py</span></code></a></p>

@@ -209,18 +209,20 @@ algorithm: It consists of an inner objective which we wrap with the
 caching decorator. This decorator specifies a pickle file that will be used for
 caching results of fitness evaluations. The inner objective is then used by the objective
 function to compute (or retrieve from cache) the fitness of the individual.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@cgp</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">disk_cache</span><span class="p">(</span><span class="s2">&quot;example_caching_cache.pkl&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">inner_objective</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@cgp</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">disk_cache</span><span class="p">(</span>
+    <span class="s2">&quot;example_caching_cache.pkl&quot;</span><span class="p">,</span> <span class="n">compute_key</span><span class="o">=</span><span class="n">cgp</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">compute_key_from_sympy_expr_and_args</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">inner_objective</span><span class="p">(</span><span class="n">ind</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;The caching decorator uses the function parameters to identify</span>
 <span class="sd">    identical function calls. Here, as many different genotypes</span>
-<span class="sd">    produce the same simplified SymPy expression we can use such</span>
-<span class="sd">    expressions as an argument to the decorated function to avoid</span>
-<span class="sd">    reevaluating functionally identical individuals.</span>
-<span class="sd">    Note that caching only makes sense for deterministic objective</span>
-<span class="sd">    functions, as it assumes that identical expressions will always</span>
-<span class="sd">    return the same fitness values.</span>
+<span class="sd">    produce the same simplified SymPy expression we can use these</span>
+<span class="sd">    avoid reevaluating functionally identical individuals. Note that</span>
+<span class="sd">    caching only makes sense for deterministic objective functions, as</span>
+<span class="sd">    it assumes that identical expressions will always return the same</span>
+<span class="sd">    fitness values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">expr</span> <span class="o">=</span> <span class="n">ind</span><span class="o">.</span><span class="n">to_sympy</span><span class="p">()</span>
     <span class="n">loss</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">x0</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">):</span>
         <span class="n">y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">expr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">subs</span><span class="p">({</span><span class="s2">&quot;x_0&quot;</span><span class="p">:</span> <span class="n">x0</span><span class="p">})</span><span class="o">.</span><span class="n">evalf</span><span class="p">())</span>
@@ -235,7 +237,7 @@ function to compute (or retrieve from cache) the fitness of the individual.</p>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness_is_None</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">individual</span>
 
-    <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="o">-</span><span class="n">inner_objective</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">to_sympy</span><span class="p">())</span>
+    <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="o">-</span><span class="n">inner_objective</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">individual</span>
 </pre></div>
@@ -399,7 +401,7 @@ individuals, and the evolutionary algorithm.</p>
 evolved function: [x_0**2 + x_0 + 1.0]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.951 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.946 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-caching-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/a2c9b3ea7a533aaea5486a503e976156/example_caching.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_caching.py</span></code></a></p>

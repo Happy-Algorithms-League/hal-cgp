@@ -10,6 +10,7 @@ second time and when you comment out the decorator on
 
 """
 
+import functools
 import multiprocessing as mp
 import time
 
@@ -38,11 +39,13 @@ def f_target(x):
 
 @cgp.utils.disk_cache(
     "example_fec_caching_cache.pkl",
-    use_fec=True,
-    fec_seed=12345,
-    fec_min_value=-10.0,
-    fec_max_value=10.0,
-    fec_batch_size=5,
+    compute_key=functools.partial(
+        cgp.utils.compute_key_from_numpy_evaluation_and_args,
+        _seed=12345,
+        _min_value=-10.0,
+        _max_value=10.0,
+        _batch_size=5,
+    ),
     file_lock=mp.Lock(),
 )
 def inner_objective(ind):
