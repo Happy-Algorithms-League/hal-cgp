@@ -105,8 +105,8 @@ def test_individual_with_parameter_python(individual_type, params, graph_input_v
     f = _unpack_evaluation(individual.to_func(), individual_type)
 
     for xi in x:
-        y = f([xi])
-        assert y[0] == pytest.approx(target_function(xi, c))
+        y = f(xi)
+        assert y == pytest.approx(target_function(xi, c))
 
 
 @pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
@@ -138,7 +138,7 @@ def test_individual_with_parameter_sympy(individual_type, params, graph_input_va
 
     x, c = graph_input_values.x, graph_input_values.c
     _unpack_genome(individual, individual_type)._parameter_names_to_values["<p1>"] = c
-    f = _unpack_evaluation(individual.to_sympy(), individual_type)[0]
+    f = _unpack_evaluation(individual.to_sympy(), individual_type)
 
     for xi in x:
         y = f.subs("x_0", xi).evalf()
@@ -216,17 +216,17 @@ def test_to_and_from_torch_plus_backprop(individual_type):
     assert loss.detach().numpy() < 1e-15
 
     # use old parameter values to compile function
-    x = [3.0]
+    x = 3.0
     f_func = _unpack_evaluation(individual.to_func(), individual_type)
     y = f_func(x)
-    assert y[0] != pytest.approx(f_target(x[0]))
+    assert y != pytest.approx(f_target(x))
 
     # update parameter values from torch class and compile new
     # function with new parameter values
     individual.update_parameters_from_torch_class(f)
     f_func = _unpack_evaluation(individual.to_func(), individual_type)
     y = f_func(x)
-    assert y[0] == pytest.approx(f_target(x[0]))
+    assert y == pytest.approx(f_target(x))
 
 
 @pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
@@ -262,7 +262,7 @@ def test_update_parameters_from_torch_class_resets_fitness(individual_type):
 
     g = _unpack_evaluation(individual.to_func(), individual_type)
     x = 2.0
-    assert g([x])[0] == pytest.approx(math.pi * x)
+    assert g(x) == pytest.approx(math.pi * x)
 
 
 @pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
@@ -298,7 +298,7 @@ def test_update_parameters_from_torch_class_does_not_reset_fitness_for_unused_pa
 
     g = _unpack_evaluation(individual.to_func(), individual_type)
     x = 2.0
-    assert g([x])[0] == pytest.approx(x ** 2)
+    assert g(x) == pytest.approx(x ** 2)
 
 
 @pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])

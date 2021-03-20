@@ -29,9 +29,9 @@ def test_to_func_simple():
     f = graph.to_func()
 
     x = [5.0, 2.0]
-    y = f(x)
+    y = f(*x)
 
-    assert x[0] + x[1] == pytest.approx(y[0])
+    assert x[0] + x[1] == pytest.approx(y)
 
     primitives = (cgp.Sub,)
     genome = cgp.Genome(2, 1, 1, 1, primitives)
@@ -54,9 +54,9 @@ def test_to_func_simple():
     f = graph.to_func()
 
     x = [5.0, 2.0]
-    y = f(x)
+    y = f(*x)
 
-    assert x[0] - x[1] == pytest.approx(y[0])
+    assert x[0] - x[1] == pytest.approx(y)
 
 
 def test_compile_two_columns():
@@ -84,9 +84,9 @@ def test_compile_two_columns():
     f = graph.to_func()
 
     x = [5.0, 2.0]
-    y = f(x)
+    y = f(*x)
 
-    assert x[0] - (x[0] + x[1]) == pytest.approx(y[0])
+    assert x[0] - (x[0] + x[1]) == pytest.approx(y)
 
 
 def test_compile_two_columns_two_rows():
@@ -123,7 +123,7 @@ def test_compile_two_columns_two_rows():
     f = graph.to_func()
 
     x = [5.0, 2.0]
-    y = f(x)
+    y = f(*x)
 
     assert x[0] + (x[0] + x[1]) == pytest.approx(y[0])
     assert (x[0] + x[1]) + (x[0] - x[1]) == pytest.approx(y[1])
@@ -168,9 +168,9 @@ def test_compile_addsubmul():
     f = graph.to_func()
 
     x = [5.0, 2.0]
-    y = f(x)
+    y = f(*x)
 
-    assert (x[0] * x[1]) - (x[0] - x[1]) == pytest.approx(y[0])
+    assert (x[0] * x[1]) - (x[0] - x[1]) == pytest.approx(y)
 
 
 def test_to_numpy():
@@ -200,7 +200,7 @@ def test_to_numpy():
     graph = cgp.CartesianGraph(genome)
     f = graph.to_numpy()
 
-    x = np.random.normal(size=(100, 1))
+    x = np.random.normal(size=100)
     y = f(x)
     y_target = x ** 2 + 1.0
 
@@ -308,9 +308,14 @@ genome[3].dna = [
 def test_compile_numpy_output_shape(genome, batch_size):
 
     c = cgp.CartesianGraph(genome).to_numpy()
-    x = np.random.normal(size=(batch_size, 1))
+    x = np.random.normal(size=batch_size)
     y = c(x)
-    assert y.shape == (batch_size, genome._n_outputs)
+
+    if genome._n_outputs == 1:
+        assert y.shape == (batch_size,)
+    else:
+        assert len(y) == genome._n_outputs
+        assert y[0].shape == (batch_size,)
 
 
 @pytest.mark.parametrize("genome, batch_size", itertools.product(genome, batch_sizes))
@@ -353,11 +358,11 @@ def test_to_sympy():
     graph = cgp.CartesianGraph(genome)
 
     y_0_target = sympy.sympify("x_0 + x_0 + 1.0", evaluate=False)
-    y_0 = graph.to_sympy(simplify=False)[0]
+    y_0 = graph.to_sympy(simplify=False)
     assert y_0_target == y_0
 
     y_0_target = sympy.sympify("2 * x_0 + 1.0", evaluate=True)
-    y_0 = graph.to_sympy()[0]
+    y_0 = graph.to_sympy()
     assert y_0_target == y_0
 
     for x in np.random.normal(size=100):
@@ -387,7 +392,7 @@ def test_allow_sympy_expr_with_infinities():
     ]
     graph = cgp.CartesianGraph(genome)
 
-    expr = graph.to_sympy(simplify=True)[0]
+    expr = graph.to_sympy(simplify=True)
     # complex infinity should appear in expression
     assert "zoo" in str(expr)
 
@@ -426,14 +431,14 @@ def test_input_dim_python(rng_seed):
 
     # fail for too short input
     with pytest.raises(ValueError):
-        f([None])
+        f(None)
 
     # fail for too long input
     with pytest.raises(ValueError):
-        f([None, None, None])
+        f(None, None, None)
 
     # do not fail for input with correct length
-    f([None, None])
+    f(None, None)
 
 
 def test_input_dim_numpy(rng_seed):
@@ -443,20 +448,20 @@ def test_input_dim_numpy(rng_seed):
     genome.randomize(rng)
     f = cgp.CartesianGraph(genome).to_numpy()
 
-    # fail for missing batch dimension
-    with pytest.raises(ValueError):
-        f(np.array([1.0]))
+    # # fail for missing batch dimension
+    # with pytest.raises(ValueError):
+    #     f(np.array([1.0]))
 
     # fail for too short input
     with pytest.raises(ValueError):
-        f(np.array([1.0]).reshape(-1, 1))
+        f(np.array([1.0]))
 
     # fail for too long input
     with pytest.raises(ValueError):
-        f(np.array([1.0, 1.0, 1.0]).reshape(-1, 3))
+        f(np.array([1.0]), np.array([1.0]), np.array([1.0]))
 
     # do not fail for input with correct shape
-    f(np.array([1.0, 1.0]).reshape(-1, 2))
+    f(np.array([1.0]), np.array([1.0]))
 
 
 def test_input_dim_torch(rng_seed):

@@ -22,9 +22,10 @@ def _objective_test_population(individual, rng_seed):
         return x[:, 0] - x[:, 1]
 
     x = np.random.normal(size=(n_function_evaluations, 2))
-    y = np.empty(n_function_evaluations)
-    for i, x_i in enumerate(x):
-        y[i] = f_graph(x_i)[0]
+    y = f_graph(x[:, 0], x[:, 1])
+    # y = np.empty(n_function_evaluations)
+    # for i, x_i in enumerate(x):
+    #     y[i] = f_graph(x_i)
 
     loss = np.mean((f_target(x) - y) ** 2)
     individual.fitness = -loss
@@ -96,7 +97,7 @@ def test_evolve_two_expressions(population_params, ea_params):
             x1 = np.random.uniform(size=2)
 
             loss += float((f0(x0) - y0(x0)) ** 2)
-            loss += float((f1(x1) - y1(x1)) ** 2)
+            loss += float((f1(x1) - y1(x1[0], x1[1])) ** 2)
         individual.fitness = -loss
 
         return individual

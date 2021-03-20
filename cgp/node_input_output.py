@@ -22,7 +22,7 @@ class InputNode(Node):
         self._output_str = f"x[{self._idx}]"
 
     def format_output_str_numpy(self, graph: "CartesianGraph") -> None:
-        self._output_str = f"x[:, {self._idx}]"
+        self.format_output_str(graph)
 
     def format_output_str_torch(self, graph: "CartesianGraph") -> None:
         self._output_str = f"x[:, {self._idx}]"

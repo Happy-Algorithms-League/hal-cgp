@@ -102,7 +102,9 @@ def test_local_search_is_only_applied_to_best_k_individuals(
     torch = pytest.importorskip("torch")
 
     def inner_objective(f):
-        return torch.nn.MSELoss()(torch.Tensor([[1.1]]), f(torch.zeros(1, 1)))
+        return torch.nn.MSELoss()(
+            torch.DoubleTensor([[1.1]]), f(torch.zeros(1, 1, dtype=torch.double))
+        )
 
     def objective(ind):
         if not ind.fitness_is_None():

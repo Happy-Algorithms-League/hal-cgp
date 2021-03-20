@@ -176,7 +176,7 @@ ax_function.set_ylabel(r"$f(x)$")
 ax_function.set_xlabel(r"$x$")
 
 
-print(f"Final expression {pop.champion.to_sympy()[0]} with fitness {pop.champion.fitness}")
+print(f"Final expression {pop.champion.to_sympy()} with fitness {pop.champion.fitness}")
 
 history_fitness = np.array(history["fitness_parents"])
 ax_fitness.plot(np.max(history_fitness, axis=1), label="Champion")

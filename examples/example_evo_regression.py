@@ -84,7 +84,7 @@ def objective(individual, target_function, seed):
                 "ignore", message="invalid value encountered in double_scalars"
             )
             try:
-                y[i] = f_graph(x_i)[0]
+                y[i] = f_graph(x_i[0], x_i[1])
             except ZeroDivisionError:
                 individual.fitness = -np.inf
                 return individual
@@ -123,7 +123,7 @@ def evolution(f_target):
     Individual
         Individual with the highest fitness in the last generation
     """
-    population_params = {"n_parents": 10, "seed": 8188211}
+    population_params = {"n_parents": 10, "seed": 818821}
 
     genome_params = {
         "n_inputs": 2,
@@ -191,7 +191,7 @@ if __name__ == "__main__":
         x_0_range = np.linspace(-5.0, 5.0, 20)
         x_1_range = np.ones_like(x_0_range) * 2.0
         # fix x_1 such than 1d plot makes sense
-        y = [f_graph([x_0, x_1_range[0]]) for x_0 in x_0_range]
+        y = [f_graph(x_0, x_1_range[0]) for x_0 in x_0_range]
         y_target = target_function(np.hstack([x_0_range.reshape(-1, 1), x_1_range.reshape(-1, 1)]))
 
         ax_function.plot(x_0_range, y_target, lw=2, alpha=0.5, label="Target")

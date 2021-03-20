@@ -56,9 +56,9 @@ def objective(individual):
     # Note that f is now a list of functions because individual is an instance
     # of `InvidividualMultiGenome`
     f = individual.to_numpy()
-    x = np.random.uniform(-4, 4, (n_function_evaluations, 1))
-    y = np.piecewise(x, [x[:, 0] < 0, x[:, 0] >= 0], f)[:, 0]
-    loss = np.sum((f_target(x[:, 0]) - y) ** 2)
+    x = np.random.uniform(-4, 4, n_function_evaluations)
+    y = np.piecewise(x, [x < 0, x >= 0], f)
+    loss = np.sum((f_target(x) - y) ** 2)
     individual.fitness = -loss / n_function_evaluations
     return individual
 
@@ -131,8 +131,8 @@ ax_fitness.axhline(0.0, color="0.7")
 f = pop.champion.to_numpy()
 x = np.linspace(-5.0, 5.0, 20)[:, np.newaxis]
 
-y = np.piecewise(x, [x[:, 0] < 0, x[:, 0] >= 0], f)[:, 0]
-y_target = f_target(x[:, 0])
+y = np.piecewise(x, [x < 0, x >= 0], f)
+y_target = f_target(x)
 
 ax_function.plot(x, y_target, lw=2, alpha=0.5, label="Target")
 ax_function.plot(x, y, "x", label="Champion")
