@@ -31,6 +31,11 @@ exported as pure Python functions, NumPy-compatible functions (Walt et al., 2011
 
 The library implements a mu + lambda evolution strategy (Beyer and Schwefel, 2002) to evolve a population of individuals to optimize an objective function.
 
+Design decisions/use cases
+==========================
+
+We designed hal-cgp for optimization problems in which individual fitness evaluations are computationally expensive. The library is hence not optimized for high performance, but rather puts ease of use and extensibility first. Furthermore we take steps to reduce the number of redundant fitness evaluations, for example by avoiding reevaluating parents at the beginning of each episode and providing a convenient decorator to cache results on disk. If for your use case individual fitness evaluations are fast and the performance of the library itself becomes a relevant factor, you may want to check out https://github.com/darioizzo/dcgp or http://www.cgplibrary.co.uk/files2/About-txt.html.
+
 .. image-start
    
 .. image:: ./cgp-sketch.png
