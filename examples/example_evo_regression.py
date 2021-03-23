@@ -20,12 +20,12 @@ docopt_str = """
 import functools
 import warnings
 
-import matplotlib.pyplot as plt
 import numpy as np
-import scipy.constants
 from docopt import docopt
 
 import cgp
+import matplotlib.pyplot as plt
+import scipy.constants
 
 args = docopt(docopt_str)
 
@@ -136,7 +136,7 @@ def evolution(f_target):
 
     ea_params = {"n_offsprings": 10, "tournament_size": 2, "mutation_rate": 0.03, "n_processes": 2}
 
-    evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
+    evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
 
     # create population that will be evolved
     pop = cgp.Population(**population_params, genome_params=genome_params)

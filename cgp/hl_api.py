@@ -1,3 +1,4 @@
+import warnings
 from typing import Callable, Optional
 
 import numpy as np
@@ -11,7 +12,8 @@ def evolve(
     pop: Population,
     objective: Callable[[IndividualBase], IndividualBase],
     ea: MuPlusLambda,
-    min_fitness: float,
+    min_fitness: float = np.inf,
+    termination_fitness: float = np.inf,
     max_generations: int = np.inf,
     max_objective_calls: int = np.inf,
     print_progress: Optional[bool] = False,
@@ -33,6 +35,10 @@ def evolve(
         `initialize_fitness_parents` and `step` method.
     min_fitness : float
         Minimum fitness at which the evolution is stopped.
+        Warning: This argument is deprecated and will be removed in the 0.4
+        release. Please use `termination_fitness` instead.
+    termination_fitness : float
+        Minimum fitness at which the evolution is terminated
     max_generations : int
         Maximum number of generations.
         Defaults to positive infinity.
@@ -50,6 +56,23 @@ def evolve(
     -------
     None
     """
+    if np.isfinite(min_fitness) and np.isfinite(termination_fitness):
+        raise RuntimeError(
+            "Both `min_fitness` and `termination_fitness` have been set. The "
+            "`min_fitness` argument is deprecated and will be removed in the 0.4 "
+            "release. Please use `termination_fitness` instead."
+        )
+
+    if np.isfinite(min_fitness):
+        warnings.warn(
+            DeprecationWarning(
+                "The `min_fitness` argument is deprecated and "
+                "will be removed in the 0.4 release. Please use "
+                "`termination_fitness` instead."
+            )
+        )
+        termination_fitness = min_fitness
+
     if np.isinf(max_generations) and np.isinf(max_objective_calls):
         raise ValueError("Either max_generations or max_objective_calls must be finite.")
 
@@ -91,7 +114,7 @@ def evolve(
         if callback is not None:
             callback(pop)
 
-        if pop.champion.fitness + 1e-10 >= min_fitness:
+        if pop.champion.fitness + 1e-10 >= termination_fitness:
             break
 
     if print_progress:
