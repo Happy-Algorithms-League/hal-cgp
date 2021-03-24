@@ -180,6 +180,9 @@
 <p>hal-cgp is an extensible pure Python library implementing Cartesian genetic programming to represent, mutate and evaluate populations of individuals encoding symbolic expressions targeting applications with computationally expensive fitness evaluations. It supports the translation from a CGP genotype, a two-dimensional Cartesian graph, into the corresponding phenotype, a computational graph implementing a particular mathematical expression. These computational graphs can be
 exported as pure Python functions, NumPy-compatible functions (Walt et al., 2011), SymPy expressions (Meurer et al., 2017) or PyTorch modules (Paszke et al., 2019).</p>
 <p>The library implements a mu + lambda evolution strategy (Beyer and Schwefel, 2002) to evolve a population of individuals to optimize an objective function.</p>
+<div class="section" id="design-decisions-use-cases">
+<h2>Design decisions/use cases<a class="headerlink" href="#design-decisions-use-cases" title="Permalink to this headline">¶</a></h2>
+<p>We designed hal-cgp for optimization problems in which individual fitness evaluations are computationally expensive. The library is hence not optimized for high performance, but rather puts ease of use and extensibility first. Furthermore we take steps to reduce the number of redundant fitness evaluations, for example by avoiding reevaluating parents at the beginning of each episode and providing a convenient decorator to cache results on disk. If for your use case individual fitness evaluations are fast and the performance of the library itself becomes a relevant factor, you may want to check out <a class="reference external" href="https://github.com/darioizzo/dcgp">https://github.com/darioizzo/dcgp</a> or <a class="reference external" href="http://www.cgplibrary.co.uk/files2/About-txt.html">http://www.cgplibrary.co.uk/files2/About-txt.html</a>.</p>
 <a class="reference internal image-reference" href="_images/cgp-sketch.png"><img alt="CGP Sketch" src="_images/cgp-sketch.png" style="width: 600px;" /></a>
 <p>Figure from Jordan, Schmidt, Senn &amp; Petrovici, “Evolving to learn: discovering interpretable plasticity rules for spiking networks”, <a class="reference external" href="https://arxiv.org/abs/2005.14149">arxiv:2005.14149</a>.</p>
 <div class="toctree-wrapper compound">
@@ -208,6 +211,7 @@ exported as pure Python functions, NumPy-compatible functions (Walt et al., 2011
 </ul>
 </div>
 <span class="target" id="module-cgp"></span><p>Cartesian genetic programming (CGP) in pure Python. &lt;<a class="reference external" href="https://happy-algorithms-league.github.io/hal-cgp/">https://happy-algorithms-league.github.io/hal-cgp/</a>&gt;</p>
+</div>
 </div>
 
 
