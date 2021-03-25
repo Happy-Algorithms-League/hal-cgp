@@ -84,7 +84,7 @@ params = {
         "levels_back": 2,
         "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat),
     },
-    "evolve_params": {"max_generations": 200, "min_fitness": -1e-12},
+    "evolve_params": {"max_generations": 200, "termination_fitness": -1e-12},
 }
 
 # %%

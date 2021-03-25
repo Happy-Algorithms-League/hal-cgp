@@ -113,7 +113,7 @@ ea_params = {
     "k_local_search": 2,
 }
 
-evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
+evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
 
 # use an uneven number of gradient steps so they can not easily
 # average out for clipped values

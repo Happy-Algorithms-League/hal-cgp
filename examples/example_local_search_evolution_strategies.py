@@ -101,7 +101,7 @@ ea_params = {
     "k_local_search": 2,
 }
 
-evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
+evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
 
 # restrict the number of steps in the local search; since parameter
 # values are propagated from parents to offsprings, parameter values

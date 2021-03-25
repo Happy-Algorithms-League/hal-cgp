@@ -168,7 +168,10 @@ def evolve(seed):
 
     ea_params = {"n_offsprings": 4, "tournament_size": 1, "mutation_rate": 0.04, "n_processes": 4}
 
-    evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 100.0}
+    evolve_params = {
+        "max_generations": int(args["--max-generations"]),
+        "termination_fitness": 100.0,
+    }
 
     pop = cgp.Population(**population_params, genome_params=genome_params)
 
