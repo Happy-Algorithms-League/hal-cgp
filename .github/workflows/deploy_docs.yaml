@@ -1,0 +1,32 @@
+name: deploy documentation
+on:
+  push:
+    branches:
+      - master
+jobs:
+  hal-cgp-deploy-docs:
+    name: hal-cgp deploy docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[all]
+          pip install pytest-cov coveralls
+          pip install gym
+      - name: Build documentation
+        run: |
+          make -C docs/ clean
+          make -C docs/ html
+          touch docs/_build/html/.nojekyll
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.0
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: docs/_build/html/ # The folder the action should deploy.
