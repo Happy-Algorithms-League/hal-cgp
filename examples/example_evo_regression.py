@@ -20,12 +20,12 @@ docopt_str = """
 import functools
 import warnings
 
+import matplotlib.pyplot as plt
 import numpy as np
+import scipy.constants
 from docopt import docopt
 
 import cgp
-import matplotlib.pyplot as plt
-import scipy.constants
 
 args = docopt(docopt_str)
 
