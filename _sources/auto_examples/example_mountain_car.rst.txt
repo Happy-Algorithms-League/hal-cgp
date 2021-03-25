@@ -211,7 +211,7 @@ We then define the main loop for the evolution, which consists of:
 
 Finally, we call the `evolve` method to perform the evolutionary search.
 
-.. GENERATED FROM PYTHON SOURCE LINES 144-197
+.. GENERATED FROM PYTHON SOURCE LINES 144-200
 
 .. code-block:: default
 
@@ -242,7 +242,10 @@ Finally, we call the `evolve` method to perform the evolutionary search.
 
         ea_params = {"n_offsprings": 4, "tournament_size": 1, "mutation_rate": 0.04, "n_processes": 4}
 
-        evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 100.0}
+        evolve_params = {
+            "max_generations": int(args["--max-generations"]),
+            "termination_fitness": 100.0,
+        }
 
         pop = cgp.Population(**population_params, genome_params=genome_params)
 
@@ -275,11 +278,11 @@ Finally, we call the `evolve` method to perform the evolutionary search.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 198-199
+.. GENERATED FROM PYTHON SOURCE LINES 201-202
 
 For visualization, we define a function to plot the fitness over generations.
 
-.. GENERATED FROM PYTHON SOURCE LINES 199-211
+.. GENERATED FROM PYTHON SOURCE LINES 202-214
 
 .. code-block:: default
 
@@ -302,14 +305,14 @@ For visualization, we define a function to plot the fitness over generations.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 212-216
+.. GENERATED FROM PYTHON SOURCE LINES 215-219
 
 We define a function that checks whether the best expression
 fulfills the "solving criteria", i.e., average reward of at least
 90.0 over 100 consecutive
 trials. (https://github.com/openai/gym/wiki/Leaderboard#mountaincarcontinuous-v0)
 
-.. GENERATED FROM PYTHON SOURCE LINES 216-252
+.. GENERATED FROM PYTHON SOURCE LINES 219-255
 
 .. code-block:: default
 
@@ -356,12 +359,12 @@ trials. (https://github.com/openai/gym/wiki/Leaderboard#mountaincarcontinuous-v0
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 253-255
+.. GENERATED FROM PYTHON SOURCE LINES 256-258
 
 Furthermore, we define a function for visualizing the agent's behaviour for
 each expression that increase over the currently best performing individual.
 
-.. GENERATED FROM PYTHON SOURCE LINES 255-284
+.. GENERATED FROM PYTHON SOURCE LINES 258-287
 
 .. code-block:: default
 
@@ -401,13 +404,13 @@ each expression that increase over the currently best performing individual.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 285-288
+.. GENERATED FROM PYTHON SOURCE LINES 288-291
 
 Finally, we execute the evolution and visualize the results.
 To animate the behavior of the car for the found expression, uncomment
 the last line of the example.
 
-.. GENERATED FROM PYTHON SOURCE LINES 288-307
+.. GENERATED FROM PYTHON SOURCE LINES 291-310
 
 .. code-block:: default
 
@@ -458,7 +461,7 @@ the last line of the example.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  17.909 seconds)
+   **Total running time of the script:** ( 0 minutes  18.334 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_mountain_car.py:

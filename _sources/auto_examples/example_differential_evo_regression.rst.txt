@@ -174,7 +174,7 @@ individuals, the evolutionary algorithm, and the local search.
         "k_local_search": 2,
     }
 
-    evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
+    evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
 
     # use an uneven number of gradient steps so they can not easily
     # average out for clipped values
@@ -332,7 +332,7 @@ evolved expression.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  20.102 seconds)
+   **Total running time of the script:** ( 0 minutes  19.791 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_differential_evo_regression.py:

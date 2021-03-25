@@ -155,7 +155,7 @@ evolutionary algorithms without (default) and with genome reordering.
         "reorder_genome": True,
     }
 
-    evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
+    evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
 
 
 
@@ -309,7 +309,7 @@ with and without genome reordering
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.045 seconds)
+   **Total running time of the script:** ( 0 minutes  4.195 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_reorder.py:

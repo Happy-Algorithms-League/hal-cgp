@@ -90,7 +90,7 @@ genome_params = {
 
 ea_params = {"n_offsprings": 4, "mutation_rate": 0.03, "n_processes": 2}
 
-evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
+evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
 
 # create population that will be evolved
 pop = cgp.Population(**population_params, genome_params=genome_params)

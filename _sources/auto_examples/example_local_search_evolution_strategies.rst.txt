@@ -163,7 +163,7 @@ individuals, the evolutionary algorithm, and the local search.
         "k_local_search": 2,
     }
 
-    evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
+    evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
 
     # restrict the number of steps in the local search; since parameter
     # values are propagated from parents to offsprings, parameter values
@@ -322,7 +322,7 @@ evolved expression.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  34.106 seconds)
+   **Total running time of the script:** ( 0 minutes  34.317 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_local_search_evolution_strategies.py:

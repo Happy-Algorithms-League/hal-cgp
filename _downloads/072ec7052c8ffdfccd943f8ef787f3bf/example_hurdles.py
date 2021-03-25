@@ -132,7 +132,7 @@ ea_params = {
     "hurdle_percentile": [0.5, 0.0],
 }
 
-evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
+evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
 
 # %%
 # We create a population that will be evolved

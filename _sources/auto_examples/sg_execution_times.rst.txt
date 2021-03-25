@@ -5,30 +5,30 @@
 
 Computation times
 =================
-**05:24.290** total execution time for **auto_examples** files:
+**05:20.805** total execution time for **auto_examples** files:
 
 +-------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_example_piecewise_target_function.py` (``example_piecewise_target_function.py``)                 | 02:22.844 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_example_piecewise_target_function.py` (``example_piecewise_target_function.py``)                 | 02:21.028 | 0.0 MB |
 +-------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_example_evo_regression.py` (``example_evo_regression.py``)                                       | 01:21.495 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_example_evo_regression.py` (``example_evo_regression.py``)                                       | 01:19.838 | 0.0 MB |
 +-------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_example_local_search_evolution_strategies.py` (``example_local_search_evolution_strategies.py``) | 00:34.106 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_example_local_search_evolution_strategies.py` (``example_local_search_evolution_strategies.py``) | 00:34.317 | 0.0 MB |
 +-------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_example_differential_evo_regression.py` (``example_differential_evo_regression.py``)             | 00:20.102 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_example_differential_evo_regression.py` (``example_differential_evo_regression.py``)             | 00:19.791 | 0.0 MB |
 +-------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_example_mountain_car.py` (``example_mountain_car.py``)                                           | 00:17.909 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_example_mountain_car.py` (``example_mountain_car.py``)                                           | 00:18.334 | 0.0 MB |
 +-------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_example_hurdles.py` (``example_hurdles.py``)                                                     | 00:08.607 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_example_hurdles.py` (``example_hurdles.py``)                                                     | 00:08.464 | 0.0 MB |
 +-------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_example_parametrized_nodes.py` (``example_parametrized_nodes.py``)                               | 00:07.668 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_example_parametrized_nodes.py` (``example_parametrized_nodes.py``)                               | 00:07.466 | 0.0 MB |
 +-------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_example_reorder.py` (``example_reorder.py``)                                                     | 00:04.045 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_example_reorder.py` (``example_reorder.py``)                                                     | 00:04.195 | 0.0 MB |
 +-------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_example_caching.py` (``example_caching.py``)                                                     | 00:02.993 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_example_caching.py` (``example_caching.py``)                                                     | 00:02.912 | 0.0 MB |
 +-------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_example_minimal.py` (``example_minimal.py``)                                                     | 00:02.340 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_example_minimal.py` (``example_minimal.py``)                                                     | 00:02.304 | 0.0 MB |
 +-------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_example_fec_caching.py` (``example_fec_caching.py``)                                             | 00:01.389 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_example_fec_caching.py` (``example_fec_caching.py``)                                             | 00:01.365 | 0.0 MB |
 +-------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
 | :ref:`sphx_glr_auto_examples_example_multi_genome.py` (``example_multi_genome.py``)                                           | 00:00.791 | 0.0 MB |
 +-------------------------------------------------------------------------------------------------------------------------------+-----------+--------+

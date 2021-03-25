@@ -93,7 +93,7 @@ ea_params_with_reorder = {
     "reorder_genome": True,
 }
 
-evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
+evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
 
 # %%
 # We create two populations that will be evolved

@@ -206,7 +206,7 @@ the (n+1)th objective by a list of numbers between 0 and 1.
         "hurdle_percentile": [0.5, 0.0],
     }
 
-    evolve_params = {"max_generations": int(args["--max-generations"]), "min_fitness": 0.0}
+    evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
 
 
 
@@ -355,7 +355,7 @@ evolved expression.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  8.607 seconds)
+   **Total running time of the script:** ( 0 minutes  8.464 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_hurdles.py:
