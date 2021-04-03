@@ -68,13 +68,13 @@ class IndividualBase:
             self._fitness = list(self._fitness) + [None]
         self._objective_idx = v
 
-    def clone(self):
+    def clone(self) -> "IndividualBase":
         raise NotImplementedError()
 
-    def copy(self):
+    def copy(self) -> "IndividualBase":
         raise NotImplementedError()
 
-    def _copy_user_defined_attributes(self, other):
+    def _copy_user_defined_attributes(self, other: "IndividualBase") -> None:
         """Copy all attributes that are not defined in __init__ of the (sub
         and super) class from self to other.
         """
@@ -85,16 +85,16 @@ class IndividualBase:
     def fitness_is_None(self) -> bool:
         return self._fitness[self._objective_idx] is None
 
-    def mutate(self, mutation_rate, rng):
+    def mutate(self, mutation_rate: float, rng: np.random.RandomState) -> None:
         raise NotImplementedError()
 
-    def randomize_genome(self, rng):
+    def randomize_genome(self, rng: np.random.RandomState):
         raise NotImplementedError()
 
-    def reorder_genome(self, rng):
+    def reorder_genome(self, rng: np.random.RandomState):
         raise NotImplementedError()
 
-    def reset_fitness(self):
+    def reset_fitness(self) -> None:
         for i in range(len(self._fitness)):
             self._fitness[i] = None
 
@@ -107,16 +107,18 @@ class IndividualBase:
     def to_torch(self):
         raise NotImplementedError()
 
-    def to_sympy(self, simplify):
+    def to_sympy(self, simplify: bool):
         raise NotImplementedError()
 
-    def update_parameters_from_torch_class(self, torch_cls):
+    def update_parameters_from_torch_class(self, torch_cls) -> None:
         raise NotImplementedError()
 
     def parameters_to_numpy_array(self, only_active_nodes: bool = False) -> "np.ndarray[float]":
         raise NotImplementedError()
 
-    def update_parameters_from_numpy_array(self, params, params_names):
+    def update_parameters_from_numpy_array(
+        self, params: "np.ndarray[float]", params_names: List[str]
+    ) -> None:
         raise NotImplementedError()
 
     @staticmethod
@@ -144,7 +146,7 @@ class IndividualBase:
         return CartesianGraph(genome).to_torch()
 
     @staticmethod
-    def _to_sympy(genome: Genome, simplify) -> "sympy_expr.Expr":
+    def _to_sympy(genome: Genome, simplify: bool) -> "sympy_expr.Expr":
         return CartesianGraph(genome).to_sympy(simplify)
 
     @staticmethod
@@ -161,16 +163,22 @@ class IndividualBase:
     ) -> bool:
         return genome.update_parameters_from_numpy_array(params, params_names)
 
-    def __lt__(self, other):
+    def __lt__(self, other: "IndividualBase") -> bool:
         for i in range(len(self._fitness)):
-            if self._fitness[i] is None and other._fitness[i] is None:
+            this_fitness = self._fitness[i]
+            other_fitness = other._fitness[i]
+            if this_fitness is None and other_fitness is None:
                 return False
-            elif self._fitness[i] is not None and other._fitness[i] is None:
+            elif this_fitness is not None and other_fitness is None:
                 return False
-            elif self._fitness[i] is None and other._fitness[i] is not None:
+            elif this_fitness is None and other_fitness is not None:
                 return True
-            elif self._fitness[i] < other._fitness[i]:
+
+            assert this_fitness is not None
+            assert other_fitness is not None
+            if this_fitness < other_fitness:
                 return True
+
         return False
 
 
@@ -187,7 +195,7 @@ class IndividualSingleGenome(IndividualBase):
         super().__init__()
         self.genome: Genome = genome
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Individual(idx={self.idx}, fitness={self.fitness}, genome={self.genome}))"
 
     def clone(self) -> "IndividualSingleGenome":
@@ -229,7 +237,9 @@ class IndividualSingleGenome(IndividualBase):
         return self._to_sympy(self.genome, simplify)
 
     def update_parameters_from_torch_class(self, torch_cls: "torch.nn.Module") -> None:
-        any_parameter_updated = self._update_parameters_from_torch_class(self.genome, torch_cls)
+        any_parameter_updated: bool = self._update_parameters_from_torch_class(
+            self.genome, torch_cls
+        )
         if any_parameter_updated:
             self.reset_fitness()
 
@@ -301,7 +311,7 @@ class IndividualMultiGenome(IndividualBase):
         return [self._to_sympy(g, simplify) for g in self.genome]
 
     def update_parameters_from_torch_class(self, torch_cls: List["torch.nn.Module"]) -> None:
-        any_parameter_updated = any(
+        any_parameter_updated: bool = any(
             [
                 self._update_parameters_from_torch_class(g, tcls)
                 for g, tcls in zip(self.genome, torch_cls)
