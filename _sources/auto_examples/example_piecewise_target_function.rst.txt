@@ -270,7 +270,7 @@ with the highest fitness and plot the search progression and target and evolved 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  54.584 seconds)
+   **Total running time of the script:** ( 2 minutes  23.084 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_piecewise_target_function.py:
