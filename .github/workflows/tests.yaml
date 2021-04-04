@@ -1,0 +1,55 @@
+name: run tests
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  hal-cgp-testsuite:
+    name: hal-cgp testsuite
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+        dep: ['[all]', '[dev]']
+        exclude:
+          - python-version: 3.6
+            dep: "[dev]"
+          - python-version: 3.7
+            dep: "[dev]"
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        env:
+          DEP: ${{ matrix.dep }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .$DEP
+          pip install pytest-cov coveralls
+      - name: Code checks
+        run: |
+          black --check .
+          flake8 --config=.flake8 .
+          mypy cgp
+          isort --check-only cgp examples test
+      - name: run tests
+        run: |
+          pytest --cov=cgp
+      - name: Build Documentation
+        run: |
+          pip install gym || exit 1;
+          make -C docs/ html-examples-short || exit 1;
+        if: matrix.python-version == 3.8 && matrix.dep == '[all]'
+      - name: Coveralls
+        uses: AndreMiras/coveralls-python-action@develop
+        with:
+          parallel: true
+          flag-name: Test suite
+        if: matrix.python-version == 3.8 && matrix.dep == '[all]'
