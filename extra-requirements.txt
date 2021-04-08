@@ -15,4 +15,4 @@ recommonmark~=0.6.0
 sphinx-rtd-theme~=0.5.0
 sphinx-gallery~=0.8.0
 pillow~=8.1.1
-git+git://github.com/Holzhaus/sphinx-multiversion@master
+sphinx-multiversion@git+https://git@github.com/Holzhaus/sphinx-multiversion#master

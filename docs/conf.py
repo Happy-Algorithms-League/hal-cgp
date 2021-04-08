@@ -67,7 +67,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Configuration for multiversion builds
 smv_branch_whitelist = "master"  # Only build master branch
-smv_remote_whitelist = r"^(origin)$"
+smv_remote_whitelist = r"^.*$"
 smv_tag_whitelist = "0.2.0"  # Only release 0.2.0 has a sphinx documentation
 smv_released_pattern = r".*"  # Tags only
 smv_outputdir_format = "{ref.name}"  # Use the branch/tag name
