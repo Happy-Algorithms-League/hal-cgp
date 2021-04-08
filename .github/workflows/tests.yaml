@@ -45,6 +45,7 @@ jobs:
       - name: Build Documentation
         run: |
           pip install gym || exit 1;
+          git fetch --all --tags;
           make -C docs/ html-examples-short || exit 1;
         if: matrix.python-version == 3.8 && matrix.dep == '[all]'
       - name: Coveralls
