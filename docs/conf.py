@@ -18,11 +18,12 @@ import sphinx_rtd_theme
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-rootdir = os.path.join(os.getenv("SPHINX_MULTIVERSION_SOURCEDIR", default="."), "../")
+rootdir = os.path.join(os.getenv("SPHINX_MULTIVERSION_SOURCEDIR", default=os.getcwd()), "../")
 sys.path.insert(0, rootdir)
-
+print(sys.path)
 import cgp  # noqa: E402 isort:skip
 
+print(cgp.__version__)
 project = "hal-cgp"
 copyright = "2021, Happy Algorithms League"
 author = cgp.__author__
@@ -66,7 +67,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Configuration for multiversion builds
 smv_branch_whitelist = "master"  # Only build master branch
-smv_remote_whitelist = None
+smv_remote_whitelist = r"^(origin)$"
 smv_tag_whitelist = "0.2.0"  # Only release 0.2.0 has a sphinx documentation
 smv_released_pattern = r".*"  # Tags only
 smv_outputdir_format = "{ref.name}"  # Use the branch/tag name
