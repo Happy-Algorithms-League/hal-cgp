@@ -750,3 +750,19 @@ def test_parameters_numpy_array_consistency():
 
     assert genome._parameter_names_to_values["<p1>"] == pytest.approx(1.1)
     assert genome._parameter_names_to_values["<p2>"] == pytest.approx(1.2)
+
+
+def test_ncolumns_zero(rng):
+
+    genome_params = {
+        "n_inputs": 1,
+        "n_outputs": 1,
+        "n_columns": 0,
+        "n_rows": 1,
+        "primitives": (cgp.Mul, cgp.Sub, cgp.Add, cgp.ConstantFloat),
+    }
+    genome = cgp.Genome(**genome_params)
+    genome.randomize(rng)
+
+    CartesianGraph(genome).to_func()
+    CartesianGraph(genome).to_numpy()

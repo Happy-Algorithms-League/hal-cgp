@@ -105,3 +105,18 @@ def test_individual_init_expects_callable(population_params, genome_params):
     # passing a list as individual_init fails
     with pytest.raises(TypeError):
         cgp.Population(**population_params, genome_params=genome_params, individual_init=[])
+
+
+def test_ncolumns_zero(population_params):
+    sympy = pytest.importorskip("sympy")
+    genome_params = {
+        "n_inputs": 1,
+        "n_outputs": 1,
+        "n_columns": 0,
+        "n_rows": 1,
+        "primitives": (cgp.Mul, cgp.Sub, cgp.Add, cgp.ConstantFloat),
+    }
+    pop = cgp.Population(**population_params, genome_params=genome_params)
+    for ind in pop:
+        sympy_expr = ind.to_sympy()
+        assert sympy_expr == sympy.sympify("x_0")
