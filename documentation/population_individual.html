@@ -4,8 +4,7 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Populations and individuals &mdash; hal-cgp 0.2.0 documentation</title>
@@ -179,20 +178,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="populations-and-individuals">
+  <div class="section" id="populations-and-individuals">
 <span id="pop-ind"></span><h1>Populations and individuals<a class="headerlink" href="#populations-and-individuals" title="Permalink to this headline">¶</a></h1>
 <p>At the core of evolutionary search is the concept of a <cite>population</cite> that
 consists of multiple <cite>individuals</cite> with associated fitness values. In genetic programming each of these individuals contains one or multiple <cite>genomes</cite> which are compiled to
 computational graphs. The fitness of each individual is typically assessed by how good these computational graphs solve a given problem.</p>
-<section id="population">
+<div class="section" id="population">
 <h2>Population<a class="headerlink" href="#population" title="Permalink to this headline">¶</a></h2>
 <p>A population (see <a class="reference internal" href="../api_reference/cgp.html#cgp.Population" title="cgp.Population"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cgp.Population()</span></code></a>) comprises a fixed number of parent
 individuals which produce offspring in every
 generation of the evolutionary algorithm.
 At each generation, some parents, chosen by a particular selection technique, produce offspring by cloning
 and randomly mutating the clones.</p>
-</section>
-<section id="individuals">
+</div>
+<div class="section" id="individuals">
 <h2>Individuals<a class="headerlink" href="#individuals" title="Permalink to this headline">¶</a></h2>
 <p>There are two types of individuals:</p>
 <ul class="simple">
@@ -218,13 +217,13 @@ This, for example, allows recording of variables used during fitness evaluation:
     <span class="n">history</span><span class="p">[</span><span class="s2">&quot;my_custom_attribute&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">champion</span><span class="o">.</span><span class="n">my_custom_attribute</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="genome">
+</div>
+<div class="section" id="genome">
 <h2>Genome<a class="headerlink" href="#genome" title="Permalink to this headline">¶</a></h2>
 <p>A <cite>Genome</cite> instance represents a particular genotype, i.e., a specific realization of a 2-dimensional Cartesian graph.
 It provides methods for randomizing and mutating the genotype. It also stores numerical values of parameters in operator nodes that can be tuned via local search (see <a class="reference internal" href="local_search.html#local-search"><span class="std std-ref">Searching numerical values for parameters via local search</span></a>).</p>
-</section>
-<section id="cartesian-graph">
+</div>
+<div class="section" id="cartesian-graph">
 <h2>Cartesian Graph<a class="headerlink" href="#cartesian-graph" title="Permalink to this headline">¶</a></h2>
 <p>The <cite>CartesianGraph</cite> class compiles genotypes to phenotypes, i.e.,  computational graphs.
 Several compilation targets are available:</p>
@@ -234,8 +233,8 @@ Several compilation targets are available:</p>
 <li><p><cite>to_torch</cite> creates a <a class="reference external" href="https://pytorch.org">PyTorch</a> module equipped with a <cite>forward</cite> method that accepts a PyTorch tensor as input and returns a PyTorch tensor</p></li>
 <li><p><cite>to_sympy</cite> returns <a class="reference external" href="https://www.sympy.org">SymPy</a> expressions representing the computational graph</p></li>
 </ul>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>

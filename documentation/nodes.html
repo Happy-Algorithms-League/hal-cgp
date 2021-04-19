@@ -4,8 +4,7 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Nodes &mdash; hal-cgp 0.2.0 documentation</title>
@@ -177,12 +176,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="nodes">
+  <div class="section" id="nodes">
 <h1>Nodes<a class="headerlink" href="#nodes" title="Permalink to this headline">¶</a></h1>
 <p>Nodes define the buildings blocks of the mathematical expressions represented by an individual.
 They are represented in the invididual’s genome (see <a class="reference internal" href="population_individual.html#pop-ind"><span class="std std-ref">Populations and individuals</span></a>).</p>
 <p>A node receives data from a certain number of input nodes (specified by its <cite>arity</cite> which can be any non-negative number) and transforms them into one output value. A priori, there are no limitations regarding the type of transformation, as long as it can be expressed in pure Python, <a class="reference external" href="https://www.sympy.org">SymPy</a>, <a class="reference external" href="https://pytorch.org">PyTorch</a>, and <a class="reference external" href="https://numpy.org">NumPy</a>.</p>
-<section id="default-nodes-in-hal-cgp">
+<div class="section" id="default-nodes-in-hal-cgp">
 <h2>Default nodes in hal-cgp<a class="headerlink" href="#default-nodes-in-hal-cgp" title="Permalink to this headline">¶</a></h2>
 <p>hal-cgp comes with a set of implemented nodes:</p>
 <ul class="simple">
@@ -191,8 +190,8 @@ They are represented in the invididual’s genome (see <a class="reference inter
 <li><p>A <cite>ConstantFloat</cite> that represents a constant in mathematical expressions.</p></li>
 <li><p>A <cite>ParameterNode</cite> that represents an adjustable parameter (see <a class="reference internal" href="local_search.html#local-search"><span class="std std-ref">Searching numerical values for parameters via local search</span></a>).</p></li>
 </ul>
-</section>
-<section id="custom-nodes">
+</div>
+<div class="section" id="custom-nodes">
 <h2>Custom nodes<a class="headerlink" href="#custom-nodes" title="Permalink to this headline">¶</a></h2>
 <p>In hal-cgp, it is straightforward to implement new, custom nodes.
 The custom nodes needs to be implemented as a subclass of the <cite>OperatorNode</cite> (<a class="reference internal" href="../api_reference/nodes.html#cgp.node.OperatorNode" title="cgp.node.OperatorNode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cgp.node.OperatorNode()</span></code></a>) and define its <code class="docutils literal notranslate"><span class="pre">arity</span></code> as well as its transformation, defined by the <code class="docutils literal notranslate"><span class="pre">_def_output</span></code> member of the class. The <code class="docutils literal notranslate"><span class="pre">_def_output</span></code> string defines the transformation in pure Python and is used to automatically define the transformation in <a class="reference external" href="https://www.sympy.org">SymPy</a>, <a class="reference external" href="https://pytorch.org">PyTorch</a>, and <a class="reference external" href="https://numpy.org">Numpy</a>. In this string <cite>x_i</cite> refers to the <a href="#id1"><span class="problematic" id="id2">`</span></a>i`th input to the node.</p>
@@ -242,8 +241,8 @@ We add the <code class="docutils literal notranslate"><span class="pre">&lt;scal
 </div>
 </div></blockquote>
 <p>For a complete example that uses custom nodes with adjustable parameters, please refer to <a class="reference internal" href="../auto_examples/example_parametrized_nodes.html#sphx-glr-auto-examples-example-parametrized-nodes-py"><span class="std std-ref">Example for evolutionary regression with parametrized nodes</span></a>.</p>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
