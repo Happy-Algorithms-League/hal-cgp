@@ -13,8 +13,8 @@
 	   :target: https://www.python.org/
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
 	   :target: https://www.gnu.org/licenses/old-licenses/gpl-3.0.html
-.. image:: https://travis-ci.org/Happy-Algorithms-League/hal-cgp.svg?branch=master
-	   :target: https://travis-ci.org/Happy-Algorithms-League/hal-cgp
+.. image:: https://github.com/Happy-Algorithms-League/hal-cgp/actions/workflows/tests.yaml/badge.svg
+	   :target: https://github.com/Happy-Algorithms-League/hal-cgp/actions/workflows/tests.yaml
 .. image:: http://www.mypy-lang.org/static/mypy_badge.svg
 	   :target: http://mypy-lang.org/
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
