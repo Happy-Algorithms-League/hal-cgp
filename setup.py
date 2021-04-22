@@ -49,7 +49,6 @@ def read_extra_requirements():
     # Collect all requirements into the 'all' key
     for key in collect_keys:
         extra_requirements["all"] += extra_requirements[key]
-    extra_requirements[":python_version == '3.6'"] = ["dataclasses"]
     return extra_requirements
 
 

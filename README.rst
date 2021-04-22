@@ -5,11 +5,11 @@
 
 .. image:: https://badge.fury.io/py/hal-cgp.svg
     :target: https://badge.fury.io/py/hal-cgp
-.. image:: https://img.shields.io/badge/python-3.6-red.svg
-	   :target: https://www.python.org/downloads/release/python-369/
 .. image:: https://img.shields.io/badge/python-3.7-red.svg
 	   :target: https://www.python.org/
 .. image:: https://img.shields.io/badge/python-3.8-red.svg
+	   :target: https://www.python.org/
+.. image:: https://img.shields.io/badge/python-3.9-red.svg
 	   :target: https://www.python.org/
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
 	   :target: https://www.gnu.org/licenses/old-licenses/gpl-3.0.html
