@@ -79,7 +79,7 @@ We first define a target function.
 
 
     def f_target(x):
-        return x[0] ** 2 + 1.0
+        return x ** 2 + 1.0
 
 
 
@@ -121,8 +121,8 @@ precisely.
             # the callable returned from `to_func` accepts and returns
             # lists; accordingly we need to pack the argument and unpack
             # the return value
-            y = f([x])[0]
-            loss += (f_target([x]) - y) ** 2
+            y = f(x)
+            loss += (f_target(x) - y) ** 2
 
         individual.fitness = -loss / n_function_evaluations
 
@@ -145,8 +145,8 @@ precisely.
             # the callable returned from `to_func` accepts and returns
             # lists; accordingly we need to pack the argument and unpack
             # the return value
-            y = f([x])[0]
-            loss += (f_target([x]) - y) ** 2
+            y = f(x)
+            loss += (f_target(x) - y) ** 2
 
         individual.fitness = -loss / n_function_evaluations
 
@@ -331,8 +331,8 @@ evolved expression.
 
     f = pop.champion.to_func()
     x = np.linspace(-5.0, 5.0, 20)
-    y = [f([x_i]) for x_i in x]
-    y_target = [f_target([x_i]) for x_i in x]
+    y = [f(x_i) for x_i in x]
+    y_target = [f_target(x_i) for x_i in x]
 
     ax_function.plot(x, y_target, lw=2, alpha=0.5, label="Target")
     ax_function.plot(x, y, "x", label="Champion")
@@ -355,7 +355,7 @@ evolved expression.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  13.378 seconds)
+   **Total running time of the script:** ( 0 minutes  12.366 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_hurdles.py:

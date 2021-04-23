@@ -158,7 +158,7 @@ cgp.evolve(pop, obj, ea, **evolve_params, print_progress=True, callback=recordin
 # After the evolutionary search has ended, we print the expression
 # with the highest fitness and plot the progression of the search.
 
-print(f"Final expression {pop.champion.to_sympy()[0]} with fitness {pop.champion.fitness}")
+print(f"Final expression {pop.champion.to_sympy()} with fitness {pop.champion.fitness}")
 
 print("Best performing expression per generation (for fitness increase > 0.5):")
 old_fitness = -np.inf

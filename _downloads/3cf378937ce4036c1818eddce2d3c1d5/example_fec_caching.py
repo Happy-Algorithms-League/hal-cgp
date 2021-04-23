@@ -61,7 +61,7 @@ def inner_objective(ind):
 
     loss = []
     for x_0 in np.linspace(-2.0, 2.0, 100):
-        y = f([x_0])
+        y = f(x_0)
         loss.append((f_target(x_0) - y) ** 2)
 
     time.sleep(0.25)  # emulate long fitness evaluation

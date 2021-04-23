@@ -297,7 +297,7 @@ evolved expression.
     ax_function.set_xlabel(r"$x$")
 
 
-    print(f"Final expression {pop.champion.to_sympy()[0]} with fitness {pop.champion.fitness}")
+    print(f"Final expression {pop.champion.to_sympy()} with fitness {pop.champion.fitness}")
 
     history_fitness = np.array(history["fitness_parents"])
     ax_fitness.plot(np.max(history_fitness, axis=1), label="Champion")
@@ -332,7 +332,7 @@ evolved expression.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  25.624 seconds)
+   **Total running time of the script:** ( 0 minutes  24.800 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_differential_evo_regression.py:

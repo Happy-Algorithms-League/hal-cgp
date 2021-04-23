@@ -239,7 +239,7 @@ fitness of the individual.</p>
 
     <span class="n">loss</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">x_0</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">):</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">([</span><span class="n">x_0</span><span class="p">])</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x_0</span><span class="p">)</span>
         <span class="n">loss</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">f_target</span><span class="p">(</span><span class="n">x_0</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span>  <span class="c1"># emulate long fitness evaluation</span>
@@ -412,10 +412,10 @@ individuals, and the evolutionary algorithm.</p>
 [120/200] max fitness: -1.0[K
 [121/200] max fitness: -1.0[K
 [122/200] max fitness: -4.930380657631324e-34[K
-evolved function: [x_0**2 + x_0 + 1.0]
+evolved function: x_0**2 + x_0 + 1.0
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  13.688 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  13.523 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-fec-caching-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3cf378937ce4036c1818eddce2d3c1d5/example_fec_caching.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_fec_caching.py</span></code></a></p>

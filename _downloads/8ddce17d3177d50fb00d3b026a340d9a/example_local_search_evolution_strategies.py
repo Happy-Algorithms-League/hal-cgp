@@ -37,7 +37,7 @@ args = docopt(docopt_str)
 
 
 def f_target(x):
-    return np.e * x[:, 0] ** 2 + 1.0 + np.pi
+    return np.e * x ** 2 + 1.0 + np.pi
 
 
 # %%
@@ -61,9 +61,9 @@ def inner_objective(ind, seed):
     f = ind.to_numpy()
     rng = np.random.RandomState(seed)
     batch_size = 500
-    x = rng.uniform(-5, 5, size=(batch_size, 1))
+    x = rng.uniform(-5, 5, size=batch_size)
     y = f(x)
-    return -np.mean((f_target(x) - y[:, 0]) ** 2)
+    return -np.mean((f_target(x) - y) ** 2)
 
 
 def objective(individual, seed):
@@ -165,7 +165,7 @@ ax_function.set_ylabel(r"$f(x)$")
 ax_function.set_xlabel(r"$x$")
 
 
-print(f"Final expression {pop.champion.to_sympy()[0]} with fitness {pop.champion.fitness}")
+print(f"Final expression {pop.champion.to_sympy()} with fitness {pop.champion.fitness}")
 
 history_fitness = np.array(history["fitness_parents"])
 ax_fitness.plot(np.max(history_fitness, axis=1), label="Champion")

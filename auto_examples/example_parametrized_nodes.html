@@ -400,7 +400,7 @@ method to perform the evolutionary search.</p>
 </div>
 <p>After the evolutionary search has ended, we print the expression
 with the highest fitness and plot the progression of the search.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final expression </span><span class="si">{</span><span class="n">pop</span><span class="o">.</span><span class="n">champion</span><span class="o">.</span><span class="n">to_sympy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> with fitness </span><span class="si">{</span><span class="n">pop</span><span class="o">.</span><span class="n">champion</span><span class="o">.</span><span class="n">fitness</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final expression </span><span class="si">{</span><span class="n">pop</span><span class="o">.</span><span class="n">champion</span><span class="o">.</span><span class="n">to_sympy</span><span class="p">()</span><span class="si">}</span><span class="s2"> with fitness </span><span class="si">{</span><span class="n">pop</span><span class="o">.</span><span class="n">champion</span><span class="o">.</span><span class="n">fitness</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best performing expression per generation (for fitness increase &gt; 0.5):&quot;</span><span class="p">)</span>
 <span class="n">old_fitness</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
@@ -430,18 +430,18 @@ with the highest fitness and plot the progression of the search.</p>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Final expression 3.1415928340353736*x_0 + 3.1415928340353736*x_1 + 2.7182734383513227 with fitness -7.080480056918192e-11
 Best performing expression per generation (for fitness increase &gt; 0.5):
-  0: -127.01931908693929, [x_1]
-  4: -5.7621478742860965, [3.1337934090450837*x_0 + 3.1337934090450837*x_1 + 0.31836625198458554]
-  5: -4.400266790086014, [3.1565329832083608*x_0 + 3.1565329832083608*x_1 + 0.62085799830068183]
-  6: -3.3439171938076777, [3.15892017999446*x_0 + 3.15892017999446*x_1 + 0.89027846015470884]
-  7: -2.5221616375748344, [3.1597540007392134*x_0 + 3.1597540007392134*x_1 + 1.1311091306962316]
-  8: -1.886291288388642, [3.1595918340334699*x_0 + 3.1595918340334699*x_1 + 1.3460568187315501]
- 10: -1.027024955717336, [3.1575106310584499*x_0 + 3.1575106310584499*x_1 + 1.7062610297769132]
- 13: -0.3868341292604577, [3.1529224955139751*x_0 + 3.1529224955139751*x_1 + 2.0975544857381176]
- 72: -7.080480056918192e-11, [3.1415928340353736*x_0 + 3.1415928340353736*x_1 + 2.7182734383513227]
+  0: -127.01931908693929, x_1
+  4: -5.7621478742860965, 3.1337934090450837*x_0 + 3.1337934090450837*x_1 + 0.31836625198458554
+  5: -4.400266790086014, 3.1565329832083608*x_0 + 3.1565329832083608*x_1 + 0.62085799830068183
+  6: -3.3439171938076777, 3.15892017999446*x_0 + 3.15892017999446*x_1 + 0.89027846015470884
+  7: -2.5221616375748344, 3.1597540007392134*x_0 + 3.1597540007392134*x_1 + 1.1311091306962316
+  8: -1.886291288388642, 3.1595918340334699*x_0 + 3.1595918340334699*x_1 + 1.3460568187315501
+ 10: -1.027024955717336, 3.1575106310584499*x_0 + 3.1575106310584499*x_1 + 1.7062610297769132
+ 13: -0.3868341292604577, 3.1529224955139751*x_0 + 3.1529224955139751*x_1 + 2.0975544857381176
+ 72: -7.080480056918192e-11, 3.1415928340353736*x_0 + 3.1415928340353736*x_1 + 2.7182734383513227
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  9.592 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  9.022 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-parametrized-nodes-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/1b27ac94862774586a16bbffc94c3333/example_parametrized_nodes.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_parametrized_nodes.py</span></code></a></p>

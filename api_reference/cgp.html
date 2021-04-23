@@ -233,7 +233,7 @@
 <h2>Cartesian Graph<a class="headerlink" href="#cartesian-graph" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="cgp.CartesianGraph">
-<em class="property">class </em><code class="sig-prename descclassname">cgp.</code><code class="sig-name descname">CartesianGraph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">genome</span><span class="p">:</span> <span class="n">Genome</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/cartesian_graph.py#L40-L407"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.CartesianGraph" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cgp.</code><code class="sig-name descname">CartesianGraph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">genome</span><span class="p">:</span> <span class="n">Genome</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/cartesian_graph.py#L40-L439"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.CartesianGraph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class representing a particular Cartesian graph defined by a
 Genome.</p>
 <dl class="py method">
@@ -260,56 +260,62 @@ Genome.</p>
 
 <dl class="py method">
 <dt id="cgp.CartesianGraph.to_func">
-<code class="sig-name descname">to_func</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Callable<span class="p">[</span><span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">, </span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/cartesian_graph.py#L233-L254"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.CartesianGraph.to_func" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compile the function(s) represented by the graph.</p>
-<p>Generates a definition of the function in Python code and
-executes the function definition to create a Callable.</p>
-<dl class="simple">
-<dt>Callable</dt><dd><p>Callable executing the function(s) represented by the graph.</p>
-</dd>
-</dl>
+<code class="sig-name descname">to_func</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Callable[[…], List[float]]<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/cartesian_graph.py#L233-L265"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.CartesianGraph.to_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Python callable implementing the function described by
+this graph.</p>
+<p>The returned callable expects as many arguments as the number
+of inputs defined in the genome. The function returns a tuple
+with length equal to the number of outputs defined in the
+genome. For convenience, if only a single output is defined
+the function will <em>not</em> return a tuple but only its first
+element.</p>
+<p>Callable</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.CartesianGraph.to_numpy">
-<code class="sig-name descname">to_numpy</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Callable<span class="p">[</span><span class="p">[</span>numpy.ndarray<span class="p">]</span><span class="p">, </span>numpy.ndarray<span class="p">]</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/cartesian_graph.py#L266-L294"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.CartesianGraph.to_numpy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compile the function(s) represented by the graph to NumPy
-expression(s).</p>
-<p>Generates a definition of the function in Python code and
-executes the function definition to create a Callable
-accepting NumPy arrays.</p>
-<dl class="simple">
-<dt>Callable</dt><dd><p>Callable executing the function(s) represented by the graph.</p>
-</dd>
-</dl>
+<code class="sig-name descname">to_numpy</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Callable[[…], List[numpy.ndarray]]<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/cartesian_graph.py#L277-L313"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.CartesianGraph.to_numpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a NumPy-array-compatible Python callable implementing the
+function described by this graph.</p>
+<p>The returned callable expects as many arguments as the number
+of inputs defined in the genome. Every argument needs to be a
+NumPy array of equal length. The function returns a tuple with
+length equal to the number of outputs defined in the
+genome. Each element will have the same length as the input
+arrays. For convenience, if only a single output is defined
+the function will <em>not</em> return a tuple but only its first
+element.</p>
+<p>Callable</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.CartesianGraph.to_sympy">
-<code class="sig-name descname">to_sympy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simplify</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>sympy.core.expr.Expr<span class="p">]</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/cartesian_graph.py#L362-L407"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.CartesianGraph.to_sympy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compile the function(s) represented by the graph to a SymPy expression.</p>
-<p>Generates one SymPy expression for each output node.</p>
+<code class="sig-name descname">to_sympy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simplify</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>sympy.core.expr.Expr<span class="p">, </span>List<span class="p">[</span>sympy.core.expr.Expr<span class="p">]</span><span class="p">]</span><a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/cartesian_graph.py#L383-L439"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.CartesianGraph.to_sympy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create SymPy expression(s) representing the function(s) described
+by this graph.</p>
+<p>Returns a list of SymPy expressions, one for each output
+node. For convenience, if only one output node is defined, it
+directly returns its expression.</p>
 <dl class="simple">
 <dt>simplify<span class="classifier">boolean, optional</span></dt><dd><p>Whether to simplify the expression using SymPy’s
 simplify() method. Defaults to True.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt>List[sympy.core.expr.Expr]</dt><dd><p>List of SymPy expressions.</p>
+<dt>List[sympy.core.expr.Expr] or sympy.core.expr.Expr</dt><dd><p>List of SymPy expressions or single expression.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="cgp.CartesianGraph.to_torch">
-<code class="sig-name descname">to_torch</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; torch.nn.modules.module.Module<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/cartesian_graph.py#L296-L350"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.CartesianGraph.to_torch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compile the function(s) represented by the graph to a Torch class.</p>
-<p>Generates a definition of the Torch class in Python code and
-executes it to create an instance of the class.</p>
-<dl class="simple">
-<dt>torch.nn.Module</dt><dd><p>Instance of the PyTorch class.</p>
-</dd>
-</dl>
+<code class="sig-name descname">to_torch</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; torch.nn.modules.module.Module<a class="reference external" href="https://github.com/Happy-Algorithms-League/hal-cgp/blob/master/cgp/cartesian_graph.py#L315-L371"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cgp.CartesianGraph.to_torch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Torch nn.Module instance implementing the function defined
+by this graph.</p>
+<p>The generated instance will have a <cite>forward</cite> method accepting
+Torch tensor of dimension (&lt;batch size&gt;, n_inputs) and
+returning a tensor of dimension (&lt;batch_size&gt;, n_outputs).</p>
+<p>torch.nn.Module</p>
 </dd></dl>
 
 </dd></dl>

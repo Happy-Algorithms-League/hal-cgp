@@ -14,7 +14,7 @@ docopt_str = """
 
    Options:
      -h --help
-     --max-generations=<N>  Maximum number of generations [default: 5000]
+     --max-generations=<N>  Maximum number of generations [default: 2000]
 """
 
 import functools
@@ -61,7 +61,7 @@ def objective(individual, rng):
     n_function_evaluations = 1000
 
     f = individual.to_numpy()
-    x = rng.uniform(-5, 5, size=(n_function_evaluations, 1))
+    x = rng.uniform(-5, 5, size=n_function_evaluations)
     y = f(x)
 
     loss = np.mean((f_target(x) - y) ** 2)
@@ -125,7 +125,7 @@ cgp.evolve(pop, obj, ea, **evolve_params, print_progress=True, callback=recordin
 # %%
 # After the evolutionary search has ended, we print the expression
 # with the highest fitness and plot the search progression and target and evolved functions.
-print(f"Final expression {pop.champion.to_sympy()[0]} with fitness {pop.champion.fitness}")
+print(f"Final expression {pop.champion.to_sympy()} with fitness {pop.champion.fitness}")
 
 fig = plt.figure(1)
 plt.plot(history["fitness_champion"])
@@ -133,11 +133,10 @@ plt.ylim(1.1 * min(history["fitness_champion"]), 5)
 plt.xlabel("Generation")
 plt.ylabel("Loss (Fitness)")
 plt.legend(["Champion loss per generation"])
-plt.title({pop.champion.to_sympy()[0]})
+plt.title({pop.champion.to_sympy()})
 fig.savefig("example_piecewise_fitness_history.pdf")
 
 x = np.arange(-5, 5, 0.01)
-x.reshape(x.size, 1)
 champion_numpy = pop.champion.to_numpy()
 
 fig = plt.figure(2)
@@ -148,7 +147,7 @@ plt.ylabel("y")
 plt.title("Target function")
 plt.legend(["target"])
 plt.subplot(122)
-plt.plot(x, champion_numpy(x.reshape(x.size, 1)), "r")
+plt.plot(x, champion_numpy(x), "r")
 plt.xlabel("x")
 plt.ylabel("y")
 plt.title("Evolved function")

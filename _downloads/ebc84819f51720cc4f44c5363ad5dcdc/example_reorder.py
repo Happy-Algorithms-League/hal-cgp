@@ -36,7 +36,7 @@ args = docopt(docopt_str)
 
 
 def f_target(x):
-    return x[0] ** 2 + 1.0
+    return x ** 2 + 1.0
 
 
 # %%
@@ -60,8 +60,8 @@ def objective(individual):
         # the callable returned from `to_func` accepts and returns
         # lists; accordingly we need to pack the argument and unpack
         # the return value
-        y = f([x])[0]
-        loss += (f_target([x]) - y) ** 2
+        y = f(x)
+        loss += (f_target(x) - y) ** 2
 
     individual.fitness = -loss / n_function_evaluations
 

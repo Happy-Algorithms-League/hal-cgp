@@ -260,8 +260,8 @@ episodes.</p>
             <span class="k">if</span> <span class="n">render</span><span class="p">:</span>
                 <span class="n">env</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
 
-            <span class="n">continuous_action</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>
-            <span class="n">observation</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">continuous_action</span><span class="p">)</span>
+            <span class="n">continuous_action</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">observation</span><span class="p">)</span>
+            <span class="n">observation</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">([</span><span class="n">continuous_action</span><span class="p">])</span>
             <span class="n">cum_reward_this_episode</span> <span class="o">+=</span> <span class="n">reward</span>
 
             <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
@@ -396,8 +396,8 @@ trials. (<a class="reference external" href="https://github.com/openai/gym/wiki/
     <span class="n">cum_reward_this_episode</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">cum_reward_all_episodes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
 
-        <span class="n">continuous_action</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>
-        <span class="n">observation</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">continuous_action</span><span class="p">)</span>
+        <span class="n">continuous_action</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">observation</span><span class="p">)</span>
+        <span class="n">observation</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">([</span><span class="n">continuous_action</span><span class="p">])</span>
         <span class="n">cum_reward_this_episode</span> <span class="o">+=</span> <span class="n">reward</span>
 
         <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
@@ -458,7 +458,7 @@ the last line of the example.</p>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;evolution ended&quot;</span><span class="p">)</span>
 
     <span class="n">max_fitness</span> <span class="o">=</span> <span class="n">history</span><span class="p">[</span><span class="s2">&quot;fitness_champion&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">best_expr</span> <span class="o">=</span> <span class="n">history</span><span class="p">[</span><span class="s2">&quot;expr_champion&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">best_expr</span> <span class="o">=</span> <span class="n">history</span><span class="p">[</span><span class="s2">&quot;expr_champion&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">best_expr_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">best_expr</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;x_0&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;x_1&quot;</span><span class="p">,</span> <span class="s2">&quot;dx/dt&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;solution with highest fitness: &quot;</span><span class="si">{</span><span class="n">best_expr_str</span><span class="si">}</span><span class="s1">&quot; (fitness: </span><span class="si">{</span><span class="n">max_fitness</span><span class="si">:</span><span class="s1">.05f</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
 
@@ -918,7 +918,7 @@ solution with highest fitness: &quot;9.0*dx/dt&quot; (fitness: 102.55338)
 average reward over 100 consecutive trials: 96.41038-&gt; environment solved!
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  20.759 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  20.890 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-example-mountain-car-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/6d1d18ac3f4f0be69ba27614e36538dc/example_mountain_car.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">example_mountain_car.py</span></code></a></p>

@@ -109,7 +109,7 @@ fitness of the individual.
 
         loss = []
         for x_0 in np.linspace(-2.0, 2.0, 100):
-            y = f([x_0])
+            y = f(x_0)
             loss.append((f_target(x_0) - y) ** 2)
 
         time.sleep(0.25)  # emulate long fitness evaluation
@@ -215,7 +215,7 @@ Finally, we call the `evolve` method to perform the evolutionary search.
  .. code-block:: none
 
     [2/200] max fitness: -2.360269360269361[K    [3/200] max fitness: -2.360269360269361[K    [4/200] max fitness: -2.360269360269361[K    [5/200] max fitness: -1.0[K    [6/200] max fitness: -1.0[K    [7/200] max fitness: -1.0[K    [8/200] max fitness: -1.0[K    [9/200] max fitness: -1.0[K    [10/200] max fitness: -1.0[K    [11/200] max fitness: -1.0[K    [12/200] max fitness: -1.0[K    [13/200] max fitness: -1.0[K    [14/200] max fitness: -1.0[K    [15/200] max fitness: -1.0[K    [16/200] max fitness: -1.0[K    [17/200] max fitness: -1.0[K    [18/200] max fitness: -1.0[K    [19/200] max fitness: -1.0[K    [20/200] max fitness: -1.0[K    [21/200] max fitness: -1.0[K    [22/200] max fitness: -1.0[K    [23/200] max fitness: -1.0[K    [24/200] max fitness: -1.0[K    [25/200] max fitness: -1.0[K    [26/200] max fitness: -1.0[K    [27/200] max fitness: -1.0[K    [28/200] max fitness: -1.0[K    [29/200] max fitness: -1.0[K    [30/200] max fitness: -1.0[K    [31/200] max fitness: -1.0[K    [32/200] max fitness: -1.0[K    [33/200] max fitness: -1.0[K    [34/200] max fitness: -1.0[K    [35/200] max fitness: -1.0[K    [36/200] max fitness: -1.0[K    [37/200] max fitness: -1.0[K    [38/200] max fitness: -1.0[K    [39/200] max fitness: -1.0[K    [40/200] max fitness: -1.0[K    [41/200] max fitness: -1.0[K    [42/200] max fitness: -1.0[K    [43/200] max fitness: -1.0[K    [44/200] max fitness: -1.0[K    [45/200] max fitness: -1.0[K    [46/200] max fitness: -1.0[K    [47/200] max fitness: -1.0[K    [48/200] max fitness: -1.0[K    [49/200] max fitness: -1.0[K    [50/200] max fitness: -1.0[K    [51/200] max fitness: -1.0[K    [52/200] max fitness: -1.0[K    [53/200] max fitness: -1.0[K    [54/200] max fitness: -1.0[K    [55/200] max fitness: -1.0[K    [56/200] max fitness: -1.0[K    [57/200] max fitness: -1.0[K    [58/200] max fitness: -1.0[K    [59/200] max fitness: -1.0[K    [60/200] max fitness: -1.0[K    [61/200] max fitness: -1.0[K    [62/200] max fitness: -1.0[K    [63/200] max fitness: -1.0[K    [64/200] max fitness: -1.0[K    [65/200] max fitness: -1.0[K    [66/200] max fitness: -1.0[K    [67/200] max fitness: -1.0[K    [68/200] max fitness: -1.0[K    [69/200] max fitness: -1.0[K    [70/200] max fitness: -1.0[K    [71/200] max fitness: -1.0[K    [72/200] max fitness: -1.0[K    [73/200] max fitness: -1.0[K    [74/200] max fitness: -1.0[K    [75/200] max fitness: -1.0[K    [76/200] max fitness: -1.0[K    [77/200] max fitness: -1.0[K    [78/200] max fitness: -1.0[K    [79/200] max fitness: -1.0[K    [80/200] max fitness: -1.0[K    [81/200] max fitness: -1.0[K    [82/200] max fitness: -1.0[K    [83/200] max fitness: -1.0[K    [84/200] max fitness: -1.0[K    [85/200] max fitness: -1.0[K    [86/200] max fitness: -1.0[K    [87/200] max fitness: -1.0[K    [88/200] max fitness: -1.0[K    [89/200] max fitness: -1.0[K    [90/200] max fitness: -1.0[K    [91/200] max fitness: -1.0[K    [92/200] max fitness: -1.0[K    [93/200] max fitness: -1.0[K    [94/200] max fitness: -1.0[K    [95/200] max fitness: -1.0[K    [96/200] max fitness: -1.0[K    [97/200] max fitness: -1.0[K    [98/200] max fitness: -1.0[K    [99/200] max fitness: -1.0[K    [100/200] max fitness: -1.0[K    [101/200] max fitness: -1.0[K    [102/200] max fitness: -1.0[K    [103/200] max fitness: -1.0[K    [104/200] max fitness: -1.0[K    [105/200] max fitness: -1.0[K    [106/200] max fitness: -1.0[K    [107/200] max fitness: -1.0[K    [108/200] max fitness: -1.0[K    [109/200] max fitness: -1.0[K    [110/200] max fitness: -1.0[K    [111/200] max fitness: -1.0[K    [112/200] max fitness: -1.0[K    [113/200] max fitness: -1.0[K    [114/200] max fitness: -1.0[K    [115/200] max fitness: -1.0[K    [116/200] max fitness: -1.0[K    [117/200] max fitness: -1.0[K    [118/200] max fitness: -1.0[K    [119/200] max fitness: -1.0[K    [120/200] max fitness: -1.0[K    [121/200] max fitness: -1.0[K    [122/200] max fitness: -4.930380657631324e-34[K
-    evolved function: [x_0**2 + x_0 + 1.0]
+    evolved function: x_0**2 + x_0 + 1.0
 
 
 
@@ -223,7 +223,7 @@ Finally, we call the `evolve` method to perform the evolutionary search.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  13.688 seconds)
+   **Total running time of the script:** ( 0 minutes  13.523 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_fec_caching.py:

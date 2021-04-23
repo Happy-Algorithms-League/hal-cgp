@@ -44,7 +44,7 @@ args = docopt(docopt_str)
 
 
 def f_target(x):
-    return x[0] ** 2 + 1.0
+    return x ** 2 + 1.0
 
 
 # %%
@@ -73,8 +73,8 @@ def objective_one(individual):
         # the callable returned from `to_func` accepts and returns
         # lists; accordingly we need to pack the argument and unpack
         # the return value
-        y = f([x])[0]
-        loss += (f_target([x]) - y) ** 2
+        y = f(x)
+        loss += (f_target(x) - y) ** 2
 
     individual.fitness = -loss / n_function_evaluations
 
@@ -97,8 +97,8 @@ def objective_two(individual):
         # the callable returned from `to_func` accepts and returns
         # lists; accordingly we need to pack the argument and unpack
         # the return value
-        y = f([x])[0]
-        loss += (f_target([x]) - y) ** 2
+        y = f(x)
+        loss += (f_target(x) - y) ** 2
 
     individual.fitness = -loss / n_function_evaluations
 
@@ -184,8 +184,8 @@ ax_fitness.axhline(0.0, color="0.7")
 
 f = pop.champion.to_func()
 x = np.linspace(-5.0, 5.0, 20)
-y = [f([x_i]) for x_i in x]
-y_target = [f_target([x_i]) for x_i in x]
+y = [f(x_i) for x_i in x]
+y_target = [f_target(x_i) for x_i in x]
 
 ax_function.plot(x, y_target, lw=2, alpha=0.5, label="Target")
 ax_function.plot(x, y, "x", label="Champion")

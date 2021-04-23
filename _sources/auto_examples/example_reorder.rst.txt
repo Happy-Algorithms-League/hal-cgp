@@ -72,7 +72,7 @@ We first define a target function.
 
 
     def f_target(x):
-        return x[0] ** 2 + 1.0
+        return x ** 2 + 1.0
 
 
 
@@ -109,8 +109,8 @@ on a set of random points.
             # the callable returned from `to_func` accepts and returns
             # lists; accordingly we need to pack the argument and unpack
             # the return value
-            y = f([x])[0]
-            loss += (f_target([x]) - y) ** 2
+            y = f(x)
+            loss += (f_target(x) - y) ** 2
 
         individual.fitness = -loss / n_function_evaluations
 
@@ -309,7 +309,7 @@ with and without genome reordering
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.725 seconds)
+   **Total running time of the script:** ( 0 minutes  4.265 seconds)
 
 
 .. _sphx_glr_download_auto_examples_example_reorder.py:
