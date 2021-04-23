@@ -46,12 +46,13 @@ def _test_to_x_compilations(
 
 def _test_to_func(genome, x, y_target):
     graph = cgp.CartesianGraph(genome)
-    assert graph.to_func()(x) == pytest.approx(y_target)
+    assert graph.to_func()(*x) == pytest.approx(y_target)
 
 
 def _test_to_numpy(genome, x, y_target):
     graph = cgp.CartesianGraph(genome)
-    assert graph.to_numpy()(np.array(x).reshape(1, -1)) == pytest.approx(y_target)
+    args = [np.array([xi]) for xi in x]
+    assert graph.to_numpy()(*args) == pytest.approx(y_target)
 
 
 def _test_to_torch(genome, x, y_target):
@@ -63,7 +64,7 @@ def _test_to_torch(genome, x, y_target):
 def _test_to_sympy(genome, x, y_target):
     pytest.importorskip("sympy")
     graph = cgp.CartesianGraph(genome)
-    assert [graph.to_sympy()[0].subs({f"x_{i}": x[i] for i in range(len(x))})] == pytest.approx(
+    assert graph.to_sympy().subs({f"x_{i}": x[i] for i in range(len(x))}) == pytest.approx(
         y_target
     )
 
@@ -92,7 +93,7 @@ def test_add():
     ]
 
     x = [5.0, 1.5]
-    y_target = [x[0] + x[1]]
+    y_target = x[0] + x[1]
 
     _test_to_x_compilations(genome, x, y_target)
 
@@ -121,7 +122,7 @@ def test_sub():
     ]
 
     x = [5.0, 1.5]
-    y_target = [x[0] - x[1]]
+    y_target = x[0] - x[1]
 
     _test_to_x_compilations(genome, x, y_target)
 
@@ -150,7 +151,7 @@ def test_mul():
     ]
 
     x = [5.0, 1.5]
-    y_target = [x[0] * x[1]]
+    y_target = x[0] * x[1]
 
     _test_to_x_compilations(genome, x, y_target)
 
@@ -179,7 +180,7 @@ def test_div():
     ]
 
     x = [5.0, 1.5]
-    y_target = [x[0] / x[1]]
+    y_target = x[0] / x[1]
 
     _test_to_x_compilations(genome, x, y_target)
 
@@ -208,7 +209,7 @@ def test_pow():
     ]
 
     x = [5.0, 1.5]
-    y_target = [x[0] ** x[1]]
+    y_target = x[0] ** x[1]
 
     _test_to_x_compilations(genome, x, y_target)
 
@@ -233,7 +234,7 @@ def test_constant_float():
     ]
 
     x = [1.0, 2.0]
-    y_target = [1.0]  # by default the output value of the ConstantFloat node is 1.0
+    y_target = 1.0  # by default the output value of the ConstantFloat node is 1.0
 
     _test_to_x_compilations(genome, x, y_target)
 
@@ -251,7 +252,7 @@ def test_parameter():
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
 
     x = [1.0]
-    y_target = [1.0]  # by default the output value of the Parameter node is 1.0
+    y_target = 1.0  # by default the output value of the Parameter node is 1.0
 
     _test_to_x_compilations(genome, x, y_target)
 
@@ -274,7 +275,7 @@ def test_parameter_w_custom_initial_value():
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
 
     x = [1.0]
-    y_target = [initial_value]
+    y_target = initial_value
 
     _test_to_x_compilations(genome, x, y_target)
 
@@ -310,7 +311,7 @@ def test_parameter_two_nodes():
     x = [1.0]
     # by default the output value of the Parameter node is 1.0,
     # hence the sum of two Parameter nodes is 2.0
-    y_target = [2.0]
+    y_target = 2.0
 
     _test_to_x_compilations(genome, x, y_target)
 
@@ -335,7 +336,7 @@ def test_parameter_w_random_initial_value(rng_seed):
     # f(x) = c
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
     f = cgp.CartesianGraph(genome).to_func()
-    y = f([0.0])[0]
+    y = f(0.0)
 
     assert min_val <= y
     assert y <= max_val
@@ -351,7 +352,7 @@ def test_multiple_parameters_per_node():
         _arity = 0
         _initial_values = {"<p>": lambda: p, "<q>": lambda: q}
         _def_output = "<p> + <q>"
-        _def_numpy_output = "np.ones(x.shape[0]) * (<p> + <q>)"
+        _def_numpy_output = "np.ones(len(x[0])) * (<p> + <q>)"
         _def_torch_output = "torch.ones(1).expand(x.shape[0]) * (<p> + <q>)"
 
     genome_params = {
@@ -365,7 +366,7 @@ def test_multiple_parameters_per_node():
     # f(x) = p + q
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
     f = cgp.CartesianGraph(genome).to_func()
-    y = f([0.0])[0]
+    y = f(0.0)
 
     assert y == pytest.approx(p + q)
 
@@ -387,7 +388,7 @@ def test_reset_parameters_upon_creation_of_node(rng):
     genome._parameter_names_to_values["<p1>"] = 1.0
 
     f = cgp.CartesianGraph(genome).to_func()
-    y = f([0.0])[0]
+    y = f(0.0)
     assert y == pytest.approx(1.0)
 
     # now mutate the genome, since there is only one other option for
@@ -400,7 +401,7 @@ def test_reset_parameters_upon_creation_of_node(rng):
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
 
     f = cgp.CartesianGraph(genome).to_func()
-    y = f([0.0])[0]
+    y = f(0.0)
     assert y == pytest.approx(np.pi)
 
 
@@ -440,15 +441,15 @@ def test_if_else_operator():
     ]
 
     x_0 = [1.0, 10.0, -20.0]
-    y_target_0 = [10.0]
+    y_target_0 = 10.0
     _test_to_x_compilations(genome, x_0, y_target_0)
 
     x_1 = [0.0, 10.0, -20.0]
-    y_target_1 = [10.0]
+    y_target_1 = 10.0
     _test_to_x_compilations(genome, x_1, y_target_1)
 
     x_2 = [-1.0, 10.0, -20.0]
-    y_target_2 = [-20.0]
+    y_target_2 = -20.0
     _test_to_x_compilations(genome, x_2, y_target_2)
 
 
@@ -544,7 +545,7 @@ def test_custom_node():
     ]
 
     x = [5.0, 1.5]
-    y_target = [2 * (x[0] + x[1])]
+    y_target = 2 * (x[0] + x[1])
 
     _test_to_x_compilations(genome, x, y_target)
 
@@ -588,7 +589,7 @@ def test_custom_node_with_custom_atomic_operator():
     ]
 
     x = [5.0, 1.5]
-    y_target = [2 * (x[0] + x[1])]
+    y_target = 2 * (x[0] + x[1])
 
     _test_to_x_compilations(genome, x, y_target, test_to_sympy=False)
 
@@ -634,6 +635,6 @@ def test_custom_node_with_custom_atomic_operator_with_external_library():
     ]
 
     x = [5.0, 1.5]
-    y_target = [scipy_const.golden_ratio * (x[0] + x[1])]
+    y_target = scipy_const.golden_ratio * (x[0] + x[1])
 
     _test_to_x_compilations(genome, x, y_target, test_to_sympy=False)

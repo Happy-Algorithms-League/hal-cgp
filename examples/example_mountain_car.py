@@ -83,8 +83,8 @@ def inner_objective(f, seed, n_runs_per_individual, n_total_steps, *, render):
             if render:
                 env.render()
 
-            continuous_action = f(observation)
-            observation, reward, done, _ = env.step(continuous_action)
+            continuous_action = f(*observation)
+            observation, reward, done, _ = env.step([continuous_action])
             cum_reward_this_episode += reward
 
             if done:
@@ -231,8 +231,8 @@ def evaluate_champion(ind):
     cum_reward_this_episode = 0
     while len(cum_reward_all_episodes) < 100:
 
-        continuous_action = f(observation)
-        observation, reward, done, _ = env.step(continuous_action)
+        continuous_action = f(*observation)
+        observation, reward, done, _ = env.step([continuous_action])
         cum_reward_this_episode += reward
 
         if done:
@@ -299,7 +299,7 @@ if __name__ == "__main__":
     print("evolution ended")
 
     max_fitness = history["fitness_champion"][-1]
-    best_expr = history["expr_champion"][-1][0]
+    best_expr = history["expr_champion"][-1]
     best_expr_str = str(best_expr).replace("x_0", "x").replace("x_1", "dx/dt")
     print(f'solution with highest fitness: "{best_expr_str}" (fitness: {max_fitness:.05f})')
 

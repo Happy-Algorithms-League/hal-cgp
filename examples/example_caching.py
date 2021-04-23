@@ -46,7 +46,7 @@ def inner_objective(ind):
     expr = ind.to_sympy()
     loss = []
     for x0 in np.linspace(-2.0, 2.0, 100):
-        y = float(expr[0].subs({"x_0": x0}).evalf())
+        y = float(expr.subs({"x_0": x0}).evalf())
         loss.append((f_target(x0) - y) ** 2)
 
     time.sleep(0.25)  # emulate long fitness evaluation

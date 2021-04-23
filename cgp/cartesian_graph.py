@@ -2,7 +2,7 @@ import collections
 import copy
 import math  # noqa: F401
 import re
-from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Set
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Set, Union
 
 import numpy as np  # noqa: F401
 
@@ -230,24 +230,35 @@ class CartesianGraph:
                 )
         return func_str
 
-    def to_func(self) -> Callable[[List[float]], List[float]]:
-        """Compile the function(s) represented by the graph.
+    def to_func(self) -> Callable[..., List[float]]:
+        """Create a Python callable implementing the function described by
+        this graph.
 
-        Generates a definition of the function in Python code and
-        executes the function definition to create a Callable.
+        The returned callable expects as many arguments as the number
+        of inputs defined in the genome. The function returns a tuple
+        with length equal to the number of outputs defined in the
+        genome. For convenience, if only a single output is defined
+        the function will *not* return a tuple but only its first
+        element.
 
         Returns
         -------
         Callable
-            Callable executing the function(s) represented by the graph.
+
         """
         self._format_output_str_of_all_nodes()
         s = ", ".join(node.output_str for node in self.output_nodes)
         func_str = f"""\
-def _f(x):
+def _f(*x):
     if len(x) != {self._n_inputs}:
         raise ValueError(f'input has length {{len(x)}}, expected {self._n_inputs}')
-    return [{s}]
+
+    res = [{s}]
+
+    if len(res) == 1:
+        return res[0]
+    else:
+        return res
 """
         func_str = self._fill_parameter_values(func_str)
         exec(func_str, {**globals(), **CUSTOM_ATOMIC_OPERATORS}, locals())
@@ -263,30 +274,38 @@ def _f(x):
             for node in active_nodes[hidden_column_idx]:
                 node.format_output_str_numpy(self)
 
-    def to_numpy(self) -> Callable[[np.ndarray], np.ndarray]:
-        """Compile the function(s) represented by the graph to NumPy
-        expression(s).
+    def to_numpy(self) -> Callable[..., List[np.ndarray]]:
+        """Create a NumPy-array-compatible Python callable implementing the
+        function described by this graph.
 
-        Generates a definition of the function in Python code and
-        executes the function definition to create a Callable
-        accepting NumPy arrays.
+        The returned callable expects as many arguments as the number
+        of inputs defined in the genome. Every argument needs to be a
+        NumPy array of equal length. The function returns a tuple with
+        length equal to the number of outputs defined in the
+        genome. Each element will have the same length as the input
+        arrays. For convenience, if only a single output is defined
+        the function will *not* return a tuple but only its first
+        element.
 
         Returns
         -------
         Callable
-            Callable executing the function(s) represented by the graph.
+
         """
 
         self._format_output_str_numpy_of_all_nodes()
         s = ", ".join(node.output_str for node in self.output_nodes)
         func_str = f"""\
-def _f(x):
-    if (len(x.shape) != 2) or (x.shape[1] != {self._n_inputs}):
-        raise ValueError(
-            f"input has shape {{tuple(x.shape)}}, expected (<batch_size>, {self._n_inputs})"
-        )
+def _f(*x):
+    if len(x) != {self._n_inputs}:
+        raise ValueError(f'input has length {{len(x)}}, expected {self._n_inputs}')
 
-    return np.stack([{s}], axis=1)
+    res = [{s}]
+
+    if len(res) == 1:
+        return res[0]
+    else:
+        return res
 """
         func_str = self._fill_parameter_values(func_str)
         exec(func_str, {**globals(), **CUSTOM_ATOMIC_OPERATORS}, locals())
@@ -294,15 +313,17 @@ def _f(x):
         return locals()["_f"]
 
     def to_torch(self) -> "torch.nn.Module":
-        """Compile the function(s) represented by the graph to a Torch class.
+        """Create a Torch nn.Module instance implementing the function defined
+        by this graph.
 
-        Generates a definition of the Torch class in Python code and
-        executes it to create an instance of the class.
+        The generated instance will have a `forward` method accepting
+        Torch tensor of dimension (<batch size>, n_inputs) and
+        returning a tensor of dimension (<batch_size>, n_outputs).
 
         Returns
         -------
         torch.nn.Module
-            Instance of the PyTorch class.
+
         """
         if not torch_available:
             raise ModuleNotFoundError("No module named 'torch' (extra requirement)")
@@ -359,10 +380,15 @@ class _C(torch.nn.Module):
             for node in active_nodes[hidden_column_idx]:
                 node.format_output_str_sympy(self)
 
-    def to_sympy(self, simplify: Optional[bool] = True) -> List["sympy_expr.Expr"]:
-        """Compile the function(s) represented by the graph to a SymPy expression.
+    def to_sympy(
+        self, simplify: Optional[bool] = True
+    ) -> Union["sympy_expr.Expr", List["sympy_expr.Expr"]]:
+        """Create SymPy expression(s) representing the function(s) described
+        by this graph.
 
-        Generates one SymPy expression for each output node.
+        Returns a list of SymPy expressions, one for each output
+        node. For convenience, if only one output node is defined, it
+        directly returns its expression.
 
         Parameters
         ----------
@@ -372,15 +398,17 @@ class _C(torch.nn.Module):
 
         Returns
         ----------
-        List[sympy.core.expr.Expr]
-            List of SymPy expressions.
+        List[sympy.core.expr.Expr] or sympy.core.expr.Expr
+            List of SymPy expressions or single expression.
+
         """
+
         if not sympy_available:
             raise ModuleNotFoundError("No module named 'sympy' (extra requirement)")
 
         self._format_output_str_sympy_of_all_nodes()
 
-        sympy_exprs = []
+        sympy_exprs: List = []
         for output_node in self.output_nodes:
 
             # replace all input-variable strings with sympy-compatible symbol
@@ -396,12 +424,16 @@ class _C(torch.nn.Module):
             # sympy should not automatically simplify the expression
             sympy_exprs.append(sympy.sympify(s, evaluate=False))
 
-        if not simplify:
-            return sympy_exprs
-        else:  # simplify expression if desired and possible
+        if simplify:
             for i, expr in enumerate(sympy_exprs):
                 try:
                     sympy_exprs[i] = expr.simplify()
                 except TypeError:
                     RuntimeWarning(f"SymPy could not simplify expression: {expr}")
+
+        # if the genome encodes only a single function we directly
+        # return the sympy expression instead of a list of length 1
+        if len(sympy_exprs) == 1:
+            return sympy_exprs[0]
+        else:
             return sympy_exprs

@@ -27,9 +27,9 @@ def test_cache_decorator_produces_identical_history(
         np.random.seed(rng_seed)
 
         if individual_type == "SingleGenome":
-            expr_unpacked = expr[0]
+            expr_unpacked = expr
         elif individual_type == "MultiGenome":
-            expr_unpacked = expr[0][0]
+            expr_unpacked = expr[0]
         else:
             raise NotImplementedError
 
@@ -87,7 +87,7 @@ def test_fec_cache_decorator_produces_identical_history(
     evolve_params = {"max_generations": 10, "min_fitness": 0.0}
 
     def f_target(x):
-        return x[0] - x[1]
+        return x[:, 0] - x[:, 1]
 
     def inner_objective(ind):
         np.random.seed(rng_seed)
@@ -99,9 +99,8 @@ def test_fec_cache_decorator_produces_identical_history(
         else:
             raise NotImplementedError
 
-        loss = 0
-        for x in np.random.uniform(size=(5, 2)):
-            loss += (f_target(x) - f(x)[0]) ** 2
+        x = np.random.uniform(size=(5, 2))
+        loss = np.sum((f(x[:, 0], x[:, 1]) - f_target(x)) ** 2)
         return loss
 
     @cgp.utils.disk_cache(
@@ -149,7 +148,7 @@ def test_fec_cache_decorator_produces_identical_history(
 def _fec_cache_decorator_with_multiple_inputs_multiple_outputs_objective(ind):
     f = ind.to_numpy()
     x = np.array([[1.0, 2.0], [3.0, 4.0]])
-    y = f(x)
+    y = f(x[:, 0], x[:, 1])
     return y
 
 
@@ -212,8 +211,8 @@ def test_fec_cache_decorator_with_multiple_inputs_multiple_outputs(genome_params
     # dimension being identical
     y1 = _fec_cache_decorator_with_multiple_inputs_multiple_outputs_objective(ind1)
 
-    assert y0[:, 0] == pytest.approx(y1[:, 0])
-    assert y0[:, 1] != pytest.approx(y1[:, 1])
+    assert y0[0] == pytest.approx(y1[0])
+    assert y0[1] != pytest.approx(y1[1])
 
 
 @cgp.utils.disk_cache(tempfile.mkstemp()[1])
@@ -391,7 +390,7 @@ def test_primitives_from_class_names_for_genome(genome_params):
 
 def test_fec_cache_decorator_with_additional_arguments(genome_params, rng, rng_seed):
     def f_target(x):
-        return x[0] - x[1]
+        return x[:, 0] - x[:, 1]
 
     @cgp.utils.disk_cache(
         tempfile.mkstemp()[1], compute_key=cgp.utils.compute_key_from_numpy_evaluation_and_args
@@ -401,9 +400,8 @@ def test_fec_cache_decorator_with_additional_arguments(genome_params, rng, rng_s
 
         f = ind.to_func()
 
-        loss = 0
-        for x in np.random.uniform(size=(n_samples, 2)):
-            loss += (f_target(x) - f(x)[0]) ** 2
+        x = np.random.uniform(size=(n_samples, 2))
+        loss = np.sum((f(x[:, 0], x[:, 1]) - f_target(x)) ** 2)
         return loss
 
     g = cgp.Genome(**genome_params)
@@ -423,14 +421,14 @@ def test_custom_compute_key_for_disk_cache(individual, rng):
         tempfile.mkstemp()[1], compute_key=cgp.utils.compute_key_from_numpy_evaluation_and_args
     )
     def inner_objective(ind):
-        return ind.to_func()([1.0, 2.0])[0]
+        return ind.to_func()(1.0, 2.0)
 
     def my_compute_key(ind):
         return 0
 
     @cgp.utils.disk_cache(tempfile.mkstemp()[1], compute_key=my_compute_key)
     def inner_objective_custom_compute_key(ind):
-        return ind.to_func()([1.0, 2.0])[0]
+        return ind.to_func()(1.0, 2.0)
 
     individual0 = individual.clone()
     individual0.genome.randomize(rng)

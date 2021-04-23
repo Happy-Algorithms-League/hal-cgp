@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Type
 import numpy as np
 
 try:
-    import sympy  # noqa: F401
     from sympy.core import expr as sympy_expr  # noqa: F401
 
     sympy_available = True
@@ -51,8 +50,8 @@ def check_to_func(cls: Type["OperatorNode"]) -> None:
     genome = _create_genome(cls)
 
     f = CartesianGraph(genome).to_func()
-    x = [1.0]
-    f(x)[0]
+    x = 1.0
+    f(x)
 
 
 def check_to_numpy(cls: Type["OperatorNode"]) -> None:
@@ -62,8 +61,8 @@ def check_to_numpy(cls: Type["OperatorNode"]) -> None:
     genome = _create_genome(cls)
 
     f = CartesianGraph(genome).to_numpy()
-    x = np.ones((3, 1))
-    f(x)[0]
+    x = np.ones(3)
+    f(x)
 
 
 def check_to_torch(cls: Type["OperatorNode"]) -> None:
@@ -91,6 +90,7 @@ def check_to_sympy(cls: Type["OperatorNode"]) -> None:
 
     genome = _create_genome(cls)
 
-    f = CartesianGraph(genome).to_sympy()[0]
+    f = CartesianGraph(genome).to_sympy()
+    assert isinstance(f, sympy_expr.Expr)
     x = [1.0]
     f.subs("x_0", x[0]).evalf()

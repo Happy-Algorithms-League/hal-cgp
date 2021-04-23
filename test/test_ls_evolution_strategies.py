@@ -49,9 +49,11 @@ def test_step_towards_maximum(rng_seed):
 
 def _objective_convergence_to_maximum(ind):
     f = ind.to_numpy()
-    x_dummy = np.zeros((1, 1))  # input, not used
-    target_value = np.array([[1.0, 1.1]])
-    return -np.sum((f(x_dummy) - target_value) ** 2)
+    x_dummy = np.zeros(1)  # input, not used
+    target_value_0 = 1.0
+    target_value_1 = 1.1
+    y = f(x_dummy)
+    return -((y[0] - target_value_0) ** 2) - (y[1] - target_value_1) ** 2
 
 
 def test_convergence_to_maximum(rng_seed):
@@ -106,10 +108,16 @@ def test_step_towards_maximum_multi_genome(rng_seed):
 
     def objective(ind):
         f = ind.to_numpy()
-        x_dummy = np.zeros((1, 1))  # input, not used
-        target_value = np.array([[1.0, 1.1]])
-        return -np.sum((f[0](x_dummy) - target_value) ** 2) - np.sum(
-            (f[1](x_dummy) - target_value) ** 2
+        x_dummy = np.zeros(1)  # input, not used
+        target_value_0 = 1.0
+        target_value_1 = 1.1
+        y0 = f[0](x_dummy)
+        y1 = f[1](x_dummy)
+        return (
+            -((y0[0] - target_value_0) ** 2)
+            - (y0[1] - target_value_1) ** 2
+            - (y1[0] - target_value_0) ** 2
+            - (y1[1] - target_value_1) ** 2
         )
 
     # test increase parameter value if too small first genome,

@@ -106,16 +106,22 @@ def compute_key_from_numpy_evaluation_and_args(
     ind = args[0]
     if isinstance(ind, IndividualSingleGenome):
         f_single = ind.to_numpy()
-        x = rng.uniform(_min_value, _max_value, (_batch_size, ind.genome._n_inputs))
-        y = f_single(x)
-        s = np.array_str(y, precision=15)
+        x = [
+            rng.uniform(_min_value, _max_value, size=_batch_size)
+            for _ in range(ind.genome._n_inputs)
+        ]
+        y = f_single(*x)
+        s = np.array_str(np.array(y), precision=15)
     elif isinstance(ind, IndividualMultiGenome):
         f_multi = ind.to_numpy()
         s = ""
         for i in range(len(ind.genome)):
-            x = rng.uniform(_min_value, _max_value, (_batch_size, ind.genome[i]._n_inputs))
-            y = f_multi[i](x)
-            s += np.array_str(y, precision=15)
+            x = [
+                rng.uniform(_min_value, _max_value, size=_batch_size)
+                for _ in range(ind.genome[i]._n_inputs)
+            ]
+            y = f_multi[i](*x)
+            s += np.array_str(np.array(y), precision=15)
     else:
         assert False  # should never be reached
 
