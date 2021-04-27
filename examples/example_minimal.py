@@ -43,7 +43,7 @@ def f_target(x):
 
 def objective(individual):
 
-    if not individual.fitness_is_None():
+    if individual.already_evaluated():
         return individual
 
     n_function_evaluations = 1000

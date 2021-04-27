@@ -85,6 +85,9 @@ class IndividualBase:
     def fitness_is_None(self) -> bool:
         return self._fitness[self._objective_idx] is None
 
+    def already_evaluated(self) -> bool:
+        return not (self._fitness[self._objective_idx] is None)
+
     def mutate(self, mutation_rate: float, rng: np.random.RandomState) -> None:
         raise NotImplementedError()
 
