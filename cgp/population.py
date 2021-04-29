@@ -1,4 +1,4 @@
-from typing import Callable, List, Union
+from typing import Callable, List, Optional, Union
 
 import numpy as np
 
@@ -16,7 +16,7 @@ class Population:
         n_parents: int,
         seed: int,
         genome_params: Union[dict, List[dict]],
-        individual_init: Union[Callable[[IndividualBase], IndividualBase], None] = None,
+        individual_init: Optional[Callable[[IndividualBase], IndividualBase]] = None,
     ) -> None:
         """Init function.
 
@@ -74,7 +74,7 @@ class Population:
         return self._parents[idx]
 
     def _generate_random_parent_population(
-        self, individual_init: Union[Callable[[IndividualBase], IndividualBase], None] = None
+        self, individual_init: Optional[Callable[[IndividualBase], IndividualBase]] = None
     ) -> None:
         parents: List[IndividualBase] = []
         for _ in range(self.n_parents):
@@ -111,7 +111,7 @@ class Population:
         ind.parent_idx = -1
         return ind
 
-    def fitness_parents(self) -> List[Union[None, float]]:
+    def fitness_parents(self) -> List[Optional[float]]:
         """Return fitness for all parents of the population.
 
         Returns

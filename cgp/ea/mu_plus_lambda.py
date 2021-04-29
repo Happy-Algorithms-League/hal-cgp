@@ -1,5 +1,5 @@
 import multiprocessing as mp
-from typing import Callable, List, Union
+from typing import Callable, List, Optional, Union
 
 import numpy as np
 
@@ -22,10 +22,10 @@ class MuPlusLambda:
         n_offsprings: int,
         mutation_rate: float,
         *,
-        tournament_size: Union[None, int] = None,
+        tournament_size: Optional[int] = None,
         n_processes: int = 1,
-        local_search: Union[None, Callable[[IndividualBase], None]] = None,
-        k_local_search: Union[int, None] = None,
+        local_search: Optional[Callable[[IndividualBase], None]] = None,
+        k_local_search: Optional[int] = None,
         reorder_genome: bool = False,
         hurdle_percentile: List = [0.0],
     ):
@@ -76,7 +76,7 @@ class MuPlusLambda:
         self.reorder_genome = reorder_genome
         self.hurdle_percentile = hurdle_percentile
 
-        self.process_pool: Union[None, "mp.pool.Pool"]
+        self.process_pool: Optional["mp.pool.Pool"]
         if self.n_processes > 1:
             self.process_pool = mp.Pool(processes=self.n_processes)
         else:

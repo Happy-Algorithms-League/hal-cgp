@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Generator, List, Optional, Set, Tuple, Type, Union
+from typing import Dict, Generator, List, Optional, Set, Tuple, Type
 
 import numpy as np
 
@@ -31,7 +31,7 @@ class Genome:
         n_columns: int,
         n_rows: int,
         primitives: Tuple[Type[Node], ...],
-        levels_back: Union[int, None] = None,
+        levels_back: Optional[int] = None,
     ) -> None:
         """Init function.
 
@@ -47,7 +47,7 @@ class Genome:
             Number of rows in the representation of the genome.
         primitives : Tuple[Type[Node], ...]
            Tuple of primitives that the genome can refer to.
-        levels_back : Union[int, None]
+        levels_back : Optional[int]
             Maximal column distance of inputs to an internal node. If
             set to `None`, no restrictions are used. Defaults to None
 

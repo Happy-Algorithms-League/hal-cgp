@@ -1,7 +1,7 @@
 import collections
 import functools
 import math
-from typing import TYPE_CHECKING, Callable, Dict, List, Tuple, Union
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -16,8 +16,8 @@ class EvolutionStrategies:
         seed: int,
         *,
         learning_rate_mu: float = 1.0,
-        learning_rate_sigma: Union[None, float] = None,
-        population_size: Union[None, int] = None,
+        learning_rate_sigma: Optional[float] = None,
+        population_size: Optional[int] = None,
         max_steps: int = 10,
         min_sigma: float = 1e-9,
         fitness_shaping: bool = True,
