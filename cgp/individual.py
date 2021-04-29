@@ -1,3 +1,4 @@
+import warnings
 import copy
 from typing import Callable, List, Set, Type, Union
 
@@ -83,6 +84,10 @@ class IndividualBase:
                 setattr(other, attr, copy.deepcopy(getattr(self, attr)))
 
     def fitness_is_None(self) -> bool:
+        warnings.warn(
+            "fitness_is_None is deprecated, use already_evaluated instead"
+            , DeprecationWarning
+        )
         return self._fitness[self._objective_idx] is None
 
     def already_evaluated(self) -> bool:
