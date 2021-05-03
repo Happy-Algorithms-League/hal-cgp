@@ -85,7 +85,7 @@ class IndividualBase:
 
     def fitness_is_None(self) -> bool:
         warnings.warn(
-            "fitness_is_None is deprecated, use already_evaluated instead"
+            "`fitness_is_None` is deprecated and will be remobed in the 0.4 release. Please use `already_evaluated` instead"
             , DeprecationWarning
         )
         return self._fitness[self._objective_idx] is None
