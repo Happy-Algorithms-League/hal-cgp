@@ -297,7 +297,7 @@ class MuPlusLambda:
          i.e., for which the objective function will be evaluated.
         """
         for individual in combined:
-            if individual.fitness_is_None():
+            if not individual.already_evaluated():
                 self.n_objective_calls += 1
 
     def mutate(

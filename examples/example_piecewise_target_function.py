@@ -55,7 +55,7 @@ def objective(individual, rng):
     Individual
         Modified individual with updated fitness value.
     """
-    if not individual.fitness_is_None():
+    if individual.already_evaluated():
         return individual
 
     n_function_evaluations = 1000

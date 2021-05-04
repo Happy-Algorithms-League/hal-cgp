@@ -256,9 +256,9 @@ def test_update_parameters_from_torch_class_resets_fitness(individual_type):
     f_opt = _unpack_evaluation(f, individual_type=individual_type)
     f_opt._p1.data[0] = math.pi
 
-    assert not individual.fitness_is_None()
+    assert individual.already_evaluated()
     individual.update_parameters_from_torch_class(f)
-    assert individual.fitness_is_None()
+    assert not individual.already_evaluated()
 
     g = _unpack_evaluation(individual.to_func(), individual_type)
     x = 2.0
@@ -292,9 +292,9 @@ def test_update_parameters_from_torch_class_does_not_reset_fitness_for_unused_pa
 
     f = individual.to_torch()
 
-    assert not individual.fitness_is_None()
+    assert individual.already_evaluated()
     individual.update_parameters_from_torch_class(f)
-    assert not individual.fitness_is_None()
+    assert individual.already_evaluated()
 
     g = _unpack_evaluation(individual.to_func(), individual_type)
     x = 2.0

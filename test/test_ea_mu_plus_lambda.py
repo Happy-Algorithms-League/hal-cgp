@@ -107,7 +107,7 @@ def test_local_search_is_only_applied_to_best_k_individuals(
         )
 
     def objective(ind):
-        if not ind.fitness_is_None():
+        if ind.already_evaluated():
             return ind
 
         f = ind.to_torch()
@@ -163,7 +163,7 @@ def test_initialize_fitness_parents(population_params, genome_params, ea_params)
 
     ea = cgp.ea.MuPlusLambda(**ea_params)
     ea.initialize_fitness_parents(pop, objective)
-    assert all([not ind.fitness_is_None() for ind in pop.parents])
+    assert all([ind.already_evaluated() for ind in pop.parents])
 
 
 def test_step(population_params, genome_params, ea_params):
@@ -251,7 +251,7 @@ def test_update_n_objective_calls(population_params, genome_params, ea_params):
     for _ in range(n_generations):
         offsprings = ea._create_new_offspring_generation(pop)
         combined = offsprings + pop.parents
-        n_objective_calls_expected += sum([1 for ind in combined if ind.fitness_is_None()])
+        n_objective_calls_expected += sum([1 for ind in combined if not ind.already_evaluated()])
         combined = ea._compute_fitness(combined, objective)
         assert n_objective_calls_expected == ea.n_objective_calls
 

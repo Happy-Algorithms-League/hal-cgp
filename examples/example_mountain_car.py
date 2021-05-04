@@ -106,7 +106,7 @@ def inner_objective(f, seed, n_runs_per_individual, n_total_steps, *, render):
 
 def objective(ind, seed, n_runs_per_individual, n_total_steps):
 
-    if not ind.fitness_is_None():
+    if ind.already_evaluated():
         return ind
 
     f = ind.to_func()

@@ -69,7 +69,7 @@ def inner_objective(ind, seed):
 def objective(individual, seed):
     """Objective function of the regression task."""
 
-    if not individual.fitness_is_None():
+    if individual.already_evaluated():
         return individual
 
     individual.fitness = inner_objective(individual, seed)

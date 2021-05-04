@@ -9,7 +9,7 @@ import cgp
 
 def _objective_test_population(individual, rng_seed):
 
-    if not individual.fitness_is_None():
+    if individual.already_evaluated():
         return individual
 
     np.random.seed(rng_seed)
@@ -78,7 +78,7 @@ def test_evolve_two_expressions(population_params, ea_params):
 
     def _objective(individual):
 
-        if not individual.fitness_is_None():
+        if individual.already_evaluated():
             return individual
 
         def f0(x):
