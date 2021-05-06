@@ -1,5 +1,5 @@
 import copy
-from typing import Callable, List, Set, Type, Union
+from typing import Callable, List, Optional, Set, Type
 
 import numpy as np
 
@@ -31,11 +31,11 @@ class IndividualBase:
     def __init__(self) -> None:
         """Init function.
         """
-        self._fitness: List[Union[None, float]] = [None]
+        self._fitness: List[Optional[float]] = [None]
         self._objective_idx: int = 0
 
-        self.idx: Union[int, None] = None
-        self.parent_idx: Union[int, None] = None
+        self.idx: Optional[int] = None
+        self.parent_idx: Optional[int] = None
 
     def __init_subclass__(cls: Type) -> None:
 
@@ -55,7 +55,7 @@ class IndividualBase:
         self._fitness[self._objective_idx] = v
 
     @property
-    def fitness_current_objective(self) -> Union[None, float]:
+    def fitness_current_objective(self) -> Optional[float]:
         return self._fitness[self._objective_idx]
 
     @property

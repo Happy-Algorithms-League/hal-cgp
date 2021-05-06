@@ -2,7 +2,7 @@ import functools
 import hashlib
 import os
 import pickle
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Type
 
 import numpy as np
 
@@ -22,9 +22,7 @@ def __check_cache_consistency(fn: str, func: Callable[..., float]) -> None:
     can be found in the cache.
 
     """
-    cached_item: Union[Dict[str, Any], None] = __find_args_and_return_value_for_consistency_check(
-        fn
-    )
+    cached_item: Optional[Dict[str, Any]] = __find_args_and_return_value_for_consistency_check(fn)
     if cached_item is None:
         return
 
@@ -38,7 +36,7 @@ def __check_cache_consistency(fn: str, func: Callable[..., float]) -> None:
         )
 
 
-def __find_args_and_return_value_for_consistency_check(fn: str) -> Union[Dict[str, Any], None]:
+def __find_args_and_return_value_for_consistency_check(fn: str) -> Optional[Dict[str, Any]]:
     """Try to retrieve argument and return value for consistency check."""
     if os.path.isfile(fn):
         with open(fn, "rb") as f:
@@ -130,7 +128,7 @@ def compute_key_from_numpy_evaluation_and_args(
     return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
 
-def __find_result_in_cache_file(fn: str, key: str) -> Union[float, None]:
+def __find_result_in_cache_file(fn: str, key: str) -> Optional[float]:
     if os.path.isfile(fn):
         with open(fn, "rb") as f:
 
@@ -177,7 +175,7 @@ def disk_cache(
     fn: str,
     *,
     compute_key: Callable[..., str] = compute_key_from_numpy_evaluation_and_args,
-    file_lock: Union[None, "mp.synchronize.Lock"] = None,
+    file_lock: Optional["mp.synchronize.Lock"] = None,
 ) -> Callable[[Callable[..., float]], Callable[..., float]]:
     """Cache function return values on disk.
 
@@ -248,7 +246,7 @@ def disk_cache(
             if file_lock is not None:
                 file_lock.acquire()
 
-            result_value_cached: Union[float, None] = __find_result_in_cache_file(fn, key)
+            result_value_cached: Optional[float] = __find_result_in_cache_file(fn, key)
 
             if file_lock is not None:
                 file_lock.release()
