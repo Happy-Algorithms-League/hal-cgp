@@ -21,8 +21,8 @@
 	   :target: https://github.com/psf/black
 .. image:: https://coveralls.io/repos/github/Happy-Algorithms-League/python-gp/badge.svg?branch=master
 	   :target: https://coveralls.io/github/Happy-Algorithms-League/python-gp?branch=master
-.. image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
-	   :target: https://happy-algorithms-league.github.io/hal-cgp/
+.. image:: https://readthedocs.org/projects/hal-cgp/badge/?version=latest
+	   :target: https://hal-cgp.readthedocs.io/en/latest/?badge=latest
 
 Cartesian genetic programming (CGP) in pure Python.
 
