@@ -1,4 +1,4 @@
-__version__ = "0.3.0.dev0"
+__version__ = "0.3.0"
 __maintainer__ = "Jakob Jordan, Maximilian Schmidt"
 __author__ = "Happy Algorithms League"
 __license__ = "GPLv3"
