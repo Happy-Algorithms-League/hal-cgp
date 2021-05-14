@@ -164,7 +164,7 @@ def test_individual_with_parameter_numpy(individual_type, params, graph_input_va
 
 
 @pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
-def test_to_and_from_torch_plus_backprop(individual_type):
+def test_to_and_from_torch_plus_backprop(individual_type, rng_torch):
     torch = pytest.importorskip("torch")
     primitives = (cgp.Mul, cgp.Parameter)
     genome = cgp.Genome(1, 1, 2, 2, primitives, 1)
@@ -202,7 +202,7 @@ def test_to_and_from_torch_plus_backprop(individual_type):
 
     for i in range(200):
 
-        x = torch.DoubleTensor(1, 1).normal_()
+        x = torch.DoubleTensor(1, 1).normal_(generator=rng_torch)
         y = f_opt(x)
 
         y_target = f_target(x)

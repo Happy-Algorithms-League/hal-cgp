@@ -15,6 +15,15 @@ def rng(rng_seed):
 
 
 @fixture
+def rng_torch(rng_seed):
+    import torch
+
+    rng = torch.Generator()
+    rng.manual_seed(rng_seed)
+    return rng
+
+
+@fixture
 def genome_params():
     return {
         "n_inputs": 2,

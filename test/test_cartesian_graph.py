@@ -319,11 +319,11 @@ def test_compile_numpy_output_shape(genome, batch_size, rng):
 
 
 @pytest.mark.parametrize("genome, batch_size", itertools.product(genome, batch_sizes))
-def test_compile_torch_output_shape(genome, batch_size):
+def test_compile_torch_output_shape(genome, batch_size, rng_torch):
     torch = pytest.importorskip("torch")
 
     c = cgp.CartesianGraph(genome).to_torch()
-    x = torch.Tensor(batch_size, 1).normal_()
+    x = torch.Tensor(batch_size, 1).normal_(generator=rng_torch)
     y = c(x)
     assert y.shape == (batch_size, genome._n_outputs)
 
