@@ -35,7 +35,7 @@ def _objective_test_population(individual, rng_seed):
 
 def _test_population(population_params, genome_params, ea_params):
 
-    evolve_params = {"max_generations": 2000, "min_fitness": -1e-12}
+    evolve_params = {"max_generations": 2000, "termination_fitness": -1e-12}
 
     np.random.seed(population_params["seed"])
 
@@ -52,7 +52,7 @@ def _test_population(population_params, genome_params, ea_params):
     obj = functools.partial(_objective_test_population, rng_seed=population_params["seed"])
     cgp.evolve(pop, obj, ea, **evolve_params, callback=recording_callback)
 
-    assert pop.champion.fitness >= evolve_params["min_fitness"]
+    assert pop.champion.fitness >= evolve_params["termination_fitness"]
 
     return history["max_fitness_per_generation"]
 
@@ -123,7 +123,7 @@ def test_evolve_two_expressions(population_params, ea_params):
         },
     ]
 
-    evolve_params = {"max_generations": 2000, "min_fitness": -1e-12}
+    evolve_params = {"max_generations": 2000, "termination_fitness": -1e-12}
 
     np.random.seed(population_params["seed"])
 
@@ -147,7 +147,7 @@ def test_finite_max_generations_or_max_objective_calls(
     ea = cgp.ea.MuPlusLambda(**ea_params)
     evolve_params = {
         "max_generations": np.inf,
-        "min_fitness": 0,
+        "termination_fitness": 0,
         "max_objective_calls": np.inf,
     }
     with pytest.raises(ValueError):
@@ -171,7 +171,7 @@ def test_speedup_parallel_evolve(population_params, genome_params, ea_params):
     population_params["n_parents"] = 4
     ea_params["n_offsprings"] = 4
 
-    evolve_params = {"max_generations": 5, "min_fitness": np.inf}
+    evolve_params = {"max_generations": 5, "termination_fitness": np.inf}
 
     # Number of calls to objective: Number of parents + (Number of
     # parents + offspring) * (N_generations - 1) Initially, we need to
