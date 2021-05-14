@@ -41,12 +41,13 @@ def test_objective_with_label(population_params, genome_params, ea_params):
     assert pop.champion.fitness == pytest.approx(-1.0)
 
 
-def test_fitness_contains_and_maintains_nan(population_params, genome_params, ea_params):
+def test_fitness_contains_and_maintains_nan(population_params, genome_params, ea_params, rng_seed):
     def objective(individual):
-        if np.random.rand() < 0.95:
+        rng = np.random.RandomState(rng_seed)
+        if rng.rand() < 0.95:
             individual.fitness = np.nan
         else:
-            individual.fitness = np.random.rand()
+            individual.fitness = rng.rand()
         return individual
 
     pop = cgp.Population(**population_params, genome_params=genome_params)

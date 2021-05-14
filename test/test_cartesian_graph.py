@@ -173,7 +173,7 @@ def test_compile_addsubmul():
     assert (x[0] * x[1]) - (x[0] - x[1]) == pytest.approx(y)
 
 
-def test_to_numpy():
+def test_to_numpy(rng):
     primitives = (cgp.Add, cgp.Mul, cgp.ConstantFloat)
     genome = cgp.Genome(1, 1, 2, 2, primitives, 1)
     # f(x) = x ** 2 + 1.
@@ -200,7 +200,7 @@ def test_to_numpy():
     graph = cgp.CartesianGraph(genome)
     f = graph.to_numpy()
 
-    x = np.random.normal(size=100)
+    x = rng.normal(size=100)
     y = f(x)
     y_target = x ** 2 + 1.0
 
@@ -305,10 +305,10 @@ genome[3].dna = [
 
 
 @pytest.mark.parametrize("genome, batch_size", itertools.product(genome, batch_sizes))
-def test_compile_numpy_output_shape(genome, batch_size):
+def test_compile_numpy_output_shape(genome, batch_size, rng):
 
     c = cgp.CartesianGraph(genome).to_numpy()
-    x = np.random.normal(size=batch_size)
+    x = rng.normal(size=batch_size)
     y = c(x)
 
     if genome._n_outputs == 1:
@@ -328,7 +328,7 @@ def test_compile_torch_output_shape(genome, batch_size):
     assert y.shape == (batch_size, genome._n_outputs)
 
 
-def test_to_sympy():
+def test_to_sympy(rng):
     sympy = pytest.importorskip("sympy")
 
     primitives = (cgp.Add, cgp.ConstantFloat)
@@ -365,7 +365,7 @@ def test_to_sympy():
     y_0 = graph.to_sympy()
     assert y_0_target == y_0
 
-    for x in np.random.normal(size=100):
+    for x in rng.normal(size=100):
         assert y_0_target.subs("x_0", x).evalf() == pytest.approx(y_0.subs("x_0", x).evalf())
 
 
@@ -422,8 +422,7 @@ def test_allow_powers_of_x_0():
     graph.to_sympy(simplify=True)
 
 
-def test_input_dim_python(rng_seed):
-    rng = np.random.RandomState(rng_seed)
+def test_input_dim_python(rng):
 
     genome = cgp.Genome(2, 1, 1, 1, (cgp.ConstantFloat,))
     genome.randomize(rng)
@@ -441,8 +440,7 @@ def test_input_dim_python(rng_seed):
     f(None, None)
 
 
-def test_input_dim_numpy(rng_seed):
-    rng = np.random.RandomState(rng_seed)
+def test_input_dim_numpy(rng):
 
     genome = cgp.Genome(2, 1, 1, 1, (cgp.ConstantFloat,))
     genome.randomize(rng)
@@ -464,10 +462,8 @@ def test_input_dim_numpy(rng_seed):
     f(np.array([1.0]), np.array([1.0]))
 
 
-def test_input_dim_torch(rng_seed):
+def test_input_dim_torch(rng):
     torch = pytest.importorskip("torch")
-
-    rng = np.random.RandomState(rng_seed)
 
     genome = cgp.Genome(2, 1, 1, 1, (cgp.ConstantFloat,))
     genome.randomize(rng)

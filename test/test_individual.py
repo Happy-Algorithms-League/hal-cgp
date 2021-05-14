@@ -302,8 +302,7 @@ def test_update_parameters_from_torch_class_does_not_reset_fitness_for_unused_pa
 
 
 @pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
-def test_individual_randomize_genome(individual_type, rng_seed):
-    rng = np.random.RandomState(rng_seed)
+def test_individual_randomize_genome(individual_type, rng):
     primitives = (cgp.Add, cgp.Mul)
     genome = cgp.Genome(1, 1, 2, 1, primitives, 1)
     genome.randomize(rng)

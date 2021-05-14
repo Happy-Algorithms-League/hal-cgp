@@ -316,14 +316,13 @@ def test_parameter_two_nodes():
     _test_to_x_compilations(genome, x, y_target)
 
 
-def test_parameter_w_random_initial_value(rng_seed):
-    np.random.seed(rng_seed)
+def test_parameter_w_random_initial_value(rng):
 
     min_val = 0.5
     max_val = 1.5
 
     class CustomParameter(cgp.Parameter):
-        _initial_values = {"<p>": lambda: np.random.uniform(min_val, max_val)}
+        _initial_values = {"<p>": lambda: rng.uniform(min_val, max_val)}
 
     genome_params = {
         "n_inputs": 1,
