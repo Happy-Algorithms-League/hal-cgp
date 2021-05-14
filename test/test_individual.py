@@ -9,9 +9,9 @@ import cgp
 from cgp import IndividualMultiGenome, IndividualSingleGenome
 from cgp.genome import ID_INPUT_NODE, ID_NON_CODING_GENE, ID_OUTPUT_NODE
 
-TestParams = namedtuple("TestParams", ["genome_params", "primitives", "dna", "target_function"])
+Params = namedtuple("Params", ["genome_params", "primitives", "dna", "target_function"])
 params_list = [
-    TestParams(
+    Params(
         genome_params={
             "n_inputs": 1,
             "n_outputs": 1,
