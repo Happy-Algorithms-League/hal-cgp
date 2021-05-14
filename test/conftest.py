@@ -16,7 +16,10 @@ def rng(rng_seed):
 
 @fixture
 def rng_torch(rng_seed):
-    import torch
+    try:
+        import torch
+    except ModuleNotFoundError:
+        return None
 
     rng = torch.Generator()
     rng.manual_seed(rng_seed)
