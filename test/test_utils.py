@@ -17,7 +17,7 @@ def test_cache_decorator_produces_identical_history(
 ):
     pytest.importorskip("sympy")
 
-    evolve_params = {"max_generations": 10, "min_fitness": 0.0}
+    evolve_params = {"max_generations": 10, "termination_fitness": 0.0}
 
     def f_target(x):
         return x[0] - x[1]
@@ -84,7 +84,7 @@ def test_fec_cache_decorator_produces_identical_history(
     individual_type, rng_seed, population_params, genome_params, ea_params
 ):
 
-    evolve_params = {"max_generations": 10, "min_fitness": 0.0}
+    evolve_params = {"max_generations": 10, "termination_fitness": 0.0}
 
     def f_target(x):
         return x[:, 0] - x[:, 1]
@@ -342,7 +342,7 @@ def test_history_recording(population_params, genome_params, ea_params):
     pop = cgp.Population(**population_params, genome_params=genome_params)
     ea = cgp.ea.MuPlusLambda(**ea_params)
 
-    evolve_params = {"max_generations": 2, "min_fitness": 1.0}
+    evolve_params = {"max_generations": 2, "termination_fitness": 1.0}
 
     history = {}
     history["fitness"] = np.empty(
