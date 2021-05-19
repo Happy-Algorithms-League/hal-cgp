@@ -146,9 +146,9 @@ def test_finite_max_generations_or_max_objective_calls(
     pop = cgp.Population(**population_params, genome_params=genome_params)
     ea = cgp.ea.MuPlusLambda(**ea_params)
     evolve_params = {
-        "max_generations": np.inf,
+        "max_generations": np.iinfo(np.int64).max,
         "termination_fitness": 0,
-        "max_objective_calls": np.inf,
+        "max_objective_calls": np.iinfo(np.int64).max,
     }
     with pytest.raises(ValueError):
         cgp.evolve(pop, objective, ea, **evolve_params)

@@ -1,5 +1,5 @@
 import copy
-from typing import Callable, List, Optional, Set, Type
+from typing import Callable, List, Optional, Set, Tuple, Type
 
 import numpy as np
 
@@ -113,11 +113,13 @@ class IndividualBase:
     def update_parameters_from_torch_class(self, torch_cls) -> None:
         raise NotImplementedError()
 
-    def parameters_to_numpy_array(self, only_active_nodes: bool = False) -> "np.ndarray[float]":
+    def parameters_to_numpy_array(
+        self, only_active_nodes: bool = False
+    ) -> Tuple[np.ndarray, List[str]]:
         raise NotImplementedError()
 
     def update_parameters_from_numpy_array(
-        self, params: "np.ndarray[float]", params_names: List[str]
+        self, params: "np.ndarray", params_names: List[str]
     ) -> None:
         raise NotImplementedError()
 
@@ -138,7 +140,7 @@ class IndividualBase:
         return CartesianGraph(genome).to_func()
 
     @staticmethod
-    def _to_numpy(genome: Genome) -> Callable[[np.ndarray], np.ndarray]:
+    def _to_numpy(genome: Genome) -> Callable[..., List[np.ndarray]]:
         return CartesianGraph(genome).to_numpy()
 
     @staticmethod
@@ -154,12 +156,14 @@ class IndividualBase:
         return genome.update_parameters_from_torch_class(torch_cls)
 
     @staticmethod
-    def _parameters_to_numpy_array(genome: Genome, only_active_nodes: bool) -> "np.ndarray[float]":
+    def _parameters_to_numpy_array(
+        genome: Genome, only_active_nodes: bool
+    ) -> Tuple[np.ndarray, List[str]]:
         return genome.parameters_to_numpy_array(only_active_nodes)
 
     @staticmethod
     def _update_parameters_from_numpy_array(
-        genome: Genome, params: "np.ndarray[float]", params_names: List[str]
+        genome: Genome, params: "np.ndarray", params_names: List[str]
     ) -> bool:
         return genome.update_parameters_from_numpy_array(params, params_names)
 
@@ -227,7 +231,7 @@ class IndividualSingleGenome(IndividualBase):
     def to_func(self) -> Callable[[List[float]], List[float]]:
         return self._to_func(self.genome)
 
-    def to_numpy(self) -> Callable[[np.ndarray], np.ndarray]:
+    def to_numpy(self) -> Callable[..., List[np.ndarray]]:
         return self._to_numpy(self.genome)
 
     def to_torch(self) -> "torch.nn.Module":
@@ -243,11 +247,13 @@ class IndividualSingleGenome(IndividualBase):
         if any_parameter_updated:
             self.reset_fitness()
 
-    def parameters_to_numpy_array(self, only_active_nodes: bool = False) -> "np.ndarray[float]":
+    def parameters_to_numpy_array(
+        self, only_active_nodes: bool = False
+    ) -> Tuple[np.ndarray, List[str]]:
         return self._parameters_to_numpy_array(self.genome, only_active_nodes)
 
     def update_parameters_from_numpy_array(
-        self, params: "np.ndarray[float]", params_names: List[str]
+        self, params: "np.ndarray", params_names: List[str]
     ) -> None:
         any_parameter_updated: bool = self._update_parameters_from_numpy_array(
             self.genome, params, params_names
@@ -301,7 +307,7 @@ class IndividualMultiGenome(IndividualBase):
     def to_func(self) -> List[Callable[[List[float]], List[float]]]:
         return [self._to_func(g) for g in self.genome]
 
-    def to_numpy(self) -> List[Callable[[np.ndarray], np.ndarray]]:
+    def to_numpy(self) -> List[Callable[..., List[np.ndarray]]]:
         return [self._to_numpy(g) for g in self.genome]
 
     def to_torch(self) -> List["torch.nn.Module"]:
@@ -320,8 +326,10 @@ class IndividualMultiGenome(IndividualBase):
         if any_parameter_updated:
             self.reset_fitness()
 
-    def parameters_to_numpy_array(self, only_active_nodes: bool = False) -> "np.ndarray[float]":
-        params: List[np.ndarray[float]] = []
+    def parameters_to_numpy_array(
+        self, only_active_nodes: bool = False
+    ) -> Tuple[np.ndarray, List[str]]:
+        params: List[np.ndarray] = []
         params_names: List[str] = []
         for g in self.genome:
             p, pn = self._parameters_to_numpy_array(g, only_active_nodes)
@@ -330,7 +338,7 @@ class IndividualMultiGenome(IndividualBase):
         return np.hstack(params), params_names
 
     def update_parameters_from_numpy_array(
-        self, params: "np.ndarray[float]", params_names: List[str]
+        self, params: "np.ndarray", params_names: List[str]
     ) -> None:
         any_parameter_updated: bool = False
         offset: int = 0

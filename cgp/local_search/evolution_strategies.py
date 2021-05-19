@@ -79,17 +79,17 @@ class EvolutionStrategies:
         self.fitness_shaping = fitness_shaping
         self.mirrored_sampling = mirrored_sampling
 
-        self.sigma: Dict[int, Dict[str, np.ndarray[float]]] = collections.defaultdict(dict)
+        self.sigma: Dict[int, Dict[str, float]] = collections.defaultdict(dict)
 
     def __call__(self, ind: "IndividualBase") -> None:
 
         rng = np.random.RandomState(self.seed)
 
-        mu: np.ndarray[float]
+        mu: np.ndarray
         params_names: List[str]
         mu, params_names = ind.parameters_to_numpy_array(only_active_nodes=True)
 
-        sigma: np.ndarray[float] = self._load_sigma(ind, mu, params_names)
+        sigma: np.ndarray = self._load_sigma(ind, mu, params_names)
 
         if len(mu) > 0:
             if self.learning_rate_sigma is None:
@@ -102,17 +102,17 @@ class EvolutionStrategies:
             else:
                 population_size = self.population_size
 
-            obj: Callable[[np.ndarray[float]], float] = functools.partial(
+            obj: Callable[[np.ndarray], float] = functools.partial(
                 self._objective_wrapper, ind=ind, params_names=params_names
             )
 
             for step in range(self.max_steps):
 
-                s: np.ndarray[float]
-                z: np.ndarray[float]
+                s: np.ndarray
+                z: np.ndarray
                 s, z = self._sample_s_and_z(mu, sigma, population_size, rng)
 
-                fitness: np.ndarray[float] = np.fromiter(map(obj, z), np.float)
+                fitness: np.ndarray = np.fromiter(map(obj, z), float)
 
                 s, z, utility = self._determine_utility(s, z, fitness)
 
@@ -131,8 +131,8 @@ class EvolutionStrategies:
         self._store_sigma(ind.idx, sigma, params_names)
 
     def _load_sigma(
-        self, ind: "IndividualBase", mu: "np.ndarray[float]", params_names: List[str]
-    ) -> "np.ndarray[float]":
+        self, ind: "IndividualBase", mu: "np.ndarray", params_names: List[str]
+    ) -> "np.ndarray":
         sigma: List[float] = []
         for i, p in enumerate(params_names):
             if ind.idx in self.sigma and p in self.sigma[ind.idx]:
@@ -144,15 +144,15 @@ class EvolutionStrategies:
 
         return np.array(sigma)
 
-    def _store_sigma(self, idx: int, sigma: "np.ndarray[float]", params_names: List[str]) -> None:
+    def _store_sigma(self, idx: int, sigma: "np.ndarray", params_names: List[str]) -> None:
         for i, p in enumerate(params_names):
             self.sigma[idx][p] = sigma[i]
 
     def _sample_s_and_z(
         self, mu: np.ndarray, sigma: np.ndarray, population_size: int, rng: "np.random.RandomState"
-    ) -> Tuple["np.ndarray[float]", "np.ndarray[float]"]:
-        s: np.ndarray[float] = rng.normal(0, 1, size=(population_size, *mu.shape))
-        z: np.ndarray[float] = mu + sigma * s
+    ) -> Tuple["np.ndarray", "np.ndarray"]:
+        s: np.ndarray = rng.normal(0, 1, size=(population_size, *mu.shape))
+        z: np.ndarray = mu + sigma * s
 
         if self.mirrored_sampling:
             z = np.vstack([z, mu - sigma * s])
@@ -161,15 +161,15 @@ class EvolutionStrategies:
         return s, z
 
     def _objective_wrapper(
-        self, z: "np.ndarray[float]", *, ind: "IndividualBase", params_names: List[str]
+        self, z: "np.ndarray", *, ind: "IndividualBase", params_names: List[str]
     ) -> float:
         new_ind: IndividualBase = ind.clone()
         new_ind.update_parameters_from_numpy_array(z, params_names)
         return self.objective(new_ind)
 
     def _determine_utility(
-        self, s: "np.ndarray[float]", z: "np.ndarray[float]", fitness: "np.ndarray[float]",
-    ) -> Tuple["np.ndarray[float]", "np.ndarray[float]", "np.ndarray[float]"]:
+        self, s: "np.ndarray", z: "np.ndarray", fitness: "np.ndarray",
+    ) -> Tuple["np.ndarray", "np.ndarray", "np.ndarray"]:
         if self.fitness_shaping:
             order, utility = self._utility_function(fitness)
             s = s[order]
@@ -179,17 +179,15 @@ class EvolutionStrategies:
 
         return s, z, utility
 
-    def _utility_function(
-        self, fitness: np.ndarray
-    ) -> Tuple["np.ndarray[int]", "np.ndarray[float]"]:
+    def _utility_function(self, fitness: np.ndarray) -> Tuple["np.ndarray", "np.ndarray"]:
         n: int = len(fitness)
-        order: np.ndarray[float] = np.argsort(fitness)[::-1]
+        order: np.ndarray = np.argsort(fitness)[::-1]
 
         fitness = fitness[order]
 
-        utility: np.ndarray[float] = [
-            np.max([0, math.log((n / 2) + 1)]) - math.log(k + 1) for k in range(n)
-        ]
+        utility: np.ndarray = np.array(
+            [np.max([0, math.log((n / 2) + 1)]) - math.log(k + 1) for k in range(n)]
+        )
         utility = utility / np.sum(utility) - 1.0 / n
 
         return order, utility
@@ -197,11 +195,11 @@ class EvolutionStrategies:
     def _update_parameters_of_search_distribution(
         self,
         s: np.ndarray,
-        utility: "np.ndarray[float]",
+        utility: "np.ndarray",
         learning_rate_sigma,
         mu: np.ndarray,
         sigma: np.ndarray,
-    ) -> Tuple["np.ndarray[float]", "np.ndarray[float]"]:
+    ) -> Tuple["np.ndarray", "np.ndarray"]:
         mu += self.learning_rate_mu * sigma * np.dot(utility, s)
         sigma *= np.exp(learning_rate_sigma / 2.0 * np.dot(utility, s ** 2 - 1))
         return mu, sigma
