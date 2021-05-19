@@ -587,7 +587,7 @@ class Genome:
 
     def _select_gene_indices_for_mutation(
         self, mutation_rate: float, rng: np.random.RandomState
-    ) -> List[int]:
+    ) -> np.ndarray:
         """Selects the gene indices for mutations
 
         Parameters
@@ -599,7 +599,7 @@ class Genome:
 
         Returns
         ----------
-        selected_gene_indices: np.ndarray
+        np.ndarray
             indices of the genes selected for mutation.
         """
 
@@ -749,7 +749,9 @@ class Genome:
                 modified_parameter_value = True
         return modified_parameter_value
 
-    def parameters_to_numpy_array(self, only_active_nodes: bool = False) -> "np.ndarray[float]":
+    def parameters_to_numpy_array(
+        self, only_active_nodes: bool = False
+    ) -> Tuple[np.ndarray, List[str]]:
         if only_active_nodes:
             graph = CartesianGraph(self)
             active_regions: List[int] = graph.determine_active_regions()
@@ -760,10 +762,10 @@ class Genome:
                 if region_idx in active_regions:
                     params_names.append(p)
                     params.append(self._parameter_names_to_values[p])
-            return np.fromiter(params, dtype=np.float), params_names
+            return np.fromiter(params, dtype=float), params_names
         else:
             return (
-                np.fromiter(self._parameter_names_to_values.values(), dtype=np.float),
+                np.fromiter(self._parameter_names_to_values.values(), dtype=float),
                 list(self._parameter_names_to_values.keys()),
             )
 
@@ -771,7 +773,7 @@ class Genome:
         return int(re.findall("<[A-z]+([0-9]+)>", parameter_name)[0])
 
     def update_parameters_from_numpy_array(
-        self, params: "np.ndarray[float]", params_names: List[str]
+        self, params: "np.ndarray", params_names: List[str]
     ) -> bool:
         any_parameter_updated: bool = False
         for v, p in zip(params, params_names):

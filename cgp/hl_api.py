@@ -14,8 +14,8 @@ def evolve(
     ea: MuPlusLambda,
     min_fitness: float = np.inf,
     termination_fitness: float = np.inf,
-    max_generations: int = np.inf,
-    max_objective_calls: int = np.inf,
+    max_generations: int = np.iinfo(np.int64).max,
+    max_objective_calls: int = np.iinfo(np.int64).max,
     print_progress: Optional[bool] = False,
     callback: Optional[Callable[[Population], None]] = None,
 ) -> None:
@@ -41,11 +41,12 @@ def evolve(
         Minimum fitness at which the evolution is terminated
     max_generations : int
         Maximum number of generations.
-        Defaults to positive infinity.
-        Either this or `max_objective_calls` needs to be set to a finite value.
+        Defaults to largest representable integer.
+        Either this or `max_objective_calls` needs to be set to a value less than that.
     max_objective_calls: int
         Maximum number of function evaluations.
-        Defaults to positive infinity.
+        Defaults to largest representable integer.
+        Either this or `max_generations` needs to be set to a value less than that.
     print_progress : boolean, optional
         Switch to print out the progress of the algorithm. Defaults to False.
     callback :  callable, optional
@@ -73,15 +74,18 @@ def evolve(
         )
         termination_fitness = min_fitness
 
-    if np.isinf(max_generations) and np.isinf(max_objective_calls):
-        raise ValueError("Either max_generations or max_objective_calls must be finite.")
+    if max_generations == np.iinfo(np.int64).max and max_objective_calls == np.iinfo(np.int64).max:
+        raise ValueError(
+            "Either max_generations or max_objective_calls must be set to a"
+            " value smaller than the largest representable integer."
+        )
 
     ea.initialize_fitness_parents(pop, objective)
     if callback is not None:
         callback(pop)
 
     # perform evolution
-    max_fitness = np.finfo(np.float).min
+    max_fitness = np.finfo(float).min
     # Main loop: -1 offset since the last loop iteration will still increase generation by one
     while pop.generation < max_generations - 1 and ea.n_objective_calls < max_objective_calls:
 
