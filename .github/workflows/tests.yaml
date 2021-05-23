@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.7, 3.8, 3.9]
         dep: ['[all]', '[dev]']
         exclude:
-          - python-version: 3.6
-            dep: "[dev]"
           - python-version: 3.7
+            dep: "[dev]"
+          - python-version: 3.8
             dep: "[dev]"
     steps:
       - name: checkout
