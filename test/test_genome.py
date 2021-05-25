@@ -767,3 +767,85 @@ def test_uninitialized_genome_throws_exception(genome_params):
     genome = cgp.Genome(**genome_params)
     with pytest.raises(RuntimeError):
         CartesianGraph(genome).to_func()
+
+
+def test_splice_dna(genome_params, rng):
+    genome = cgp.Genome(**genome_params)
+
+    with pytest.raises(RuntimeError):
+        genome.splice_dna(new_dna=[1, 2, 3])
+
+    genome.randomize(rng)
+    new_dna = []
+
+    with pytest.raises(ValueError):
+        [] = genome.splice_dna(new_dna)
+
+    new_dna = [0, 0, 1]
+
+    with pytest.raises(ValueError):
+        [] = genome.splice_dna(new_dna, hidden_start_node=-1)
+    with pytest.raises(ValueError):
+        [] = genome.splice_dna(new_dna, hidden_start_node=9)  # only 9 internal nodes
+
+    address_node = genome.splice_dna(new_dna)
+    assert address_node == 2  # 0 + n_inputs
+
+    address_node = genome.splice_dna(new_dna, hidden_start_node=2)
+    assert address_node == 4  # 2 + n_inputs
+
+    dna_insert = [0, 0, 1, 1, 1, 1]
+    address_node = genome.splice_dna(dna_insert)
+    assert address_node == 3  # 1 + n_inputs
+
+    dna_insert = [0, 0, 1, 0]
+    with pytest.raises(ValueError):
+        [] = genome.splice_dna(dna_insert)
+
+
+def test_change_address_gene_of_output_node(genome_params, rng):
+    genome = cgp.Genome(**genome_params)
+    genome.randomize(rng)
+
+    with pytest.raises(ValueError):
+        genome.change_address_gene_of_output_node(new_address=-1, output_node_idx=0)
+        genome.change_address_gene_of_output_node(new_address=10, output_node_idx=0)
+        genome.change_address_gene_of_output_node(new_address=0, output_node_idx=1)
+
+    for new_address in range(9):
+        genome.change_address_gene_of_output_node(new_address)
+        assert genome.dna[-2] == new_address
+
+    genome_params["n_outputs"] = 2
+    genome = cgp.Genome(**genome_params)
+    genome.randomize(rng)
+
+    new_address = 2
+
+    genome.change_address_gene_of_output_node(new_address, output_node_idx=0)
+    assert genome.dna[-5] == new_address
+
+    genome.change_address_gene_of_output_node(new_address, output_node_idx=1)
+    assert genome.dna[-2] == new_address
+
+
+def test_set_expression_for_output(genome_params, rng):
+    sympy = pytest.importorskip("sympy")
+
+    genome = cgp.Genome(**genome_params)
+    genome.randomize(rng)
+
+    new_dna = [0, 0, 1]
+    genome.set_expression_for_output(new_dna)
+
+    x_0 = sympy.symbols("x_0")
+    x_1 = sympy.symbols("x_1")
+    assert CartesianGraph(genome).to_sympy() == x_0 + x_1
+
+    new_dna = [1, 0, 1]
+    genome.set_expression_for_output(new_dna)
+    assert CartesianGraph(genome).to_sympy() == x_0 - x_1
+
+    new_dna = [0, 0, 1, 2, 0, 0, 1, 0, 0, 0, 2, 3]  # x_0+x_1; 1.0; 0; x_0+x_1 + 1.0
+    genome.set_expression_for_output(new_dna)
+    assert CartesianGraph(genome).to_sympy() == x_0 + x_1 + 1.0
