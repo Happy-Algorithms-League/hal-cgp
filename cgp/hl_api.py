@@ -99,13 +99,13 @@ def evolve(
             max_fitness = pop.champion.fitness
 
         if print_progress:
-            if np.isfinite(max_generations):
+            if max_generations < np.iinfo(np.int64).max:
                 print(
                     f"\r[{pop.generation + 1}/{max_generations}] max fitness: {max_fitness}\033[K",
                     end="",
                     flush=True,
                 )
-            elif np.isfinite(max_objective_calls):
+            elif max_objective_calls < np.iinfo(np.int64).max:
                 print(
                     f"\r[{ea.n_objective_calls}/{max_objective_calls}] "
                     f"max fitness: {max_fitness}\033[K",
