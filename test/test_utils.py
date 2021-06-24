@@ -66,7 +66,7 @@ def test_cache_decorator_produces_identical_history(
         def recording_callback(pop):
             history["fitness_champion"].append(pop.champion.fitness)
 
-        cgp.evolve(pop, objective, ea, **evolve_params, callback=recording_callback)
+        cgp.evolve(objective, pop, ea, **evolve_params, callback=recording_callback)
 
         return history
 
@@ -129,7 +129,7 @@ def test_fec_cache_decorator_produces_identical_history(
         def recording_callback(pop):
             history["fitness_champion"].append(pop.champion.fitness)
 
-        cgp.evolve(pop, objective, ea, **evolve_params, callback=recording_callback)
+        cgp.evolve(objective, pop, ea, **evolve_params, callback=recording_callback)
 
         return history
 
@@ -356,7 +356,7 @@ def test_history_recording(population_params, genome_params, ea_params):
         history["fitness_champion"][pop.generation] = pop.champion.fitness
         history["champion"].append(pop.champion)
 
-    cgp.evolve(pop, objective_history_recording, ea, **evolve_params, callback=recording_callback)
+    cgp.evolve(objective_history_recording, pop, ea, **evolve_params, callback=recording_callback)
 
     assert np.all(history["fitness"] == pytest.approx(1.0))
     assert np.all(history["fitness_champion"] == pytest.approx(1.0))

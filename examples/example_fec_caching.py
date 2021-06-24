@@ -113,7 +113,7 @@ ea = cgp.ea.MuPlusLambda(**params["ea_params"])
 # Finally, we call the `evolve` method to perform the evolutionary search.
 
 
-cgp.evolve(pop, objective, ea, **params["evolve_params"], print_progress=True)
+cgp.evolve(objective, pop, ea, **params["evolve_params"], print_progress=True)
 
 
 print(f"evolved function: {pop.champion.to_sympy()}")

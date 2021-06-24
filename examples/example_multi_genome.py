@@ -106,7 +106,7 @@ def recording_callback(pop):
 
 # %%
 # and finally perform the evolution
-cgp.evolve(pop, objective, ea, **evolve_params, print_progress=True, callback=recording_callback)
+cgp.evolve(objective, pop, ea, **evolve_params, print_progress=True, callback=recording_callback)
 
 
 # %%

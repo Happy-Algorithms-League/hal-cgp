@@ -26,30 +26,30 @@ class Genome:
 
     def __init__(
         self,
-        n_inputs: int,
-        n_outputs: int,
-        n_columns: int,
-        n_rows: int,
-        primitives: Tuple[Type[Node], ...],
+        n_inputs: int = 1,
+        n_outputs: int = 1,
+        n_columns: int = 128,
+        n_rows: int = 1,
+        primitives: Optional[Tuple[Type[Node], ...]] = None,
         levels_back: Optional[int] = None,
     ) -> None:
         """Init function.
 
         Parameters
         ----------
-        n_inputs : int
-            Number of inputs of the function represented by the genome.
-        n_outputs : int
-            Number of outputs of the function represented by the genome.
-        n_columns : int
-            Number of columns in the representation of the genome.
-        n_rows : int
-            Number of rows in the representation of the genome.
-        primitives : Tuple[Type[Node], ...]
-           Tuple of primitives that the genome can refer to.
-        levels_back : Optional[int]
+        n_inputs : int, optional
+            Number of inputs of the function represented by the genome. Defaults to 1.
+        n_outputs : int, optional
+            Number of outputs of the function represented by the genome. Defaults to 1.
+        n_columns : int, optional
+            Number of columns in the representation of the genome. Defaults to 12.
+        n_rows : int, optional
+            Number of rows in the representation of the genome. Defaults to 1.
+        primitives : Tuple[Type[Node], ...], optional
+           Tuple of primitives that the genome can refer to. Defaults to (+, -, *, 1.0).
+        levels_back : Optional[int], optional
             Maximal column distance of inputs to an internal node. If
-            set to `None`, no restrictions are used. Defaults to None
+            set to `None`, no restrictions are used. Defaults to None.
 
         """
         if n_inputs <= 0:
@@ -76,7 +76,19 @@ class Genome:
             raise ValueError("levels_back can not be larger than n_columns")
         self._levels_back = levels_back
 
-        self._primitives = Primitives(primitives)
+        if primitives is None:
+            # we need to delay this import to avoid circular imports: node_impl
+            # -> node -> node_validation -> genome
+            from .node_impl import (  # delayed to avoid circular imports
+                Add,
+                ConstantFloat,
+                Mul,
+                Sub,
+            )
+
+            self._primitives = Primitives((Add, Sub, Mul, ConstantFloat))
+        else:
+            self._primitives = Primitives(primitives)
         self._length_per_region = (
             1 + self._primitives.max_arity
         )  # one function gene + multiple address genes

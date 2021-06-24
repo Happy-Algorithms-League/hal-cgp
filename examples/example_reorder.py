@@ -126,12 +126,12 @@ def recording_callback_with_reorder(pop):
 # %%
 # and finally perform the evolution of the two populations
 cgp.evolve(
-    pop, objective, ea, **evolve_params, print_progress=True, callback=recording_callback,
+    objective, pop, ea, **evolve_params, print_progress=True, callback=recording_callback,
 )
 
 cgp.evolve(
-    pop_with_reorder,
     objective,
+    pop_with_reorder,
     ea_with_reorder,
     **evolve_params,
     print_progress=True,

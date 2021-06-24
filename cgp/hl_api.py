@@ -8,39 +8,37 @@ from .population import Population
 
 
 def evolve(
-    pop: Population,
     objective: Callable[[IndividualBase], IndividualBase],
-    ea: MuPlusLambda,
+    pop: Population = Population(),
+    ea: MuPlusLambda = MuPlusLambda(),
     termination_fitness: float = np.inf,
     max_generations: int = np.iinfo(np.int64).max,
     max_objective_calls: int = np.iinfo(np.int64).max,
     print_progress: Optional[bool] = False,
     callback: Optional[Callable[[Population], None]] = None,
-) -> None:
+) -> Population:
     """
     Evolves a population and returns the history of fitness of parents.
 
     Parameters
     ----------
-    pop : Population
-        A population class that will be evolved.
     objective : Callable
         An objective function used for the evolution. Needs to take an
         individual (Individual) as input parameter and return
         a modified individual (with updated fitness).
-    ea : EA algorithm instance
-        The evolution algorithm. Needs to be a class instance with an
-        `initialize_fitness_parents` and `step` method.
-    termination_fitness : float
-        Minimum fitness at which the evolution is terminated.
-    max_generations : int
+    pop : Population, optional
+        A population class that will be evolved. Defaults to population with default parameters.
+    ea : EA algorithm instance, optional
+        The evolutionary algorithm. Defaults to MuPlusLambda.
+    termination_fitness : float, optional
+        Minimum fitness at which the evolution is terminated. Defaults to positive infinity.
+    max_generations : int, optional
         Maximum number of generations.
-        Defaults to largest representable integer.
-        Either this or `max_objective_calls` needs to be set to a value less than that.
-    max_objective_calls: int
+        If neither this nor `max_objective_calls` are set, `max_generations` defaults to 1000.
+    max_objective_calls: int, optional
         Maximum number of function evaluations.
         Defaults to largest representable integer.
-        Either this or `max_generations` needs to be set to a value less than that.
+        If neither this nor `max_generations` are set, `max_generations` defaults to 1000.
     print_progress : boolean, optional
         Switch to print out the progress of the algorithm. Defaults to False.
     callback :  callable, optional
@@ -49,13 +47,11 @@ def evolve(
 
     Returns
     -------
-    None
+    Population
+        The evolved population.
     """
     if max_generations == np.iinfo(np.int64).max and max_objective_calls == np.iinfo(np.int64).max:
-        raise ValueError(
-            "Either max_generations or max_objective_calls must be set to a"
-            " value smaller than the largest representable integer."
-        )
+        max_generations = 1000
 
     ea.initialize_fitness_parents(pop, objective)
     if callback is not None:
@@ -100,3 +96,5 @@ def evolve(
 
     if print_progress:
         print()
+
+    return pop

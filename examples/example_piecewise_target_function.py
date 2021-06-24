@@ -120,7 +120,7 @@ rng = np.random.RandomState(seed=population_params["seed"])
 obj = functools.partial(objective, rng=rng)
 
 # Perform the evolution
-cgp.evolve(pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback)
+cgp.evolve(obj, pop, ea, **evolve_params, print_progress=True, callback=recording_callback)
 
 # %%
 # After the evolutionary search has ended, we print the expression

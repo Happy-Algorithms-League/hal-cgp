@@ -156,7 +156,7 @@ def evolution(f_target):
     obj = functools.partial(objective, target_function=f_target, seed=population_params["seed"])
 
     # Perform the evolution
-    cgp.evolve(pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback)
+    cgp.evolve(obj, pop, ea, **evolve_params, print_progress=True, callback=recording_callback)
     return history, pop.champion
 
 

@@ -13,24 +13,25 @@ class Population:
 
     def __init__(
         self,
-        n_parents: int,
-        seed: int,
-        genome_params: Union[dict, List[dict]],
+        n_parents: int = 4,
+        seed: int = 1234,
+        genome_params: Optional[Union[dict, List[dict]]] = None,
         individual_init: Optional[Callable[[IndividualBase], IndividualBase]] = None,
     ) -> None:
         """Init function.
 
         Parameters
         ----------
-        n_parents : int
-            Number of parent individuals.
-        seed : int
-            Seed for internal random number generator.
+        n_parents : int, optional
+            Number of parent individuals. Defaults to 4.
+        seed : int, optional
+            Seed for internal random number generator. Defaults to 1234.
         genome_params : dict
-            Parameters for the genomes of the population's individuals.
+            Parameters for the genomes of the population's individuals. Defaults to None.
+            If None, default parameters defined in Genome are used.
         individual_init: callable, optional
             If not None, called for each individual of the initial
-            parent population, for example, to set the dna of parents.
+            parent population, for example, to set the dna of parents. Defaults to None.
         """
         self.n_parents = n_parents  # number of individuals in parent population
 
@@ -90,8 +91,12 @@ class Population:
         return idx
 
     def generate_random_individual(self) -> IndividualBase:
-        if isinstance(self._genome_params, dict):
-            genome: Genome = Genome(**self._genome_params)
+        if self._genome_params is None or isinstance(self._genome_params, dict):
+            genome: Genome
+            if self._genome_params is None:
+                genome = Genome()
+            else:
+                genome = Genome(**self._genome_params)
             individual_s = IndividualSingleGenome(
                 genome=genome
             )  # type: IndividualBase # indicates to mypy that

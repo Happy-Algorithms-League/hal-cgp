@@ -145,7 +145,7 @@ obj = functools.partial(objective, seed=population_params["seed"] + 1)
 # %%
 # Finally, we call the `evolve` method to perform the evolutionary search.
 
-cgp.evolve(pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback)
+cgp.evolve(obj, pop, ea, **evolve_params, print_progress=True, callback=recording_callback)
 
 
 # %%

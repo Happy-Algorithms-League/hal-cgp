@@ -19,8 +19,8 @@ class MuPlusLambda:
 
     def __init__(
         self,
-        n_offsprings: int,
-        mutation_rate: float,
+        n_offsprings: int = 4,
+        mutation_rate: float = 0.03,
         *,
         tournament_size: Optional[int] = None,
         n_processes: int = 1,
@@ -33,10 +33,11 @@ class MuPlusLambda:
 
         Parameters
         ----------
-        n_offsprings : int
-            Number of offspring in each iteration.
-        mutation_rate : float
+        n_offsprings : int, optional
+            Number of offspring in each iteration. Defaults to 4.
+        mutation_rate : float, optional
             Probability of a gene to be mutated, between 0 (excluded) and 1 (included).
+            Defaults to 0.03.
         tournament_size : int, optional
             Tournament size in each iteration. Defaults to the number of parents in the population
         n_processes : int, optional
