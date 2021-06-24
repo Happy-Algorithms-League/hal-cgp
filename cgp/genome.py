@@ -95,8 +95,6 @@ class Genome:
         self._permissible_values: List[np.ndarray] = self.determine_permissible_values()
 
     def __getitem__(self, key: int) -> int:
-        if self.dna is None:
-            raise RuntimeError("dna not initialized")
         return self.dna[key]
 
     def __setitem__(self, key: int, value: int) -> None:
@@ -106,6 +104,8 @@ class Genome:
 
     @property
     def dna(self) -> List[int]:
+        if self._dna == []:
+            raise RuntimeError("dna not initialized")
         return list(self._dna)  # return copy to avoid inplace modification
 
     @dna.setter
