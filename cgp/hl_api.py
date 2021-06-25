@@ -1,4 +1,3 @@
-import warnings
 from typing import Callable, Optional
 
 import numpy as np
@@ -12,7 +11,6 @@ def evolve(
     pop: Population,
     objective: Callable[[IndividualBase], IndividualBase],
     ea: MuPlusLambda,
-    min_fitness: float = np.inf,
     termination_fitness: float = np.inf,
     max_generations: int = np.iinfo(np.int64).max,
     max_objective_calls: int = np.iinfo(np.int64).max,
@@ -33,12 +31,8 @@ def evolve(
     ea : EA algorithm instance
         The evolution algorithm. Needs to be a class instance with an
         `initialize_fitness_parents` and `step` method.
-    min_fitness : float
-        Minimum fitness at which the evolution is stopped.
-        Warning: This argument is deprecated and will be removed in the 0.4
-        release. Please use `termination_fitness` instead.
     termination_fitness : float
-        Minimum fitness at which the evolution is terminated
+        Minimum fitness at which the evolution is terminated.
     max_generations : int
         Maximum number of generations.
         Defaults to largest representable integer.
@@ -57,23 +51,6 @@ def evolve(
     -------
     None
     """
-    if np.isfinite(min_fitness) and np.isfinite(termination_fitness):
-        raise RuntimeError(
-            "Both `min_fitness` and `termination_fitness` have been set. The "
-            "`min_fitness` argument is deprecated and will be removed in the 0.4 "
-            "release. Please use `termination_fitness` instead."
-        )
-
-    if np.isfinite(min_fitness):
-        warnings.warn(
-            DeprecationWarning(
-                "The `min_fitness` argument is deprecated and "
-                "will be removed in the 0.4 release. Please use "
-                "`termination_fitness` instead."
-            )
-        )
-        termination_fitness = min_fitness
-
     if max_generations == np.iinfo(np.int64).max and max_objective_calls == np.iinfo(np.int64).max:
         raise ValueError(
             "Either max_generations or max_objective_calls must be set to a"

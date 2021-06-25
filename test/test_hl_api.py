@@ -204,19 +204,3 @@ def test_speedup_parallel_evolve(population_params, genome_params, ea_params):
         else:
             # assert that multiprocessing roughly follows a linear speedup.
             assert T == pytest.approx(T_baseline / n_processes, rel=0.25)
-
-
-def test_min_fitness_deprecation(population_params, genome_params, ea_params):
-    def objective(individual):
-        individual.fitness = 1.0
-        return individual
-
-    pop = cgp.Population(**population_params, genome_params=genome_params)
-    ea = cgp.ea.MuPlusLambda(**ea_params)
-    with pytest.warns(DeprecationWarning):
-        cgp.evolve(pop, objective, ea, min_fitness=2.0, max_generations=10)
-
-    with pytest.raises(RuntimeError):
-        cgp.evolve(
-            pop, objective, ea, min_fitness=2.0, termination_fitness=1.5, max_generations=10
-        )

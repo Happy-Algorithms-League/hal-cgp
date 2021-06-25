@@ -120,7 +120,7 @@ Follow these steps to solve a basic regression problem:
 
       ea_params = {"n_offsprings": 10, "tournament_size": 2, "n_processes": 2}
 
-      evolve_params = {"max_generations": 1000, "min_fitness": 0.0}
+      evolve_params = {"max_generations": 1000, "termination_fitness": 0.0}
 
 3. Initialize a population and an evolutionary algorithm instance:
 
