@@ -766,3 +766,9 @@ def test_ncolumns_zero(rng):
 
     CartesianGraph(genome).to_func()
     CartesianGraph(genome).to_numpy()
+
+
+def test_uninitialized_genome_throws_exception(genome_params):
+    genome = cgp.Genome(**genome_params)
+    with pytest.raises(RuntimeError):
+        CartesianGraph(genome).to_func()
