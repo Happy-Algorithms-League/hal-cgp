@@ -15,9 +15,9 @@ def test_champion(population_simple_fitness):
     assert pop.champion == pop.parents[-1]
 
 
-def test_fitness_parents(population_params, genome_params):
+def test_fitness_parents(population_params, genome_params, rng):
     pop = cgp.Population(**population_params, genome_params=genome_params)
-    fitness_values = np.random.rand(population_params["n_parents"])
+    fitness_values = rng.rand(population_params["n_parents"])
     for fitness, parent in zip(fitness_values, pop.parents):
         parent.fitness = fitness
 

@@ -168,7 +168,7 @@ def test_check_dna_consistency():
         ]
 
 
-def test_permissible_addresses():
+def test_permissible_addresses(rng):
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 4, "n_rows": 3, "levels_back": 2}
 
     primitives = (cgp.Add,)
@@ -180,7 +180,7 @@ def test_permissible_addresses():
         primitives,
         params["levels_back"],
     )
-    genome.randomize(np.random)
+    genome.randomize(rng)
 
     for input_idx in range(params["n_inputs"]):
         region_idx = input_idx
@@ -310,18 +310,16 @@ def test_individuals_have_different_genome(population_params, genome_params, ea_
                 assert parent_i.genome.dna is not parent_j.genome.dna
 
 
-def test_is_gene_in_input_region(rng_seed):
+def test_is_gene_in_input_region(rng):
     genome = cgp.Genome(2, 1, 2, 1, (cgp.Add,))
-    rng = np.random.RandomState(rng_seed)
     genome.randomize(rng)
 
     assert genome._is_gene_in_input_region(0)
     assert not genome._is_gene_in_input_region(6)
 
 
-def test_is_gene_in_hidden_region(rng_seed):
+def test_is_gene_in_hidden_region(rng):
     genome = cgp.Genome(2, 1, 2, 1, (cgp.Add,))
-    rng = np.random.RandomState(rng_seed)
     genome.randomize(rng)
 
     assert genome._is_gene_in_hidden_region(6)
@@ -330,22 +328,20 @@ def test_is_gene_in_hidden_region(rng_seed):
     assert not genome._is_gene_in_hidden_region(12)
 
 
-def test_is_gene_in_output_region(rng_seed):
+def test_is_gene_in_output_region(rng):
     genome = cgp.Genome(2, 1, 2, 1, (cgp.Add,))
-    rng = np.random.RandomState(rng_seed)
     genome.randomize(rng)
 
     assert genome._is_gene_in_output_region(12)
     assert not genome._is_gene_in_output_region(11)
 
 
-def test_mutation_rate(rng_seed, mutation_rate):
+def test_mutation_rate(rng, mutation_rate):
     n_inputs = 1
     n_outputs = 1
     n_columns = 4
     n_rows = 3
     genome = cgp.Genome(n_inputs, n_outputs, n_columns, n_rows, (cgp.Add, cgp.Sub))
-    rng = np.random.RandomState(rng_seed)
     genome.randomize(rng)
 
     def count_n_immutable_genes(n_inputs, n_outputs, n_rows):
@@ -385,9 +381,8 @@ def test_mutation_rate(rng_seed, mutation_rate):
     assert np.std(n_mutations) == pytest.approx(n_mutations_std_expected, rel=0.04)
 
 
-def test_only_silent_mutations(genome_params, mutation_rate, rng_seed):
+def test_only_silent_mutations(genome_params, mutation_rate, rng):
     genome = cgp.Genome(**genome_params)
-    rng = np.random.RandomState(rng_seed)
     genome.randomize(rng)
 
     only_silent_mutations = genome.mutate(mutation_rate=0, rng=rng)

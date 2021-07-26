@@ -12,8 +12,6 @@ def _objective_test_population(individual, rng_seed):
     if not individual.fitness_is_None():
         return individual
 
-    np.random.seed(rng_seed)
-
     n_function_evaluations = 100
 
     f_graph = individual.to_func()
@@ -21,7 +19,8 @@ def _objective_test_population(individual, rng_seed):
     def f_target(x):  # target function
         return x[:, 0] - x[:, 1]
 
-    x = np.random.normal(size=(n_function_evaluations, 2))
+    rng = np.random.RandomState(seed=rng_seed)
+    x = rng.normal(size=(n_function_evaluations, 2))
     y = f_graph(x[:, 0], x[:, 1])
     # y = np.empty(n_function_evaluations)
     # for i, x_i in enumerate(x):
@@ -36,8 +35,6 @@ def _objective_test_population(individual, rng_seed):
 def _test_population(population_params, genome_params, ea_params):
 
     evolve_params = {"max_generations": 2000, "termination_fitness": -1e-12}
-
-    np.random.seed(population_params["seed"])
 
     pop = cgp.Population(**population_params, genome_params=genome_params)
 
@@ -57,7 +54,7 @@ def _test_population(population_params, genome_params, ea_params):
     return history["max_fitness_per_generation"]
 
 
-def test_parallel_population(population_params, genome_params, ea_params):
+def test_parallel_population(population_params, genome_params, ea_params, rng_seed):
     """Test consistent evolution independent of the number of processes.
     """
 
@@ -72,7 +69,7 @@ def test_parallel_population(population_params, genome_params, ea_params):
     assert fitness_per_n_processes[0] == pytest.approx(fitness_per_n_processes[2])
 
 
-def test_evolve_two_expressions(population_params, ea_params):
+def test_evolve_two_expressions(population_params, ea_params, rng_seed):
     """Test evolution of multiple expressions simultaneously.
     """
 
@@ -80,6 +77,8 @@ def test_evolve_two_expressions(population_params, ea_params):
 
         if not individual.fitness_is_None():
             return individual
+
+        rng = np.random.RandomState(rng_seed)
 
         def f0(x):
             return x[0] * (x[0] + x[0])
@@ -93,8 +92,8 @@ def test_evolve_two_expressions(population_params, ea_params):
         loss = 0
         for _ in range(100):
 
-            x0 = np.random.uniform(size=1)
-            x1 = np.random.uniform(size=2)
+            x0 = rng.uniform(size=1)
+            x1 = rng.uniform(size=2)
 
             loss += float((f0(x0) - y0(x0)) ** 2)
             loss += float((f1(x1) - y1(x1[0], x1[1])) ** 2)
@@ -125,8 +124,6 @@ def test_evolve_two_expressions(population_params, ea_params):
 
     evolve_params = {"max_generations": 2000, "termination_fitness": -1e-12}
 
-    np.random.seed(population_params["seed"])
-
     pop = cgp.Population(**population_params, genome_params=genome_params)
 
     ea = cgp.ea.MuPlusLambda(**ea_params)
@@ -154,17 +151,18 @@ def test_finite_max_generations_or_max_objective_calls(
         cgp.evolve(pop, objective, ea, **evolve_params)
 
 
-def _objective_speedup_parallel_evolve(individual):
+def _objective_speedup_parallel_evolve(individual, rng_seed):
 
     time.sleep(0.25)
 
-    individual.fitness = np.random.rand()
+    rng = np.random.RandomState(rng_seed)
+    individual.fitness = rng.rand()
 
     return individual
 
 
 @pytest.mark.skip(reason="Test is not robust against execution in CI.")
-def test_speedup_parallel_evolve(population_params, genome_params, ea_params):
+def test_speedup_parallel_evolve(population_params, genome_params, ea_params, rng_seed):
 
     # use 4 parents and 4 offsprings to achieve even load on 2, 4
     # cores
@@ -180,19 +178,17 @@ def test_speedup_parallel_evolve(population_params, genome_params, ea_params):
     n_calls_objective = population_params["n_parents"] + (
         population_params["n_parents"] + ea_params["n_offsprings"]
     ) * (evolve_params["max_generations"] - 1)
-    np.random.seed(population_params["seed"])
 
     time_per_objective_call = 0.25
 
-    # Serial execution
-
+    obj = functools.partial(_objective_speedup_parallel_evolve, rng_seed=rng_seed)
     for n_processes in [1, 2, 4]:
         pop = cgp.Population(**population_params, genome_params=genome_params)
 
         ea = cgp.ea.MuPlusLambda(**ea_params, n_processes=n_processes)
 
         t0 = time.time()
-        cgp.evolve(pop, _objective_speedup_parallel_evolve, ea, **evolve_params)
+        cgp.evolve(pop, obj, ea, **evolve_params)
         T = time.time() - t0
 
         if n_processes == 1:

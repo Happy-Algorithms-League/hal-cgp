@@ -13,7 +13,7 @@ from cgp.genome import ID_INPUT_NODE, ID_NON_CODING_GENE, ID_OUTPUT_NODE
 
 @pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
 def test_cache_decorator_produces_identical_history(
-    individual_type, rng_seed, population_params, genome_params, ea_params
+    individual_type, population_params, genome_params, ea_params, rng_seed
 ):
     pytest.importorskip("sympy")
 
@@ -24,7 +24,6 @@ def test_cache_decorator_produces_identical_history(
 
     def inner_objective(ind):
         expr = ind.to_sympy()
-        np.random.seed(rng_seed)
 
         if individual_type == "SingleGenome":
             expr_unpacked = expr
@@ -33,8 +32,9 @@ def test_cache_decorator_produces_identical_history(
         else:
             raise NotImplementedError
 
+        rng = np.random.RandomState(rng_seed)
         loss = 0
-        for x in np.random.uniform(size=(5, 2)):
+        for x in rng.uniform(size=(5, 2)):
             loss += (
                 f_target(x) - float(expr_unpacked.subs({"x_0": x[0], "x_1": x[1]}).evalf())
             ) ** 2
@@ -81,7 +81,7 @@ def test_cache_decorator_produces_identical_history(
 
 @pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
 def test_fec_cache_decorator_produces_identical_history(
-    individual_type, rng_seed, population_params, genome_params, ea_params
+    individual_type, population_params, genome_params, ea_params, rng_seed
 ):
 
     evolve_params = {"max_generations": 10, "termination_fitness": 0.0}
@@ -90,7 +90,6 @@ def test_fec_cache_decorator_produces_identical_history(
         return x[:, 0] - x[:, 1]
 
     def inner_objective(ind):
-        np.random.seed(rng_seed)
 
         if individual_type == "SingleGenome":
             f = ind.to_func()
@@ -99,7 +98,8 @@ def test_fec_cache_decorator_produces_identical_history(
         else:
             raise NotImplementedError
 
-        x = np.random.uniform(size=(5, 2))
+        rng = np.random.RandomState(rng_seed)
+        x = rng.uniform(size=(5, 2))
         loss = np.sum((f(x[:, 0], x[:, 1]) - f_target(x)) ** 2)
         return loss
 
@@ -396,11 +396,11 @@ def test_fec_cache_decorator_with_additional_arguments(genome_params, rng, rng_s
         tempfile.mkstemp()[1], compute_key=cgp.utils.compute_key_from_numpy_evaluation_and_args
     )
     def inner_objective(ind, n_samples):
-        np.random.seed(rng_seed)
 
         f = ind.to_func()
 
-        x = np.random.uniform(size=(n_samples, 2))
+        rng_objective = np.random.RandomState(seed=rng_seed)
+        x = rng_objective.uniform(size=(n_samples, 2))
         loss = np.sum((f(x[:, 0], x[:, 1]) - f_target(x)) ** 2)
         return loss
 
