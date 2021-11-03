@@ -235,6 +235,13 @@ class MuPlusLambda:
         use_hurdles=True,
     ) -> List[IndividualBase]:
         def compute_fitness_hurdle(ind_evaluating: List[IndividualBase]) -> float:
+            for ind in ind_evaluating:
+                if ind.fitness_current_objective is None:
+                    raise RuntimeError(
+                        f"fitness of individual {ind.idx} is None"
+                        f" after objective {ind.objective_idx}."
+                    )
+
             return np.percentile(
                 np.unique([ind.fitness_current_objective for ind in ind_evaluating]),
                 self.hurdle_percentile[ind_evaluating[0].objective_idx] * 100,

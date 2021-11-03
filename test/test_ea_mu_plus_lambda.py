@@ -338,3 +338,16 @@ def test_mutate(population_params, genome_params, ea_params):
     assert np.any(
         [off_orig != off_mutated for off_orig, off_mutated in zip(offspring_original, offspring)]
     )
+
+
+def test_objective_must_set_valid_fitness(population_params, genome_params, ea_params):
+    def objective(ind):
+        # missing ind.fitness assignement
+        return ind
+
+    pop = cgp.Population(**population_params, genome_params=genome_params)
+    ea = cgp.ea.MuPlusLambda(**ea_params)
+    with pytest.raises(RuntimeError):
+        cgp.evolve(pop, objective, ea, max_generations=10)
+    with pytest.raises(RuntimeError):
+        pop.champion.fitness

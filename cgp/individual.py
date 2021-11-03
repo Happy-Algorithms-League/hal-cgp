@@ -45,7 +45,10 @@ class IndividualBase:
 
     @property
     def fitness(self) -> float:
-        return sum([f for f in self._fitness if f is not None])
+        fitness_all_objectives: List[float] = [f for f in self._fitness if f is not None]
+        if len(fitness_all_objectives) == 0:
+            raise RuntimeError(f"fitness of individual {self.idx} is None for all objectives.")
+        return sum(fitness_all_objectives)
 
     @fitness.setter
     def fitness(self, v: float) -> None:
