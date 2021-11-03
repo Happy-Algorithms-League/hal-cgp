@@ -65,36 +65,8 @@ def objective(individual):
 
 
 # %%
-# Next, we set up the evolutionary search. We first define the
-# parameters for the population, the genome of individuals, and the
-# evolutionary algorithm.
-
-
-population_params = {"n_parents": 1, "seed": 8188211}
-
-genome_params = {
-    "n_inputs": 1,
-    "n_outputs": 1,
-    "n_columns": 12,
-    "n_rows": 1,
-    "levels_back": 5,
-    "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat),
-}
-
-ea_params = {"n_offsprings": 4, "mutation_rate": 0.03, "n_processes": 2}
-
-evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
-
-# %%
-# We create a population that will be evolved
-pop = cgp.Population(**population_params, genome_params=genome_params)
-
-# %%
-# and an instance of the (mu + lambda) evolutionary algorithm
-ea = cgp.ea.MuPlusLambda(**ea_params)
-
-# %%
-# We define a callback for recording of fitness over generations
+# Next, we set up the evolutionary search. We define a callback for recording
+# of fitness over generations
 history = {}
 history["fitness_champion"] = []
 
@@ -104,8 +76,12 @@ def recording_callback(pop):
 
 
 # %%
-# and finally perform the evolution
-cgp.evolve(pop, objective, ea, **evolve_params, print_progress=True, callback=recording_callback)
+# and finally perform the evolution relying on the libraries default
+# hyperparameters except that we terminate the evolution as soon as one
+# individual has reached fitness zero.
+pop = cgp.evolve(
+    objective, termination_fitness=0.0, print_progress=True, callback=recording_callback
+)
 
 
 # %%

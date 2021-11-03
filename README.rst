@@ -103,33 +103,7 @@ Follow these steps to solve a basic regression problem:
           individual.fitness = ...
 	  return individual
 
-2. Define parameters for the population, the genome, the evolutionary algorithm and the evolve function.
-   
-   .. code-block:: python
-
-      population_params = {"n_parents": 10, "mutation_rate": 0.5, "seed": 8188211}
-
-      genome_params = {
-           "n_inputs": 2,
-   	   "n_outputs": 1,
-	   "n_columns": 10,
-	   "n_rows": 2,
-	   "levels_back": 5,
-	   "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Div, cgp.ConstantFloat),
-	   }
-
-      ea_params = {"n_offsprings": 10, "tournament_size": 2, "n_processes": 2}
-
-      evolve_params = {"max_generations": 1000, "termination_fitness": 0.0}
-
-3. Initialize a population and an evolutionary algorithm instance:
-
-   .. code-block:: python
-
-      pop = cgp.Population(**population_params, genome_params=genome_params)
-      ea = cgp.ea.MuPlusLambda(**ea_params)
-
-4. Define a callback function to record information about the progress of the evolution:
+2. Define a callback function to record information about the progress of the evolution:
 
    .. code-block:: python
 
@@ -138,11 +112,11 @@ Follow these steps to solve a basic regression problem:
       def recording_callback(pop):
           history["fitness_parents"].append(pop.fitness_parents())
 
-5. Use the `evolve` function that ties everything together and executes the evolution:
+3. Use the `evolve` function that uses default hyperparameters and starts the evolution:
 
    .. code-block:: python
 		
-      cgp.evolve(pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback)
+      cgp.evolve(obj, print_progress=True, callback=recording_callback)
 
 .. basic-usage-end
 

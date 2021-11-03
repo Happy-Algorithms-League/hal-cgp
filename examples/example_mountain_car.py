@@ -192,7 +192,7 @@ def evolve(seed):
         n_total_steps=objective_params["n_total_steps"],
     )
 
-    cgp.evolve(pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback)
+    cgp.evolve(obj, pop, ea, **evolve_params, print_progress=True, callback=recording_callback)
 
     return history, pop.champion
 

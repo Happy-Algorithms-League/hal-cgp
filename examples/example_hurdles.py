@@ -155,8 +155,8 @@ def recording_callback(pop):
 # %%
 # and finally perform the evolution
 cgp.evolve(
-    pop,
     [objective_one, objective_two],
+    pop,
     ea,
     **evolve_params,
     print_progress=True,
