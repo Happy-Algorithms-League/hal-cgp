@@ -282,6 +282,113 @@ class Genome:
         # accept generated dna if it is valid
         self.dna = dna
 
+    def splice_dna(self, new_dna: List[int], hidden_start_node: int = 0) -> int:
+        """Splice the dna.
+
+        Replaces a segment of the dna starting from hidden start node with new dna.
+
+        Parameters
+        ----------
+        new_dna: List[int]
+            dna segment to be inserted.
+        hidden_start_node: int, optional
+            Index of the hidden node, where the insert starts.
+            Relative to the first hidden node.
+            Defaults to 0.
+
+        Returns
+        ----------
+        int
+            Address of the last node for which the dna was changed.
+        """
+        if len(new_dna) % self._length_per_region != 0 or len(new_dna) == 0:
+            raise ValueError(
+                f"Length of inserted dna must be a multiple of region "
+                f"length ({self._length_per_region})"
+            )
+
+        n_inserted_nodes = len(new_dna) // self._length_per_region
+
+        if hidden_start_node < 0 or hidden_start_node > self._n_hidden:
+            raise ValueError("hidden_start_node must be non-negative and smaller than n_hidden")
+
+        if hidden_start_node + n_inserted_nodes >= self._n_hidden:
+            raise ValueError("New dna too long")
+
+        dna = self.dna
+
+        start_idx = (self._n_inputs + hidden_start_node) * self._length_per_region
+        end_idx = start_idx + len(new_dna)
+        dna[start_idx:end_idx] = new_dna
+
+        self.dna = dna
+
+        last_inserted_node = self._n_inputs + hidden_start_node + n_inserted_nodes - 1
+
+        return last_inserted_node
+
+    def change_address_gene_of_output_node(self, new_address: int, output_node_idx: int = 0):
+        """Change the address gene of an output node.
+
+        Parameters
+        ----------
+        new_address: int
+            Address of the node from which the output should read.
+        output_node_idx: int
+            Index of the output node for which the address node is changed.
+            Relative to the first output node.
+            Defaults to 0.
+
+        Returns
+        ----------
+        None
+        """
+        if new_address < 0 or new_address > self._n_hidden:
+            raise ValueError("New address not valid; must be the index of a hidden node")
+        if output_node_idx < 0:
+            raise ValueError("Output node index must be non-negative")
+        if output_node_idx > self._n_outputs - 1:
+            raise ValueError("Output node index must be smaller than number of outputs")
+
+        dna = self.dna
+
+        idx_output_address_gene = (
+            self._n_inputs + self._n_hidden + output_node_idx
+        ) * self._length_per_region + 1  # address gene has offset 1
+        dna[idx_output_address_gene] = new_address
+        self.dna = dna
+
+    def set_expression_for_output(
+        self, dna_insert: List[int], hidden_start_node: int = 0, output_node_idx: int = 0
+    ):
+        """Set an expression for one output node
+
+        Replaces part of the dna with user defined values starting from the specified hidden
+        node. Sets the specified output node to read from the last node for which dna was changed.
+
+        Parameters
+        ----------
+        dna_insert: List[int]
+            dna segment to be inserted at the first hidden nodes.
+        hidden_start_node: int
+            Index of the hidden node, where the insert starts.
+            Relative to the first hidden node.
+            Defaults to 0.
+        output_node_idx: int
+            Index of the output node which will read the last node of the insert.
+            Relative to the first output node.
+            Defaults to 0.
+        Returns
+        ----------
+        None
+        """
+
+        last_inserted_node = self.splice_dna(dna_insert, hidden_start_node)
+
+        self.change_address_gene_of_output_node(
+            new_address=last_inserted_node, output_node_idx=output_node_idx
+        )
+
     def reorder(self, rng: np.random.RandomState) -> None:
         """Reorder the genome
 
