@@ -171,11 +171,11 @@ class IndividualBase:
         return genome.update_parameters_from_numpy_array(params, params_names)
 
     def __lt__(self, other: "IndividualBase") -> bool:
-        for i in range(len(self._fitness)):
+        for i in range(len(self._fitness) - 1, -1, -1):
             this_fitness = self._fitness[i]
             other_fitness = other._fitness[i]
             if this_fitness is None and other_fitness is None:
-                return False
+                continue
             elif this_fitness is not None and other_fitness is None:
                 return False
             elif this_fitness is None and other_fitness is not None:
@@ -185,6 +185,8 @@ class IndividualBase:
             assert other_fitness is not None
             if this_fitness < other_fitness:
                 return True
+            else:
+                return False
 
         return False
 
