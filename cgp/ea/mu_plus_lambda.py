@@ -289,6 +289,19 @@ class MuPlusLambda:
         return combined
 
     def _sort(self, combined: List[IndividualBase]) -> List[IndividualBase]:
+        """Sort individuals according to their fitness. Best individuals should appear
+        first, worst last. In the case of multiple objectives used with hurdles
+        sorting should result in individuals being sorted first by the last
+        objective. For example, the population of individuals [(0, 5), (1,
+        None), (2, 4), (3, None)], where each tuple represent the fitness values
+        of an individual on two objectives (<first objective>, <second
+        objective>) should result in [(0, 5), (2, 4), (3, None), (1, None)].
+        WARNING: a stable sorting algorithm must be used since the order of
+        individuals with identical fitness must not be changed to make sure
+        offspring with identical fitness as their parents remain before them in
+        the list of all individuals!
+
+        """
         return sorted(combined, reverse=True)
 
     def _create_new_parent_population(
