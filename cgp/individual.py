@@ -171,9 +171,10 @@ class IndividualBase:
         return genome.update_parameters_from_numpy_array(params, params_names)
 
     def __lt__(self, other: "IndividualBase") -> bool:
-        for i in range(len(self._fitness) - 1, -1, -1):
-            this_fitness = self._fitness[i]
-            other_fitness = other._fitness[i]
+        # determine order of self and other by iterating through fitness values
+        # in reversed order; for multiple objectives seperated by hurdles, this
+        # will try to sort by fitness on later objectives first
+        for this_fitness, other_fitness in zip(reversed(self._fitness), reversed(other._fitness)):
             if this_fitness is None and other_fitness is None:
                 continue
             elif this_fitness is not None and other_fitness is None:
