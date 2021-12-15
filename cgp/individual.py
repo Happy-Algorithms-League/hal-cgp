@@ -55,6 +55,8 @@ class IndividualBase:
         if not isinstance(v, float):
             raise ValueError(f"IndividualBase fitness value is of wrong type {type(v)}.")
 
+        if self._objective_idx > 0:
+            assert self._fitness[self._objective_idx - 1] is not None
         self._fitness[self._objective_idx] = v
 
     @property
