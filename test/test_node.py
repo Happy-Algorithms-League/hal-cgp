@@ -461,7 +461,7 @@ def test_raise_broken_def_output():
 
 
 def test_raise_broken_def_numpy_output():
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
 
         class CustomAdd(cgp.OperatorNode):
             _arity = 2
