@@ -444,3 +444,56 @@ def test_custom_compute_key_for_disk_cache(individual, rng):
     loss1 = inner_objective_custom_compute_key(individual1)
 
     assert loss0 == pytest.approx(loss1)
+
+
+def test_compute_key_from_object():
+    args = (
+        0.5,
+        ("a", 3.14),
+        np.array([0.3, 0.8]),
+        {"a": 3.0, "b": "str", "c": {"d": 4}, 5: 6},
+        True,
+        5,
+    )
+    kwargs = {"kwa": {"a": 3.0, "b": "str", "c": {"d": 4}, 5: 6}, "kwb": 42}
+    key_expected = cgp.utils.__compute_key_from_object(args) + cgp.utils.__compute_key_from_object(
+        kwargs
+    )
+
+    # make sure single change leads to different key
+    args = (
+        0.5,
+        ("a", 3.14),
+        np.array([0.3, 0.8]),
+        {"a": 3.0, "b": "str", "c": {"d": 5}, 5: 6},
+        True,
+        5,
+    )
+    kwargs = {"kwa": {"a": 3.0, "b": "str", "c": {"d": 4}, 5: 6}, "kwb": 42}
+    key = cgp.utils.__compute_key_from_object(args) + cgp.utils.__compute_key_from_object(kwargs)
+    assert key != key_expected
+
+    args = (
+        0.5,
+        ("a", 3.14),
+        np.array([0.3, 0.8]),
+        {"a": 3.0, "b": "str", "d": {"d": 4}, 5: 6},
+        True,
+        5,
+    )
+    kwargs = {"kwa": {"a": 3.0, "b": "str", "c": {"d": 4}, 5: 6}, "kwb": 42}
+    key = cgp.utils.__compute_key_from_object(args) + cgp.utils.__compute_key_from_object(kwargs)
+    assert key != key_expected
+
+    # make sure dict order does not matter
+    args = (
+        0.5,
+        ("a", 3.14),
+        np.array([0.3, 0.8]),
+        {"a": 3.0, "b": "str", "c": {"d": 4}, 5: 6},
+        True,
+        5,
+    )
+    kwargs = {"kwa": {"b": "str", "a": 3.0, "c": {"d": 4}, 5: 6}, "kwb": 42}
+    key = cgp.utils.__compute_key_from_object(args) + cgp.utils.__compute_key_from_object(kwargs)
+    assert key == key_expected

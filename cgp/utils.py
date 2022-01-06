@@ -64,7 +64,8 @@ def compute_key_from_sympy_expr_and_args(*args: Any, **kwargs: Any) -> str:
     ):
         raise ValueError("first argument of decorated function must be an Individual instance")
 
-    s: str = str(args[0].to_sympy()) + str(args[1:]) + str(kwargs)
+    s: str = str(args[0].to_sympy())
+    s += __compute_key_from_object(args[1:]) + __compute_key_from_object(kwargs)
     return hashlib.sha1(s.encode("utf-8")).hexdigest()
 
 
@@ -102,6 +103,7 @@ def compute_key_from_numpy_evaluation_and_args(
 
     rng = np.random.RandomState(seed=_seed)
     ind = args[0]
+    s: str
     if isinstance(ind, IndividualSingleGenome):
         f_single = ind.to_numpy()
         x = [
@@ -123,9 +125,34 @@ def compute_key_from_numpy_evaluation_and_args(
     else:
         assert False  # should never be reached
 
-    s += str(args[1:]) + str(kwargs)
+    s += __compute_key_from_object(args[1:]) + __compute_key_from_object(kwargs)
 
     return hashlib.sha1(s.encode("utf-8")).hexdigest()
+
+
+def __compute_key_from_object(a: Any) -> str:
+    if isinstance(a, str):
+        return a
+    elif isinstance(a, int):
+        return str(a)
+    elif isinstance(a, float):
+        return np.format_float_positional(a)
+    elif isinstance(a, (tuple, list, np.ndarray)):
+        return "".join(__compute_key_from_object(a_i) for a_i in a)
+    elif isinstance(a, dict):
+        # WARNING: we convert all keys to strings
+        # WARNING: we iterate through (string converted) keys in alphabetical
+        # order; two dicts with identical keys but different orders will hence
+        # result in the same key
+        return "".join(
+            str(key_i) + __compute_key_from_object(a[key_i])
+            for key_i in sorted(a, key=lambda k: str(k))
+        )
+    else:
+        raise RuntimeError(
+            f"unsupported type {type(a)} with value `{a}` in arguments to decorated function.\n"
+            "supported types are: str, int, float, tuple, list, np.ndarray, dict."
+        )
 
 
 def __find_result_in_cache_file(fn: str, key: str) -> Optional[float]:
