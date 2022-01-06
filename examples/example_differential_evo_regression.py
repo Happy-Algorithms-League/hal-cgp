@@ -28,7 +28,7 @@ docopt_str = """
 
   Options:
     -h --help
-    --max-generations=<N>  Maximum number of generations [default: 2000]
+    --max-generations=<N>  Maximum number of generations [default: 500]
 
 """
 
@@ -94,26 +94,13 @@ def objective(individual, seed):
 # individuals, the evolutionary algorithm, and the local search.
 
 
-population_params = {"n_parents": 1, "seed": 818821}
+seed = 1234
+genome_params = {"primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Parameter)}
 
-genome_params = {
-    "n_inputs": 1,
-    "n_outputs": 1,
-    "n_columns": 20,
-    "n_rows": 1,
-    "levels_back": None,
-    "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Parameter),
-}
+# apply local search only to the top two individuals
+ea_params = {"k_local_search": 2}
 
-ea_params = {
-    "n_offsprings": 4,
-    "tournament_size": 1,
-    "mutation_rate": 0.05,
-    "n_processes": 1,
-    "k_local_search": 2,
-}
-
-evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
+evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": -1e-8}
 
 # use an uneven number of gradient steps so they can not easily
 # average out for clipped values
@@ -123,7 +110,7 @@ local_search_params = {"lr": 1e-3, "gradient_steps": 9}
 # We then create a Population instance and instantiate the local search
 # and evolutionary algorithm.
 
-pop = cgp.Population(**population_params, genome_params=genome_params)
+pop = cgp.Population(genome_params=genome_params)
 
 # define the function for local search; parameters such as the
 # learning rate and number of gradient steps are fixed via the use
@@ -131,7 +118,7 @@ pop = cgp.Population(**population_params, genome_params=genome_params)
 # population of individuals as input
 local_search = functools.partial(
     cgp.local_search.gradient_based,
-    objective=functools.partial(inner_objective, seed=population_params["seed"]),
+    objective=functools.partial(inner_objective, seed=seed),
     **local_search_params,
 )
 
@@ -151,7 +138,7 @@ def recording_callback(pop):
     history["fitness_parents"].append(pop.fitness_parents())
 
 
-obj = functools.partial(objective, seed=population_params["seed"])
+obj = functools.partial(objective, seed=seed)
 
 # %%
 # Finally, we call the `evolve` method to perform the evolutionary search.

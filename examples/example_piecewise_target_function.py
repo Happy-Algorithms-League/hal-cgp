@@ -58,10 +58,10 @@ def objective(individual, rng):
     if not individual.fitness_is_None():
         return individual
 
-    n_function_evaluations = 1000
+    n_function_evaluations = 10000
 
     f = individual.to_numpy()
-    x = rng.uniform(-5, 5, size=n_function_evaluations)
+    x = rng.uniform(-7, 5, size=n_function_evaluations)
     y = f(x)
 
     loss = np.mean((f_target(x) - y) ** 2)
@@ -72,55 +72,35 @@ def objective(individual, rng):
 
 # %%
 # Next, we set up the evolutionary search. First, we define the parameters for
-# the population, the genomes of individuals, and the evolutionary
-# algorithm.
-population_params = {
-    "n_parents": 1,
-    "seed": 8188211,
-}
+# the genomes of individuals, and the evolutionary algorithm.
+
+seed = 1234
 
 genome_params = {
-    "n_inputs": 1,
-    "n_outputs": 1,
-    "n_columns": 20,
-    "n_rows": 1,
-    "levels_back": None,
     "primitives": (cgp.IfElse, cgp.Mul, cgp.Add, cgp.Sub, cgp.ConstantFloat,),
 }
-
-ea_params = {"n_offsprings": 4, "mutation_rate": 0.03, "n_processes": 2}
 
 evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
 
 # create population that will be evolved
-pop = cgp.Population(**population_params, genome_params=genome_params)
-
-# create instance of evolutionary algorithm
-ea = cgp.ea.MuPlusLambda(**ea_params)
+pop = cgp.Population(genome_params=genome_params)
 
 # define callback for recording of fitness over generations
 history = {}
 history["fitness_champion"] = []
-history["expr_champion"] = []
 
 
 def recording_callback(pop):
     history["fitness_champion"].append(pop.champion.fitness)
-    try:
-        sympy_expression = pop.champion.to_sympy()
-    except TypeError:
-        sympy_expression = pop.champion.to_sympy(simplify=False)
-
-    history["expr_champion"].append(sympy_expression)
 
 
 # the objective passed to evolve should only accept one argument,
 # the individual
-rng = np.random.RandomState(seed=population_params["seed"])
+rng = np.random.RandomState(seed=seed)
 obj = functools.partial(objective, rng=rng)
 
 # Perform the evolution
-cgp.evolve(obj, pop, ea, **evolve_params, print_progress=True, callback=recording_callback)
+pop = cgp.evolve(obj, pop, **evolve_params, print_progress=True, callback=recording_callback)
 
 # %%
 # After the evolutionary search has ended, we print the expression

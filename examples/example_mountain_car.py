@@ -20,7 +20,7 @@ docopt_str = """
 
   Options:
     -h --help
-    --max-generations=<N>  Maximum number of generations [default: 1500]
+    --max-generations=<N>  Maximum number of generations [default: 500]
     --visualize-final-champion  Create animation of final champion in the mountain car env.
 """
 
@@ -147,14 +147,8 @@ def evolve(seed):
 
     objective_params = {"n_runs_per_individual": 3, "n_total_steps": 2000}
 
-    population_params = {"n_parents": 1, "seed": seed}
-
     genome_params = {
         "n_inputs": 2,
-        "n_outputs": 1,
-        "n_columns": 16,
-        "n_rows": 1,
-        "levels_back": None,
         "primitives": (
             cgp.Add,
             cgp.Sub,
@@ -166,14 +160,14 @@ def evolve(seed):
         ),
     }
 
-    ea_params = {"n_offsprings": 4, "tournament_size": 1, "mutation_rate": 0.04, "n_processes": 4}
+    ea_params = {"n_processes": 4}
 
     evolve_params = {
         "max_generations": int(args["--max-generations"]),
         "termination_fitness": 100.0,
     }
 
-    pop = cgp.Population(**population_params, genome_params=genome_params)
+    pop = cgp.Population(genome_params=genome_params)
 
     ea = cgp.ea.MuPlusLambda(**ea_params)
 
@@ -192,7 +186,9 @@ def evolve(seed):
         n_total_steps=objective_params["n_total_steps"],
     )
 
-    cgp.evolve(obj, pop, ea, **evolve_params, print_progress=True, callback=recording_callback)
+    pop = cgp.evolve(
+        obj, pop, ea, **evolve_params, print_progress=True, callback=recording_callback
+    )
 
     return history, pop.champion
 
@@ -208,7 +204,7 @@ def plot_fitness_over_generation_index(history):
     ax.set_xlabel("Generation index")
     ax.set_ylabel("Fitness champion")
     ax.plot(history["fitness_champion"])
-    fig.savefig("example_mountain_car.png", dpi=300)
+    fig.savefig("example_mountain_car.pdf", dpi=300)
 
 
 # %%
@@ -268,7 +264,7 @@ def visualize_behaviour_for_evolutionary_jumps(seed, history, only_final_solutio
             continue
 
         if fitness > max_fitness:
-            expr = history["expr_champion"][i][0]
+            expr = history["expr_champion"][i]
             expr_str = str(expr).replace("x_0", "x").replace("x_1", "dx/dt")
 
             print(f'visualizing behaviour for expression "{expr_str}" (fitness: {fitness:.05f})')
@@ -276,8 +272,8 @@ def visualize_behaviour_for_evolutionary_jumps(seed, history, only_final_solutio
             x_0, x_1 = sympy.symbols("x_0, x_1")
             f_lambdify = sympy.lambdify([x_0, x_1], expr)
 
-            def f(x):
-                return [f_lambdify(x[0], x[1])]
+            def f(x, v):
+                return f_lambdify(x, v)
 
             inner_objective(f, seed, n_runs_per_individual, n_total_steps, render=True)
 
@@ -292,7 +288,7 @@ def visualize_behaviour_for_evolutionary_jumps(seed, history, only_final_solutio
 
 if __name__ == "__main__":
 
-    seed = 818821
+    seed = 1234
 
     print("starting evolution")
     history, champion = evolve(seed)

@@ -78,28 +78,17 @@ def objective(individual, seed):
 
 
 # %%
-# Next, we define the parameters for the population, the genome of
-# individuals, the evolutionary algorithm, and the local search.
+# Next, we define the parameters for the genome of individuals, the evolutionary
+# algorithm, and the local search.
 
-
-population_params = {"n_parents": 1, "seed": 818821}
+seed = 1234
 
 genome_params = {
-    "n_inputs": 1,
-    "n_outputs": 1,
     "n_columns": 36,
-    "n_rows": 1,
-    "levels_back": None,
     "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Parameter),
 }
 
-ea_params = {
-    "n_offsprings": 4,
-    "mutation_rate": 0.05,
-    "tournament_size": 1,
-    "n_processes": 1,
-    "k_local_search": 2,
-}
+ea_params = {"k_local_search": 2}
 
 evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
 
@@ -109,26 +98,27 @@ evolve_params = {"max_generations": int(args["--max-generations"]), "termination
 # number of steps per generation
 local_search_params = {"max_steps": 5}
 
+
 # %%
 # We then create a Population instance and instantiate the local search
 # and evolutionary algorithm.
 
-pop = cgp.Population(**population_params, genome_params=genome_params)
+pop = cgp.Population(genome_params=genome_params)
 
 # define the function for local search; an instance of the
 # EvolutionStrategies can be called with an individual as an argument
 # for which the local search is performed
 local_search = cgp.local_search.EvolutionStrategies(
-    objective=functools.partial(inner_objective, seed=population_params["seed"] + 1),
-    seed=population_params["seed"] + 2,
+    objective=functools.partial(inner_objective, seed=seed + 1234),
+    seed=seed + 12345,
     **local_search_params,
 )
 
 ea = cgp.ea.MuPlusLambda(**ea_params, local_search=local_search)
 
+
 # %%
 #  We define a recording callback closure for bookkeeping of the progression of the evolution.
-
 
 history = {}
 history["champion"] = []
@@ -140,12 +130,13 @@ def recording_callback(pop):
     history["fitness_parents"].append(pop.fitness_parents())
 
 
-obj = functools.partial(objective, seed=population_params["seed"] + 1)
+obj = functools.partial(objective, seed=seed + 123456)
+
 
 # %%
 # Finally, we call the `evolve` method to perform the evolutionary search.
 
-cgp.evolve(obj, pop, ea, **evolve_params, print_progress=True, callback=recording_callback)
+pop = cgp.evolve(obj, pop, ea, **evolve_params, print_progress=True, callback=recording_callback)
 
 
 # %%

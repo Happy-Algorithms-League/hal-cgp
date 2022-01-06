@@ -72,13 +72,13 @@ def objective(individual, target_function, seed):
 
     np.random.seed(seed)
 
-    f_graph = individual.to_numpy()  # generate a NumPy compatible function
+    f = individual.to_numpy()  # generate a NumPy compatible function
     x = np.random.uniform(-4, 4, size=(n_function_evaluations, 2))
     with warnings.catch_warnings():  # ignore warnings due to zero division
         warnings.filterwarnings("ignore", message="divide by zero encountered in true_divide")
         warnings.filterwarnings("ignore", message="invalid value encountered in")
         try:
-            y = f_graph(x[:, 0], x[:, 1])  # pass a vector of values to the function
+            y = f(x[:, 0], x[:, 1])  # pass a vector of values to the function
         except ZeroDivisionError:
             individual.fitness = -np.inf
             return individual
@@ -117,7 +117,7 @@ def evolution(f_target):
     Individual
         Individual with the highest fitness in the last generation
     """
-    population_params = {"n_parents": 10, "seed": 818821}
+    population_params = {"n_parents": 10, "seed": 1234}
 
     genome_params = {
         "n_inputs": 2,
