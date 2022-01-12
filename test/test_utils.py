@@ -240,7 +240,9 @@ def test_cache_decorator(n_processes, individual):
                 _cache_decorator_objective_two_processes, sleep_time=sleep_time
             )
             mpc = mp.get_context("fork")
-            with concurrent.futures.ProcessPoolExecutor(max_workers=n_processes, mp_context=mpc) as executor:
+            with concurrent.futures.ProcessPoolExecutor(
+                max_workers=n_processes, mp_context=mpc
+            ) as executor:
                 return list(executor.map(objective, x))
 
     sleep_time = 1.0
