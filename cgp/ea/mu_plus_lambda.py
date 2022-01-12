@@ -58,10 +58,11 @@ class MuPlusLambda:
             before creating offsprings.
             Defaults to True.
         hurdle_percentile : List[float], optional
-            Specifies which percentile of individuals passes the
-            respective hurdle, i.e., is evaluated on the next
-            objective when providing a list of objectives to be
-            evaluated sequentially.
+            Specifies which percentile of individuals passes the respective
+            hurdle, i.e., which individuals are evaluated on the next objective
+            when providing a list of objectives. Individuals are sorted
+            according to their fitness values starting from the *last* hurdle.
+
         """
         self.n_offsprings = n_offsprings
 
