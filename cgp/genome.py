@@ -8,13 +8,6 @@ from .node import Node, OperatorNode
 from .primitives import Primitives
 
 try:
-    import sympy
-
-    sympy_available = False
-except ModuleNotFoundError:
-    sympy_available = True
-
-try:
     import torch  # noqa: F401
 
     torch_available = True
@@ -368,9 +361,9 @@ class Genome:
     def set_expression_for_output(
         self,
         dna_insert: List[int],
+        target_expression: str,
         hidden_start_node: int = 0,
         output_node_idx: int = 0,
-        target_expression: Optional[str] = None,
     ):
         """Set an expression for one output node
 
@@ -381,6 +374,9 @@ class Genome:
         ----------
         dna_insert: List[int]
             dna segment to be inserted at the first hidden nodes.
+        target_expression: str
+             Expression the output node should compile to. Numbers must be written as float.
+             Defaults to None.
         hidden_start_node: int
             Index of the hidden node, where the insert starts.
             Relative to the first hidden node.
@@ -389,9 +385,6 @@ class Genome:
             Index of the output node which will read the last node of the insert.
             Relative to the first output node.
             Defaults to 0.
-        target_expression: str, optional
-             Expression the output node should compile to. Numbers must be written as float.
-             Defaults to None.
         Returns
         ----------
         None
@@ -402,16 +395,21 @@ class Genome:
         self.change_address_gene_of_output_node(
             new_address=last_inserted_node, output_node_idx=output_node_idx
         )
-        if target_expression is not None:
-            if self._n_outputs > 1:
-                output_as_sympy = CartesianGraph(self).to_sympy()[output_node_idx]
-            else:
-                output_as_sympy = CartesianGraph(self).to_sympy()
+        try:
+            import sympy
 
-            target_expression_as_sympy = sympy.parse_expr(target_expression)
-            if not output_as_sympy == target_expression_as_sympy:
-                print(target_expression_as_sympy, output_as_sympy)
-                raise ValueError("Target expression and set output expression do not match")
+            if target_expression is not None:
+                if self._n_outputs > 1:
+                    output_as_sympy = CartesianGraph(self).to_sympy()[output_node_idx]
+                else:
+                    output_as_sympy = CartesianGraph(self).to_sympy()
+
+                target_expression_as_sympy = sympy.parse_expr(target_expression)
+                if not output_as_sympy == target_expression_as_sympy:
+                    raise ValueError("expression of output and target expression do not match")
+
+        except ModuleNotFoundError:
+            raise Warning("Sympy not available, can not compare written output to target")
 
     def reorder(self, rng: np.random.RandomState) -> None:
         """Reorder the genome

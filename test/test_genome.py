@@ -835,23 +835,25 @@ def test_set_expression_for_output(genome_params, rng):
     genome = cgp.Genome(**genome_params)
     genome.randomize(rng)
 
-    new_dna = [0, 0, 1]
-    genome.set_expression_for_output(new_dna)
-
     x_0 = sympy.symbols("x_0")
     x_1 = sympy.symbols("x_1")
+
+    new_dna = [0, 0, 1]
+    genome.set_expression_for_output(new_dna, target_expression="x_0 + x_1")
     assert CartesianGraph(genome).to_sympy() == x_0 + x_1
 
     new_dna = [1, 0, 1]
-    genome.set_expression_for_output(dna_insert=new_dna, target_expression=" x_0 - x_1")
+    genome.set_expression_for_output(dna_insert=new_dna, target_expression="x_0 - x_1")
     assert CartesianGraph(genome).to_sympy() == x_0 - x_1
 
     new_dna = [0, 0, 1, 2, 0, 0, 1, 0, 0, 0, 2, 3]  # x_0+x_1; 1.0; 0; x_0+x_1 + 1.0
-    genome.set_expression_for_output(dna_insert=new_dna, target_expression=" x_0 + x_1 + 1.0")
+    genome.set_expression_for_output(dna_insert=new_dna, target_expression="x_0 + x_1 + 1.0")
     assert CartesianGraph(genome).to_sympy() == x_0 + x_1 + 1.0
 
     with pytest.raises(ValueError):
-        genome.set_expression_for_output(dna_insert=new_dna, target_expression=" x_0 + x_1 + 1")
+        # setting an int in the str causes an error, since to_sympy() will always treat variables as float
+        genome.set_expression_for_output(dna_insert=new_dna, target_expression="x_0 + x_1 + 1")
+        genome.set_expression_for_output(dna_insert=new_dna, target_expression="x_0 + x_1 8 1.0")
 
     genome2_params = {
         "n_inputs": 2,
@@ -862,6 +864,6 @@ def test_set_expression_for_output(genome_params, rng):
     genome2.randomize(rng)
 
     genome2.set_expression_for_output(
-        new_dna, output_node_idx=1, target_expression=" x_0 + x_1 + 1.0"
+        new_dna, output_node_idx=1, target_expression="x_0 + x_1 + 1.0"
     )
     assert CartesianGraph(genome2).to_sympy()[1] == x_0 + x_1 + 1.0
