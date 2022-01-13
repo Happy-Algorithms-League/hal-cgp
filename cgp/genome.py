@@ -360,8 +360,12 @@ class Genome:
         self.dna = dna
 
     def set_expression_for_output(
-        self, dna_insert: List[int], hidden_start_node: int = 0, output_node_idx: int = 0,
-            target_expression: Optional[str] = None):
+        self,
+        dna_insert: List[int],
+        hidden_start_node: int = 0,
+        output_node_idx: int = 0,
+        target_expression: Optional[str] = None,
+    ):
         """Set an expression for one output node
 
         Replaces part of the dna with user defined values starting from the specified hidden
@@ -401,7 +405,7 @@ class Genome:
             target_expression_as_sympy = sympy.parse_expr(target_expression)
             if not output_as_sympy == target_expression_as_sympy:
                 print(target_expression_as_sympy, output_as_sympy)
-                raise ValueError('Target expression and set output expression do not match')
+                raise ValueError("Target expression and set output expression do not match")
 
     def reorder(self, rng: np.random.RandomState) -> None:
         """Reorder the genome
