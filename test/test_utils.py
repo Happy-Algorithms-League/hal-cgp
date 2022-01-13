@@ -264,12 +264,12 @@ def test_cache_decorator(n_processes, individual):
     assert (time.time() - t0) > (0.9 * sleep_time)
 
     # second call should be faster as result is retrieved from cache;
-    # at most 40% of the sleep time; to account for possible timing
+    # at most 50% of the sleep time; to account for possible timing
     # measurement inaccuracies and process spin up/down time in
     # TravisCI we should not choose less
     t0 = time.time()
     evaluate_objective_on_list(x)
-    assert (time.time() - t0) < (0.4 * sleep_time)
+    assert (time.time() - t0) < (0.5 * sleep_time)
 
 
 def test_cache_decorator_consistency(individual):
