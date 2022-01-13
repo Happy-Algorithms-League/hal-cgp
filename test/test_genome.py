@@ -851,7 +851,7 @@ def test_set_expression_for_output(genome_params, rng):
     assert CartesianGraph(genome).to_sympy() == x_0 + x_1 + 1.0
 
     with pytest.raises(ValueError):
-        # setting an int in the str causes an error, since to_sympy() will always treat variables as float
+        # setting an int in the str causes an error
         genome.set_expression_for_output(dna_insert=new_dna, target_expression="x_0 + x_1 + 1")
         genome.set_expression_for_output(dna_insert=new_dna, target_expression="x_0 + x_1 8 1.0")
 
