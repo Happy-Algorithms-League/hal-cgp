@@ -26,7 +26,6 @@ class MuPlusLambda:
         n_processes: int = 1,
         local_search: Optional[Callable[[IndividualBase], None]] = None,
         k_local_search: Optional[int] = None,
-        reorder_genome: bool = False,
         hurdle_percentile: List = [0.0],
     ):
         """Init function
@@ -50,13 +49,6 @@ class MuPlusLambda:
         k_local_search : int
             Number of individuals in the whole population (parents +
             offsprings) to apply local search to.
-       reorder_genome : bool, optional
-            Whether genome reordering should be applied.
-            Reorder shuffles the genotype of an individual without changing its phenotype,
-            thereby contributing to neutral drift through the genotypic search space.
-            If True, reorder is applied to each parents genome at every generation
-            before creating offsprings.
-            Defaults to True.
         hurdle_percentile : List[float], optional
             Specifies which percentile of individuals passes the respective
             hurdle, i.e., which individuals are evaluated on the next objective
@@ -75,7 +67,6 @@ class MuPlusLambda:
         self.n_processes = n_processes
         self.local_search = local_search
         self.k_local_search = k_local_search
-        self.reorder_genome = reorder_genome
         self.hurdle_percentile = hurdle_percentile
 
         self.process_pool: Optional["mp.pool.Pool"]
@@ -127,7 +118,7 @@ class MuPlusLambda:
             Modified population with new parents.
         """
 
-        if self.reorder_genome:
+        if pop.reorder_genome_bool:
             pop.reorder_genome()
 
         offsprings = self._create_new_offspring_generation(pop)

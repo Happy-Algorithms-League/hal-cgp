@@ -17,6 +17,7 @@ class Population:
         seed: int = 1234,
         genome_params: Optional[Union[dict, List[dict]]] = None,
         individual_init: Optional[Callable[[IndividualBase], IndividualBase]] = None,
+        reorder_genome_bool: bool = True,
     ) -> None:
         """Init function.
 
@@ -32,6 +33,13 @@ class Population:
         individual_init: callable, optional
             If not None, called for each individual of the initial
             parent population, for example, to set the dna of parents. Defaults to None.
+        reorder_genome_bool : bool, optional
+            Whether genome reordering should be applied.
+            Reorder shuffles the genotype of an individual without changing its phenotype,
+            thereby contributing to neutral drift through the genotypic search space.
+            If True, reorder is applied to each parents genome at every generation
+            in the evolutionary algorithm before creating offsprings.
+            Defaults to True.
         """
         self.n_parents = n_parents  # number of individuals in parent population
 
@@ -51,6 +59,27 @@ class Population:
             raise TypeError("individual_init must be a callable")
 
         self._generate_random_parent_population(individual_init)
+
+        self.reorder_genome_bool = reorder_genome_bool
+
+        # check if the reorder default is incompatible and in case set it to False
+        if isinstance(genome_params, dict):
+            if ("n_rows" in genome_params and genome_params["n_rows"] != 1) or (
+                "levels_back" in genome_params
+                and "n_columns" in genome_params
+                and genome_params["levels_back"] != genome_params["n_columns"]
+            ):
+
+                self.reorder_genome_bool = False
+
+        elif isinstance(self._genome_params, list):
+            for genome_param in self._genome_params:
+                if ("n_rows" in genome_param and genome_param["n_rows"] != 1) or (
+                    "levels_back" in genome_param
+                    and "n_columns" in genome_param
+                    and genome_param["levels_back"] != genome_param["n_columns"]
+                ):
+                    self.reorder_genome_bool = False
 
     @property
     def champion(self) -> IndividualBase:
@@ -133,5 +162,6 @@ class Population:
         ---------
         None
         """
+        assert self.reorder_genome_bool
         for parent in self.parents:
             parent.reorder_genome(self.rng)

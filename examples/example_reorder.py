@@ -74,7 +74,7 @@ def objective(individual):
 # evolutionary algorithms without (default) and with genome reordering.
 
 
-population_params = {"n_parents": 1, "seed": 818821}
+population_params = {"n_parents": 1, "reorder_genome_bool": True, "seed": 818821}
 
 genome_params = {
     "n_inputs": 1,
@@ -90,7 +90,6 @@ ea_params_with_reorder = {
     "n_offsprings": 4,
     "mutation_rate": 0.03,
     "n_processes": 2,
-    "reorder_genome": True,
 }
 
 evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
