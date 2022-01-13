@@ -325,3 +325,22 @@ def test_clone_copies_user_defined_attributes(individual_type, genome_params, rn
 
     assert ind.my_attribute == my_attribute
     assert ind_clone.my_attribute == my_attribute
+
+
+@pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
+def test_raise_error_for_impossible_setting_fitness(individual_type, genome_params, rng):
+    genome = cgp.Genome(**genome_params)
+    genome.randomize(rng)
+    ind = _create_individual(genome, individual_type=individual_type)
+    ind.objective_idx = 0
+    ind.fitness = 1.0
+    # ind has now a fitness array [1.0]
+    ind.objective_idx = 1
+    # ind has now a fitness array [1.0, None]
+    ind.objective_idx = 2
+    # ind has would have a fitness array [1.0, None, 1.0], which should not be
+    # allowed
+    with pytest.raises(AssertionError):
+        ind.fitness = 1.0
+    # hence, ind should have fitness array [1.0, None, None]
+    assert ind._fitness == [1.0, None, None]

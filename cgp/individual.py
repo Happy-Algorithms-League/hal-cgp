@@ -55,6 +55,8 @@ class IndividualBase:
         if not isinstance(v, float):
             raise ValueError(f"IndividualBase fitness value is of wrong type {type(v)}.")
 
+        if self._objective_idx > 0:
+            assert self._fitness[self._objective_idx - 1] is not None
         self._fitness[self._objective_idx] = v
 
     @property
@@ -171,11 +173,12 @@ class IndividualBase:
         return genome.update_parameters_from_numpy_array(params, params_names)
 
     def __lt__(self, other: "IndividualBase") -> bool:
-        for i in range(len(self._fitness)):
-            this_fitness = self._fitness[i]
-            other_fitness = other._fitness[i]
+        # determine order of self and other by iterating through fitness values
+        # in reversed order; for multiple objectives seperated by hurdles, this
+        # will try to sort by fitness on later objectives first
+        for this_fitness, other_fitness in zip(reversed(self._fitness), reversed(other._fitness)):
             if this_fitness is None and other_fitness is None:
-                return False
+                continue
             elif this_fitness is not None and other_fitness is None:
                 return False
             elif this_fitness is None and other_fitness is not None:
@@ -185,6 +188,8 @@ class IndividualBase:
             assert other_fitness is not None
             if this_fitness < other_fitness:
                 return True
+            else:
+                return False
 
         return False
 

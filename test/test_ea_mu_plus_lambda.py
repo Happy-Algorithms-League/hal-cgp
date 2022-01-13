@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 import cgp
+from cgp import IndividualSingleGenome
 
 
 def test_assert_mutation_rate(n_offsprings, mutation_rate):
@@ -351,3 +352,36 @@ def test_objective_must_set_valid_fitness(population_params, genome_params, ea_p
         cgp.evolve(objective, pop, ea, max_generations=10)
     with pytest.raises(RuntimeError):
         pop.champion.fitness
+
+
+def test_sort_with_hurdles():
+    # one objective: fittest individual should be first
+    ind0 = IndividualSingleGenome([])
+    ind0._fitness = [0]
+    ind1 = IndividualSingleGenome([])
+    ind1._fitness = [1]
+    ind2 = IndividualSingleGenome([])
+    ind2._fitness = [2]
+    ind3 = IndividualSingleGenome([])
+    ind3._fitness = [3]
+    individuals = [ind0, ind1, ind2, ind3]
+    ea = cgp.ea.MuPlusLambda()
+    sorted_individuals = ea._sort(individuals)
+    expected = [[3], [2], [1], [0]]
+    assert [ind._fitness for ind in sorted_individuals] == expected
+
+    # two objective with hurdle: individuals which pass more hurdles should come
+    # first, in each hurdle sorted by their fitness
+    ind0 = IndividualSingleGenome([])
+    ind0._fitness = [0, 5]
+    ind1 = IndividualSingleGenome([])
+    ind1._fitness = [1, None]
+    ind2 = IndividualSingleGenome([])
+    ind2._fitness = [2, 4]
+    ind3 = IndividualSingleGenome([])
+    ind3._fitness = [3, None]
+    individuals = [ind0, ind1, ind2, ind3]
+    ea = cgp.ea.MuPlusLambda()
+    sorted_individuals = ea._sort(individuals)
+    expected = [[0, 5], [2, 4], [3, None], [1, None]]
+    assert [ind._fitness for ind in sorted_individuals] == expected
