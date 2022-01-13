@@ -2,11 +2,17 @@ import re
 from typing import Dict, Generator, List, Optional, Set, Tuple, Type
 
 import numpy as np
-import sympy
 
 from .cartesian_graph import CartesianGraph
 from .node import Node, OperatorNode
 from .primitives import Primitives
+
+try:
+    import sympy
+
+    sympy_available = False
+except ModuleNotFoundError:
+    sympy_available = True
 
 try:
     import torch  # noqa: F401
