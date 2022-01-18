@@ -17,7 +17,9 @@ jobs:
         dep: ['[all]', '[dev]']
         exclude:
           - os: macos-11
-            python-version: [3.7, 3.8]
+            python-version: 3.7
+          - os: macos-11
+            python-version: 3.8
           - python-version: 3.7
             dep: "[dev]"
           - python-version: 3.8
