@@ -399,7 +399,9 @@ class Genome:
             import sympy
 
         except ModuleNotFoundError:
-            raise ModuleNotFoundError("Can not check output expression. No module named 'sympy' (extra requirement)")
+            raise ModuleNotFoundError(
+                "Can not check output expression. No module named 'sympy' (extra requirement)"
+            )
 
         if target_expression is not None:
             if self._n_outputs > 1:
