@@ -72,7 +72,7 @@ def objective(individual, target_function, seed):
 
     np.random.seed(seed)
 
-    f_graph = individual.to_func()
+    f = individual.to_func()
     y = np.empty(n_function_evaluations)
     x = np.random.uniform(-4, 4, size=(n_function_evaluations, 2))
     for i, x_i in enumerate(x):
@@ -84,7 +84,7 @@ def objective(individual, target_function, seed):
                 "ignore", message="invalid value encountered in double_scalars"
             )
             try:
-                y[i] = f_graph(x_i[0], x_i[1])
+                y[i] = f(x_i[0], x_i[1])
             except ZeroDivisionError:
                 individual.fitness = -np.inf
                 return individual
@@ -123,7 +123,7 @@ def evolution(f_target):
     Individual
         Individual with the highest fitness in the last generation
     """
-    population_params = {"n_parents": 10, "seed": 818821}
+    population_params = {"n_parents": 10, "seed": 1234}
 
     genome_params = {
         "n_inputs": 2,

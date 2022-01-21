@@ -15,7 +15,7 @@ docopt_str = """
 
    Options:
      -h --help
-     --max-generations=<N>  Maximum number of generations [default: 300]
+     --max-generations=<N>  Maximum number of generations [default: 1000]
 """
 
 import matplotlib.pyplot as plt
@@ -49,50 +49,41 @@ def objective(individual):
     if not individual.fitness_is_None():
         return individual
 
-    n_function_evaluations = 1000
+    n_function_evaluations = 10000
 
-    np.random.seed(1234)
+    np.random.seed(12345)
 
     # Note that f is now a list of functions because individual is an instance
     # of `InvidividualMultiGenome`
     f = individual.to_numpy()
     x = np.random.uniform(-4, 4, n_function_evaluations)
     y = np.piecewise(x, [x < 0, x >= 0], f)
-    loss = np.sum((f_target(x) - y) ** 2)
-    individual.fitness = -loss / n_function_evaluations
+    loss = np.mean((f_target(x) - y) ** 2)
+    individual.fitness = -loss
     return individual
 
 
 # %%
 # Next, we set up the evolutionary search. First, we define the parameters for
-# the population, the genomes of individuals, and the evolutionary
+# the genomes of individuals, and the evolutionary
 # algorithm. Note that we define ``genome_params`` as a list of parameter
 # dictionaries which causes the population to create instances of
 # ``InvidividualMultiGenome``.
 
-population_params = {"n_parents": 1, "seed": 8188211}
+seed = 1234
 
 single_genome_params = {
-    "n_inputs": 1,
-    "n_outputs": 1,
-    "n_columns": 12,
-    "n_rows": 1,
-    "levels_back": 5,
     "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat),
 }
 genome_params = [single_genome_params, single_genome_params]
 
-ea_params = {"n_offsprings": 4, "mutation_rate": 0.03, "n_processes": 1}
-
 evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
+
 
 # %%
 # We create a population that will be evolved
-pop = cgp.Population(**population_params, genome_params=genome_params)
+pop = cgp.Population(genome_params=genome_params)
 
-# %%
-# and an instance of the (mu + lambda) evolutionary algorithm
-ea = cgp.ea.MuPlusLambda(**ea_params)
 
 # %%
 # We define a callback for recording of fitness over generations
@@ -106,7 +97,7 @@ def recording_callback(pop):
 
 # %%
 # and finally perform the evolution
-cgp.evolve(objective, pop, ea, **evolve_params, print_progress=True, callback=recording_callback)
+pop = cgp.evolve(objective, pop, **evolve_params, print_progress=True, callback=recording_callback)
 
 
 # %%
