@@ -9,11 +9,11 @@ from cgp.genome import ID_INPUT_NODE, ID_NON_CODING_GENE, ID_OUTPUT_NODE
 
 
 def test_check_dna_consistency():
-    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1}
+    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1}
 
     primitives = (cgp.Add,)
     genome = cgp.Genome(
-        params["n_inputs"], params["n_outputs"], params["n_columns"], params["n_rows"], primitives,
+        params["n_inputs"], params["n_outputs"], params["n_columns"], primitives,
     )
     genome.dna = [
         ID_INPUT_NODE,
@@ -169,16 +169,14 @@ def test_check_dna_consistency():
 
 
 def test_permissible_addresses(rng):
-    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 4, "n_rows": 3, "levels_back": 2}
+    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 4,}
 
     primitives = (cgp.Add,)
     genome = cgp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
-        params["n_rows"],
         primitives,
-        params["levels_back"],
     )
     genome.randomize(rng)
 
@@ -189,28 +187,28 @@ def test_permissible_addresses(rng):
 
     expected_for_hidden = [
         [0, 1],
-        [0, 1, 2, 3, 4],
-        [0, 1, 2, 3, 4, 5, 6, 7],
-        [0, 1, 5, 6, 7, 8, 9, 10],
+        [0, 1, 2],
+        [0, 1, 2, 3],
+        [0, 1, 2, 3, 4]
     ]
 
     for column_idx in range(params["n_columns"]):
-        region_idx = params["n_inputs"] + params["n_rows"] * column_idx
+        region_idx = params["n_inputs"] + column_idx
         assert expected_for_hidden[column_idx] == genome._permissible_addresses(region_idx)
 
-    expected_for_output = list(range(params["n_inputs"] + params["n_rows"] * params["n_columns"]))
+    expected_for_output = list(range(params["n_inputs"] + params["n_columns"]))
 
     for output_idx in range(params["n_outputs"]):
-        region_idx = params["n_inputs"] + params["n_rows"] * params["n_columns"] + output_idx
+        region_idx = params["n_inputs"] + params["n_columns"] + output_idx
         assert expected_for_output == genome._permissible_addresses(region_idx)
 
 
 def test_region_iterators():
-    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1, "n_rows": 1}
+    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1}
 
     primitives = (cgp.Add,)
     genome = cgp.Genome(
-        params["n_inputs"], params["n_outputs"], params["n_columns"], params["n_rows"], primitives,
+        params["n_inputs"], params["n_outputs"], params["n_columns"], primitives,
     )
     genome.dna = [
         ID_INPUT_NODE,
@@ -237,47 +235,9 @@ def test_region_iterators():
         assert region == [ID_OUTPUT_NODE, 0, ID_NON_CODING_GENE]
 
 
-def test_check_levels_back_consistency():
-    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 4, "n_rows": 3, "levels_back": None}
-
-    primitives = (cgp.Add,)
-
-    params["levels_back"] = 0
-    with pytest.raises(ValueError):
-        cgp.Genome(
-            params["n_inputs"],
-            params["n_outputs"],
-            params["n_columns"],
-            params["n_rows"],
-            primitives,
-            params["levels_back"],
-        )
-
-    params["levels_back"] = params["n_columns"] + 1
-    with pytest.raises(ValueError):
-        cgp.Genome(
-            params["n_inputs"],
-            params["n_outputs"],
-            params["n_columns"],
-            params["n_rows"],
-            primitives,
-            params["levels_back"],
-        )
-
-    params["levels_back"] = params["n_columns"] - 1
-    cgp.Genome(
-        params["n_inputs"],
-        params["n_outputs"],
-        params["n_columns"],
-        params["n_rows"],
-        primitives,
-        params["levels_back"],
-    )
-
-
 def test_catch_invalid_allele_in_inactive_region():
     primitives = (cgp.ConstantFloat,)
-    genome = cgp.Genome(1, 1, 1, 1, primitives)
+    genome = cgp.Genome(1, 1, 1, primitives)
 
     # should raise error: ConstantFloat node has no addresses, but silent
     # address gene should still specify valid address
@@ -311,7 +271,7 @@ def test_individuals_have_different_genome(population_params, genome_params, ea_
 
 
 def test_is_gene_in_input_region(rng):
-    genome = cgp.Genome(2, 1, 2, 1, (cgp.Add,))
+    genome = cgp.Genome(2, 1, 2, (cgp.Add,))
     genome.randomize(rng)
 
     assert genome._is_gene_in_input_region(0)
@@ -319,7 +279,7 @@ def test_is_gene_in_input_region(rng):
 
 
 def test_is_gene_in_hidden_region(rng):
-    genome = cgp.Genome(2, 1, 2, 1, (cgp.Add,))
+    genome = cgp.Genome(2, 1, 2, (cgp.Add,))
     genome.randomize(rng)
 
     assert genome._is_gene_in_hidden_region(6)
@@ -329,7 +289,7 @@ def test_is_gene_in_hidden_region(rng):
 
 
 def test_is_gene_in_output_region(rng):
-    genome = cgp.Genome(2, 1, 2, 1, (cgp.Add,))
+    genome = cgp.Genome(2, 1, 2, (cgp.Add,))
     genome.randomize(rng)
 
     assert genome._is_gene_in_output_region(12)
@@ -340,20 +300,18 @@ def test_mutation_rate(rng, mutation_rate):
     n_inputs = 1
     n_outputs = 1
     n_columns = 4
-    n_rows = 3
-    genome = cgp.Genome(n_inputs, n_outputs, n_columns, n_rows, (cgp.Add, cgp.Sub))
+    genome = cgp.Genome(n_inputs, n_outputs, n_columns, (cgp.Add, cgp.Sub))
     genome.randomize(rng)
 
-    def count_n_immutable_genes(n_inputs, n_outputs, n_rows):
+    def count_n_immutable_genes(n_inputs, n_outputs):
         length_per_region = genome.primitives.max_arity + 1  # function gene + address gene
         n_immutable_genes = n_inputs * length_per_region  # none of the input genes are mutable
         n_immutable_genes += n_outputs * (
             length_per_region - 1
         )  # only one gene per output can be mutated
         if n_inputs == 1:
-            n_immutable_genes += (
-                n_rows * genome.primitives.max_arity
-            )  # address gene in the first (hidden) column can't be mutated
+            n_immutable_genes += genome.primitives.max_arity
+            # address gene in the first (hidden) column can't be mutated
             # if only one input node exists
         return n_immutable_genes
 
@@ -364,7 +322,7 @@ def test_mutation_rate(rng, mutation_rate):
                 n_differences += 1
         return n_differences
 
-    n_immutable_genes = count_n_immutable_genes(n_inputs, n_outputs, n_rows)
+    n_immutable_genes = count_n_immutable_genes(n_inputs, n_outputs)
     n_mutations_mean_expected = mutation_rate * (len(genome.dna) - n_immutable_genes)
     n_mutations_std_expected = np.sqrt(
         (len(genome.dna) - n_immutable_genes) * mutation_rate * (1 - mutation_rate)
@@ -400,24 +358,6 @@ def test_only_silent_mutations(genome_params, mutation_rate, rng):
         ID_NON_CODING_GENE,
         2,
         1,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
         0,
         0,
         0,
@@ -467,16 +407,16 @@ def test_permissible_values(genome_params):
     n_inputs = 2
     n_outputs = 1
     n_columns = 3
-    n_rows = 3
-    levels_back = 2
+    # n_rows = 3
+    # levels_back = 2
     primitives = (cgp.Add, cgp.Sub, cgp.ConstantFloat)
-    genome = cgp.Genome(n_inputs, n_outputs, n_columns, n_rows, primitives, levels_back)
+    genome = cgp.Genome(n_inputs, n_outputs, n_columns, primitives)
 
     permissible_function_gene_values = np.arange(len(genome._primitives._primitives))
     permissible_addresses_first_internal_column = np.array([0, 1])
-    permissible_addresses_second_internal_column = np.array([0, 1, 2, 3, 4])
-    permissible_addresses_third_internal_column = np.array([0, 1, 2, 3, 4, 5, 6, 7])
-    permissible_addresses_output = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    permissible_addresses_second_internal_column = np.array([0, 1, 2])
+    permissible_addresses_third_internal_column = np.array([0, 1, 2, 3])
+    permissible_addresses_output = np.array([0, 1, 2, 3, 4])
 
     permissible_values_expected = [
         np.array(ID_INPUT_NODE),
@@ -489,26 +429,8 @@ def test_permissible_values(genome_params):
         permissible_addresses_first_internal_column,
         permissible_addresses_first_internal_column,
         permissible_function_gene_values,
-        permissible_addresses_first_internal_column,
-        permissible_addresses_first_internal_column,
-        permissible_function_gene_values,
-        permissible_addresses_first_internal_column,
-        permissible_addresses_first_internal_column,
-        permissible_function_gene_values,
         permissible_addresses_second_internal_column,
         permissible_addresses_second_internal_column,
-        permissible_function_gene_values,
-        permissible_addresses_second_internal_column,
-        permissible_addresses_second_internal_column,
-        permissible_function_gene_values,
-        permissible_addresses_second_internal_column,
-        permissible_addresses_second_internal_column,
-        permissible_function_gene_values,
-        permissible_addresses_third_internal_column,
-        permissible_addresses_third_internal_column,
-        permissible_function_gene_values,
-        permissible_addresses_third_internal_column,
-        permissible_addresses_third_internal_column,
         permissible_function_gene_values,
         permissible_addresses_third_internal_column,
         permissible_addresses_third_internal_column,
@@ -544,7 +466,6 @@ def test_genome_reordering_empirically(rng):
         "n_inputs": 2,
         "n_outputs": 1,
         "n_columns": 14,
-        "n_rows": 1,
         "primitives": (cgp.Mul, cgp.Sub, cgp.Add, cgp.ConstantFloat, cgp.Parameter),
     }
 
@@ -618,40 +539,10 @@ def test_genome_reordering_empirically(rng):
         assert sympy_expression_after_reorder == sympy_expression
 
 
-def test_genome_reordering_parameterization_consistency(rng):
-
-    genome_params = {
-        "n_inputs": 2,
-        "n_outputs": 1,
-        "n_columns": 10,
-        "n_rows": 2,
-        "primitives": (cgp.Mul, cgp.Sub, cgp.Add, cgp.ConstantFloat),
-    }
-
-    genome = cgp.Genome(**genome_params)
-
-    with pytest.raises(ValueError):
-        genome.reorder(rng)
-
-    genome_params = {
-        "n_inputs": 2,
-        "n_outputs": 1,
-        "n_columns": 10,
-        "n_rows": 1,
-        "primitives": (cgp.Mul, cgp.Sub, cgp.Add, cgp.ConstantFloat),
-        "levels_back": 5,
-    }
-
-    genome = cgp.Genome(**genome_params)
-
-    with pytest.raises(ValueError):
-        genome.reorder(rng)
-
-
 def test_parameters_to_numpy_array():
 
     primitives = (cgp.Parameter,)
-    genome = cgp.Genome(1, 1, 2, 1, primitives)
+    genome = cgp.Genome(1, 1, 2, primitives)
     # [f0(x), f1(x)] = [c1, c2]
     genome.dna = [
         ID_INPUT_NODE,
@@ -684,7 +575,7 @@ def test_parameters_to_numpy_array():
 def test_update_parameters_from_numpy_array():
 
     primitives = (cgp.Parameter,)
-    genome = cgp.Genome(1, 1, 2, 1, primitives)
+    genome = cgp.Genome(1, 1, 2, primitives)
     # [f0(x), f1(x)] = [c1, c2]
     genome.dna = [
         ID_INPUT_NODE,
@@ -715,7 +606,7 @@ def test_update_parameters_from_numpy_array():
 
 def test_parameters_numpy_array_consistency():
     primitives = (cgp.Parameter,)
-    genome = cgp.Genome(1, 1, 2, 1, primitives)
+    genome = cgp.Genome(1, 1, 2, primitives)
     # [f0(x), f1(x)] = [c1, c2]
     genome.dna = [
         ID_INPUT_NODE,
@@ -753,7 +644,6 @@ def test_ncolumns_zero(rng):
         "n_inputs": 1,
         "n_outputs": 1,
         "n_columns": 0,
-        "n_rows": 1,
         "primitives": (cgp.Mul, cgp.Sub, cgp.Add, cgp.ConstantFloat),
     }
     genome = cgp.Genome(**genome_params)
@@ -786,13 +676,13 @@ def test_splice_dna(genome_params, rng):
     with pytest.raises(ValueError):
         [] = genome.splice_dna(new_dna, hidden_start_node=-1)
     with pytest.raises(ValueError):
-        [] = genome.splice_dna(new_dna, hidden_start_node=9)  # only 9 internal nodes
+        [] = genome.splice_dna(new_dna, hidden_start_node=3)  # only 3 internal nodes
 
     address_node = genome.splice_dna(new_dna)
     assert address_node == 2  # 0 + n_inputs
 
-    address_node = genome.splice_dna(new_dna, hidden_start_node=2)
-    assert address_node == 4  # 2 + n_inputs
+    address_node = genome.splice_dna(new_dna, hidden_start_node=1)
+    assert address_node == 3  # 2 + n_inputs
 
     dna_insert = [0, 0, 1, 1, 1, 1]
     address_node = genome.splice_dna(dna_insert)
@@ -812,7 +702,7 @@ def test_change_address_gene_of_output_node(genome_params, rng):
         genome.change_address_gene_of_output_node(new_address=10, output_node_idx=0)
         genome.change_address_gene_of_output_node(new_address=0, output_node_idx=1)
 
-    for new_address in range(9):
+    for new_address in range(4):
         genome.change_address_gene_of_output_node(new_address)
         assert genome.dna[-2] == new_address
 
@@ -832,6 +722,8 @@ def test_change_address_gene_of_output_node(genome_params, rng):
 def test_set_expression_for_output(genome_params, rng):
     sympy = pytest.importorskip("sympy")
 
+    genome_params["n_columns"] = 4
+
     genome = cgp.Genome(**genome_params)
     genome.randomize(rng)
 
@@ -846,6 +738,6 @@ def test_set_expression_for_output(genome_params, rng):
     genome.set_expression_for_output(new_dna)
     assert CartesianGraph(genome).to_sympy() == x_0 - x_1
 
-    new_dna = [0, 0, 1, 2, 0, 0, 1, 0, 0, 0, 2, 3]  # x_0+x_1; 1.0; 0; x_0+x_1 + 1.0
+    new_dna = [0, 0, 1, 2, 0, 0, 0, 2, 3]  # x_0+x_1; 1.0; x_0+x_1 + 1.0
     genome.set_expression_for_output(new_dna)
     assert CartesianGraph(genome).to_sympy() == x_0 + x_1 + 1.0
