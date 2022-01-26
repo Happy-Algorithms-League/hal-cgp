@@ -50,57 +50,37 @@ def objective(individual):
     if not individual.fitness_is_None():
         return individual
 
-    n_function_evaluations = 1000
+    n_function_evaluations = 10000
 
-    np.random.seed(1234)
+    np.random.seed(12345)
 
-    f = individual.to_func()
-    loss = 0
-    for x in np.random.uniform(-4, 4, n_function_evaluations):
-        # the callable returned from `to_func` accepts and returns
-        # lists; accordingly we need to pack the argument and unpack
-        # the return value
-        y = f(x)
-        loss += (f_target(x) - y) ** 2
-
-    individual.fitness = -loss / n_function_evaluations
+    f = individual.to_numpy()
+    x = np.random.uniform(-4, 4, n_function_evaluations)
+    y = f(x)
+    loss = np.mean((f_target(x) - y) ** 2)
+    individual.fitness = -loss
 
     return individual
 
 
 # %%
-# Next, we set up the evolutionary search. We first define the
-# parameters for the population, the genome of individuals, and two
-# evolutionary algorithms without (default) and with genome reordering.
+# Next, we set up the evolutionary search. We first define the parameters for
+# the genome of individuals, and two evolutionary algorithms without (default)
+# and with genome reordering.
 
+seed = 1234
 
-population_params = {"n_parents": 1, "seed": 818821}
-
-genome_params = {
-    "n_inputs": 1,
-    "n_outputs": 1,
-    "n_hidden_units": 12,
-    "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat),
-}
-
-ea_params = {"n_offsprings": 4, "mutation_rate": 0.03, "n_processes": 2}
-ea_params_with_reorder = {
-    "n_offsprings": 4,
-    "mutation_rate": 0.03,
-    "n_processes": 2,
-    "reorder_genome": True,
-}
+ea_params_with_reorder = {"reorder_genome": True}
 
 evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
 
 # %%
 # We create two populations that will be evolved
-pop = cgp.Population(**population_params, genome_params=genome_params)
-pop_with_reorder = cgp.Population(**population_params, genome_params=genome_params)
+pop = cgp.Population()
+pop_with_reorder = cgp.Population()
 
 # %%
-# and two instances of the (mu + lambda) evolutionary algorithm
-ea = cgp.ea.MuPlusLambda(**ea_params)
+# and an instance of the (mu + lambda) evolutionary algorithm
 ea_with_reorder = cgp.ea.MuPlusLambda(**ea_params_with_reorder)
 
 # %%
@@ -123,11 +103,11 @@ def recording_callback_with_reorder(pop):
 
 # %%
 # and finally perform the evolution of the two populations
-cgp.evolve(
-    objective, pop, ea, **evolve_params, print_progress=True, callback=recording_callback,
+pop = cgp.evolve(
+    objective, pop, **evolve_params, print_progress=True, callback=recording_callback,
 )
 
-cgp.evolve(
+pop_with_reorder = cgp.evolve(
     objective,
     pop_with_reorder,
     ea_with_reorder,

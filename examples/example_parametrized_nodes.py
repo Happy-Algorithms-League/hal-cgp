@@ -96,20 +96,17 @@ def objective(individual, seed):
 
 
 # %%
-# Next, we define the parameters for the population, the genome of
+# Next, we define the parameters for the genome of
 # individuals, the evolutionary algorithm, and the local search. Note
 # that we add the custom node defined above as a primitive.
 
-population_params = {"n_parents": 1, "seed": 818821}
+seed = 1234
 
 genome_params = {
     "n_inputs": 2,
-    "n_outputs": 1,
     "n_hidden_units": 5,
     "primitives": (ParametrizedAdd, cgp.Add, cgp.Sub, cgp.Mul),
 }
-
-ea_params = {"n_offsprings": 4, "tournament_size": 1, "mutation_rate": 0.04, "n_processes": 2}
 
 evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
 
@@ -119,15 +116,15 @@ local_search_params = {"lr": 1e-3, "gradient_steps": 9}
 # We then create a Population instance and instantiate the local search
 # and evolutionary algorithm.
 
-pop = cgp.Population(**population_params, genome_params=genome_params)
+pop = cgp.Population(genome_params=genome_params)
 
 local_search = functools.partial(
     cgp.local_search.gradient_based,
-    objective=functools.partial(inner_objective, seed=population_params["seed"]),
+    objective=functools.partial(inner_objective, seed=seed),
     **local_search_params,
 )
 
-ea = cgp.ea.MuPlusLambda(**ea_params, local_search=local_search)
+ea = cgp.ea.MuPlusLambda(local_search=local_search)
 
 
 # %%
@@ -148,9 +145,9 @@ def recording_callback(pop):
 # comparable across individuals and, finally, we call the `evolve`
 # method to perform the evolutionary search.
 
-obj = functools.partial(objective, seed=population_params["seed"])
+obj = functools.partial(objective, seed=seed)
 
-cgp.evolve(obj, pop, ea, **evolve_params, print_progress=True, callback=recording_callback)
+pop = cgp.evolve(obj, pop, ea, **evolve_params, print_progress=True, callback=recording_callback)
 
 # %%
 # After the evolutionary search has ended, we print the expression
