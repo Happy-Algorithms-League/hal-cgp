@@ -73,9 +73,7 @@ def test_add():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1}
 
     primitives = (cgp.Add,)
-    genome = cgp.Genome(
-        params["n_inputs"], params["n_outputs"], params["n_columns"], primitives,
-    )
+    genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_columns"], primitives)
     # f(x) = x[0] + x[1]
     genome.dna = [
         ID_INPUT_NODE,
@@ -102,9 +100,7 @@ def test_sub():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1}
 
     primitives = (cgp.Sub,)
-    genome = cgp.Genome(
-        params["n_inputs"], params["n_outputs"], params["n_columns"], primitives,
-    )
+    genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_columns"], primitives)
     # f(x) = x[0] - x[1]
     genome.dna = [
         ID_INPUT_NODE,
@@ -131,9 +127,7 @@ def test_mul():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1}
 
     primitives = (cgp.Mul,)
-    genome = cgp.Genome(
-        params["n_inputs"], params["n_outputs"], params["n_columns"], primitives,
-    )
+    genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_columns"], primitives)
     # f(x) = x[0] * x[1]
     genome.dna = [
         ID_INPUT_NODE,
@@ -160,9 +154,7 @@ def test_div():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1}
 
     primitives = (cgp.Div,)
-    genome = cgp.Genome(
-        params["n_inputs"], params["n_outputs"], params["n_columns"], primitives,
-    )
+    genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_columns"], primitives)
     # f(x) = x[0] / x[1]
     genome.dna = [
         ID_INPUT_NODE,
@@ -189,9 +181,7 @@ def test_pow():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1}
 
     primitives = (cgp.Pow,)
-    genome = cgp.Genome(
-        params["n_inputs"], params["n_outputs"], params["n_columns"], primitives,
-    )
+    genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_columns"], primitives)
     # f(x) = x[0] ** x[1]
     genome.dna = [
         ID_INPUT_NODE,
@@ -219,9 +209,7 @@ def test_constant_float():
 
     primitives = (cgp.ConstantFloat,)
     # f(x) = c
-    genome = cgp.Genome(
-        params["n_inputs"], params["n_outputs"], params["n_columns"], primitives,
-    )
+    genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_columns"], primitives)
     genome.dna = [
         ID_INPUT_NODE,
         ID_NON_CODING_GENE,
@@ -246,7 +234,7 @@ def test_parameter():
         "n_columns": 1,
     }
     primitives = (cgp.Parameter,)
-    genome = cgp.Genome(**genome_params, primitives=primitives)
+    genome = cgp.Genome(primitives=primitives, **genome_params)
     # f(x) = c
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
 
@@ -268,7 +256,7 @@ def test_parameter_w_custom_initial_value():
         "n_columns": 1,
     }
     primitives = (CustomParameter,)
-    genome = cgp.Genome(**genome_params, primitives=primitives)
+    genome = cgp.Genome(primitives=primitives, **genome_params)
     # f(x) = c
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
 
@@ -285,7 +273,7 @@ def test_parameter_two_nodes():
         "n_columns": 3,
     }
     primitives = (cgp.Parameter, cgp.Add)
-    genome = cgp.Genome(**genome_params, primitives=primitives)
+    genome = cgp.Genome(primitives=primitives, **genome_params)
     # f(x) = c1 + c2
     genome.dna = [
         ID_INPUT_NODE,
@@ -327,7 +315,7 @@ def test_parameter_w_random_initial_value(rng):
         "n_columns": 1,
     }
     primitives = (CustomParameter,)
-    genome = cgp.Genome(**genome_params, primitives=primitives)
+    genome = cgp.Genome(primitives=primitives, **genome_params)
     # f(x) = c
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
     f = cgp.CartesianGraph(genome).to_func()
@@ -356,7 +344,7 @@ def test_multiple_parameters_per_node():
         "n_columns": 1,
     }
     primitives = (DoubleParameter,)
-    genome = cgp.Genome(**genome_params, primitives=primitives)
+    genome = cgp.Genome(primitives=primitives, **genome_params)
     # f(x) = p + q
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
     f = cgp.CartesianGraph(genome).to_func()
@@ -375,7 +363,7 @@ def test_reset_parameters_upon_creation_of_node(rng):
         "n_columns": 1,
     }
     primitives = (CustomParameter, CustomParameter)
-    genome = cgp.Genome(**genome_params, primitives=primitives)
+    genome = cgp.Genome(primitives=primitives, **genome_params)
     # f(x) = p
     genome.dna = [ID_INPUT_NODE, ID_NON_CODING_GENE, 0, 0, ID_OUTPUT_NODE, 1]
     genome._parameter_names_to_values["<p1>"] = 1.0
@@ -406,7 +394,7 @@ def test_if_else_operator():
         "n_columns": 1,
     }
     primitives = (cgp.IfElse,)
-    genome = cgp.Genome(**genome_params, primitives=primitives)
+    genome = cgp.Genome(primitives=primitives, **genome_params)
 
     # f(x_0, x_1, x_2) = {x_1 if x_0 >= 0, x_2 otherwise}
     genome.dna = [

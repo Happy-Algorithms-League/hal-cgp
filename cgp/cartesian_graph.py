@@ -52,7 +52,7 @@ class CartesianGraph:
         """
         self._n_inputs: int
         self._n_outputs: int
-        self._n_columns: int
+        self._n_hidden_units: int
         self._nodes: List
         self._parameter_names_to_values: Dict[str, float]
 
@@ -82,15 +82,15 @@ class CartesianGraph:
         s = "\n"
 
         #for row in range(max(self._n_inputs, self._n_rows)):
-        for idx in range(self._n_inputs + self._n_columns + self._n_outputs):
+        for idx in range(self._n_inputs + self._n_hidden_units + self._n_outputs):
 
             if idx < self._n_inputs:
                 s += pretty_node_str(self.input_nodes[idx])
 
-            elif idx < self._n_inputs + self._n_columns:
+            elif idx < self._n_inputs + self._n_hidden_units:
                 s += pretty_node_str(self.hidden_nodes[idx - self._n_inputs])
             else:
-                s += pretty_node_str(self.output_nodes[idx - self._n_inputs - self._n_columns])
+                s += pretty_node_str(self.output_nodes[idx - self._n_inputs - self._n_hidden_units])
             s += "\t"
             s += "\n"
 
@@ -102,7 +102,7 @@ class CartesianGraph:
 
         self._n_inputs = genome._n_inputs
         self._n_outputs = genome._n_outputs
-        self._n_columns = genome._n_columns
+        self._n_hidden_units = genome._n_hidden_units
         self._parameter_names_to_values = copy.deepcopy(genome._parameter_names_to_values)
 
         self._nodes = []

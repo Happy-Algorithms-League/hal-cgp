@@ -12,9 +12,7 @@ def test_check_dna_consistency():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1}
 
     primitives = (cgp.Add,)
-    genome = cgp.Genome(
-        params["n_inputs"], params["n_outputs"], params["n_columns"], primitives,
-    )
+    genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_columns"], primitives)
     genome.dna = [
         ID_INPUT_NODE,
         ID_NON_CODING_GENE,
@@ -172,12 +170,7 @@ def test_permissible_addresses(rng):
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 4,}
 
     primitives = (cgp.Add,)
-    genome = cgp.Genome(
-        params["n_inputs"],
-        params["n_outputs"],
-        params["n_columns"],
-        primitives,
-    )
+    genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_columns"], primitives)
     genome.randomize(rng)
 
     for input_idx in range(params["n_inputs"]):
@@ -207,9 +200,7 @@ def test_region_iterators():
     params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 1}
 
     primitives = (cgp.Add,)
-    genome = cgp.Genome(
-        params["n_inputs"], params["n_outputs"], params["n_columns"], primitives,
-    )
+    genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_columns"], primitives)
     genome.dna = [
         ID_INPUT_NODE,
         ID_NON_CODING_GENE,

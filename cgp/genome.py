@@ -28,7 +28,7 @@ class Genome:
         self,
         n_inputs: int = 1,
         n_outputs: int = 1,
-        n_columns: int = 128,
+        n_hidden_units: int = 128,
         primitives: Optional[Tuple[Type[Node], ...]] = None,
     ) -> None:
         """Init function.
@@ -39,8 +39,8 @@ class Genome:
             Number of inputs of the function represented by the genome. Defaults to 1.
         n_outputs : int, optional
             Number of outputs of the function represented by the genome. Defaults to 1.
-        n_columns : int, optional
-            Number of columns in the representation of the genome. Defaults to 12.
+        n_hidden_units : int, optional
+            Number of hidden units in the representation of the genome. Defaults to 128.
         primitives : Tuple[Type[Node], ...], optional
            Tuple of primitives that the genome can refer to. Defaults to (+, -, *, 1.0).
 
@@ -49,9 +49,9 @@ class Genome:
             raise ValueError("n_inputs must be strictly positive")
         self._n_inputs = n_inputs
 
-        if n_columns < 0:
+        if n_hidden_units < 0:
             raise ValueError("n_columns must be non-negative")
-        self._n_columns = n_columns
+        self._n_hidden_units = n_hidden_units
 
         if n_outputs <= 0:
             raise ValueError("n_outputs must be strictly positive")
@@ -109,7 +109,7 @@ class Genome:
 
     @property
     def _n_hidden(self) -> int:
-        return self._n_columns
+        return self._n_hidden_units
 
     @property
     def _n_regions(self) -> int:
@@ -553,20 +553,20 @@ class Genome:
 
         # add all nodes reachable
         if self._is_hidden_region(region_idx):
-            hidden_column_idx = self._hidden_column_idx(region_idx)
+            hidden_idx = self._hidden_idx(region_idx)
             lower = self._n_inputs
-            upper = self._n_inputs + hidden_column_idx
+            upper = self._n_inputs + hidden_idx
         else:
             assert self._is_output_region(region_idx)
             lower = self._n_inputs
-            upper = self._n_inputs + self._n_columns
+            upper = self._n_inputs + self._n_hidden_units
 
         permissible_addresses += [j for j in range(lower, upper)]
 
         return permissible_addresses
 
     def _permissible_addresses_for_output_region(self) -> List[int]:
-        return self._permissible_addresses(self._n_inputs + self._n_columns)
+        return self._permissible_addresses(self._n_inputs + self._n_hidden_units)
 
     def _validate_dna(self, dna: List[int]) -> None:
 
@@ -608,13 +608,13 @@ class Genome:
             if output_region[2:] != [self._id_unused_gene] * (self._primitives.max_arity - 1):
                 raise ValueError("inactive address genes for output nodes need to be empty")
 
-    def _hidden_column_idx(self, region_idx: int) -> int:
+    def _hidden_idx(self, region_idx: int) -> int:
         assert self._n_inputs <= region_idx
-        assert region_idx < self._n_inputs + self._n_columns
-        hidden_column_idx = (region_idx - self._n_inputs)
-        assert 0 <= hidden_column_idx
-        assert hidden_column_idx < self._n_columns
-        return hidden_column_idx
+        assert region_idx < self._n_inputs + self._n_hidden_units
+        hidden_idx = (region_idx - self._n_inputs)
+        assert 0 <= hidden_idx
+        assert hidden_idx < self._n_hidden_units
+        return hidden_idx
 
     def iter_input_regions(
         self, dna: Optional[List[int]] = None
@@ -760,12 +760,7 @@ class Genome:
         Genome
         """
 
-        new = Genome(
-            self._n_inputs,
-            self._n_outputs,
-            self._n_columns,
-            tuple(self._primitives),
-        )
+        new = Genome(self._n_inputs, self._n_outputs, self._n_hidden_units, tuple(self._primitives))
         new.dna = self.dna.copy()
 
         # Lamarckian strategy: parameter values are passed on to

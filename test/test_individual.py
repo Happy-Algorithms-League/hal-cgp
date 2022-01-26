@@ -41,7 +41,7 @@ graph_input_values_list = [GraphInputValues(x=[3.0, 5.0], c=1.0), GraphInputValu
 
 
 def _create_genome(genome_params, primitives, dna):
-    genome = cgp.Genome(**genome_params, primitives=primitives)
+    genome = cgp.Genome(primitives=primitives, **genome_params)
     genome.dna = dna
     return genome
 
