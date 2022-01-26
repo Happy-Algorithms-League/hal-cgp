@@ -422,14 +422,14 @@ def test_custom_compute_key_for_disk_cache(individual, rng):
         tempfile.mkstemp()[1], compute_key=cgp.utils.compute_key_from_numpy_evaluation_and_args
     )
     def inner_objective(ind):
-        return ind.to_func()(1.0, 2.0)
+        return ind.to_func()(2.0, 2.0)
 
     def my_compute_key(ind):
         return 0
 
     @cgp.utils.disk_cache(tempfile.mkstemp()[1], compute_key=my_compute_key)
     def inner_objective_custom_compute_key(ind):
-        return ind.to_func()(1.0, 2.0)
+        return ind.to_func()(2.0, 2.0)
 
     individual0 = individual.clone()
     individual0.genome.randomize(rng)
