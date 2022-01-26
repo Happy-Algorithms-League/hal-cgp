@@ -73,7 +73,6 @@ def objective(individual):
 seed = 1234
 
 single_genome_params = {
-
     "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat),
 }
 genome_params = [single_genome_params, single_genome_params]

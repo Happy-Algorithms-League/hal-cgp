@@ -73,7 +73,9 @@ def test_add():
     params = {"n_inputs": 2, "n_outputs": 1, "n_hidden_units": 1}
 
     primitives = (cgp.Add,)
-    genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_hidden_units"], primitives)
+    genome = cgp.Genome(
+        params["n_inputs"], params["n_outputs"], params["n_hidden_units"], primitives
+    )
     # f(x) = x[0] + x[1]
     genome.dna = [
         ID_INPUT_NODE,
@@ -100,7 +102,9 @@ def test_sub():
     params = {"n_inputs": 2, "n_outputs": 1, "n_hidden_units": 1}
 
     primitives = (cgp.Sub,)
-    genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_hidden_units"], primitives)
+    genome = cgp.Genome(
+        params["n_inputs"], params["n_outputs"], params["n_hidden_units"], primitives
+    )
     # f(x) = x[0] - x[1]
     genome.dna = [
         ID_INPUT_NODE,
@@ -127,7 +131,9 @@ def test_mul():
     params = {"n_inputs": 2, "n_outputs": 1, "n_hidden_units": 1}
 
     primitives = (cgp.Mul,)
-    genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_hidden_units"], primitives)
+    genome = cgp.Genome(
+        params["n_inputs"], params["n_outputs"], params["n_hidden_units"], primitives
+    )
     # f(x) = x[0] * x[1]
     genome.dna = [
         ID_INPUT_NODE,
@@ -154,7 +160,9 @@ def test_div():
     params = {"n_inputs": 2, "n_outputs": 1, "n_hidden_units": 1}
 
     primitives = (cgp.Div,)
-    genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_hidden_units"], primitives)
+    genome = cgp.Genome(
+        params["n_inputs"], params["n_outputs"], params["n_hidden_units"], primitives
+    )
     # f(x) = x[0] / x[1]
     genome.dna = [
         ID_INPUT_NODE,
@@ -181,7 +189,9 @@ def test_pow():
     params = {"n_inputs": 2, "n_outputs": 1, "n_hidden_units": 1}
 
     primitives = (cgp.Pow,)
-    genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_hidden_units"], primitives)
+    genome = cgp.Genome(
+        params["n_inputs"], params["n_outputs"], params["n_hidden_units"], primitives
+    )
     # f(x) = x[0] ** x[1]
     genome.dna = [
         ID_INPUT_NODE,
@@ -209,7 +219,9 @@ def test_constant_float():
 
     primitives = (cgp.ConstantFloat,)
     # f(x) = c
-    genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_hidden_units"], primitives)
+    genome = cgp.Genome(
+        params["n_inputs"], params["n_outputs"], params["n_hidden_units"], primitives
+    )
     genome.dna = [
         ID_INPUT_NODE,
         ID_NON_CODING_GENE,

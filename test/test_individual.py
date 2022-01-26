@@ -12,11 +12,7 @@ from cgp.genome import ID_INPUT_NODE, ID_NON_CODING_GENE, ID_OUTPUT_NODE
 Params = namedtuple("Params", ["genome_params", "primitives", "dna", "target_function"])
 params_list = [
     Params(
-        genome_params={
-            "n_inputs": 1,
-            "n_outputs": 1,
-            "n_hidden_units": 2,
-        },
+        genome_params={"n_inputs": 1, "n_outputs": 1, "n_hidden_units": 2,},
         primitives=(cgp.Add, cgp.Parameter),
         dna=[
             ID_INPUT_NODE,

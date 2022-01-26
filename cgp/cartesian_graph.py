@@ -81,7 +81,6 @@ class CartesianGraph:
 
         s = "\n"
 
-        #for row in range(max(self._n_inputs, self._n_rows)):
         for idx in range(self._n_inputs + self._n_hidden_units + self._n_outputs):
 
             if idx < self._n_inputs:
@@ -90,7 +89,9 @@ class CartesianGraph:
             elif idx < self._n_inputs + self._n_hidden_units:
                 s += pretty_node_str(self.hidden_nodes[idx - self._n_inputs])
             else:
-                s += pretty_node_str(self.output_nodes[idx - self._n_inputs - self._n_hidden_units])
+                s += pretty_node_str(
+                    self.output_nodes[idx - self._n_inputs - self._n_hidden_units]
+                )
             s += "\t"
             s += "\n"
 

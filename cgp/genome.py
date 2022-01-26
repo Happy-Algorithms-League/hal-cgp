@@ -611,7 +611,7 @@ class Genome:
     def _hidden_idx(self, region_idx: int) -> int:
         assert self._n_inputs <= region_idx
         assert region_idx < self._n_inputs + self._n_hidden_units
-        hidden_idx = (region_idx - self._n_inputs)
+        hidden_idx = region_idx - self._n_inputs
         assert 0 <= hidden_idx
         assert hidden_idx < self._n_hidden_units
         return hidden_idx
@@ -760,7 +760,9 @@ class Genome:
         Genome
         """
 
-        new = Genome(self._n_inputs, self._n_outputs, self._n_hidden_units, tuple(self._primitives))
+        new = Genome(
+            self._n_inputs, self._n_outputs, self._n_hidden_units, tuple(self._primitives)
+        )
         new.dna = self.dna.copy()
 
         # Lamarckian strategy: parameter values are passed on to

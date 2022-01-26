@@ -90,7 +90,11 @@ def test_compile_two_columns():
 
 
 def test_compile_addsubmul():
-    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 3,}
+    params = {
+        "n_inputs": 2,
+        "n_outputs": 1,
+        "n_columns": 3,
+    }
 
     primitives = (cgp.Add, cgp.Sub, cgp.Mul)
     genome = cgp.Genome(params["n_inputs"], params["n_outputs"], params["n_columns"], primitives)
@@ -156,7 +160,9 @@ def test_to_numpy(rng):
 
 batch_sizes = [1, 10]
 primitives = (cgp.Mul, cgp.ConstantFloat)
-genome = [cgp.Genome(n_inputs=1, n_outputs=1, n_hidden_units=2, primitives=primitives) for i in range(2)]
+genome = [
+    cgp.Genome(n_inputs=1, n_outputs=1, n_hidden_units=2, primitives=primitives) for i in range(2)
+]
 # Function: f(x) = 1*x
 genome[0].dna = [
     ID_INPUT_NODE,
@@ -188,7 +194,9 @@ genome[1].dna = [
     ID_NON_CODING_GENE,
 ]
 
-genome += [cgp.Genome(n_inputs=1, n_outputs=2, n_hidden_units=3, primitives=primitives) for i in range(2)]
+genome += [
+    cgp.Genome(n_inputs=1, n_outputs=2, n_hidden_units=3, primitives=primitives) for i in range(2)
+]
 # Function: f(x) = (1*x, 1*1)
 genome[2].dna = [
     ID_INPUT_NODE,
