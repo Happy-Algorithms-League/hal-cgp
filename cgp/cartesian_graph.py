@@ -53,7 +53,6 @@ class CartesianGraph:
         self._n_inputs: int
         self._n_outputs: int
         self._n_columns: int
-        self._n_rows: int
         self._nodes: List
         self._parameter_names_to_values: Dict[str, float]
 
@@ -82,29 +81,17 @@ class CartesianGraph:
 
         s = "\n"
 
-        for row in range(max(self._n_inputs, self._n_rows)):
-            for column in range(-1, self._n_columns + 1):
+        #for row in range(max(self._n_inputs, self._n_rows)):
+        for idx in range(self._n_inputs + self._n_columns + self._n_outputs):
 
-                if column == -1:
-                    if row < self._n_inputs:
-                        s += pretty_node_str(self.input_nodes[row])
-                    else:
-                        s += empty_node_str()
-                    s += "\t"
+            if idx < self._n_inputs:
+                s += pretty_node_str(self.input_nodes[idx])
 
-                elif column < self._n_columns:
-                    if row < self._n_rows:
-                        s += pretty_node_str(self.hidden_nodes[row + column * self._n_rows])
-                    else:
-                        s += empty_node_str()
-                    s += "\t"
-                else:
-                    if row < self._n_outputs:
-                        s += pretty_node_str(self.output_nodes[row])
-                    else:
-                        s += empty_node_str()
-                    s += "\t"
-
+            elif idx < self._n_inputs + self._n_columns:
+                s += pretty_node_str(self.hidden_nodes[idx - self._n_inputs])
+            else:
+                s += pretty_node_str(self.output_nodes[idx - self._n_inputs - self._n_columns])
+            s += "\t"
             s += "\n"
 
         return s
@@ -116,7 +103,6 @@ class CartesianGraph:
         self._n_inputs = genome._n_inputs
         self._n_outputs = genome._n_outputs
         self._n_columns = genome._n_columns
-        self._n_rows = genome._n_rows
         self._parameter_names_to_values = copy.deepcopy(genome._parameter_names_to_values)
 
         self._nodes = []
@@ -137,7 +123,7 @@ class CartesianGraph:
         self._determine_active_nodes()
 
     def _hidden_column_idx(self, idx: int) -> int:
-        return (idx - self._n_inputs) // self._n_rows
+        return idx - self._n_inputs
 
     @property
     def input_nodes(self) -> List[Node]:
