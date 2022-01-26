@@ -16,8 +16,6 @@ params_list = [
             "n_inputs": 1,
             "n_outputs": 1,
             "n_columns": 2,
-            "n_rows": 1,
-            "levels_back": 2,
         },
         primitives=(cgp.Add, cgp.Parameter),
         dna=[
@@ -85,7 +83,7 @@ def _unpack_genome(individual, individual_type="SingleGenome"):
 def test_pickle_individual(individual_type):
 
     primitives = (cgp.Add,)
-    genome = cgp.Genome(1, 1, 1, 1, primitives)
+    genome = cgp.Genome(1, 1, 1, primitives)
     individual = _create_individual(genome, individual_type=individual_type)
 
     with open("individual.pkl", "wb") as f:
@@ -167,7 +165,7 @@ def test_individual_with_parameter_numpy(individual_type, params, graph_input_va
 def test_to_and_from_torch_plus_backprop(individual_type, rng_torch):
     torch = pytest.importorskip("torch")
     primitives = (cgp.Mul, cgp.Parameter)
-    genome = cgp.Genome(1, 1, 2, 2, primitives, 1)
+    genome = cgp.Genome(1, 1, 4, primitives)
     # f(x) = c * x
     genome.dna = [
         ID_INPUT_NODE,
@@ -233,7 +231,7 @@ def test_to_and_from_torch_plus_backprop(individual_type, rng_torch):
 def test_update_parameters_from_torch_class_resets_fitness(individual_type):
     pytest.importorskip("torch")
     primitives = (cgp.Mul, cgp.Parameter)
-    genome = cgp.Genome(1, 1, 2, 1, primitives, 1)
+    genome = cgp.Genome(1, 1, 2, primitives)
     # f(x) = c * x
     genome.dna = [
         ID_INPUT_NODE,
@@ -271,7 +269,7 @@ def test_update_parameters_from_torch_class_does_not_reset_fitness_for_unused_pa
 ):
     pytest.importorskip("torch")
     primitives = (cgp.Mul, cgp.Parameter)
-    genome = cgp.Genome(1, 1, 2, 1, primitives, 1)
+    genome = cgp.Genome(1, 1, 2, primitives)
     # f(x) = x ** 2
     genome.dna = [
         ID_INPUT_NODE,
@@ -304,7 +302,7 @@ def test_update_parameters_from_torch_class_does_not_reset_fitness_for_unused_pa
 @pytest.mark.parametrize("individual_type", ["SingleGenome", "MultiGenome"])
 def test_individual_randomize_genome(individual_type, rng):
     primitives = (cgp.Add, cgp.Mul)
-    genome = cgp.Genome(1, 1, 2, 1, primitives, 1)
+    genome = cgp.Genome(1, 1, 2, primitives)
     genome.randomize(rng)
 
     dna_old = list(genome.dna)
