@@ -62,21 +62,16 @@ def objective_one(individual):
     if not individual.fitness_is_None():
         return individual
 
-    n_function_evaluations = 100000
+    n_function_evaluations = 1000000
 
     np.random.seed(1234)
-    values = np.random.uniform(-4, 4, n_function_evaluations)
+    x = np.random.uniform(-4, 4, n_function_evaluations)[:100]
 
-    f = individual.to_func()
-    loss = 0
-    for x in values[:100]:
-        # the callable returned from `to_func` accepts and returns
-        # lists; accordingly we need to pack the argument and unpack
-        # the return value
-        y = f(x)
-        loss += (f_target(x) - y) ** 2
+    f = individual.to_numpy()
+    y = f(x)
+    loss = np.mean((f_target(x) - y) ** 2)
 
-    individual.fitness = -loss / n_function_evaluations
+    individual.fitness = -loss
 
     return individual
 
@@ -86,59 +81,33 @@ def objective_two(individual):
     if not individual.fitness_is_None():
         return individual
 
-    n_function_evaluations = 100000
+    n_function_evaluations = 1000000
 
     np.random.seed(1234)
-    values = np.random.uniform(-4, 4, n_function_evaluations)
+    x = np.random.uniform(-4, 4, n_function_evaluations)[100:]
 
-    f = individual.to_func()
-    loss = 0
-    for x in values[100:]:
-        # the callable returned from `to_func` accepts and returns
-        # lists; accordingly we need to pack the argument and unpack
-        # the return value
-        y = f(x)
-        loss += (f_target(x) - y) ** 2
+    f = individual.to_numpy()
+    y = f(x)
+    loss = np.mean((f_target(x) - y) ** 2)
 
-    individual.fitness = -loss / n_function_evaluations
+    individual.fitness = -loss
 
     return individual
 
 
 # %%
-# Next, we set up the evolutionary search. We first define the
-# parameters for the population, the genome of individuals, and the
-# evolutionary algorithm.
-
-
-population_params = {"n_parents": 1, "seed": 8188211}
-
-genome_params = {
-    "n_inputs": 1,
-    "n_outputs": 1,
-    "n_hidden_units": 12,
-    "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat),
-}
-
-# %%
-# We define the upper percentile of individuals which are evaluated on
-# the (n+1)th objective by a list of numbers between 0 and 1.
-ea_params = {
-    "n_offsprings": 4,
-    "mutation_rate": 0.03,
-    "n_processes": 1,
-    "hurdle_percentile": [0.5, 0.0],
-}
+# Next, we set up the evolutionary search. We first define the parameters of the
+# evolutionary algorithm. We define the upper percentile of individuals which
+# are evaluated on the (n+1)th objective by a list of numbers between 0 and 1
+ea_params = {"hurdle_percentile": [0.75, 0.0]}
 
 evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": 0.0}
 
-# %%
-# We create a population that will be evolved
-pop = cgp.Population(**population_params, genome_params=genome_params)
 
 # %%
-# and an instance of the (mu + lambda) evolutionary algorithm
+# We create an instance of the (mu + lambda) evolutionary algorithm with these parameters
 ea = cgp.ea.MuPlusLambda(**ea_params)
+
 
 # %%
 # We define a callback for recording of fitness over generations
@@ -152,10 +121,9 @@ def recording_callback(pop):
 
 # %%
 # and finally perform the evolution
-cgp.evolve(
+pop = cgp.evolve(
     [objective_one, objective_two],
-    pop,
-    ea,
+    ea=ea,
     **evolve_params,
     print_progress=True,
     callback=recording_callback
@@ -191,4 +159,4 @@ ax_function.legend()
 ax_function.set_ylabel(r"$f(x)$")
 ax_function.set_xlabel(r"$x$")
 
-fig.savefig("example_minimal.pdf", dpi=300)
+fig.savefig("example_hurdles.pdf", dpi=300)

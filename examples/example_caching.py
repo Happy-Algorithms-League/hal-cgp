@@ -43,11 +43,11 @@ def inner_objective(ind):
     fitness values.
 
     """
-    expr = ind.to_sympy()
-    loss = []
-    for x0 in np.linspace(-2.0, 2.0, 100):
-        y = float(expr.subs({"x_0": x0}).evalf())
-        loss.append((f_target(x0) - y) ** 2)
+
+    f = ind.to_numpy()
+    x = np.linspace(-2.0, 2.0, 100)
+    y = f(x)
+    loss = (f_target(x) - y) ** 2
 
     time.sleep(0.25)  # emulate long fitness evaluation
 
@@ -63,40 +63,10 @@ def objective(individual):
     return individual
 
 
-# %%
-# Next, we define the parameters for the population, the genome of
-# individuals, and the evolutionary algorithm.
-
-
-params = {
-    "population_params": {"n_parents": 10, "seed": 8188211},
-    "ea_params": {
-        "n_offsprings": 10,
-        "tournament_size": 1,
-        "mutation_rate": 0.05,
-        "n_processes": 1,
-    },
-    "genome_params": {
-        "n_inputs": 1,
-        "n_outputs": 1,
-        "n_hidden_units": 10,
-        "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat),
-    },
-    "evolve_params": {"max_generations": 200, "termination_fitness": -1e-12},
-}
-
-# %%
-# We then create a Population instance and instantiate the evolutionary algorithm.
-
-
-pop = cgp.Population(**params["population_params"], genome_params=params["genome_params"])
-ea = cgp.ea.MuPlusLambda(**params["ea_params"])
-
-# %%
 # Finally, we call the `evolve` method to perform the evolutionary search.
 
 
-cgp.evolve(objective, pop, ea, **params["evolve_params"], print_progress=True)
+pop = cgp.evolve(objective, max_generations=200, termination_fitness=0.0, print_progress=True)
 
 
 print(f"evolved function: {pop.champion.to_sympy()}")
