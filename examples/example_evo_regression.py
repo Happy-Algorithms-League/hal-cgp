@@ -128,9 +128,7 @@ def evolution(f_target):
     genome_params = {
         "n_inputs": 2,
         "n_outputs": 1,
-        "n_columns": 12,
-        "n_rows": 2,
-        "levels_back": 5,
+        "n_hidden_units": 12,
         "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Div, cgp.ConstantFloat),
     }
 

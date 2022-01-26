@@ -79,9 +79,7 @@ params = {
     "genome_params": {
         "n_inputs": 1,
         "n_outputs": 1,
-        "n_columns": 10,
-        "n_rows": 2,
-        "levels_back": 2,
+        "n_hidden_units": 10,
         "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.ConstantFloat),
     },
     "evolve_params": {"max_generations": 200, "termination_fitness": -1e-12},

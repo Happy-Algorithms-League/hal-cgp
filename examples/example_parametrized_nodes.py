@@ -105,9 +105,7 @@ population_params = {"n_parents": 1, "seed": 818821}
 genome_params = {
     "n_inputs": 2,
     "n_outputs": 1,
-    "n_columns": 5,
-    "n_rows": 1,
-    "levels_back": None,
+    "n_hidden_units": 5,
     "primitives": (ParametrizedAdd, cgp.Add, cgp.Sub, cgp.Mul),
 }
 

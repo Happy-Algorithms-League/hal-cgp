@@ -152,9 +152,7 @@ def evolve(seed):
     genome_params = {
         "n_inputs": 2,
         "n_outputs": 1,
-        "n_columns": 16,
-        "n_rows": 1,
-        "levels_back": None,
+        "n_hidden_units": 16,
         "primitives": (
             cgp.Add,
             cgp.Sub,

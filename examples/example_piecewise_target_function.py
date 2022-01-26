@@ -82,9 +82,7 @@ population_params = {
 genome_params = {
     "n_inputs": 1,
     "n_outputs": 1,
-    "n_columns": 20,
-    "n_rows": 1,
-    "levels_back": None,
+    "n_hidden_units": 20,
     "primitives": (cgp.IfElse, cgp.Mul, cgp.Add, cgp.Sub, cgp.ConstantFloat,),
 }
 
