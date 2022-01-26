@@ -119,7 +119,7 @@ def test_local_search_is_only_applied_to_best_k_individuals(
     genome_params = {
         "n_inputs": 1,
         "n_outputs": 1,
-        "n_columns": 1,
+        "n_hidden_units": 1,
         "primitives": (cgp.Parameter,),
     }
 

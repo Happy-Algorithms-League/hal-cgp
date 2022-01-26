@@ -15,7 +15,7 @@ params_list = [
         genome_params={
             "n_inputs": 1,
             "n_outputs": 1,
-            "n_columns": 2,
+            "n_hidden_units": 2,
         },
         primitives=(cgp.Add, cgp.Parameter),
         dna=[

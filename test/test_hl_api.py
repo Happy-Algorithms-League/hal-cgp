@@ -107,13 +107,13 @@ def test_evolve_two_expressions(population_params, ea_params, rng_seed):
         {
             "n_inputs": 1,
             "n_outputs": 1,
-            "n_columns": 4,
+            "n_hidden_units": 4,
             "primitives": (cgp.Add, cgp.Mul),
         },
         {
             "n_inputs": 2,
             "n_outputs": 1,
-            "n_columns": 4,
+            "n_hidden_units": 4,
             "primitives": (cgp.Sub, cgp.Mul),
         },
     ]

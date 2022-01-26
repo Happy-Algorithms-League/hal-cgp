@@ -31,7 +31,7 @@ def genome_params():
     return {
         "n_inputs": 2,
         "n_outputs": 1,
-        "n_columns": 3,
+        "n_hidden_units": 3,
         "primitives": (cgp.Add, cgp.Sub, cgp.ConstantFloat),
     }
 
