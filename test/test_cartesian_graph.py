@@ -9,7 +9,7 @@ from cgp.genome import ID_INPUT_NODE, ID_NON_CODING_GENE, ID_OUTPUT_NODE
 
 def test_to_func_simple():
     primitives = (cgp.Add,)
-    genome = cgp.Genome(2, 1, 1, 1, primitives)
+    genome = cgp.Genome(2, 1, 1, primitives)
 
     genome.dna = [
         ID_INPUT_NODE,
@@ -34,7 +34,7 @@ def test_to_func_simple():
     assert x[0] + x[1] == pytest.approx(y)
 
     primitives = (cgp.Sub,)
-    genome = cgp.Genome(2, 1, 1, 1, primitives)
+    genome = cgp.Genome(n_inputs=2, n_outputs=1, n_columns=1, primitives=primitives)
 
     genome.dna = [
         ID_INPUT_NODE,
@@ -61,7 +61,7 @@ def test_to_func_simple():
 
 def test_compile_two_columns():
     primitives = (cgp.Add, cgp.Sub)
-    genome = cgp.Genome(2, 1, 2, 1, primitives, 1)
+    genome = cgp.Genome(n_inputs=2, n_outputs=1, n_columns= 2, primitives=primitives)
 
     genome.dna = [
         ID_INPUT_NODE,
@@ -89,57 +89,15 @@ def test_compile_two_columns():
     assert x[0] - (x[0] + x[1]) == pytest.approx(y)
 
 
-def test_compile_two_columns_two_rows():
-    primitives = (cgp.Add, cgp.Sub)
-    genome = cgp.Genome(2, 2, 2, 2, primitives, 1)
-
-    genome.dna = [
-        ID_INPUT_NODE,
-        ID_NON_CODING_GENE,
-        ID_NON_CODING_GENE,
-        ID_INPUT_NODE,
-        ID_NON_CODING_GENE,
-        ID_NON_CODING_GENE,
-        0,
-        0,
-        1,
-        1,
-        0,
-        1,
-        0,
-        0,
-        2,
-        0,
-        2,
-        3,
-        ID_OUTPUT_NODE,
-        4,
-        ID_NON_CODING_GENE,
-        ID_OUTPUT_NODE,
-        5,
-        ID_NON_CODING_GENE,
-    ]
-    graph = cgp.CartesianGraph(genome)
-    f = graph.to_func()
-
-    x = [5.0, 2.0]
-    y = f(*x)
-
-    assert x[0] + (x[0] + x[1]) == pytest.approx(y[0])
-    assert (x[0] + x[1]) + (x[0] - x[1]) == pytest.approx(y[1])
-
-
 def test_compile_addsubmul():
-    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 2, "n_rows": 2, "levels_back": 1}
+    params = {"n_inputs": 2, "n_outputs": 1, "n_columns": 3,}
 
     primitives = (cgp.Add, cgp.Sub, cgp.Mul)
     genome = cgp.Genome(
         params["n_inputs"],
         params["n_outputs"],
         params["n_columns"],
-        params["n_rows"],
         primitives,
-        params["levels_back"],
     )
     genome.dna = [
         ID_INPUT_NODE,
@@ -151,15 +109,12 @@ def test_compile_addsubmul():
         2,
         0,
         1,
-        1,
+        0,
         0,
         1,
         1,
         2,
         3,
-        0,
-        0,
-        0,
         ID_OUTPUT_NODE,
         4,
         ID_NON_CODING_GENE,
@@ -170,12 +125,12 @@ def test_compile_addsubmul():
     x = [5.0, 2.0]
     y = f(*x)
 
-    assert (x[0] * x[1]) - (x[0] - x[1]) == pytest.approx(y)
+    assert (x[0] * x[1]) - (x[0] + x[1]) == pytest.approx(y)
 
 
 def test_to_numpy(rng):
     primitives = (cgp.Add, cgp.Mul, cgp.ConstantFloat)
-    genome = cgp.Genome(1, 1, 2, 2, primitives, 1)
+    genome = cgp.Genome(n_inputs=1, n_outputs=1, n_columns=3, primitives=primitives)
     # f(x) = x ** 2 + 1.
     genome.dna = [
         ID_INPUT_NODE,
@@ -190,9 +145,6 @@ def test_to_numpy(rng):
         0,
         1,
         2,
-        0,
-        0,
-        1,
         ID_OUTPUT_NODE,
         3,
         ID_NON_CODING_GENE,
@@ -209,7 +161,7 @@ def test_to_numpy(rng):
 
 batch_sizes = [1, 10]
 primitives = (cgp.Mul, cgp.ConstantFloat)
-genome = [cgp.Genome(1, 1, 2, 2, primitives, 1) for i in range(2)]
+genome = [cgp.Genome(n_inputs=1, n_outputs=1, n_columns=2, primitives=primitives) for i in range(2)]
 # Function: f(x) = 1*x
 genome[0].dna = [
     ID_INPUT_NODE,
@@ -218,17 +170,11 @@ genome[0].dna = [
     1,
     0,
     0,
-    1,
-    0,
-    0,
-    0,
-    0,
-    1,
     0,
     0,
     1,
     ID_OUTPUT_NODE,
-    3,
+    2,
     ID_NON_CODING_GENE,
 ]
 # Function: f(x) = 1
@@ -242,18 +188,12 @@ genome[1].dna = [
     1,
     0,
     0,
-    0,
-    0,
-    1,
-    0,
-    0,
-    1,
     ID_OUTPUT_NODE,
     1,
     ID_NON_CODING_GENE,
 ]
 
-genome += [cgp.Genome(1, 2, 2, 2, primitives, 1) for i in range(2)]
+genome += [cgp.Genome(n_inputs=1, n_outputs=2, n_columns=3, primitives=primitives) for i in range(2)]
 # Function: f(x) = (1*x, 1*1)
 genome[2].dna = [
     ID_INPUT_NODE,
@@ -262,9 +202,6 @@ genome[2].dna = [
     1,
     0,
     0,
-    1,
-    0,
-    0,
     0,
     0,
     1,
@@ -272,10 +209,10 @@ genome[2].dna = [
     1,
     1,
     ID_OUTPUT_NODE,
-    3,
+    2,
     ID_NON_CODING_GENE,
     ID_OUTPUT_NODE,
-    4,
+    3,
     ID_NON_CODING_GENE,
 ]
 # Function: f(x) = (1, x*x)
@@ -286,9 +223,6 @@ genome[3].dna = [
     1,
     0,
     0,
-    1,
-    0,
-    0,
     0,
     1,
     1,
@@ -299,7 +233,7 @@ genome[3].dna = [
     1,
     ID_NON_CODING_GENE,
     ID_OUTPUT_NODE,
-    3,
+    2,
     ID_NON_CODING_GENE,
 ]
 
@@ -332,7 +266,7 @@ def test_to_sympy(rng):
     sympy = pytest.importorskip("sympy")
 
     primitives = (cgp.Add, cgp.ConstantFloat)
-    genome = cgp.Genome(1, 1, 2, 2, primitives, 1)
+    genome = cgp.Genome(n_inputs=1, n_outputs=1, n_columns=3, primitives=primitives)
 
     # f = x_0 + x_0 + 1.0
     genome.dna = [
@@ -348,9 +282,6 @@ def test_to_sympy(rng):
         0,
         1,
         2,
-        0,
-        0,
-        1,
         ID_OUTPUT_NODE,
         3,
         ID_NON_CODING_GENE,
@@ -373,7 +304,7 @@ def test_allow_sympy_expr_with_infinities():
     pytest.importorskip("sympy")
 
     primitives = (cgp.Sub, cgp.Div)
-    genome = cgp.Genome(1, 1, 2, 1, primitives, 1)
+    genome = cgp.Genome(n_inputs=1, n_outputs=1, n_columns=2, primitives=primitives)
 
     # x[0] / (x[0] - x[0])
     genome.dna = [
@@ -401,21 +332,18 @@ def test_allow_powers_of_x_0():
     pytest.importorskip("sympy")
 
     primitives = (cgp.Sub, cgp.Mul)
-    genome = cgp.Genome(1, 1, 2, 1, primitives, 1)
+    genome = cgp.Genome(n_inputs=1, n_outputs=1, n_columns=1, primitives=primitives)
 
     # x[0] ** 2
     genome.dna = [
         ID_INPUT_NODE,
         ID_NON_CODING_GENE,
         ID_NON_CODING_GENE,
-        0,
-        0,
-        0,
         1,
         0,
         0,
         ID_OUTPUT_NODE,
-        2,
+        1,
         ID_NON_CODING_GENE,
     ]
     graph = cgp.CartesianGraph(genome)
@@ -424,7 +352,7 @@ def test_allow_powers_of_x_0():
 
 def test_input_dim_python(rng):
 
-    genome = cgp.Genome(2, 1, 1, 1, (cgp.ConstantFloat,))
+    genome = cgp.Genome(n_inputs=2, n_outputs=1, n_columns=1, primitives=(cgp.ConstantFloat,))
     genome.randomize(rng)
     f = cgp.CartesianGraph(genome).to_func()
 
@@ -442,7 +370,7 @@ def test_input_dim_python(rng):
 
 def test_input_dim_numpy(rng):
 
-    genome = cgp.Genome(2, 1, 1, 1, (cgp.ConstantFloat,))
+    genome = cgp.Genome(2, 1, 1, (cgp.ConstantFloat,))
     genome.randomize(rng)
     f = cgp.CartesianGraph(genome).to_numpy()
 
@@ -465,7 +393,7 @@ def test_input_dim_numpy(rng):
 def test_input_dim_torch(rng):
     torch = pytest.importorskip("torch")
 
-    genome = cgp.Genome(2, 1, 1, 1, (cgp.ConstantFloat,))
+    genome = cgp.Genome(2, 1, 1, (cgp.ConstantFloat,))
     genome.randomize(rng)
     f = cgp.CartesianGraph(genome).to_torch()
 
@@ -487,7 +415,7 @@ def test_input_dim_torch(rng):
 
 def test_pretty_str():
     primitives = (cgp.Sub, cgp.Mul)
-    genome = cgp.Genome(1, 1, 2, 1, primitives, 1)
+    genome = cgp.Genome(1, 1, 2, primitives)
 
     # x[0] ** 2
     genome.dna = [
@@ -514,73 +442,6 @@ def test_pretty_str():
         assert node.__class__.__name__ in pretty_str
     for node in graph.hidden_nodes:
         assert node.__class__.__name__ in pretty_str
-
-
-def test_pretty_str_with_unequal_inputs_rows_outputs():
-    primitives = (cgp.Add,)
-
-    # less rows than inputs/outputs
-    genome = cgp.Genome(1, 1, 1, 2, primitives)
-    # f(x) = x[0] + x[0]
-    genome.dna = [
-        ID_INPUT_NODE,
-        ID_NON_CODING_GENE,
-        ID_NON_CODING_GENE,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        ID_OUTPUT_NODE,
-        1,
-        ID_NON_CODING_GENE,
-    ]
-    graph = cgp.CartesianGraph(genome)
-
-    expected_pretty_str = """
-00 * InputNode          \t01 * Add (00,00)        \t03 * OutputNode (01)    \t
-                        \t02   Add                \t                        \t
-"""
-    assert graph.pretty_str() == expected_pretty_str
-
-    # more rows than inputs/outputs
-    genome = cgp.Genome(3, 3, 1, 2, primitives)
-    # f(x) = [x[0] + x[1], x[0] + x[1], x[1] + x[2]]
-    genome.dna = [
-        ID_INPUT_NODE,
-        ID_NON_CODING_GENE,
-        ID_NON_CODING_GENE,
-        ID_INPUT_NODE,
-        ID_NON_CODING_GENE,
-        ID_NON_CODING_GENE,
-        ID_INPUT_NODE,
-        ID_NON_CODING_GENE,
-        ID_NON_CODING_GENE,
-        0,
-        0,
-        1,
-        0,
-        1,
-        2,
-        ID_OUTPUT_NODE,
-        3,
-        ID_NON_CODING_GENE,
-        ID_OUTPUT_NODE,
-        3,
-        ID_NON_CODING_GENE,
-        ID_OUTPUT_NODE,
-        4,
-        ID_NON_CODING_GENE,
-    ]
-    graph = cgp.CartesianGraph(genome)
-
-    expected_pretty_str = """
-00 * InputNode          \t03 * Add (00,01)        \t05 * OutputNode (03)    \t
-01 * InputNode          \t04 * Add (01,02)        \t06 * OutputNode (03)    \t
-02 * InputNode          \t                        \t07 * OutputNode (04)    \t
-"""
-    assert graph.pretty_str() == expected_pretty_str
 
 
 def test_repr(rng, genome_params):

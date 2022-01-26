@@ -158,8 +158,6 @@ def test_fec_cache_decorator_with_multiple_inputs_multiple_outputs(genome_params
         "n_inputs": 2,
         "n_outputs": 2,
         "n_columns": 1,
-        "n_rows": 1,
-        "levels_back": None,
         "primitives": (cgp.Add, cgp.Sub),
     }
 
