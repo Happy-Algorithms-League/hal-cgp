@@ -376,7 +376,6 @@ class Genome:
             dna segment to be inserted at the first hidden nodes.
         target_expression: str
              Expression the output node should compile to. Numbers must be written as float.
-             Defaults to None.
         hidden_start_node: int
             Index of the hidden node, where the insert starts.
             Relative to the first hidden node.
@@ -403,15 +402,14 @@ class Genome:
                 "Can not check output expression. No module named 'sympy' (extra requirement)"
             )
 
-        if target_expression is not None:
-            if self._n_outputs > 1:
-                output_as_sympy = CartesianGraph(self).to_sympy()[output_node_idx]
-            else:
-                output_as_sympy = CartesianGraph(self).to_sympy()
+        if self._n_outputs > 1:
+            output_as_sympy = CartesianGraph(self).to_sympy()[output_node_idx]
+        else:
+            output_as_sympy = CartesianGraph(self).to_sympy()
 
-            target_expression_as_sympy = sympy.parse_expr(target_expression)
-            if not output_as_sympy == target_expression_as_sympy:
-                raise ValueError("expression of output and target expression do not match")
+        target_expression_as_sympy = sympy.parse_expr(target_expression)
+        if not output_as_sympy == target_expression_as_sympy:
+            raise ValueError("expression of output and target expression do not match")
 
     def reorder(self, rng: np.random.RandomState) -> None:
         """Reorder the genome
