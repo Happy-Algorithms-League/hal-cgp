@@ -153,7 +153,7 @@ class IndividualBase:
         return CartesianGraph(genome).to_torch()
 
     @staticmethod
-    def _to_sympy(genome: Genome, simplify: bool) -> "sympy_expr.Expr":
+    def _to_sympy(genome: Genome, simplify: bool):
         return CartesianGraph(genome).to_sympy(simplify)
 
     @staticmethod
