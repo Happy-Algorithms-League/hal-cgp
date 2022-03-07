@@ -4,6 +4,7 @@ scipy ~= 1.6.2
 sympy ~= 1.8
 torch ~= 1.8.0
 gym
+pygame
 # dev requirements
 pytest ~= 5.4.1
 mypy ~= 0.800
