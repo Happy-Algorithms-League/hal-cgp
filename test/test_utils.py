@@ -3,6 +3,7 @@ import functools
 import multiprocessing as mp
 import tempfile
 import time
+import warnings
 
 import numpy as np
 import pytest
@@ -500,3 +501,58 @@ def test_compute_key_from_object():
     kwargs = {"kwa": {"b": "str", "a": 3.0, "c": {"d": 4}, 5: 6}, "kwb": 42}
     key = cgp.utils.__compute_key_from_object(args) + cgp.utils.__compute_key_from_object(kwargs)
     assert key == key_expected
+
+
+def test_warn_if_decorator_numpy_evalutation_all_nan():
+    @cgp.utils.disk_cache(tempfile.mkstemp()[1])
+    def inner_objective(ind):
+        return 0.0
+
+    genome_params = {
+        "n_columns": 2,
+        "primitives": (cgp.Add, cgp.Sub, cgp.Div,),
+    }
+
+    genome = cgp.Genome(**genome_params)
+    # f(x) = x0 / (x0 - x0)
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        1,
+        0,
+        0,
+        2,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
+    ind = cgp.IndividualSingleGenome(genome)
+    with pytest.raises(RuntimeWarning):
+        with warnings.catch_warnings():
+            # ignore warnings due to zero division
+            warnings.filterwarnings("ignore", message="divide by zero encountered in true_divide")
+            # trigger an exception which can be caught by pytest when
+            # encoutering the relevant warning
+            warnings.filterwarnings("error", message="no finite output")
+            inner_objective(ind)
+
+    # f(x) = x0 / (x0 + x0)
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        0,
+        2,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        2,
+        ID_NON_CODING_GENE,
+    ]
+    ind = cgp.IndividualSingleGenome(genome)
+    inner_objective(ind)

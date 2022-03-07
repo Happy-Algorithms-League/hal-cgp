@@ -2,6 +2,7 @@ import functools
 import hashlib
 import os
 import pickle
+import warnings
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Type
 
 import numpy as np
@@ -110,8 +111,14 @@ def compute_key_from_numpy_evaluation_and_args(
             rng.uniform(_min_value, _max_value, size=_batch_size)
             for _ in range(ind.genome._n_inputs)
         ]
-        y = f_single(*x)
-        s = np.array_str(np.array(y), precision=15)
+        y = np.array(f_single(*x))
+        if not np.any(np.isfinite(y)):
+            warnings.warn(
+                "no finite output for the chosen input range for the caching decorator."
+                " please choose an appropriate range.",
+                RuntimeWarning,
+            )
+        s = np.array_str(y, precision=15)
     elif isinstance(ind, IndividualMultiGenome):
         f_multi = ind.to_numpy()
         s = ""
@@ -120,8 +127,14 @@ def compute_key_from_numpy_evaluation_and_args(
                 rng.uniform(_min_value, _max_value, size=_batch_size)
                 for _ in range(ind.genome[i]._n_inputs)
             ]
-            y = f_multi[i](*x)
-            s += np.array_str(np.array(y), precision=15)
+            y = np.array(f_multi[i](*x))
+            if not np.any(np.isfinite(y)):
+                warnings.warn(
+                    "no finite output for the chosen input range for the caching decorator."
+                    " please choose an appropriate range.",
+                    RuntimeWarning,
+                )
+            s += np.array_str(y, precision=15)
     else:
         assert False  # should never be reached
 

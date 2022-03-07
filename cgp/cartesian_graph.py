@@ -2,7 +2,7 @@ import collections
 import copy
 import math  # noqa: F401
 import re
-from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Set, Union
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Set
 
 import numpy as np  # noqa: F401
 
@@ -380,9 +380,7 @@ class _C(torch.nn.Module):
             for node in active_nodes[hidden_column_idx]:
                 node.format_output_str_sympy(self)
 
-    def to_sympy(
-        self, simplify: Optional[bool] = True
-    ) -> Union["sympy_expr.Expr", List["sympy_expr.Expr"]]:
+    def to_sympy(self, simplify: Optional[bool] = True):
         """Create SymPy expression(s) representing the function(s) described
         by this graph.
 
