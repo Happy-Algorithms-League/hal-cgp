@@ -588,3 +588,98 @@ def test_repr(rng, genome_params):
     genome.randomize(rng)
     # Assert that the CartesianGraph.__repr__ doesn't raise an error
     str(cgp.CartesianGraph(genome))
+
+
+def test_to_cpp():
+    sympy = pytest.importorskip("sympy")
+
+    # test addition, multiplication, single input, constant: f = 2 * x_0 + 1
+    primitives = (cgp.Add, cgp.ConstantFloat)
+    genome = cgp.Genome(1, 1, 2, 2, primitives, 1)
+
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        2,
+        0,
+        0,
+        1,
+        ID_OUTPUT_NODE,
+        3,
+        ID_NON_CODING_GENE,
+    ]
+
+    function_name = 'test_function'
+    filename = 'test0'
+    graph = cgp.CartesianGraph(genome)
+    [(filename_cpp, code_cpp), (filename_header, code_header)] = graph.to_cpp(function_name=function_name,
+                                                                              filename=filename, path='test_cpp')
+
+    filename_cpp_target = 'test0.c'
+    assert filename_cpp == filename_cpp_target
+
+    code_cpp_target = f'#include "{filename}.h"'\
+                      f'\n#include <math.h>\ndouble {function_name}(double x_0) ' \
+                      f'{{\n   double {function_name}_result;' \
+                      f'\n   {function_name}_result = 2*x_0 + 1.0;\n   return {function_name}_result;\n}}\n'
+
+    assert code_cpp_target == code_cpp
+
+    filename_header_target = 'test0.h'
+    assert filename_header == filename_header_target
+
+    code_header_target = f'#ifndef PROJECT__{filename.upper()}__H'\
+                         f'\n#define PROJECT__{filename.upper()}__H'\
+                         f'\ndouble {function_name}(double x_0);\n#endif\n'
+
+    assert code_header_target == code_header
+
+    # test exponential, subtraction, multiple inputs f = x_0^2 - x_1
+    primitives = (cgp.Mul, cgp.Sub)
+    genome = cgp.Genome(2, 1, 2, 1, primitives, 1)
+
+    genome.dna = [
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        ID_INPUT_NODE,
+        ID_NON_CODING_GENE,
+        ID_NON_CODING_GENE,
+        0,  # cgp.Mul
+        0,  # x_0
+        0,  # x_0
+        1,  # cpg.Sub
+        2,  # x_0^2
+        1,  # x_1
+        ID_OUTPUT_NODE,
+        3,
+        ID_NON_CODING_GENE,
+    ]
+
+    function_name = 'test_function'
+    filename = 'test1'
+    graph = cgp.CartesianGraph(genome)
+    [(filename_cpp, code_cpp), (filename_header, code_header)] = graph.to_cpp(function_name=function_name,
+                                                                              filename=filename, path='test_cpp')
+
+    code_cpp_target = f'#include "{filename}.h"'\
+                      f'\n#include <math.h>\ndouble {function_name}(double x_0, double x_1) ' \
+                      f'{{\n   double {function_name}_result;' \
+                      f'\n   {function_name}_result = pow(x_0, 2) - x_1;\n   return {function_name}_result;\n}}\n'
+
+    assert code_cpp_target == code_cpp
+
+    code_header_target = f'#ifndef PROJECT__{filename.upper()}__H'\
+                         f'\n#define PROJECT__{filename.upper()}__H'\
+                         f'\ndouble {function_name}(double x_0, double x_1);\n#endif\n'
+
+    assert code_header_target == code_header
