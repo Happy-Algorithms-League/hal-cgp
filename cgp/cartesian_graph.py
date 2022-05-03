@@ -469,3 +469,5 @@ class _C(torch.nn.Module):
             f.write(f'{code_cpp}')
         with open("%s/%s"%(path, filename_header), 'w') as f:
             f.write(f'{code_header}')
+
+        return [(filename_cpp, code_cpp), (filename_header, code_header)]
