@@ -1,6 +1,7 @@
 import collections
 import copy
 import math  # noqa: F401
+import os
 import re
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Set
 
@@ -12,6 +13,7 @@ from .node_input_output import InputNode, OutputNode
 try:
     import sympy
     from sympy.core import expr as sympy_expr  # noqa: F401
+    from sympy.utilities.codegen import codegen
 
     sympy_available = True
 except ModuleNotFoundError:
@@ -435,3 +437,35 @@ class _C(torch.nn.Module):
             return sympy_exprs[0]
         else:
             return sympy_exprs
+
+    def to_cpp(self, function_name, filename, path):
+        """Create a C++ module described by the graph.
+
+        Returns a C++ module. Currently only available for a single output node.
+        See: https://docs.sympy.org/latest/modules/utilities/codegen.html
+
+        Returns
+        ----------
+        C++ module
+
+        """
+
+        if not sympy_available:
+            raise ModuleNotFoundError("No sympy module available. Required for exporting C++ module")
+
+        if not self._n_outputs == 1:
+            raise ValueError("C++ module export only available for single output node.")
+
+        sympy_expr = self.to_sympy()
+
+        # from sympy.abc import x, y, z
+        # [(c_name, c_code), (h_name, c_header)] = codegen(("f", x + y * z), "C89", "test", header=False, empty=False)
+        [(filename_cpp, code_cpp), (filename_header, code_header)] = codegen((function_name, sympy_expr),
+                                                         "C99", filename, header=False, empty=False)
+
+        if not os.path.exists(path):
+            os.makedirs(path)
+        with open("%s/%s"%(path, filename_cpp), 'w') as f:
+            f.write(f'{code_cpp}')
+        with open("%s/%s"%(path, filename_header), 'w') as f:
+            f.write(f'{code_header}')
