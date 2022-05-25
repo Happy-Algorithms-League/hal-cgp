@@ -7,7 +7,7 @@ Example for evolutionary regression, with evaluation in c
 # sphinx-gallery.
 docopt_str = """
    Usage:
-     example_evaluate_in_c.py 
+     example_evaluate_in_c.py
 
    Options:
      -h --help
@@ -33,14 +33,24 @@ def compile_c_code(filename, scriptname, path):
     path_file_h = pathlib.Path(f"{path}/{filename}.h")
     path_script_c = pathlib.Path(f"{path}/{scriptname}.c")
     path_script_h = pathlib.Path(f"{path}/{scriptname}.h")
-    assert path_file_c.is_file() & path_file_h.is_file() & path_script_c.is_file() & path_script_h.is_file()
+    assert (
+        path_file_c.is_file()
+        & path_file_h.is_file()
+        & path_script_c.is_file()
+        & path_script_h.is_file()
+    )
 
     # compile file with rule
-    subprocess.run(["gcc", "-c", "-fPIC", f"{path}/{filename}.c", "-o", f"{path}/{filename}.o", ])
+    subprocess.run(["gcc", "-c", "-fPIC", f"{path}/{filename}.c", "-o", f"{path}/{filename}.o"])
     # compile script
-    subprocess.run(["gcc", "-c", "-fPIC", f"{path}/{scriptname}.c", "-o", f"{path}/{scriptname}.o", ])
+    subprocess.run(
+        ["gcc", "-c", "-fPIC", f"{path}/{scriptname}.c", "-o", f"{path}/{scriptname}.o"]
+    )
     # create executable
-    subprocess.run(["gcc", f"{path}/{scriptname}.o", f"{path}/{filename}.o", "-o", f"{path}/{filename}"])
+    subprocess.run(
+        ["gcc", f"{path}/{scriptname}.o", f"{path}/{filename}.o", "-o", f"{path}/{filename}"]
+    )
+
 
 # %%
 # We define the objective function for the evolution. It creates a
@@ -55,10 +65,10 @@ def objective(individual):
         return individual
 
     graph = cgp.CartesianGraph(individual.genome)
-    function_name = 'rule'
-    filename = 'individual'
-    scriptname = 'main'
-    path = 'c_code'
+    function_name = "rule"
+    filename = "individual"
+    scriptname = "main"
+    path = "c_code"
 
     graph.to_c(function_name=function_name, filename=filename, path=path)
 
@@ -68,19 +78,19 @@ def objective(individual):
     # assert that the executable returns something
     assert subprocess.check_output(pathlib.Path().absolute() / f"{path}/{filename}")
     # run simulation and assign fitness
-    individual.fitness = -1.0 * float(subprocess.check_output(pathlib.Path().absolute() / f"{path}/{filename}"))
+    individual.fitness = -1.0 * float(
+        subprocess.check_output(pathlib.Path().absolute() / f"{path}/{filename}")
+    )
 
     return individual
+
 
 # %%
 # Next, we set up the evolutionary search. We first define the parameters of the
 # genome. We then create a population of individuals with matching genome parameters.
 
 
-genome_params = {
-    "n_inputs": 2,
-    "primitives": (cgp.Add, cgp.Mul, cgp.ConstantFloat)
-}
+genome_params = {"n_inputs": 2, "primitives": (cgp.Add, cgp.Mul, cgp.ConstantFloat)}
 
 pop = cgp.Population(genome_params=genome_params)
 
@@ -90,10 +100,7 @@ pop = cgp.Population(genome_params=genome_params)
 # hyperparameters except that we terminate the evolution as soon as one
 # individual has reached fitness zero.
 
-pop = cgp.evolve(
-    objective=objective,  pop=pop, termination_fitness=0.0,
-    print_progress=True
-)
+pop = cgp.evolve(objective=objective, pop=pop, termination_fitness=0.0, print_progress=True)
 
 # %%
 # After finishing the evolution, we print the final evolved expression.
