@@ -1,6 +1,6 @@
 """
-Example for evolutionary regression, with evaluation in cpp
-===========================================
+Example for evolutionary regression, with evaluation in c
+=========================================================
 """
 
 # The docopt str is added explicitly to ensure compatibility with
@@ -13,9 +13,6 @@ docopt_str = """
      -h --help
 """
 
-import ctypes, ctypes.util
-import matplotlib.pyplot as plt
-import numpy as np
 import pathlib
 import subprocess
 from docopt import docopt
@@ -25,85 +22,67 @@ import cgp
 args = docopt(docopt_str)
 
 # %%
-# Then we define the objective function for the evolution. It uses
-# the mean-squared error between the output of the expression
-# represented by a given individual and the target function evaluated
-# on a set of random points.
+# We first define a helper function for compiling the c code. It creates
+# object files from the file and main script and creates an executable
+
+
+def compile_c_code(filename, scriptname, path):
+
+    # assert all necessary files exist
+    path_file_c = pathlib.Path(f"{path}/{filename}.c")
+    path_file_h = pathlib.Path(f"{path}/{filename}.h")
+    path_script_c = pathlib.Path(f"{path}/{scriptname}.c")
+    path_script_h = pathlib.Path(f"{path}/{scriptname}.h")
+    assert path_file_c.is_file() & path_file_h.is_file() & path_script_c.is_file() & path_script_h.is_file()
+
+    # compile file with rule
+    subprocess.run(["gcc", "-c", "-fPIC", f"{path}/{filename}.c", "-o", f"{path}/{filename}.o", ])
+    # compile script
+    subprocess.run(["gcc", "-c", "-fPIC", f"{path}/{scriptname}.c", "-o", f"{path}/{scriptname}.o", ])
+    # create executable
+    subprocess.run(["gcc", f"{path}/{scriptname}.o", f"{path}/{filename}.o", "-o", f"{path}/{filename}"])
+
+# %%
+# We define the objective function for the evolution. It creates a
+# c module and header from the computational graph. File with rule
+# and script for evaluation are compiled using the above helper function.
+# It assigns fitness to the negative float of the print of the script execution.
 
 
 def objective(individual):
 
     if not individual.fitness_is_None():
         return individual
-    #individual = set_initial_dna(individual)  # todo remove (debugging stuff)
 
     graph = cgp.CartesianGraph(individual.genome)
     function_name = 'rule'
     filename = 'individual'
+    scriptname = 'main'
     path = 'c_code'
 
-    # todo: combine filename with individual id? f'individual_{individual.idx}'? - Issue in the main.c import
-    graph.to_c(function_name=function_name, filename=filename, path=path)  #
-
-    def compile_c_code(filename, path):
-        subprocess.run(["gcc", "-c", "-fPIC", f"{path}/{filename}.c", "-o", f"{path}/{filename}.o", ])  # todo: catch errors
-        subprocess.run(["gcc", "-c", "-fPIC", f"{path}/main.c", "-o", f"{path}/main.o", ])
-        # subprocess.run(["gcc", f"{path}/main.o", f"{path}/{filename}.o", "-shared", "-o", f"{path}/{filename}.so"])
-        subprocess.run(["gcc", f"{path}/main.o", f"{path}/{filename}.o", "-o", f"{path}/{filename}"])
-
+    graph.to_c(function_name=function_name, filename=filename, path=path)
 
     # compile_c_code()
-    compile_c_code(filename, path)
+    compile_c_code(filename=filename, scriptname=scriptname, path=path)
 
-    #libname = pathlib.Path().absolute() / f"{path}/{filename}.so"
-    #c_lib = ctypes.CDLL(libname)
-    #c_lib.l2_norm_rule_target.restype = ctypes.c_double  # set output type to double
-
-    # run simulation
-    #individual.fitness = -1.0 * c_lib.l2_norm_rule_target()
+    # assert that the executable returns something
+    assert subprocess.check_output(pathlib.Path().absolute() / f"{path}/{filename}")
+    # run simulation and assign fitness
     individual.fitness = -1.0 * float(subprocess.check_output(pathlib.Path().absolute() / f"{path}/{filename}"))
 
     return individual
 
+# %%
+# Next, we set up the evolutionary search. We first define the parameters of the
+# genome. We then create a population of individuals with matching genome parameters.
 
-set_solution_initially = False
 
 genome_params = {
     "n_inputs": 2,
     "primitives": (cgp.Add, cgp.Mul, cgp.ConstantFloat)
 }
 
-seed = 123456789
-
-
-# target = x_0 * x_1 + 1.0;
-def set_initial_dna(ind):
-    genome = cgp.Genome(**genome_params)
-    genome.randomize(rng=np.random.RandomState(seed=1234))
-
-    #dna_prior = [1, 0, 1, 2, 0, 0, 0, 2, 3]  # Mul as 2nd operator (1): x_0*x1; 2 as const
-    dna_prior = [2,0,0, 2,0,0, 0,2,3]
-    genome.set_expression_for_output(dna_insert=dna_prior)
-    ind = cgp.IndividualSingleGenome(genome)
-    print(ind.to_sympy())
-    return cgp.IndividualSingleGenome(genome)
-
-
-if set_solution_initially:
-    pop = cgp.Population(genome_params=genome_params, individual_init=set_initial_dna, seed=seed)
-else:
-    pop = cgp.Population(genome_params=genome_params, seed=seed)
-
-
-# %%
-# Next, we set up the evolutionary search. We define a callback for recording
-# of fitness over generations
-history = {}
-history["fitness_champion"] = []
-
-
-def recording_callback(pop):
-    history["fitness_champion"].append(pop.champion.fitness)
+pop = cgp.Population(genome_params=genome_params)
 
 
 # %%
@@ -112,43 +91,10 @@ def recording_callback(pop):
 # individual has reached fitness zero.
 
 pop = cgp.evolve(
-    objective=objective,  pop=pop, termination_fitness=0.0, max_generations=1000,
-    print_progress=True, callback=recording_callback
+    objective=objective,  pop=pop, termination_fitness=0.0,
+    print_progress=True
 )
 
-print(pop.champion.to_sympy())
-
-
 # %%
-# After finishing the evolution, we plot the result and log the final
-# evolved expression.
-
-
-def plot_champion_and_target(f_champion, f_target):
-    width = 9.0
-    fig, axes = plt.subplots(1, 2, figsize=(width, width / 1.62))
-
-    ax_fitness, ax_function = axes[0], axes[1]
-    ax_fitness.set_xlabel("Generation")
-    ax_fitness.set_ylabel("Fitness")
-
-    ax_fitness.plot(history["fitness_champion"], label="Champion")
-
-    ax_fitness.set_yscale("symlog")
-    ax_fitness.set_ylim(-1.0e2, 0.1)
-    ax_fitness.axhline(0.0, color="0.7")
-
-    x = np.linspace(-5.0, 5.0, 20)
-    y = [f_champion(x_i) for x_i in x]
-    y_target = [f_target(x_i) for x_i in x]
-
-    ax_function.plot(x, y_target, lw=2, alpha=0.5, label="Target")
-    ax_function.plot(x, y, "x", label="Champion")
-    ax_function.legend()
-    ax_function.set_ylabel(r"$f(x)$")
-    ax_function.set_xlabel(r"$x$")
-
-    fig.savefig("example_evaluate_in_cpp.pdf", dpi=300)
-
-
-# plot_champion_and_target(f_champion=pop.champion.to_func, f_target=f_target)
+# After finishing the evolution, we print the final evolved expression.
+print(pop.champion.to_sympy())
