@@ -438,36 +438,56 @@ class _C(torch.nn.Module):
         else:
             return sympy_exprs
 
-    def to_cpp(self, function_name, filename, path):
-        """Create a C++ module described by the graph.
+    def to_c(self, function_name, filename, path):
+        """Create a C module described by the graph.
 
-        Returns a C++ module. Currently only available for a single output node.
-        See: https://docs.sympy.org/latest/modules/utilities/codegen.html
+        Writes code and header into files in the given path.
+        Important: function_name and filename have to be different, due to
+        Currently only available for a single output node.
 
         Returns
         ----------
-        C++ module
-
+        None
         """
 
         if not sympy_available:
-            raise ModuleNotFoundError("No sympy module available. Required for exporting C++ module")
+            raise ModuleNotFoundError("No sympy module available. Required for exporting C module")
 
         if not self._n_outputs == 1:
-            raise ValueError("C++ module export only available for single output node.")
+            raise ValueError("C module export only available for single output node.")
+
+        if function_name in filename:
+            raise ValueError("function_name can not be substring of filename, due to function declaration"
+                             "consistency checks")
 
         sympy_expr = self.to_sympy()
 
-        # from sympy.abc import x, y, z
-        # [(c_name, c_code), (h_name, c_header)] = codegen(("f", x + y * z), "C89", "test", header=False, empty=False)
-        [(filename_cpp, code_cpp), (filename_header, code_header)] = codegen((function_name, sympy_expr),
+        [(filename_c, code_c), (filename_header, code_header)] = codegen((function_name, sympy_expr),
                                                          "C99", filename, header=False, empty=False)
+
+        def replace_func_declaration_in_code_and_header_with_full_variable_set(code_c, code_header, function_name):
+
+            arg_string_list = [f'double x_{idx}' for idx in range(self._n_inputs)]
+            permanent_header = f'{function_name}(' + ", ".join(arg_string_list) + ')'
+
+            c_replace_start_idx = code_c.find(function_name)
+            c_replace_end_idx = code_c.find(')', c_replace_start_idx) + 1  # +1 offset for
+            code_c = code_c.replace(code_c[c_replace_start_idx:c_replace_end_idx], permanent_header)
+
+            h_replace_start_idx = code_header.find(function_name)
+            h_replace_end_idx = code_header.find(')', h_replace_start_idx) + 1
+            code_header = code_header.replace(code_header[h_replace_start_idx:h_replace_end_idx], permanent_header)
+
+            return code_c, code_header
+
+        # assert function declaration consistency - replace declaration in header and code
+        code_c, code_header = replace_func_declaration_in_code_and_header_with_full_variable_set(code_c, code_header,
+                                                                                                 function_name)
 
         if not os.path.exists(path):
             os.makedirs(path)
-        with open("%s/%s"%(path, filename_cpp), 'w') as f:
-            f.write(f'{code_cpp}')
+        with open("%s/%s"%(path, filename_c), 'w') as f:
+            f.write(f'{code_c}')
         with open("%s/%s"%(path, filename_header), 'w') as f:
             f.write(f'{code_header}')
 
-        return [(filename_cpp, code_cpp), (filename_header, code_header)]
