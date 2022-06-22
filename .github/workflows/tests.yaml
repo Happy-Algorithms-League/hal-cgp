@@ -33,10 +33,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .$DEP
           pip install pytest-cov coveralls
-      - name: Code checks
-        run: |
-          mypy cgp
-          isort --check-only cgp examples test
       - name: run tests
         run: |
           pytest --cov=cgp
