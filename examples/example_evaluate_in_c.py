@@ -96,6 +96,7 @@ obj = functools.partial(objective, path=path)
 pop = cgp.evolve(objective=obj, pop=pop, termination_fitness=0.0, print_progress=True)
 
 # %%
-# After finishing the evolution, we print the final evolved expression and assert it is the target expression.
+# After finishing the evolution, we print the final evolved expression and assert it is the target
+# expression.
 print(pop.champion.to_sympy())
 assert str(pop.champion.to_sympy()) == "x_0*x_1 + 1.0"
