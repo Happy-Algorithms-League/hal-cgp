@@ -4,47 +4,42 @@
 #include <stdlib.h>
 
 
-double target(double x_0, double x_1) {
-    double target;
-    target = x_0 * x_1 + 1.0;
-    return target;
+double target(const double x_0, const double x_1) {
+    return x_0 * x_1 + 1.0;
 }
 
 /* generate a random floating point number from min to max */
-double rand_from(double min, double max) 
+double rand_from_to(double min, double max)
 {
-    double range = (max - min); 
+    const double range = (max - min);
     double div = RAND_MAX / range;
     return min + (rand() / div);
 }
 
 
-double l2_norm_rule_target() {
-    int sz = 100;
+double loss() {
+    int n_samples = 100;
     srand(1234); // fix seed
-    double x_0_rand;
-    double x_1_rand;
 
-    double target_value;
-    double rule_output;
     double sum_l2_difference = 0.0;
 
-    for(int i=0;i<sz;i++){
-        /* generate two random values for x_0, x_1 */
-        double min = -1.0;
-        double max = 1.0;
-        x_0_rand=rand_from(min, max);
-        x_1_rand=rand_from(min, max);
+    const double min = -1.0;
+    const double max = 1.0;
 
-        target_value=target(x_0_rand, x_1_rand);
-        rule_output=rule(x_0_rand, x_1_rand);
+    for(int i=0;i<n_samples;i++){
+        /* generate two random values for x_0, x_1 */
+        const double x_0_rand=rand_from_to(min, max);
+        const double x_1_rand=rand_from_to(min, max);
+
+        const double target_value=target(x_0_rand, x_1_rand);
+        const double rule_output=rule(x_0_rand, x_1_rand);
         
         sum_l2_difference += pow(target_value-rule_output, 2);
     }
-    return sum_l2_difference/sz;
+    return sum_l2_difference/(double)n_samples;
 }
 
 int main(){
-    printf("%f", l2_norm_rule_target());
+    printf("%f", loss());
     return 0;
 }
