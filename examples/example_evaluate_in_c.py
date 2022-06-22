@@ -15,6 +15,7 @@ docopt_str = """
 import functools
 import pathlib
 import subprocess
+
 from docopt import docopt
 
 import cgp
@@ -41,16 +42,16 @@ def compile_c_code(path):
 
     # create executable
     subprocess.check_call(
-        ["gcc", f"{path}/main.o", f"{path}/individual.o", "-o", f"{path}/individual"]
+        ["gcc", f"{path}/main.o", f"{path}/individual.o", "-o", f"{path}/main"]
     )
 
 
 # %%
 # We define the objective function for the evolution. It creates a
-# C module and header from the computational graph. File with rule
-# and script for evaluation are compiled using the above helper function.
-# It assigns fitness to the negative float of the print of the script execution.
-
+# C module and header from the computational graph. The module
+# and the main source file for evaluation are compiled using the above
+# helper function.  Here the objective obtains the fitness by reading
+# the screen output of the C program.
 
 def objective(individual, path):
 
