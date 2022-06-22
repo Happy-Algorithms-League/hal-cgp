@@ -1,6 +1,7 @@
 import collections
 import copy
 import math  # noqa: F401
+import os
 import re
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Set
 
@@ -12,6 +13,7 @@ from .node_input_output import InputNode, OutputNode
 try:
     import sympy
     from sympy.core import expr as sympy_expr  # noqa: F401
+    from sympy.utilities.codegen import codegen
 
     sympy_available = True
 except ModuleNotFoundError:
@@ -435,3 +437,85 @@ class _C(torch.nn.Module):
             return sympy_exprs[0]
         else:
             return sympy_exprs
+
+    def to_c(self, path):
+        """Create a C containing the function described by this graph.
+
+        Writes header and source into files to the given path.
+        Currently only available for a single output node.
+
+        Returns
+        ----------
+        None
+        """
+
+        if not sympy_available:
+            raise ModuleNotFoundError("No sympy module available. Required for exporting C module")
+
+        if not self._n_outputs == 1:
+            raise ValueError("C module export only available for single output node.")
+
+        function_name = "rule"
+        filename = "individual"
+
+        sympy_expression = self.to_sympy()
+
+        [(filename_source, code_source), (filename_header, code_header)] = codegen(
+            (function_name, sympy_expression), "C99", filename, header=False, empty=False
+        )
+
+        def replace_func_signature_in_source_and_header_with_full_variable_set(
+            code_source, code_header, function_name
+        ):
+            """Replaces function signature in source and header
+            with a signature containing all input variables of the graph
+
+            Sympy generates function signatures based on the variables used in the expressions,
+            but our callers expect a fixed signature. Thus we have to replace the signature in
+            code source and code header with a signature using all of the input variables to the
+            computational graph to ensure consistency across individuals.
+
+            Returns code_source and code_header string with updated function signature
+
+            Returns
+            ----------
+            (str, str):
+                code_source and code_header signatures
+            """
+
+            # generate signature with all input variables
+            arg_string_list = [f"double x_{idx}" for idx in range(self._n_inputs)]
+            permanent_signature = f"{function_name}(" + ", ".join(arg_string_list) + ")"
+
+            # update signature in code_source
+            c_replace_start_idx = code_source.find(function_name)
+            c_replace_end_idx = (
+                code_source.find(")", c_replace_start_idx) + 1
+            )  # +1 offset for to account for ")"
+            code_source = code_source.replace(
+                code_source[c_replace_start_idx:c_replace_end_idx], permanent_signature
+            )
+
+            # update signature in code_header
+            h_replace_start_idx = code_header.find(function_name)
+            h_replace_end_idx = code_header.find(")", h_replace_start_idx) + 1
+            code_header = code_header.replace(
+                code_header[h_replace_start_idx:h_replace_end_idx], permanent_signature
+            )
+
+            return code_source, code_header
+
+        # assert function signature consistency - replace signature in header and code
+        (
+            code_source,
+            code_header,
+        ) = replace_func_signature_in_source_and_header_with_full_variable_set(
+            code_source, code_header, function_name
+        )
+
+        if not os.path.exists(path):
+            os.makedirs(path)
+        with open("%s/%s" % (path, filename_source), "w") as f:
+            f.write(f"{code_source}")
+        with open("%s/%s" % (path, filename_header), "w") as f:
+            f.write(f"{code_header}")
