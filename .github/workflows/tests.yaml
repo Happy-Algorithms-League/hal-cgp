@@ -33,22 +33,28 @@ jobs:
         env:
           DEP: ${{ matrix.dep }}
         run: |
+          pip --version
           pip install --upgrade -e .$DEP
           pip install --upgrade pytest-cov coveralls
       - name: Run code checks (black)
         run: |
+          black --version
           black --check .
       - name: Run code checks (flake8)
         run: |
+          flake8 --version
           flake8 --config=.flake8 .
       - name: Run code checks (mypy)
         run: |
+          mypy --version
           mypy cgp
       - name: Run code checks (isort)
         run: |
+          isort --version
           isort --check-only cgp examples test
       - name: Run tests
         run: |
+          pytest --version
           pytest --cov=cgp
       - name: Build documentation
         run: |
