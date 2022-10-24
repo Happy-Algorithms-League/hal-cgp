@@ -3,15 +3,16 @@ matplotlib ~= 3.4.1
 scipy ~= 1.6.2
 sympy ~= 1.8
 torch ~= 1.8.0
-gym
-pygame
+gym ~= 0.18.3
 # dev requirements
 pytest ~= 5.4.1
 mypy ~= 0.800
+click ~= 8.0.1
 black ~= 19.10b0
 flake8 ~= 3.7.9
 isort ~=5.2.2
 # doc requirements
+jinja2 ~= 3.0.1
 sphinx ~=3.1.2
 recommonmark~=0.6.0
 msmb_theme~=1.2.0
