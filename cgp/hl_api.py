@@ -9,8 +9,8 @@ from .population import Population
 
 def evolve(
     objective: Callable[[IndividualBase], IndividualBase],
-    pop: Population = Population(),
-    ea: MuPlusLambda = MuPlusLambda(),
+    pop: Population = None,
+    ea: MuPlusLambda = None,
     termination_fitness: float = np.inf,
     max_generations: int = np.iinfo(np.int64).max,
     max_objective_calls: int = np.iinfo(np.int64).max,
@@ -50,6 +50,12 @@ def evolve(
     Population
         The evolved population.
     """
+    if pop is None:
+        pop = Population()
+
+    if ea is None:
+        ea = MuPlusLambda()
+
     if max_generations == np.iinfo(np.int64).max and max_objective_calls == np.iinfo(np.int64).max:
         max_generations = 1000
 

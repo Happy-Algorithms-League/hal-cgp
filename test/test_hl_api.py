@@ -182,3 +182,16 @@ def test_speedup_parallel_evolve(population_params, genome_params, ea_params, rn
         else:
             # assert that multiprocessing roughly follows a linear speedup.
             assert T == pytest.approx(T_baseline / n_processes, rel=0.25)
+
+
+def test_non_persistent_default_population(rng):
+    def objective(ind):
+        ind.fitness = rng.rand()
+        return ind
+
+    pop0 = cgp.evolve(objective, max_generations=5)
+    pop1 = cgp.evolve(objective, max_generations=5)
+
+    # since these were two independent runs with random fitness assignments we
+    # would expect the champions to be different
+    assert pop0.champion.fitness != pytest.approx(pop1.champion.fitness)
