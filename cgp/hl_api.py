@@ -9,12 +9,12 @@ from .population import Population
 
 def evolve(
     objective: Callable[[IndividualBase], IndividualBase],
-    pop: Population = None,
-    ea: MuPlusLambda = None,
+    pop: Optional[Population] = None,
+    ea: Optional[MuPlusLambda] = None,
     termination_fitness: float = np.inf,
     max_generations: int = np.iinfo(np.int64).max,
     max_objective_calls: int = np.iinfo(np.int64).max,
-    print_progress: Optional[bool] = False,
+    print_progress: bool = False,
     callback: Optional[Callable[[Population], None]] = None,
 ) -> Population:
     """
