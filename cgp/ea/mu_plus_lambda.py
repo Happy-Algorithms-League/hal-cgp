@@ -142,6 +142,8 @@ class MuPlusLambda:
         # concatenating the parent population to the offspring
         # population instead of the other way around
         combined = offsprings + pop.parents
+        assert all(ind.idx is not None for ind in combined)
+        assert len(set(ind.idx for ind in combined)) == len(combined)
 
         # we follow a two-step process for selection of new parents:
         # we first determine the fitness for all individuals, then, if
