@@ -64,7 +64,7 @@ def evolve(
         callback(pop)
 
     # perform evolution
-    max_fitness = np.finfo(float).min
+    max_fitness = float(np.finfo(float).min)
     # Main loop: -1 offset since the last loop iteration will still increase generation by one
     while pop.generation < max_generations - 1 and ea.n_objective_calls < max_objective_calls:
 

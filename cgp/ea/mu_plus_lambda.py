@@ -214,7 +214,9 @@ class MuPlusLambda:
 
         offsprings: List[IndividualBase] = []
         while len(offsprings) < self.n_offsprings:
-            tournament_pool = pop.rng.permutation(pop.parents)[: self.tournament_size]
+            tournament_pool = pop.rng.permutation(pop.parents)[  # type: ignore
+                : self.tournament_size
+            ]
             best_in_tournament = sorted(tournament_pool, reverse=True)[0]
             offsprings.append(best_in_tournament.clone())
 
