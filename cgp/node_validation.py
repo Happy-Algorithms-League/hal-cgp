@@ -4,6 +4,7 @@ import numpy as np
 
 try:
     from sympy.core import expr as sympy_expr  # noqa: F401
+    from sympy.logic import boolalg as sympy_boolalg  # noqa: F401
 
     sympy_available = True
 except ModuleNotFoundError:
@@ -91,6 +92,7 @@ def check_to_sympy(cls: Type["OperatorNode"]) -> None:
     genome = _create_genome(cls)
 
     f = CartesianGraph(genome).to_sympy()
-    assert isinstance(f, sympy_expr.Expr)
-    x = [1.0]
-    f.subs("x_0", x[0]).evalf()
+    assert isinstance(f, sympy_expr.Expr) or isinstance(f, sympy_boolalg.Boolean)
+    if isinstance(f, sympy_expr.Expr):
+        x = [1.0]
+        f.subs("x_0", x[0]).evalf()
