@@ -35,7 +35,7 @@ from docopt import docopt
 import cgp
 
 try:
-    import gym
+    import gymnasium as gym
 except ImportError:
     raise ImportError(
         "Failed to import the OpenAI Gym package. Please install it via `pip install gym`."
@@ -68,29 +68,22 @@ class ConstantFloatTen(cgp.ConstantFloat):
 
 
 def inner_objective(f, seed, n_runs_per_individual, n_total_steps, *, render):
-
-    env = gym.make("MountainCarContinuous-v0")
-
-    env.seed(seed)
+    env = gym.make("MountainCarContinuous-v0", render_mode="human" if render else None)
 
     cum_reward_all_episodes = []
     for _ in range(n_runs_per_individual):
-        observation = env.reset()
+        observation, _ = env.reset(seed=seed)
 
         cum_reward_this_episode = 0
         for _ in range(n_total_steps):
-
-            if render:
-                env.render()
-
             continuous_action = f(*observation)
-            observation, reward, done, _ = env.step([continuous_action])
+            observation, reward, terminated, truncated, _ = env.step([continuous_action])
             cum_reward_this_episode += reward
 
-            if done:
+            if terminated or truncated:
                 cum_reward_all_episodes.append(cum_reward_this_episode)
                 cum_reward_this_episode = 0
-                observation = env.reset()
+                observation, _ = env.reset(seed=seed)
 
     env.close()
 
@@ -147,8 +140,14 @@ def evolve(seed):
 
     objective_params = {"n_runs_per_individual": 3, "n_total_steps": 2000}
 
+    population_params = {"n_parents": 1, "seed": seed}
+
     genome_params = {
         "n_inputs": 2,
+        "n_outputs": 1,
+        "n_columns": 16,
+        "n_rows": 1,
+        "levels_back": None,
         "primitives": (
             cgp.Add,
             cgp.Sub,
@@ -160,14 +159,19 @@ def evolve(seed):
         ),
     }
 
-    ea_params = {"n_processes": 4}
+    ea_params = {
+        "n_offsprings": 4, 
+        "tournament_size": 1, 
+        "mutation_rate": 0.04, 
+        "n_processes": 4
+    }
 
     evolve_params = {
         "max_generations": int(args["--max-generations"]),
         "termination_fitness": 100.0,
     }
 
-    pop = cgp.Population(genome_params=genome_params)
+    pop = cgp.Population(**population_params, genome_params=genome_params)
 
     ea = cgp.ea.MuPlusLambda(**ea_params)
 
@@ -186,8 +190,8 @@ def evolve(seed):
         n_total_steps=objective_params["n_total_steps"],
     )
 
-    pop = cgp.evolve(
-        obj, pop, ea, **evolve_params, print_progress=True, callback=recording_callback
+    cgp.evolve(
+        pop, obj, ea, **evolve_params, print_progress=True, callback=recording_callback
     )
 
     return history, pop.champion
@@ -217,9 +221,7 @@ def plot_fitness_over_generation_index(history):
 def evaluate_champion(ind):
 
     env = gym.make("MountainCarContinuous-v0")
-
-    env.seed(seed)
-    observation = env.reset()
+    observation, _ = env.reset(seed=seed)
 
     f = ind.to_func()
 
@@ -228,13 +230,14 @@ def evaluate_champion(ind):
     while len(cum_reward_all_episodes) < 100:
 
         continuous_action = f(*observation)
-        observation, reward, done, _ = env.step([continuous_action])
+        observation, reward, terminated, truncated, _ = env.step([continuous_action])
         cum_reward_this_episode += reward
 
-        if done:
+
+        if terminated or truncated:
             cum_reward_all_episodes.append(cum_reward_this_episode)
             cum_reward_this_episode = 0
-            observation = env.reset()
+            observation, _ = env.reset(seed=seed)
 
     env.close()
 
@@ -272,8 +275,8 @@ def visualize_behaviour_for_evolutionary_jumps(seed, history, only_final_solutio
             x_0, x_1 = sympy.symbols("x_0, x_1")
             f_lambdify = sympy.lambdify([x_0, x_1], expr)
 
-            def f(x, v):
-                return f_lambdify(x, v)
+            def f(x, y):
+                return f_lambdify(x, y)
 
             inner_objective(f, seed, n_runs_per_individual, n_total_steps, render=True)
 
