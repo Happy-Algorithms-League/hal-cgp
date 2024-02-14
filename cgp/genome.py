@@ -359,7 +359,11 @@ class Genome:
         self.dna = dna
 
     def set_expression_for_output(
-        self, dna_insert: List[int], hidden_start_node: int = 0, output_node_idx: int = 0
+        self,
+        dna_insert: List[int],
+        target_expression: str,
+        hidden_start_node: int = 0,
+        output_node_idx: int = 0,
     ):
         """Set an expression for one output node
 
@@ -370,6 +374,8 @@ class Genome:
         ----------
         dna_insert: List[int]
             dna segment to be inserted at the first hidden nodes.
+        target_expression: str
+             Expression the output node should compile to. Numbers must be written as float.
         hidden_start_node: int
             Index of the hidden node, where the insert starts.
             Relative to the first hidden node.
@@ -388,6 +394,22 @@ class Genome:
         self.change_address_gene_of_output_node(
             new_address=last_inserted_node, output_node_idx=output_node_idx
         )
+        try:
+            import sympy
+
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(
+                "Can not check output expression. No module named 'sympy' (extra requirement)"
+            )
+
+        if self._n_outputs > 1:
+            output_as_sympy = CartesianGraph(self).to_sympy()[output_node_idx]
+        else:
+            output_as_sympy = CartesianGraph(self).to_sympy()
+
+        target_expression_as_sympy = sympy.parse_expr(target_expression)
+        if not output_as_sympy == target_expression_as_sympy:
+            raise ValueError("expression of output and target expression do not match")
 
     def reorder(self, rng: np.random.RandomState) -> None:
         """Reorder the genome
