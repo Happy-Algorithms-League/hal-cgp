@@ -74,7 +74,8 @@ class ExampleCLIArgs:
         return "ExampleCLIArgs"
 
     def __call__(self, sphinx_gallery_conf, script_vars):
-        if "example_caching.py" in script_vars["src_file"]:
+        fn = os.path.basename(script_vars["src_file"])
+        if fn in ("example_caching.py", "example_initialize_individuals.py"):
             return []
         else:
             return ["--max-generations", "10"]
