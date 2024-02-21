@@ -104,7 +104,7 @@ seed = 1234
 
 genome_params = {
     "n_inputs": 2,
-    "n_columns": 5,
+    "n_hidden_units": 5,
     "primitives": (ParametrizedAdd, cgp.Add, cgp.Sub, cgp.Mul),
 }
 

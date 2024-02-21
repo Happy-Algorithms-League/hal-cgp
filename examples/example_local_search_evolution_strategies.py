@@ -84,7 +84,7 @@ def objective(individual, seed):
 seed = 1234
 
 genome_params = {
-    "n_columns": 36,
+    "n_hidden_units": 36,
     "primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Parameter),
 }
 

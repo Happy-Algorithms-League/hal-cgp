@@ -28,10 +28,8 @@ class Genome:
         self,
         n_inputs: int = 1,
         n_outputs: int = 1,
-        n_columns: int = 128,
-        n_rows: int = 1,
+        n_hidden_units: int = 128,
         primitives: Optional[Tuple[Type[Node], ...]] = None,
-        levels_back: Optional[int] = None,
     ) -> None:
         """Init function.
 
@@ -41,40 +39,23 @@ class Genome:
             Number of inputs of the function represented by the genome. Defaults to 1.
         n_outputs : int, optional
             Number of outputs of the function represented by the genome. Defaults to 1.
-        n_columns : int, optional
-            Number of columns in the representation of the genome. Defaults to 12.
-        n_rows : int, optional
-            Number of rows in the representation of the genome. Defaults to 1.
+        n_hidden_units : int, optional
+            Number of hidden units in the representation of the genome. Defaults to 128.
         primitives : Tuple[Type[Node], ...], optional
            Tuple of primitives that the genome can refer to. Defaults to (+, -, *, 1.0).
-        levels_back : Optional[int], optional
-            Maximal column distance of inputs to an internal node. If
-            set to `None`, no restrictions are used. Defaults to None.
 
         """
         if n_inputs <= 0:
             raise ValueError("n_inputs must be strictly positive")
         self._n_inputs = n_inputs
 
-        if n_columns < 0:
+        if n_hidden_units < 0:
             raise ValueError("n_columns must be non-negative")
-        self._n_columns = n_columns
-
-        if n_rows < 0:
-            raise ValueError("n_rows must be non-negative")
-        self._n_rows = n_rows
+        self._n_hidden_units = n_hidden_units
 
         if n_outputs <= 0:
             raise ValueError("n_outputs must be strictly positive")
         self._n_outputs = n_outputs
-
-        if levels_back is None:
-            levels_back = n_columns
-        if levels_back == 0 and n_columns != 0:
-            raise ValueError("levels_back must be strictly positive")
-        if levels_back > n_columns:
-            raise ValueError("levels_back can not be larger than n_columns")
-        self._levels_back = levels_back
 
         if primitives is None:
             # we need to delay this import to avoid circular imports: node_impl
@@ -128,7 +109,7 @@ class Genome:
 
     @property
     def _n_hidden(self) -> int:
-        return self._n_columns * self._n_rows
+        return self._n_hidden_units
 
     @property
     def _n_regions(self) -> int:
@@ -267,9 +248,7 @@ class Genome:
         # add hidden nodes
         for i in range(self._n_hidden):
 
-            if i % self._n_rows == 0:  # only compute permissible addresses once per column
-                permissible_addresses = self._permissible_addresses(i + self._n_inputs)
-
+            permissible_addresses = self._permissible_addresses(i + self._n_inputs)
             dna += self._create_random_hidden_region(rng, permissible_addresses)
 
         # add output nodes
@@ -312,7 +291,7 @@ class Genome:
         if hidden_start_node < 0 or hidden_start_node > self._n_hidden:
             raise ValueError("hidden_start_node must be non-negative and smaller than n_hidden")
 
-        if hidden_start_node + n_inserted_nodes >= self._n_hidden:
+        if hidden_start_node + n_inserted_nodes > self._n_hidden:
             raise ValueError("New dna too long")
 
         dna = self.dna
@@ -409,10 +388,6 @@ class Genome:
         ----------
         None
         """
-        if (self._n_rows != 1) or (self._levels_back != self._n_columns):
-            raise ValueError(
-                "Genome reordering is only implemented for n_rows=1" " and levels_back=n_columns"
-            )
 
         dna = self._dna.copy()
 
@@ -501,9 +476,7 @@ class Genome:
     def _replace_invalid_address_alleles(self, dna: List[int], rng: np.random.RandomState) -> None:
         """Replace invalid alleles for unused address genes of all nodes
         by random permissible values.
-        WARNING: Works only if self.n_rows==1.
         """
-        assert self._n_rows == 1
 
         for gene_idx, gene_value in enumerate(dna):
             region_idx = self._get_region_idx(gene_idx)
@@ -578,22 +551,22 @@ class Genome:
         # all nodes can be connected to input
         permissible_addresses += [j for j in range(0, self._n_inputs)]
 
-        # add all nodes reachable according to levels back
+        # add all nodes reachable
         if self._is_hidden_region(region_idx):
-            hidden_column_idx = self._hidden_column_idx(region_idx)
-            lower = self._n_inputs + self._n_rows * max(0, (hidden_column_idx - self._levels_back))
-            upper = self._n_inputs + self._n_rows * hidden_column_idx
+            hidden_idx = self._hidden_idx(region_idx)
+            lower = self._n_inputs
+            upper = self._n_inputs + hidden_idx
         else:
             assert self._is_output_region(region_idx)
             lower = self._n_inputs
-            upper = self._n_inputs + self._n_rows * self._n_columns
+            upper = self._n_inputs + self._n_hidden_units
 
         permissible_addresses += [j for j in range(lower, upper)]
 
         return permissible_addresses
 
     def _permissible_addresses_for_output_region(self) -> List[int]:
-        return self._permissible_addresses(self._n_inputs + self._n_rows * self._n_columns)
+        return self._permissible_addresses(self._n_inputs + self._n_hidden_units)
 
     def _validate_dna(self, dna: List[int]) -> None:
 
@@ -635,13 +608,13 @@ class Genome:
             if output_region[2:] != [self._id_unused_gene] * (self._primitives.max_arity - 1):
                 raise ValueError("inactive address genes for output nodes need to be empty")
 
-    def _hidden_column_idx(self, region_idx: int) -> int:
+    def _hidden_idx(self, region_idx: int) -> int:
         assert self._n_inputs <= region_idx
-        assert region_idx < self._n_inputs + self._n_rows * self._n_columns
-        hidden_column_idx = (region_idx - self._n_inputs) // self._n_rows
-        assert 0 <= hidden_column_idx
-        assert hidden_column_idx < self._n_columns
-        return hidden_column_idx
+        assert region_idx < self._n_inputs + self._n_hidden_units
+        hidden_idx = region_idx - self._n_inputs
+        assert 0 <= hidden_idx
+        assert hidden_idx < self._n_hidden_units
+        return hidden_idx
 
     def iter_input_regions(
         self, dna: Optional[List[int]] = None
@@ -788,12 +761,7 @@ class Genome:
         """
 
         new = Genome(
-            self._n_inputs,
-            self._n_outputs,
-            self._n_columns,
-            self._n_rows,
-            tuple(self._primitives),
-            self._levels_back,
+            self._n_inputs, self._n_outputs, self._n_hidden_units, tuple(self._primitives)
         )
         new.dna = self.dna.copy()
 

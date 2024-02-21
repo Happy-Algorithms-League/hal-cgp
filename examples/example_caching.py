@@ -63,7 +63,6 @@ def objective(individual):
     return individual
 
 
-# %%
 # Finally, we call the `evolve` method to perform the evolutionary search.
 
 

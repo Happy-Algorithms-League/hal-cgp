@@ -97,8 +97,6 @@ def objective(individual, seed):
 seed = 1234
 genome_params = {"primitives": (cgp.Add, cgp.Sub, cgp.Mul, cgp.Parameter)}
 
-# apply local search only to the top two individuals
-ea_params = {"k_local_search": 2}
 
 evolve_params = {"max_generations": int(args["--max-generations"]), "termination_fitness": -1e-8}
 

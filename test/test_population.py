@@ -81,9 +81,7 @@ def test_individual_init(population_params, genome_params):
     genome_params = {
         "n_inputs": 1,
         "n_outputs": 1,
-        "n_columns": 3,
-        "n_rows": 1,
-        "levels_back": None,
+        "n_hidden_units": 3,
         "primitives": (cgp.Add, cgp.Sub, cgp.ConstantFloat),
     }
 
@@ -112,8 +110,7 @@ def test_ncolumns_zero(population_params):
     genome_params = {
         "n_inputs": 1,
         "n_outputs": 1,
-        "n_columns": 0,
-        "n_rows": 1,
+        "n_hidden_units": 0,
         "primitives": (cgp.Mul, cgp.Sub, cgp.Add, cgp.ConstantFloat),
     }
     pop = cgp.Population(**population_params, genome_params=genome_params)

@@ -104,22 +104,8 @@ def test_evolve_two_expressions(population_params, ea_params, rng_seed):
     # contains parameters for two distinct CartesianGraphs as list of
     # two dicts
     genome_params = [
-        {
-            "n_inputs": 1,
-            "n_outputs": 1,
-            "n_columns": 4,
-            "n_rows": 2,
-            "levels_back": 2,
-            "primitives": (cgp.Add, cgp.Mul),
-        },
-        {
-            "n_inputs": 2,
-            "n_outputs": 1,
-            "n_columns": 2,
-            "n_rows": 2,
-            "levels_back": 2,
-            "primitives": (cgp.Sub, cgp.Mul),
-        },
+        {"n_inputs": 1, "n_outputs": 1, "n_hidden_units": 4, "primitives": (cgp.Add, cgp.Mul),},
+        {"n_inputs": 2, "n_outputs": 1, "n_hidden_units": 4, "primitives": (cgp.Sub, cgp.Mul),},
     ]
 
     evolve_params = {"max_generations": 2000, "termination_fitness": -1e-12}
