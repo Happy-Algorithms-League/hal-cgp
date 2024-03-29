@@ -186,9 +186,9 @@ class Genome:
     def _determine_permissible_values_input_region(self, gene_idx: int) -> np.ndarray:
 
         if self._is_function_gene(gene_idx):
-            return np.array(self._id_input_node)
+            return np.array([self._id_input_node])
         else:
-            return np.array(self._id_unused_gene)
+            return np.array([self._id_unused_gene])
 
     def _determine_permissible_values_hidden_region(
         self, gene_idx: int, region_idx: int
@@ -206,13 +206,13 @@ class Genome:
     def _determine_permissible_values_output_region(self, gene_idx: int) -> np.ndarray:
 
         if self._is_function_gene(gene_idx):
-            return np.array(self._id_output_node)
+            return np.array([self._id_output_node])
         else:
             address_idx = gene_idx % self._length_per_region - 1
             if address_idx == 0:
                 return np.array(self._permissible_addresses_for_output_region())
             else:
-                return np.array(self._id_unused_gene)
+                return np.array([self._id_unused_gene])
 
     def _create_input_region(self) -> List[int]:
 
