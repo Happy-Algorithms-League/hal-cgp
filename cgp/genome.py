@@ -750,15 +750,25 @@ class Genome:
         selected_gene_indices = self._select_gene_indices_for_mutation(mutation_rate, rng)
 
         for (gene_idx, allele) in zip(selected_gene_indices, np.array(dna)[selected_gene_indices]):
-
-            region_idx = self._get_region_idx(gene_idx)
-
             permissible_values = self._permissible_values[gene_idx]
-            permissible_alternative_values = permissible_values[permissible_values != allele]
 
-            if len(permissible_alternative_values) > 0:
+            if len(permissible_values) == 0:
+                raise RuntimeError("should have at least one permissible value")
+            elif len(permissible_values) == 1:
+                assert permissible_values[0] == allele
+                continue  # since we have no new choice there's nothing to do here
+            else:
+                rng.shuffle(permissible_values)
 
-                dna[gene_idx] = rng.choice(permissible_alternative_values)
+                # we have at least two permissible values, we pick the one
+                # that's different from the current one
+                if permissible_values[0] != allele:
+                    dna[gene_idx] = permissible_values[0]
+                else:
+                    dna[gene_idx] = permissible_values[1]
+
+                region_idx = self._get_region_idx(gene_idx)
+
                 modified_parameter_value: bool
                 if self._is_function_gene(gene_idx):
                     region_idx = self._get_region_idx(gene_idx)
